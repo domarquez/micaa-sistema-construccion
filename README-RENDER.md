@@ -1,96 +1,68 @@
-# MICAA - Guía de Despliegue en Render
+# MICAA - Deployment en Render
 
-## Resumen del Proyecto
-MICAA es un sistema integral de construcción y arquitectura desarrollado con:
-- **Frontend:** React 18 + TypeScript + Vite
-- **Backend:** Node.js 20 + Express + TypeScript  
-- **Base de Datos:** PostgreSQL con Drizzle ORM
-- **Email:** SMTP con mail.micaa.store
+## 🚀 Comandos de Build para Render
 
-## Configuración Render
-
-### 1. Crear Base de Datos PostgreSQL
-1. En Render Dashboard → New → PostgreSQL
-2. Nombre: `micaa-db`
-3. Plan: Starter (gratuito)
-4. Copiar `DATABASE_URL` para usar en el Web Service
-
-### 2. Crear Web Service
-1. En Render Dashboard → New → Web Service
-2. Conectar repositorio de GitHub
-3. Configuración:
-   - **Name:** `micaa-app`
-   - **Environment:** Node
-   - **Build Command:** `npm install && npm run build`
-   - **Start Command:** `npm start`
-   - **Node Version:** 18+
-
-### 3. Variables de Entorno
-Agregar en Render Dashboard → Environment:
+### Opción 1: Script personalizado (RECOMENDADO)
+```bash
+Build Command: ./build.sh
+Start Command: npm start
 ```
+
+### Opción 2: Comando directo con devDependencies
+```bash
+Build Command: npm install --include=dev && npm run build
+Start Command: npm start
+```
+
+## 📋 Configuración de Variables de Entorno
+
+### Variables Requeridas:
+```
+DATABASE_URL=postgresql://...
 NODE_ENV=production
-DATABASE_URL=[URL de la base de datos PostgreSQL]
+```
+
+### Variables Opcionales (SMTP):
+```
 SMTP_HOST=mail.micaa.store
 SMTP_PORT=465
-SMTP_USER=contacto@micaa.store
-SMTP_PASS=[contraseña SMTP configurada]
+SMTP_USER=contacto@micaa.store  
+SMTP_PASS=[tu-contraseña-smtp]
 NOTIFICATION_EMAIL=contacto@micaa.store
 ```
 
-### 4. Scripts de Build Optimizados
-El proyecto incluye scripts optimizados para producción:
-- `npm run build` - Construye cliente y servidor
-- `npm start` - Inicia aplicación en producción
-- `npm run db:push` - Ejecuta migraciones (una vez desplegado)
-
-### 5. Características de Producción
-- Health check endpoint: `/health`
-- Manejo de errores mejorado
-- Pool de conexiones optimizado
-- Compatibilidad con WebSocket de Neon
-- Assets estáticos optimizados
-
-## Después del Despliegue
-
-### 1. Ejecutar Migraciones
-Una vez desplegado, acceder a Shell en Render y ejecutar:
-```bash
-npm run db:push
+### Variables de Seguridad:
+```
+JWT_SECRET=[tu-jwt-secret]
 ```
 
-### 2. Verificar Funcionalidad
-- Endpoint health: `https://tu-app.onrender.com/health`
-- Landing page: `https://tu-app.onrender.com`
-- API: `https://tu-app.onrender.com/api/statistics`
+## ⚡ Troubleshooting
 
-## Datos Preexistentes
-La aplicación incluye datos completos del sector construcción boliviano:
-- **1,762** materiales con precios
-- **455** actividades de construcción
-- **2,798** composiciones APU
-- Sistema colaborativo de actividades
-- Marketplace de proveedores
+### Error: "vite: not found"
+**Causa:** Render no instala devDependencies por defecto
+**Solución:** Usar `npm install --include=dev` en build command
 
-## Funcionalidades Clave
-- Cálculo de presupuestos con APU
-- Sistema colaborativo de actividades
-- Marketplace para proveedores
-- Factores de precios por ciudad
-- Sistema de email automático
-- Panel administrativo completo
+### Error: "esbuild: not found"  
+**Causa:** esbuild está en devDependencies
+**Solución:** Incluir `--include=dev` en npm install
 
-## Monitoreo
-La aplicación incluye:
-- Health checks automáticos
-- Logging estructurado
-- Manejo graceful de errores
-- Métricas de rendimiento
+### Error: Build timeout
+**Causa:** Build tarda más de 15 minutos
+**Solución:** Optimizar chunks o usar Render Pro
 
-## Escalabilidad
-Configurado para:
-- Auto-scaling en Render
-- Pool de conexiones eficiente
-- Optimización de assets
-- Cache del lado cliente
+## 🛠️ Versiones de Node.js
 
-El sistema está completamente optimizado y listo para producción en Render.
+Render usa Node.js 22.16.0 por defecto (compatible)
+Para especificar versión: crear `.nvmrc` con version número
+
+## 📊 Status del Build
+
+✅ **Vulnerabilidades:** Resueltas (solo 4 moderadas restantes)  
+✅ **Dependencias:** Todas compatibles  
+✅ **Build local:** Funciona perfectamente  
+✅ **Assets:** Optimizados (344KB gzipped)  
+
+## 🚦 Health Check
+
+Endpoint: `/health`
+Respuesta: `{"status": "ok", "timestamp": "..."}`

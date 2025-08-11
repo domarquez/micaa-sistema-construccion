@@ -1,11 +1,9 @@
 services:
   - type: web
-    name: micaa-app
+    name: micaa-sistema
     env: node
-    plan: starter
-    buildCommand: npm install && npm run build
+    buildCommand: ./build.sh
     startCommand: npm start
-    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
@@ -13,15 +11,3 @@ services:
         fromDatabase:
           name: micaa-db
           property: connectionString
-      - key: SMTP_HOST
-        value: mail.micaa.store
-      - key: SMTP_PORT
-        value: 465
-      - key: SMTP_USER
-        value: contacto@micaa.store
-      - key: NOTIFICATION_EMAIL
-        value: contacto@micaa.store
-
-databases:
-  - name: micaa-db
-    plan: starter
