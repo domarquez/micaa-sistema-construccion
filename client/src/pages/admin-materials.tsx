@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Search, DollarSign, Save, RefreshCw } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -62,15 +62,7 @@ export default function AdminMaterials() {
   // Update material price mutation
   const updatePriceMutation = useMutation({
     mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
-      const response = await fetch(`/api/admin/materials/${materialId}/price`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ price }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update price');
-      }
-      return response.json();
+      return await apiRequest(`/api/admin/materials/${materialId}/price`, "PUT", { price });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/materials"] });
@@ -93,15 +85,7 @@ export default function AdminMaterials() {
   // Global price adjustment mutation
   const globalAdjustmentMutation = useMutation({
     mutationFn: async (factor: number) => {
-      const response = await fetch('/api/apply-price-adjustment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ factor, updatedBy: 'admin' }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to apply global adjustment');
-      }
-      return response.json();
+      return await apiRequest('/api/apply-price-adjustment', "POST", { factor, updatedBy: 'admin' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/materials"] });
