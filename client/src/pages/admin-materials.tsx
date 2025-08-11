@@ -98,7 +98,10 @@ export default function AdminMaterials() {
   };
 
   const handleSavePrice = async () => {
-    if (!editingMaterial || !newPrice) return;
+    if (!editingMaterial || !newPrice) {
+      console.log("Missing material or price data");
+      return;
+    }
     
     const price = parseFloat(newPrice);
     if (isNaN(price) || price <= 0) {
@@ -110,15 +113,29 @@ export default function AdminMaterials() {
       return;
     }
 
+    console.log("Starting price update...", {
+      materialId: editingMaterial.id,
+      materialName: editingMaterial.name,
+      newPrice: price
+    });
+
     try {
-      console.log("Updating price manually...", editingMaterial.id, price);
-      
       const token = localStorage.getItem('auth_token');
       if (!token) {
-        throw new Error('No authentication token found');
+        console.error('No authentication token found');
+        toast({
+          title: "Error de autenticación",
+          description: "No se encontró token de autenticación. Inicia sesión nuevamente.",
+          variant: "destructive",
+        });
+        return;
       }
 
-      const response = await fetch(`/api/admin/materials/${editingMaterial.id}/price`, {
+      const url = `/api/admin/materials/${editingMaterial.id}/price`;
+      console.log('Making API request to:', url);
+      console.log('Request payload:', { price });
+
+      const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -127,29 +144,42 @@ export default function AdminMaterials() {
         body: JSON.stringify({ price }),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`${response.status}: ${errorText}`);
+        console.error('API error response:', errorText);
+        throw new Error(`Error ${response.status}: ${errorText}`);
       }
 
       const result = await response.json();
-      console.log("Price updated successfully:", result);
+      console.log("API response success:", result);
       
       // Update UI
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
+      
       toast({
-        title: "Precio actualizado",
-        description: "El precio base del material se actualizó correctamente.",
+        title: "✓ Precio actualizado",
+        description: `Precio cambiado a Bs. ${price.toFixed(2)}`,
       });
+      
       setEditingMaterial(null);
       setNewPrice("");
       setIsDialogOpen(false);
       
+      console.log("Price update completed successfully");
+      
     } catch (error: any) {
-      console.error("Price update error:", error);
+      console.error("Complete error details:", {
+        error: error,
+        message: error.message,
+        stack: error.stack
+      });
+      
       toast({
-        title: "Error",
-        description: error.message || "No se pudo actualizar el precio del material.",
+        title: "Error al actualizar",
+        description: `No se pudo actualizar el precio: ${error.message || 'Error desconocido'}`,
         variant: "destructive",
       });
     }
@@ -292,12 +322,12 @@ export default function AdminMaterials() {
                             Editar Precio
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent aria-describedby="dialog-description">
                           <DialogHeader>
                             <DialogTitle>Editar Precio Base</DialogTitle>
-                            <div className="sr-only">
-                              Formulario para actualizar el precio base del material seleccionado
-                            </div>
+                            <p id="dialog-description" className="text-sm text-gray-600">
+                              Actualiza el precio base del material seleccionado
+                            </p>
                           </DialogHeader>
                           <div className="space-y-4">
                             <div>
