@@ -130,6 +130,8 @@ export default function AdminMaterials() {
         });
         return;
       }
+      
+      console.log('Auth token found:', token ? `${token.substring(0, 20)}...` : 'null');
 
       const url = `/api/admin/materials/${editingMaterial.id}/price`;
       console.log('Making API request to:', url);
@@ -150,6 +152,7 @@ export default function AdminMaterials() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API error response:', errorText);
+        console.error('Response headers:', Object.fromEntries(response.headers.entries()));
         throw new Error(`Error ${response.status}: ${errorText}`);
       }
 
