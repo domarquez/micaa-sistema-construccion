@@ -60,50 +60,7 @@ export default function AdminMaterials() {
     queryKey: ["/api/material-categories"],
   });
 
-  // Update material price mutation
-  const updatePriceMutation = useMutation({
-    mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
-      console.log("Updating price for material:", materialId, "to price:", price);
-      
-      const response = await fetch(`/api/admin/materials/${materialId}/price`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
-        },
-        body: JSON.stringify({ price }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`${response.status}: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log("Price update response:", result);
-      return result;
-    },
-    onSuccess: (data) => {
-      console.log("Price updated successfully:", data);
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
-      toast({
-        title: "Precio actualizado",
-        description: "El precio base del material se actualizó correctamente.",
-      });
-      setEditingMaterial(null);
-      setNewPrice("");
-      setIsDialogOpen(false);
-    },
-    onError: (error: any) => {
-      console.error("Price update error:", error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo actualizar el precio del material.",
-        variant: "destructive",
-      });
-    },
-  });
+  // Remove mutation - using direct approach now
 
   // Global price adjustment mutation
   const globalAdjustmentMutation = useMutation({
@@ -140,7 +97,7 @@ export default function AdminMaterials() {
     setIsDialogOpen(true);
   };
 
-  const handleSavePrice = () => {
+  const handleSavePrice = async () => {
     if (!editingMaterial || !newPrice) return;
     
     const price = parseFloat(newPrice);
@@ -153,10 +110,49 @@ export default function AdminMaterials() {
       return;
     }
 
-    updatePriceMutation.mutate({
-      materialId: editingMaterial.id,
-      price
-    });
+    try {
+      console.log("Updating price manually...", editingMaterial.id, price);
+      
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`/api/admin/materials/${editingMaterial.id}/price`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ price }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Price updated successfully:", result);
+      
+      // Update UI
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
+      toast({
+        title: "Precio actualizado",
+        description: "El precio base del material se actualizó correctamente.",
+      });
+      setEditingMaterial(null);
+      setNewPrice("");
+      setIsDialogOpen(false);
+      
+    } catch (error: any) {
+      console.error("Price update error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo actualizar el precio del material.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleGlobalAdjustment = (factor: number) => {
@@ -326,12 +322,8 @@ export default function AdminMaterials() {
                             <div className="flex gap-2">
                               <Button
                                 onClick={handleSavePrice}
-                                disabled={updatePriceMutation.isPending}
                                 className="flex-1"
                               >
-                                {updatePriceMutation.isPending && (
-                                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                )}
                                 <Save className="h-4 w-4 mr-2" />
                                 Guardar
                               </Button>
