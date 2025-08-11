@@ -64,15 +64,25 @@ export default function AdminMaterials() {
   const updatePriceMutation = useMutation({
     mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
       console.log("Updating price for material:", materialId, "to price:", price);
-      try {
-        const response = await apiRequest("PUT", `/api/admin/materials/${materialId}/price`, { price });
-        const result = await response.json();
-        console.log("Price update response:", result);
-        return result;
-      } catch (error) {
-        console.error("API request failed:", error);
-        throw error;
+      
+      const response = await fetch(`/api/admin/materials/${materialId}/price`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+        body: JSON.stringify({ price }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`${response.status}: ${errorText}`);
       }
+
+      const result = await response.json();
+      console.log("Price update response:", result);
+      return result;
     },
     onSuccess: (data) => {
       console.log("Price updated successfully:", data);
@@ -289,6 +299,9 @@ export default function AdminMaterials() {
                         <DialogContent>
                           <DialogHeader>
                             <DialogTitle>Editar Precio Base</DialogTitle>
+                            <div className="sr-only">
+                              Formulario para actualizar el precio base del material seleccionado
+                            </div>
                           </DialogHeader>
                           <div className="space-y-4">
                             <div>
