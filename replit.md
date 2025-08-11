@@ -64,7 +64,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### August 11, 2025: Google AdSense Integration Complete
+### August 11, 2025: System Fixes and Google AdSense Integration Complete
+- **Critical System Repairs**: Eliminadas todas las referencias incorrectas a "insucons" del sistema
+- **Activity Compositions Fixed**: Agregadas rutas API faltantes /api/activities/:id/compositions y /api/activities/:id/apu-calculation 
+- **Admin Material Management**: Corregidos errores de autenticación y endpoints en gestión de materiales
+- **Price Update System**: Sistema de actualización de precios funcionando correctamente en backend
+- **API Request Fixes**: Corregido orden de parámetros en función apiRequest (método, URL, datos)
+- **Dialog Management**: Implementado estado controlado para diálogos de edición de precios
+
+### Google AdSense Integration Complete
 - **Google AdSense Script**: Agregado script oficial en index.html con Publisher ID ca-pub-8854811165812956
 - **Advertising Components**: Creados 4 componentes especializados de anuncios:
   - AdHeader: Banner 728x90 para desktop (slot: 2345678901)

@@ -64,10 +64,15 @@ export default function AdminMaterials() {
   const updatePriceMutation = useMutation({
     mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
       console.log("Updating price for material:", materialId, "to price:", price);
-      const response = await apiRequest("PUT", `/api/admin/materials/${materialId}/price`, { price });
-      const result = await response.json();
-      console.log("Price update response:", result);
-      return result;
+      try {
+        const response = await apiRequest("PUT", `/api/admin/materials/${materialId}/price`, { price });
+        const result = await response.json();
+        console.log("Price update response:", result);
+        return result;
+      } catch (error) {
+        console.error("API request failed:", error);
+        throw error;
+      }
     },
     onSuccess: (data) => {
       console.log("Price updated successfully:", data);
