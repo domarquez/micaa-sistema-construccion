@@ -50,8 +50,8 @@ export default function AdminMaterials() {
   const { toast } = useToast();
 
   // Fetch materials
-  const { data: materials = [], isLoading: materialsLoading } = useQuery({
-    queryKey: ["/api/materials", { categoryId: selectedCategory, search: searchTerm }],
+  const { data: materials = [], isLoading: materialsLoading } = useQuery<Material[]>({
+    queryKey: ["/api/admin/materials", { categoryId: selectedCategory, search: searchTerm }],
   });
 
   // Fetch categories
@@ -65,7 +65,7 @@ export default function AdminMaterials() {
       return await apiRequest(`/api/admin/materials/${materialId}/price`, "PUT", { price });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/materials"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
       toast({
         title: "Precio actualizado",
         description: "El precio base del material se actualizó correctamente.",
@@ -88,7 +88,7 @@ export default function AdminMaterials() {
       return await apiRequest('/api/apply-price-adjustment', "POST", { factor, updatedBy: 'admin' });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/materials"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
       toast({
         title: "Ajuste aplicado",
         description: "El ajuste global de precios se aplicó correctamente.",
