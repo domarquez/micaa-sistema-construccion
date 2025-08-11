@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { db } from './db';
 import { storage as dbStorage } from './storage';
-import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets } from '../shared/schema';
+import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 
 // Middleware de autenticación
@@ -185,6 +185,44 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error('Activities fetch error:', error);
       res.status(500).json({ error: 'Failed to fetch activities' });
+    }
+  });
+
+  // Get activity compositions
+  router.get('/activities/:id/compositions', async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      const compositions = await db.select()
+        .from(activityCompositions)
+        .where(eq(activityCompositions.activityId, activityId));
+
+      res.json(compositions);
+    } catch (error) {
+      console.error('Activity compositions fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch activity compositions' });
+    }
+  });
+
+  // Get activity APU calculation
+  router.get('/activities/:id/apu-calculation', async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      // Import APU calculator
+      const { calculateAPU } = await import('./apu-calculator');
+      const calculation = await calculateAPU(activityId);
+      
+      res.json(calculation);
+    } catch (error) {
+      console.error('APU calculation error:', error);
+      res.status(500).json({ error: 'Failed to calculate APU' });
     }
   });
 

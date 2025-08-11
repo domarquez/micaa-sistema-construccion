@@ -332,7 +332,7 @@ export default function ActivityDetailDialog({
               <CardContent className="py-8 text-center text-gray-500">
                 <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>No hay composiciones disponibles para esta actividad</p>
-                <p className="text-sm">Las composiciones se importan desde los APU de insucons.com</p>
+                <p className="text-sm">Las composiciones se crean y gestionan dentro del sistema MICAA</p>
               </CardContent>
             </Card>
           ) : null}

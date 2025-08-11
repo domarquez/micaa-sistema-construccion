@@ -117,7 +117,7 @@ export async function importAPUCompositions() {
             // Si no existe la actividad, crearla automáticamente
             if (!activity) {
               try {
-                // Determinar la fase según el grupo de insucons.com
+                // Determinar la fase según el grupo del sistema
                 let phaseId = 3; // Obra gruesa por defecto
                 const groupName = group.name.toLowerCase();
                 

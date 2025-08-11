@@ -92,7 +92,7 @@ export async function getAPUGroups(): Promise<APUGroup[]> {
       const text = link.text().trim();
       
       if (href && text && href.includes('grupos/') && href.match(/grupos\/\d+\//)) {
-        const fullUrl = href.startsWith('http') ? href : `https://www.insucons.com/${href}`;
+        const fullUrl = href.startsWith('http') ? href : `https://www.micaa.store/${href}`;
         const pathParts = href.split('/');
         const groupId = pathParts[pathParts.length - 2] || '';
         
@@ -142,7 +142,7 @@ export async function getAPUsByGroup(groupUrl: string): Promise<APUItem[]> {
         // Verificar si es un enlace a un APU individual (tiene patrón: categoria/numero/nombre)
         const apuPattern = /\/[a-z-]+\/\d+\/[a-z0-9-]+$/;
         if (href.match(apuPattern) && !href.includes('/grupos/') && href.includes('analisis-precio-unitario/hh/')) {
-          const fullUrl = href.startsWith('http') ? href : `https://www.insucons.com/${href}`;
+          const fullUrl = href.startsWith('http') ? href : `https://www.micaa.store/${href}`;
           const pathParts = href.split('/');
           const code = pathParts[pathParts.length - 2] || ''; // El número del APU
           const name = text;
@@ -169,7 +169,7 @@ export async function getAPUsByGroup(groupUrl: string): Promise<APUItem[]> {
         const name = link.text().trim() || cells.eq(1).text().trim();
         
         if (href && name && href.match(/\/\d+\/[a-z0-9-]+$/)) {
-          const fullUrl = href.startsWith('http') ? href : `https://www.insucons.com/${href}`;
+          const fullUrl = href.startsWith('http') ? href : `https://www.micaa.store/${href}`;
           const pathParts = href.split('/');
           const code = pathParts[pathParts.length - 2] || '';
           
