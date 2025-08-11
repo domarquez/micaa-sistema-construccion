@@ -311,56 +311,14 @@ export default function AdminMaterials() {
                       Bs. {Number(material.price).toFixed(2)}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditPrice(material)}
-                          >
-                            <DollarSign className="h-4 w-4 mr-2" />
-                            Editar Precio
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent aria-describedby="dialog-description">
-                          <DialogHeader>
-                            <DialogTitle>Editar Precio Base</DialogTitle>
-                            <p id="dialog-description" className="text-sm text-gray-600">
-                              Actualiza el precio base del material seleccionado
-                            </p>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div>
-                              <label className="text-sm font-medium">Material</label>
-                              <p className="text-gray-600">{editingMaterial?.name}</p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium">Precio Actual</label>
-                              <p className="text-gray-600">Bs. {editingMaterial?.price.toFixed(2)}</p>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium">Nuevo Precio</label>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={newPrice}
-                                onChange={(e) => setNewPrice(e.target.value)}
-                                placeholder="0.00"
-                              />
-                            </div>
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={handleSavePrice}
-                                className="flex-1"
-                              >
-                                <Save className="h-4 w-4 mr-2" />
-                                Guardar
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditPrice(material)}
+                      >
+                        <DollarSign className="h-4 w-4 mr-2" />
+                        Editar Precio
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -369,6 +327,59 @@ export default function AdminMaterials() {
           )}
         </CardContent>
       </Card>
+
+      {/* Price Edit Dialog - moved outside of table loop */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent aria-describedby="dialog-description">
+          <DialogHeader>
+            <DialogTitle>Editar Precio Base</DialogTitle>
+            <p id="dialog-description" className="text-sm text-gray-600">
+              Actualiza el precio base del material seleccionado
+            </p>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Material</label>
+              <p className="text-gray-600">{editingMaterial?.name}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Precio Actual</label>
+              <p className="text-gray-600">Bs. {editingMaterial?.price ? Number(editingMaterial.price).toFixed(2) : '0.00'}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Nuevo Precio</label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={newPrice}
+                onChange={(e) => setNewPrice(e.target.value)}
+                placeholder="0.00"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleSavePrice}
+                className="flex-1"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Guardar
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  setEditingMaterial(null);
+                  setNewPrice("");
+                }}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
