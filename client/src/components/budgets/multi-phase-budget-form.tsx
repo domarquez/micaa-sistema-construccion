@@ -37,7 +37,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Plus, Trash2, Building, FileText } from "lucide-react";
-import ModuleConfigurator from "@/components/module-configurator";
+
 import type { Project, ConstructionPhase, ActivityWithPhase, BudgetWithProject } from "@shared/schema";
 
 const projectFormSchema = z.object({
@@ -100,8 +100,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   const [currentProject, setCurrentProject] = useState<Project | null>(budget?.project || null);
   const [phases, setPhases] = useState<PhaseData[]>([]);
   const [selectedPhases, setSelectedPhases] = useState<number[]>([]);
-  const [moduleCount, setModuleCount] = useState(2);
-  const [moduleTotalPrice, setModuleTotalPrice] = useState(0);
+
   const isEditing = !!budget;
 
   const form = useForm<ProjectFormData>({
@@ -411,7 +410,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
             const updatedItem = { ...item, [field]: value };
             
             if (field === 'activityId') {
-              const activity = allActivities?.activities?.find(a => a.id === value) || allActivities?.find(a => a.id === value);
+              const activity = allActivities?.find((a: any) => a.id === value);
               updatedItem.activity = activity;
               if (activity && activity.unitPrice) {
                 const cityValue = form.watch('city');
@@ -439,57 +438,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     }));
   };
 
-  // Función para manejar cambios en el configurador de módulos
-  const handleModuleChange = (modules: number, totalPrice: number) => {
-    const previousModuleCount = moduleCount;
-    setModuleCount(modules);
-    setModuleTotalPrice(totalPrice);
-    
-    // Aplicar el multiplicador de módulos a todas las cantidades existentes
-    if (phases.length > 0 && previousModuleCount !== modules) {
-      setPhases(phases.map(phase => {
-        const updatedItems = phase.items.map(item => {
-          if (item.activityId > 0) {
-            // Calcular nueva cantidad basada en la proporción de módulos
-            const baseQuantity = previousModuleCount > 0 ? item.quantity / previousModuleCount : item.quantity;
-            const newQuantity = Math.max(1, Math.round(baseQuantity * modules));
-            const newSubtotal = item.unitPrice * newQuantity;
-            
-            return {
-              ...item,
-              quantity: newQuantity,
-              subtotal: newSubtotal
-            };
-          }
-          return item;
-        });
-        
-        const newTotal = updatedItems.reduce((sum, item) => sum + item.subtotal, 0);
-        
-        return {
-          ...phase,
-          items: updatedItems,
-          total: newTotal
-        };
-      }));
-    }
-  };
 
-  // Detectar tipo de proyecto basado en el nombre
-  const getProjectType = () => {
-    const projectName = currentProject?.name?.toLowerCase() || "";
-    if (projectName.includes("casa") || projectName.includes("vivienda") || projectName.includes("hogar")) {
-      return "casa8";
-    }
-    return "galeria";
-  };
-
-  // Calcular precio base aproximado para el configurador
-  const getBasePrice = () => {
-    if (phases.length === 0) return 0;
-    const total = phases.reduce((sum, phase) => sum + phase.total, 0);
-    return moduleCount > 0 ? total / moduleCount : total;
-  };
 
   const grandTotal = phases.reduce((sum, phase) => sum + phase.total, 0);
 
@@ -610,15 +559,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
             </Card>
           )}
 
-          {/* Configurador de Módulos */}
-          {currentProject && (
-            <ModuleConfigurator
-              projectType={getProjectType()}
-              basePrice={getBasePrice()}
-              onModuleChange={handleModuleChange}
-              className="mb-6"
-            />
-          )}
+
 
           {/* Selección de Fases */}
           {currentProject && (
@@ -628,16 +569,13 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span>Proyecto: {currentProject.name}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {moduleCount} módulos • {getProjectType()}
-                      </Badge>
                     </div>
                     <Badge variant="outline">
                       Total: Bs {grandTotal.toLocaleString('es-BO', { minimumFractionDigits: 2 })}
                     </Badge>
                   </CardTitle>
                   <CardDescription>
-                    Selecciona las fases que incluirá este presupuesto. Las cantidades se ajustarán automáticamente según el número de módulos configurados.
+                    Selecciona las fases que incluirá este presupuesto.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
