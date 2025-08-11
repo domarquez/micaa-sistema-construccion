@@ -1,0 +1,132 @@
+[
+  {
+    "id": 1,
+    "name": "BOMBA DE AGUA 3HP",
+    "description": "Herramienta de construcción: BOMBA DE AGUA 3HP",
+    "unit": "HR.",
+    "unit_price": "24.38",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.272Z",
+    "updated_at": "2025-06-01T09:30:52.272Z"
+  },
+  {
+    "id": 2,
+    "name": "COMPACTADORAS",
+    "description": "Herramienta de construcción: COMPACTADORAS",
+    "unit": "%",
+    "unit_price": "32.50",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.300Z",
+    "updated_at": "2025-06-01T09:30:52.300Z"
+  },
+  {
+    "id": 3,
+    "name": "EQUIPO DE SOLDADURA",
+    "description": "Herramienta de construcción: EQUIPO DE SOLDADURA",
+    "unit": "HR.",
+    "unit_price": "27.62",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.316Z",
+    "updated_at": "2025-06-01T09:30:52.316Z"
+  },
+  {
+    "id": 4,
+    "name": "HERRAMIENTAS MENORES",
+    "description": "Herramienta de construcción: HERRAMIENTAS MENORES",
+    "unit": "%",
+    "unit_price": "9.72",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.331Z",
+    "updated_at": "2025-06-01T09:30:52.331Z"
+  },
+  {
+    "id": 5,
+    "name": "MEZCLADORA",
+    "description": "Herramienta de construcción: MEZCLADORA",
+    "unit": "HR.",
+    "unit_price": "39.00",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.347Z",
+    "updated_at": "2025-06-01T09:30:52.347Z"
+  },
+  {
+    "id": 6,
+    "name": "RETROEXCAVADORA",
+    "description": "Herramienta de construcción: RETROEXCAVADORA",
+    "unit": "HR.",
+    "unit_price": "299.00",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.363Z",
+    "updated_at": "2025-06-01T09:30:52.363Z"
+  },
+  {
+    "id": 7,
+    "name": "VIBRADORA",
+    "description": "Herramienta de construcción: VIBRADORA",
+    "unit": "HR.",
+    "unit_price": "21.12",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.379Z",
+    "updated_at": "2025-06-01T09:30:52.379Z"
+  },
+  {
+    "id": 8,
+    "name": "VOLQUETA",
+    "description": "Herramienta de construcción: VOLQUETA",
+    "unit": "M3",
+    "unit_price": "24.38",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.396Z",
+    "updated_at": "2025-06-01T09:30:52.396Z"
+  },
+  {
+    "id": 9,
+    "name": "OTROS",
+    "description": "Herramienta de construcción: OTROS",
+    "unit": "%",
+    "unit_price": "1.10",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.412Z",
+    "updated_at": "2025-06-01T09:30:52.412Z"
+  },
+  {
+    "id": 10,
+    "name": "COMPRESORA ATLAS COPCO",
+    "description": "Herramienta de construcción: COMPRESORA ATLAS COPCO",
+    "unit": "HR.",
+    "unit_price": "97.50",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.428Z",
+    "updated_at": "2025-06-01T09:30:52.428Z"
+  },
+  {
+    "id": 11,
+    "name": "EQUIPO DE PERFORACION",
+    "description": "Herramienta de construcción: EQUIPO DE PERFORACION",
+    "unit": "HR.",
+    "unit_price": "56.88",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.452Z",
+    "updated_at": "2025-06-01T09:30:52.452Z"
+  },
+  {
+    "id": 12,
+    "name": "Prueba de Herramientas",
+    "description": "Herramienta de construcción: Prueba de Herramientas",
+    "unit": "Hr",
+    "unit_price": "240.74",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.468Z",
+    "updated_at": "2025-06-01T09:30:52.468Z"
+  },
+  {
+    "id": 13,
+    "name": "ENSAYO",
+    "description": "Herramienta de construcción: ENSAYO",
+    "unit": "HR",
+    "unit_price": "7.51",
+    "is_active": true,
+    "created_at": "2025-06-01T09:30:52.485Z",
+    "updated_at": "2025-06-01T09:30:52.485Z"
+  }
+]

@@ -1,0 +1,362 @@
+[
+  {
+    "id": 27,
+    "budget_id": 25,
+    "activity_id": 6,
+    "quantity": "1.000",
+    "unit_price": "5.13",
+    "subtotal": "0.00",
+    "phase_id": 1
+  },
+  {
+    "id": 28,
+    "budget_id": 25,
+    "activity_id": 176,
+    "quantity": "50.000",
+    "unit_price": "5.94",
+    "subtotal": "297.00",
+    "phase_id": 1
+  },
+  {
+    "id": 29,
+    "budget_id": 25,
+    "activity_id": 45,
+    "quantity": "1.000",
+    "unit_price": "344.30",
+    "subtotal": "0.00",
+    "phase_id": 5
+  },
+  {
+    "id": 30,
+    "budget_id": 25,
+    "activity_id": 241,
+    "quantity": "1.000",
+    "unit_price": "480.00",
+    "subtotal": "0.00",
+    "phase_id": 5
+  },
+  {
+    "id": 31,
+    "budget_id": 26,
+    "activity_id": 178,
+    "quantity": "1.000",
+    "unit_price": "12.50",
+    "subtotal": "0.00",
+    "phase_id": 1
+  },
+  {
+    "id": 32,
+    "budget_id": 26,
+    "activity_id": 386,
+    "quantity": "1.000",
+    "unit_price": "303.88",
+    "subtotal": "0.00",
+    "phase_id": 1
+  },
+  {
+    "id": 33,
+    "budget_id": 26,
+    "activity_id": 62,
+    "quantity": "1.000",
+    "unit_price": "566.80",
+    "subtotal": "0.00",
+    "phase_id": 3
+  },
+  {
+    "id": 34,
+    "budget_id": 26,
+    "activity_id": 88,
+    "quantity": "1.000",
+    "unit_price": "937.50",
+    "subtotal": "0.00",
+    "phase_id": 3
+  },
+  {
+    "id": 35,
+    "budget_id": 27,
+    "activity_id": 6,
+    "quantity": "1.000",
+    "unit_price": "5.13",
+    "subtotal": "0.00",
+    "phase_id": 1
+  },
+  {
+    "id": 36,
+    "budget_id": 27,
+    "activity_id": 176,
+    "quantity": "50.000",
+    "unit_price": "5.94",
+    "subtotal": "297.00",
+    "phase_id": 1
+  },
+  {
+    "id": 37,
+    "budget_id": 27,
+    "activity_id": 45,
+    "quantity": "33.000",
+    "unit_price": "344.30",
+    "subtotal": "11361.90",
+    "phase_id": 5
+  },
+  {
+    "id": 38,
+    "budget_id": 27,
+    "activity_id": 241,
+    "quantity": "34.000",
+    "unit_price": "480.00",
+    "subtotal": "16320.00",
+    "phase_id": 5
+  },
+  {
+    "id": 39,
+    "budget_id": 28,
+    "activity_id": 6,
+    "quantity": "1.000",
+    "unit_price": "5.13",
+    "subtotal": "0.00",
+    "phase_id": 1
+  },
+  {
+    "id": 40,
+    "budget_id": 28,
+    "activity_id": 176,
+    "quantity": "50.000",
+    "unit_price": "5.94",
+    "subtotal": "297.00",
+    "phase_id": 1
+  },
+  {
+    "id": 41,
+    "budget_id": 28,
+    "activity_id": 45,
+    "quantity": "33.000",
+    "unit_price": "344.30",
+    "subtotal": "11361.90",
+    "phase_id": 5
+  },
+  {
+    "id": 42,
+    "budget_id": 28,
+    "activity_id": 241,
+    "quantity": "34.000",
+    "unit_price": "480.00",
+    "subtotal": "16320.00",
+    "phase_id": 5
+  },
+  {
+    "id": 43,
+    "budget_id": 28,
+    "activity_id": 108,
+    "quantity": "1.000",
+    "unit_price": "1035.00",
+    "subtotal": "1035.00",
+    "phase_id": 4
+  },
+  {
+    "id": 44,
+    "budget_id": 29,
+    "activity_id": 6,
+    "quantity": "1.000",
+    "unit_price": "5.13",
+    "subtotal": "0.00",
+    "phase_id": 1
+  },
+  {
+    "id": 45,
+    "budget_id": 29,
+    "activity_id": 176,
+    "quantity": "50.000",
+    "unit_price": "5.94",
+    "subtotal": "297.00",
+    "phase_id": 1
+  },
+  {
+    "id": 46,
+    "budget_id": 29,
+    "activity_id": 185,
+    "quantity": "34.000",
+    "unit_price": "6.25",
+    "subtotal": "212.50",
+    "phase_id": 1
+  },
+  {
+    "id": 47,
+    "budget_id": 29,
+    "activity_id": 108,
+    "quantity": "1.000",
+    "unit_price": "1035.00",
+    "subtotal": "1035.00",
+    "phase_id": 4
+  },
+  {
+    "id": 48,
+    "budget_id": 29,
+    "activity_id": 116,
+    "quantity": "34.000",
+    "unit_price": "89.00",
+    "subtotal": "3026.00",
+    "phase_id": 4
+  },
+  {
+    "id": 49,
+    "budget_id": 29,
+    "activity_id": 45,
+    "quantity": "33.000",
+    "unit_price": "344.30",
+    "subtotal": "11361.90",
+    "phase_id": 5
+  },
+  {
+    "id": 50,
+    "budget_id": 29,
+    "activity_id": 241,
+    "quantity": "34.000",
+    "unit_price": "480.00",
+    "subtotal": "16320.00",
+    "phase_id": 5
+  },
+  {
+    "id": 51,
+    "budget_id": 29,
+    "activity_id": 245,
+    "quantity": "2344.000",
+    "unit_price": "20.46",
+    "subtotal": "47958.24",
+    "phase_id": 5
+  },
+  {
+    "id": 52,
+    "budget_id": 30,
+    "activity_id": 184,
+    "quantity": "2.000",
+    "unit_price": "1.25",
+    "subtotal": "2.50",
+    "phase_id": 1
+  },
+  {
+    "id": 53,
+    "budget_id": 30,
+    "activity_id": 390,
+    "quantity": "3.000",
+    "unit_price": "303.88",
+    "subtotal": "911.64",
+    "phase_id": 1
+  },
+  {
+    "id": 54,
+    "budget_id": 30,
+    "activity_id": 32,
+    "quantity": "2.000",
+    "unit_price": "354.13",
+    "subtotal": "708.26",
+    "phase_id": 3
+  },
+  {
+    "id": 55,
+    "budget_id": 31,
+    "activity_id": 184,
+    "quantity": "2.000",
+    "unit_price": "1.25",
+    "subtotal": "2.50",
+    "phase_id": 1
+  },
+  {
+    "id": 56,
+    "budget_id": 31,
+    "activity_id": 390,
+    "quantity": "3.000",
+    "unit_price": "303.88",
+    "subtotal": "911.64",
+    "phase_id": 1
+  },
+  {
+    "id": 57,
+    "budget_id": 31,
+    "activity_id": 32,
+    "quantity": "2.000",
+    "unit_price": "354.13",
+    "subtotal": "708.26",
+    "phase_id": 3
+  },
+  {
+    "id": 58,
+    "budget_id": 31,
+    "activity_id": 266,
+    "quantity": "12.000",
+    "unit_price": "272.00",
+    "subtotal": "3264.00",
+    "phase_id": 2
+  },
+  {
+    "id": 59,
+    "budget_id": 32,
+    "activity_id": 178,
+    "quantity": "32.000",
+    "unit_price": "12.50",
+    "subtotal": "400.00",
+    "phase_id": 1
+  },
+  {
+    "id": 60,
+    "budget_id": 32,
+    "activity_id": 390,
+    "quantity": "34.000",
+    "unit_price": "303.88",
+    "subtotal": "10331.92",
+    "phase_id": 1
+  },
+  {
+    "id": 61,
+    "budget_id": 33,
+    "activity_id": 178,
+    "quantity": "32.000",
+    "unit_price": "12.50",
+    "subtotal": "400.00",
+    "phase_id": 1
+  },
+  {
+    "id": 62,
+    "budget_id": 33,
+    "activity_id": 390,
+    "quantity": "34.000",
+    "unit_price": "303.88",
+    "subtotal": "10331.92",
+    "phase_id": 1
+  },
+  {
+    "id": 63,
+    "budget_id": 33,
+    "activity_id": 56,
+    "quantity": "3.000",
+    "unit_price": "533.30",
+    "subtotal": "1599.90",
+    "phase_id": 3
+  },
+  {
+    "id": 64,
+    "budget_id": 33,
+    "activity_id": 234,
+    "quantity": "1.000",
+    "unit_price": "5038.45",
+    "subtotal": "5038.45",
+    "phase_id": 3
+  },
+  {
+    "id": 65,
+    "budget_id": 34,
+    "activity_id": 386,
+    "quantity": "2.000",
+    "unit_price": "303.88",
+    "subtotal": "607.76",
+    "phase_id": 1
+  },
+  {
+    "id": 66,
+    "budget_id": 34,
+    "activity_id": 185,
+    "quantity": "2.000",
+    "unit_price": "6.25",
+    "subtotal": "12.50",
+    "phase_id": 1
+  }
+]

@@ -1,0 +1,234 @@
+[
+  {
+    "id": 1,
+    "name": "ACERO PARA CONSTRUCCION"
+  },
+  {
+    "id": 2,
+    "name": "ADHESIVOS"
+  },
+  {
+    "id": 3,
+    "name": "ADITIVOS"
+  },
+  {
+    "id": 4,
+    "name": "ADOQUINES"
+  },
+  {
+    "id": 5,
+    "name": "AISLAMIENTO TERMICO Y ACUSTICO"
+  },
+  {
+    "id": 6,
+    "name": "ALIGERANTES"
+  },
+  {
+    "id": 7,
+    "name": "ALAMBRES Y MALLAS"
+  },
+  {
+    "id": 8,
+    "name": "ARIDOS Y PIEDRAS"
+  },
+  {
+    "id": 9,
+    "name": "ALFOMBRAS Y EMPAPELADOS"
+  },
+  {
+    "id": 10,
+    "name": "AZULEJOS Y CERAMICOS"
+  },
+  {
+    "id": 11,
+    "name": "BOMBAS DE AGUA"
+  },
+  {
+    "id": 12,
+    "name": "CALEFONES"
+  },
+  {
+    "id": 13,
+    "name": "CAÑOS Y ACCESORIOS"
+  },
+  {
+    "id": 14,
+    "name": "CAMARA SEPTICA DE PVC"
+  },
+  {
+    "id": 15,
+    "name": "CARPINTERIA DE ALUMINIO"
+  },
+  {
+    "id": 16,
+    "name": "CEMENTOS"
+  },
+  {
+    "id": 17,
+    "name": "CIELO FALSO PLAFON"
+  },
+  {
+    "id": 18,
+    "name": "CLAVOS"
+  },
+  {
+    "id": 19,
+    "name": "CUBIERTAS"
+  },
+  {
+    "id": 20,
+    "name": "DOMOS DE PVC"
+  },
+  {
+    "id": 21,
+    "name": "ESTUCOS Y CALES"
+  },
+  {
+    "id": 22,
+    "name": "FIJACIONES EN SECO"
+  },
+  {
+    "id": 23,
+    "name": "GAVIONES"
+  },
+  {
+    "id": 24,
+    "name": "GRIFERIA"
+  },
+  {
+    "id": 25,
+    "name": "HERRAMIENTAS"
+  },
+  {
+    "id": 26,
+    "name": "IMPERMEABILIZANTES"
+  },
+  {
+    "id": 27,
+    "name": "IMPERMEABILIZANTES SUPERFICIALES"
+  },
+  {
+    "id": 28,
+    "name": "INSTALACION ELECTRICA"
+  },
+  {
+    "id": 29,
+    "name": "INSTALACION SANITARIA"
+  },
+  {
+    "id": 30,
+    "name": "INSTALACION TELEFONICA"
+  },
+  {
+    "id": 31,
+    "name": "LADRILLOS"
+  },
+  {
+    "id": 32,
+    "name": "LOSETAS"
+  },
+  {
+    "id": 33,
+    "name": "MADERAS"
+  },
+  {
+    "id": 34,
+    "name": "MADERA ELABORADA"
+  },
+  {
+    "id": 35,
+    "name": "MANGUERAS"
+  },
+  {
+    "id": 36,
+    "name": "MOSAICOS Y ZOCALOS"
+  },
+  {
+    "id": 37,
+    "name": "MALLAS ELECTROSOLDADAS"
+  },
+  {
+    "id": 38,
+    "name": "MATERIAL ELECTRICO DE EMPALME"
+  },
+  {
+    "id": 39,
+    "name": "MESONES"
+  },
+  {
+    "id": 40,
+    "name": "PINTURAS"
+  },
+  {
+    "id": 41,
+    "name": "PISOS"
+  },
+  {
+    "id": 42,
+    "name": "PLANCHAS DE ACERO"
+  },
+  {
+    "id": 43,
+    "name": "PLANCHAS DE ACRILICO"
+  },
+  {
+    "id": 44,
+    "name": "POLITUBOS"
+  },
+  {
+    "id": 45,
+    "name": "QUINQUELLERIA"
+  },
+  {
+    "id": 46,
+    "name": "SELLANTES"
+  },
+  {
+    "id": 47,
+    "name": "SOGAS"
+  },
+  {
+    "id": 48,
+    "name": "TANQUES"
+  },
+  {
+    "id": 49,
+    "name": "TEJAS"
+  },
+  {
+    "id": 50,
+    "name": "TIERRA TOSCA Y SUELO SELECCIONADO"
+  },
+  {
+    "id": 51,
+    "name": "TUBOS DE CERAMICA"
+  },
+  {
+    "id": 52,
+    "name": "TUBOS DE HORMIGON"
+  },
+  {
+    "id": 53,
+    "name": "TUBOS Y ACCESORIOS DE PVC"
+  },
+  {
+    "id": 54,
+    "name": "TUBERIAS Y AGO. NOVAFOI"
+  },
+  {
+    "id": 55,
+    "name": "TUBOS Y ACC. P/AGUA CALIENTE"
+  },
+  {
+    "id": 56,
+    "name": "VIDRIOS"
+  },
+  {
+    "id": 57,
+    "name": "CARBURANTES - LUBRICANTES"
+  },
+  {
+    "id": 58,
+    "name": "CAMARA NUEVA ERA DE POLIETILENO"
+  }
+]

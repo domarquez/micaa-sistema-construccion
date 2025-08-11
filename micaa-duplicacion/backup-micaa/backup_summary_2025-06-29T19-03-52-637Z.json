@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-06-29T19:03:55.198Z",
+  "totalTables": 16,
+  "totalRecords": 5361,
+  "tables": [
+    "users",
+    "material_categories",
+    "materials",
+    "construction_phases",
+    "activities",
+    "activity_compositions",
+    "tools",
+    "labor",
+    "projects",
+    "budgets",
+    "budget_items",
+    "suppliers",
+    "companies",
+    "advertisements",
+    "city_price_factors",
+    "supplier_materials"
+  ],
+  "backupDir": "./backup-micaa"
+}

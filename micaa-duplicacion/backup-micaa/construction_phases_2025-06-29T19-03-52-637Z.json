@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "name": "TRABAJOS PRELIMINARES",
+    "description": "Actividades iniciales de preparación del proyecto"
+  },
+  {
+    "id": 2,
+    "name": "MOVIMIENTOS DE TIERRAS",
+    "description": "Excavaciones, rellenos y movimiento de suelos"
+  },
+  {
+    "id": 3,
+    "name": "OBRA GRUESA",
+    "description": "Estructura principal de la construcción"
+  },
+  {
+    "id": 4,
+    "name": "OBRA FINA",
+    "description": "Acabados interiores y exteriores"
+  },
+  {
+    "id": 5,
+    "name": "INSTALACIONES HIDROSANITARIAS",
+    "description": "Sistemas de agua potable y desagüe"
+  },
+  {
+    "id": 6,
+    "name": "INSTALACIONES ELECTRICAS",
+    "description": "Sistemas eléctricos y de comunicaciones"
+  },
+  {
+    "id": 7,
+    "name": "TRABAJOS DE ACABADOS",
+    "description": "Acabados finales y decorativos"
+  },
+  {
+    "id": 8,
+    "name": "JARDINES Y EXTERIORES",
+    "description": "Paisajismo y áreas exteriores"
+  },
+  {
+    "id": 9,
+    "name": "VIAS Y ACCESOS",
+    "description": "Pavimentación y accesos vehiculares"
+  }
+]
