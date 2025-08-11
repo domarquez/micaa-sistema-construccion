@@ -16,11 +16,11 @@ export interface AdConfig {
 export const googleAdsConfig: AdConfig = {
   clientId: "ca-pub-8854811165812956", // Google AdSense Publisher ID for MICAA
   adSlots: {
-    banner: "1234567890",      // 728x90 banner ad slot
-    sidebar: "0987654321",     // 160x600 sidebar ad slot  
-    square: "1122334455",      // 300x250 square ad slot
-    mobile: "5544332211",      // 320x50 mobile ad slot
-    responsive: "6677889900"   // Responsive ad slot
+    banner: "2345678901",      // 728x90 header banner ad slot (AdHeader)
+    sidebar: "0987654321",     // 160x600 sidebar ad slot (existing)
+    square: "1234567890",      // 300x250 in-feed ad slot (AdInFeed)
+    mobile: "4567890123",      // 320x50 mobile ad slot (AdMobile)
+    responsive: "3456789012"   // Responsive footer ad slot (AdFooter)
   }
 };
 

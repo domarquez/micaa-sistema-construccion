@@ -47,6 +47,7 @@ import { formatCurrency, formatRelativeTime, debounce } from "@/lib/utils";
 import { queryClient } from "@/lib/queryClient";
 import MaterialForm from "@/components/materials/material-form";
 import type { MaterialWithCategory, MaterialWithCustomPrice, MaterialCategory } from "@shared/schema";
+import AdInFeed from "@/components/ads/AdInFeed";
 
 export default function Materials() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -309,6 +310,9 @@ export default function Materials() {
           </div>
         </div>
       </div>
+
+      {/* AdSense In-Feed - Entre header y contenido */}
+      <AdInFeed className="max-w-4xl mx-auto" />
 
       {/* Search and Filters */}
       <Card className="shadow-material">

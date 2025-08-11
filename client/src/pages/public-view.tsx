@@ -8,6 +8,10 @@ import { ContactForm } from "@/components/contact-form";
 import { ConstructorGame } from "@/components/constructor-game";
 import { MicaaLogo } from "@/components/micaa-logo";
 import { BannerAd, SquareAd, MobileAd, ResponsiveAd, SidebarAd } from "@/components/ad-space";
+import AdHeader from "@/components/ads/AdHeader";
+import AdInFeed from "@/components/ads/AdInFeed";
+import AdFooter from "@/components/ads/AdFooter";
+import AdMobile from "@/components/ads/AdMobile";
 import {
   Table,
   TableBody,
@@ -159,6 +163,14 @@ export default function PublicView() {
           </div>
         </div>
       </div>
+
+      {/* Header Ad - Desktop y Mobile */}
+      <div className="hidden md:block">
+        <AdHeader className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" />
+      </div>
+      
+      {/* Mobile Ad - Solo móvil */}
+      <AdMobile className="md:hidden" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Publicidad Dual - Lado a Lado - Primero */}
@@ -416,6 +428,9 @@ export default function PublicView() {
             )}
           </CardContent>
         </Card>
+
+        {/* AdSense In-Feed - Entre estadísticas y contenido */}
+        <AdInFeed className="max-w-4xl mx-auto" />
 
         {/* Navegación por pestañas */}
         <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
@@ -709,6 +724,9 @@ export default function PublicView() {
             </div>
           </div>
         </div>
+        
+        {/* AdSense Footer - Final de página */}
+        <AdFooter />
       </footer>
     </div>
   );

@@ -22,6 +22,8 @@ import {
 import { formatCurrency, formatNumber, formatRelativeTime } from "@/lib/utils";
 import type { BudgetWithProject } from "@shared/schema";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import AdInFeed from "@/components/ads/AdInFeed";
+import AdFooter from "@/components/ads/AdFooter";
 
 interface Statistics {
   totalMaterials: number;
@@ -245,6 +247,9 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
+      {/* AdSense In-Feed - Entre gráficos y contenido */}
+      <AdInFeed className="max-w-4xl mx-auto" />
+
       {/* Recent Activity and Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Budgets */}
@@ -345,6 +350,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* AdSense Footer - Final del dashboard */}
+      <AdFooter />
     </div>
   );
 }

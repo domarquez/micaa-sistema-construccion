@@ -17,6 +17,8 @@ import {
   Clock,
   Search
 } from "lucide-react";
+import AdInFeed from "@/components/ads/AdInFeed";
+import AdFooter from "@/components/ads/AdFooter";
 
 interface MaterialWithOffers {
   id: number;
@@ -210,6 +212,9 @@ export default function Marketplace() {
         </Card>
       </div>
 
+      {/* AdSense In-Feed - Entre estadísticas y contenido */}
+      <AdInFeed className="max-w-4xl mx-auto" />
+
       {/* Lista de materiales con ofertas */}
       <div className="space-y-6">
         {isLoading ? (
@@ -330,6 +335,9 @@ export default function Marketplace() {
           </Card>
         )}
       </div>
+
+      {/* AdSense Footer - Final del marketplace */}
+      <AdFooter />
     </div>
   );
 }

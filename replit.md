@@ -59,5 +59,21 @@ Preferred communication style: Simple, everyday language.
 - **Validation**: `zod`, `@hookform/resolvers`
 - **Charts**: `recharts`
 - **Deployment Platform**: Render
-- **Monetization**: Google AdSense (ca-pub-8854811165812956)
+- **Monetization**: Google AdSense (ca-pub-8854811165812956) - Implementado con espacios publicitarios estratégicos
 - **Email Service**: SMTP (mail.micaa.store) for notifications and password recovery.
+
+## Recent Changes
+
+### August 11, 2025: Google AdSense Integration Complete
+- **Google AdSense Script**: Agregado script oficial en index.html con Publisher ID ca-pub-8854811165812956
+- **Advertising Components**: Creados 4 componentes especializados de anuncios:
+  - AdHeader: Banner 728x90 para desktop (slot: 2345678901)
+  - AdInFeed: Anuncios fluidos 300x250 entre contenido (slot: 1234567890) 
+  - AdMobile: Banner móvil 320x50 (slot: 4567890123)
+  - AdFooter: Anuncios responsivos de footer (slot: 3456789012)
+- **Strategic Placement**: Espacios publicitarios integrados en páginas principales cumpliendo políticas de Google:
+  - Página pública: Header + Mobile + InFeed + Footer
+  - Dashboard: InFeed entre gráficos + Footer
+  - Materiales: InFeed entre header y contenido
+  - Marketplace: InFeed entre estadísticas + Footer
+- **Policy Compliance**: Implementación que respeta las políticas de Google AdSense sin saturar la experiencia del usuario
