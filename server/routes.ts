@@ -1228,24 +1228,33 @@ export async function registerRoutes(app: any) {
   });
 
   // GESTIÓN DE PRECIOS GLOBALES - ADMIN
-  app.put("/api/admin/materials/:id/price", requireAdmin, async (req, res) => {
+  app.put("/api/admin/materials/:id/price", requireAdmin, async (req: any, res) => {
     try {
+      console.log("=== ADMIN PRICE UPDATE REQUEST ===");
+      console.log("Material ID:", req.params.id);
+      console.log("Request body:", req.body);
+      console.log("User:", req.user?.username, "Role:", req.user?.role);
+      
       const materialId = parseInt(req.params.id);
       const { price } = req.body;
       
       if (!price || price <= 0) {
+        console.log("Invalid price provided:", price);
         return res.status(400).json({ message: "Precio inválido" });
       }
 
+      console.log("Updating material", materialId, "to price", price);
       const updatedMaterial = await db.update(materials)
         .set({ price: parseFloat(price) })
         .where(eq(materials.id, materialId))
         .returning();
 
       if (updatedMaterial.length === 0) {
+        console.log("Material not found:", materialId);
         return res.status(404).json({ message: "Material no encontrado" });
       }
 
+      console.log("Material updated successfully:", updatedMaterial[0]);
       res.json(updatedMaterial[0]);
     } catch (error) {
       console.error("Error updating material price:", error);

@@ -62,10 +62,14 @@ export default function AdminMaterials() {
   // Update material price mutation
   const updatePriceMutation = useMutation({
     mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
+      console.log("Updating price for material:", materialId, "to price:", price);
       const response = await apiRequest("PUT", `/api/admin/materials/${materialId}/price`, { price });
-      return response.json();
+      const result = await response.json();
+      console.log("Price update response:", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Price updated successfully:", data);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
       toast({
         title: "Precio actualizado",
@@ -74,10 +78,11 @@ export default function AdminMaterials() {
       setEditingMaterial(null);
       setNewPrice("");
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Price update error:", error);
       toast({
         title: "Error",
-        description: "No se pudo actualizar el precio del material.",
+        description: error.message || "No se pudo actualizar el precio del material.",
         variant: "destructive",
       });
     },
