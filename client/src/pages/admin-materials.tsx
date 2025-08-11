@@ -62,7 +62,8 @@ export default function AdminMaterials() {
   // Update material price mutation
   const updatePriceMutation = useMutation({
     mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
-      return await apiRequest(`/api/admin/materials/${materialId}/price`, "PUT", { price });
+      const response = await apiRequest("PUT", `/api/admin/materials/${materialId}/price`, { price });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
@@ -85,7 +86,8 @@ export default function AdminMaterials() {
   // Global price adjustment mutation
   const globalAdjustmentMutation = useMutation({
     mutationFn: async (factor: number) => {
-      return await apiRequest('/api/apply-price-adjustment', "POST", { factor, updatedBy: 'admin' });
+      const response = await apiRequest("POST", '/api/apply-price-adjustment', { factor, updatedBy: 'admin' });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
