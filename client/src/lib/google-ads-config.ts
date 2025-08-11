@@ -14,7 +14,7 @@ export interface AdConfig {
 
 // Default configuration - replace with actual Google AdSense values
 export const googleAdsConfig: AdConfig = {
-  clientId: "ca-pub-XXXXXXXXXXXXXXXXX", // Replace with your Google AdSense Publisher ID
+  clientId: "ca-pub-8854811165812956", // Google AdSense Publisher ID for MICAA
   adSlots: {
     banner: "1234567890",      // 728x90 banner ad slot
     sidebar: "0987654321",     // 160x600 sidebar ad slot  
@@ -58,7 +58,7 @@ GOOGLE ADSENSE SETUP FOR MICAA:
 2. GET YOUR PUBLISHER ID:
    - In AdSense dashboard, go to Account > Account information
    - Copy your Publisher ID (starts with ca-pub-)
-   - Replace "ca-pub-XXXXXXXXXXXXXXXXX" in google-ads-config.ts
+   - Replace "ca-pub-8854811165812956" in google-ads-config.ts
 
 3. CREATE AD UNITS:
    - Go to Ads > By ad unit > Display ads
@@ -76,7 +76,7 @@ GOOGLE ADSENSE SETUP FOR MICAA:
 
 5. ADD ADSENSE SCRIPT:
    - Add this to your HTML head section:
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8854811165812956" crossorigin="anonymous"></script>
 
 6. VERIFY IMPLEMENTATION:
    - Use AdSense dashboard to check ad serving
@@ -117,8 +117,8 @@ export function trackAdPerformance(adSlot: string, action: 'impression' | 'click
   console.log(`Ad ${action} tracked for slot: ${adSlot}`);
   
   // Example: Send to Google Analytics
-  if (typeof gtag !== 'undefined') {
-    gtag('event', action, {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', action, {
       event_category: 'ads',
       event_label: adSlot,
       value: action === 'click' ? 1 : 0
