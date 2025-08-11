@@ -382,7 +382,7 @@ export class DatabaseStorage implements IStorage {
       .from(materials)
       .leftJoin(materialCategories, eq(materials.categoryId, materialCategories.id))
       .leftJoin(userMaterialPrices, and(
-        eq(userMaterialPrices.materialId, materials.id),
+        eq(userMaterialPrices.originalMaterialName, materials.name),
         eq(userMaterialPrices.userId, userId)
       ))
       .orderBy(desc(materials.lastUpdated));
@@ -401,7 +401,7 @@ export class DatabaseStorage implements IStorage {
       .from(materials)
       .leftJoin(materialCategories, eq(materials.categoryId, materialCategories.id))
       .leftJoin(userMaterialPrices, and(
-        eq(userMaterialPrices.materialId, materials.id),
+        eq(userMaterialPrices.originalMaterialName, materials.name),
         eq(userMaterialPrices.userId, userId)
       ))
       .where(eq(materials.categoryId, categoryId))
@@ -422,7 +422,7 @@ export class DatabaseStorage implements IStorage {
       .from(userMaterialPrices)
       .where(and(
         eq(userMaterialPrices.userId, data.userId),
-        eq(userMaterialPrices.materialId, data.materialId)
+        eq(userMaterialPrices.originalMaterialName, data.originalMaterialName)
       ));
 
     if (existing.length > 0) {
@@ -430,7 +430,9 @@ export class DatabaseStorage implements IStorage {
       const [updated] = await db
         .update(userMaterialPrices)
         .set({
-          customPrice: data.customPrice,
+          customMaterialName: data.customMaterialName,
+          price: data.price,
+          unit: data.unit,
           reason: data.reason,
           updatedAt: new Date()
         })
@@ -447,12 +449,12 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async deleteUserMaterialPrice(userId: number, materialId: number): Promise<void> {
+  async deleteUserMaterialPrice(id: number, userId: number): Promise<void> {
     await db
       .delete(userMaterialPrices)
       .where(and(
-        eq(userMaterialPrices.userId, userId),
-        eq(userMaterialPrices.materialId, materialId)
+        eq(userMaterialPrices.id, id),
+        eq(userMaterialPrices.userId, userId)
       ));
   }
 
@@ -988,7 +990,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateSupplierCompany(id: number, company: Partial<InsertSupplierCompany>): Promise<SupplierCompany> {
     // Remove any existing updatedAt and createdAt from the input to avoid conflicts
-    const { updatedAt, createdAt, ...updateData } = company;
+    const updateData = { ...company };
     
     const [updated] = await db
       .update(supplierCompanies)
@@ -1466,47 +1468,11 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(userMaterialPrices.updatedAt));
   }
 
-  async createUserMaterialPrice(price: InsertUserMaterialPrice): Promise<UserMaterialPrice> {
-    // Check if user already has a price for this material
-    const [existing] = await db
-      .select()
-      .from(userMaterialPrices)
-      .where(
-        and(
-          eq(userMaterialPrices.userId, price.userId),
-          eq(userMaterialPrices.originalMaterialName, price.originalMaterialName)
-        )
-      );
-
-    if (existing) {
-      // Update existing price
-      const [updated] = await db
-        .update(userMaterialPrices)
-        .set({
-          customMaterialName: price.customMaterialName,
-          price: price.price,
-          unit: price.unit,
-          reason: price.reason,
-          updatedAt: new Date()
-        })
-        .where(eq(userMaterialPrices.id, existing.id))
-        .returning();
-      return updated;
-    } else {
-      // Create new price
-      const [newPrice] = await db
-        .insert(userMaterialPrices)
-        .values(price)
-        .returning();
-      return newPrice;
-    }
-  }
-
   async updateUserMaterialPrice(id: number, userId: number, price: number): Promise<UserMaterialPrice> {
     const [updated] = await db
       .update(userMaterialPrices)
       .set({
-        price,
+        price: price.toString(),
         updatedAt: new Date()
       })
       .where(
@@ -1517,17 +1483,6 @@ export class DatabaseStorage implements IStorage {
       )
       .returning();
     return updated;
-  }
-
-  async deleteUserMaterialPrice(id: number, userId: number): Promise<void> {
-    await db
-      .delete(userMaterialPrices)
-      .where(
-        and(
-          eq(userMaterialPrices.id, id),
-          eq(userMaterialPrices.userId, userId)
-        )
-      );
   }
 }
 
