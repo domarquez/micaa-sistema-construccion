@@ -1,11 +1,17 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { db } from './db';
 import { storage as dbStorage } from './storage';
 import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
+import { JwtPayload } from 'jsonwebtoken';
+
+// Custom JWT payload interface
+interface CustomJwtPayload extends JwtPayload {
+  userId: number;
+}
 
 // Middleware de autenticación
-const requireAuth = async (req: any, res: any, next: any) => {
+const requireAuth = async (req: Request & { user?: any }, res: Response, next: any) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -16,9 +22,9 @@ const requireAuth = async (req: any, res: any, next: any) => {
     
     // Verificar token JWT
     const jwt = await import('jsonwebtoken');
-    let decoded;
+    let decoded: CustomJwtPayload;
     try {
-      decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key');
+      decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as CustomJwtPayload;
     } catch (error) {
       return res.status(401).json({ message: "Token inválido" });
     }
@@ -76,19 +82,26 @@ export async function registerRoutes(app: any) {
   });
 
   // Materials routes with category information
-  router.get('/materials', async (req, res) => {
+  router.get('/materials', async (req: Request, res: Response) => {
     try {
       const { search, category, limit = '50' } = req.query;
       
-      // First get materials
-      let materialsQuery = db.select().from(materials);
+      // Build where conditions
+      let whereConditions = [];
       
       if (search && typeof search === 'string') {
-        materialsQuery = materialsQuery.where(like(materials.name, `%${search}%`));
+        whereConditions.push(like(materials.name, `%${search}%`));
       }
       
       if (category && typeof category === 'string') {
-        materialsQuery = materialsQuery.where(eq(materials.categoryId, parseInt(category)));
+        whereConditions.push(eq(materials.categoryId, parseInt(category)));
+      }
+      
+      // Build the query
+      let materialsQuery = db.select().from(materials);
+      
+      if (whereConditions.length > 0) {
+        materialsQuery = materialsQuery.where(whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions));
       }
       
       const materialsData = await materialsQuery.limit(parseInt(limit as string));
@@ -130,19 +143,27 @@ export async function registerRoutes(app: any) {
   });
 
   // Activities routes with phase information
-  router.get('/activities', async (req, res) => {
+  router.get('/activities', async (req: Request, res: Response) => {
     try {
       const { search, phase, limit = '100', offset = '0' } = req.query;
       
-      // First get activities
-      let activitiesQuery = db.select().from(activities);
+      // Build where conditions
+      let whereConditions = [];
       
       if (search && typeof search === 'string') {
-        activitiesQuery = activitiesQuery.where(like(activities.name, `%${search}%`));
+        whereConditions.push(like(activities.name, `%${search}%`));
       }
       
       if (phase && typeof phase === 'string') {
-        activitiesQuery = activitiesQuery.where(eq(activities.phaseId, parseInt(phase)));
+        whereConditions.push(eq(activities.phaseId, parseInt(phase)));
+      }
+      
+      // Build activities query
+      let activitiesQuery = db.select().from(activities);
+      
+      if (whereConditions.length > 0) {
+        const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
+        activitiesQuery = activitiesQuery.where(whereClause);
       }
       
       const activitiesData = await activitiesQuery
@@ -150,14 +171,11 @@ export async function registerRoutes(app: any) {
         .offset(parseInt(offset as string));
       
       // Get total count for pagination
-      let countQuery = db.select({ count: sql`count(*)` }).from(activities);
+      let countQuery = db.select({ count: sql`count(*)`.as('count') }).from(activities);
       
-      if (search && typeof search === 'string') {
-        countQuery = countQuery.where(like(activities.name, `%${search}%`));
-      }
-      
-      if (phase && typeof phase === 'string') {
-        countQuery = countQuery.where(eq(activities.phaseId, parseInt(phase)));
+      if (whereConditions.length > 0) {
+        const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
+        countQuery = countQuery.where(whereClause);
       }
       
       const totalCountResult = await countQuery;
@@ -247,16 +265,20 @@ export async function registerRoutes(app: any) {
   });
 
   // Supplier companies routes
-  router.get('/suppliers', async (req, res) => {
+  router.get('/suppliers', async (req: Request, res: Response) => {
     try {
       const { search, specialty, limit = '20' } = req.query;
-      let query = db.select().from(supplierCompanies).where(eq(supplierCompanies.isActive, true));
+      
+      let whereConditions = [eq(supplierCompanies.isActive, true)];
       
       if (search && typeof search === 'string') {
-        query = query.where(like(supplierCompanies.companyName, `%${search}%`));
+        whereConditions.push(like(supplierCompanies.companyName, `%${search}%`));
       }
       
-      const suppliers = await query.limit(parseInt(limit as string));
+      const suppliers = await db.select()
+        .from(supplierCompanies)
+        .where(and(...whereConditions))
+        .limit(parseInt(limit as string));
       res.json(suppliers);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch suppliers' });
@@ -296,18 +318,18 @@ export async function registerRoutes(app: any) {
   });
 
   // Statistics route
-  router.get('/stats', async (req, res) => {
+  router.get('/stats', async (req: Request, res: Response) => {
     try {
-      const [userCount] = await db.select().from(users);
-      const [materialCount] = await db.select().from(materials);
-      const [activityCount] = await db.select().from(activities);
-      const [supplierCount] = await db.select().from(supplierCompanies);
+      const userCount = await db.select({ count: sql`count(*)`.as('count') }).from(users);
+      const materialCount = await db.select({ count: sql`count(*)`.as('count') }).from(materials);
+      const activityCount = await db.select({ count: sql`count(*)`.as('count') }).from(activities);
+      const supplierCount = await db.select({ count: sql`count(*)`.as('count') }).from(supplierCompanies);
       
       res.json({
-        users: userCount?.length || 0,
-        materials: materialCount?.length || 0,
-        activities: activityCount?.length || 0,
-        suppliers: supplierCount?.length || 0
+        users: Number(userCount[0]?.count) || 0,
+        materials: Number(materialCount[0]?.count) || 0,
+        activities: Number(activityCount[0]?.count) || 0,
+        suppliers: Number(supplierCount[0]?.count) || 0
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch statistics' });
@@ -315,7 +337,7 @@ export async function registerRoutes(app: any) {
   });
 
   // Public routes (no authentication required)
-  app.get("/api/public/materials", async (req, res) => {
+  app.get("/api/public/materials", async (req: Request, res: Response) => {
     try {
       const materialsData = await db.select().from(materials).limit(100);
       const categories = await db.select().from(materialCategories).orderBy(asc(materialCategories.name));
@@ -342,7 +364,7 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  app.get("/api/public/material-categories", async (req, res) => {
+  app.get("/api/public/material-categories", async (req: Request, res: Response) => {
     try {
       const categories = await db.select().from(materialCategories);
       res.json(categories);
@@ -352,7 +374,7 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  app.get("/api/public/suppliers", async (req, res) => {
+  app.get("/api/public/suppliers", async (req: Request, res: Response) => {
     try {
       const suppliers = await db.select().from(supplierCompanies).where(eq(supplierCompanies.isActive, true)).limit(50);
       res.json(suppliers);
@@ -362,7 +384,7 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  app.get("/api/public/dual-advertisements", async (req, res) => {
+  app.get("/api/public/dual-advertisements", async (req: Request, res: Response) => {
     try {
       const activeAds = await db
         .select({
@@ -405,39 +427,39 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  app.get("/api/statistics", async (req, res) => {
+  app.get("/api/statistics", async (req: Request, res: Response) => {
     try {
-      const [materialsCount] = await db.select({ count: sql`count(*)` }).from(materials);
-      const [activitiesCount] = await db.select({ count: sql`count(*)` }).from(activities);
-      const [suppliersCount] = await db.select({ count: sql`count(*)` }).from(supplierCompanies);
-      const [usersCount] = await db.select({ count: sql`count(*)` }).from(users);
+      const [materialsCount] = await db.select({ count: sql`count(*)`.as('count') }).from(materials);
+      const [activitiesCount] = await db.select({ count: sql`count(*)`.as('count') }).from(activities);
+      const [suppliersCount] = await db.select({ count: sql`count(*)`.as('count') }).from(supplierCompanies);
+      const [usersCount] = await db.select({ count: sql`count(*)`.as('count') }).from(users);
       // Query budgets and projects with error handling
       let budgetsCount = { count: 0 };
       let projectsCount = { count: 0 };
       let totalValue = { total: 0 };
       
       try {
-        [budgetsCount] = await db.select({ count: sql`count(*)` }).from(budgets);
+        [budgetsCount] = await db.select({ count: sql`count(*)`.as('count') }).from(budgets);
       } catch (e) {
         console.log('Budgets table query failed, using direct SQL');
         const result = await db.execute(sql`SELECT count(*) as count FROM budgets`);
-        budgetsCount = { count: result.rows[0].count };
+        budgetsCount = { count: Number(result.rows[0].count) };
       }
       
       try {
-        [projectsCount] = await db.select({ count: sql`count(*)` }).from(projects);
+        [projectsCount] = await db.select({ count: sql`count(*)`.as('count') }).from(projects);
       } catch (e) {
         console.log('Projects table query failed, using direct SQL');
         const result = await db.execute(sql`SELECT count(*) as count FROM projects`);
-        projectsCount = { count: result.rows[0].count };
+        projectsCount = { count: Number(result.rows[0].count) };
       }
       
       try {
-        [totalValue] = await db.select({ total: sql`coalesce(sum(total), 0)` }).from(budgets);
+        [totalValue] = await db.select({ total: sql`coalesce(sum(total), 0)`.as('total') }).from(budgets);
       } catch (e) {
         console.log('Budget total query failed, using direct SQL');
         const result = await db.execute(sql`SELECT coalesce(sum(total), 0) as total FROM budgets`);
-        totalValue = { total: result.rows[0].total };
+        totalValue = { total: Number(result.rows[0].total) };
       }
       
       res.json({
