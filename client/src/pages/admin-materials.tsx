@@ -47,6 +47,7 @@ export default function AdminMaterials() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [newPrice, setNewPrice] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
   // Fetch materials
@@ -77,6 +78,7 @@ export default function AdminMaterials() {
       });
       setEditingMaterial(null);
       setNewPrice("");
+      setIsDialogOpen(false);
     },
     onError: (error: any) => {
       console.error("Price update error:", error);
@@ -120,6 +122,7 @@ export default function AdminMaterials() {
   const handleEditPrice = (material: Material) => {
     setEditingMaterial(material);
     setNewPrice(Number(material.price).toString());
+    setIsDialogOpen(true);
   };
 
   const handleSavePrice = () => {
@@ -267,7 +270,7 @@ export default function AdminMaterials() {
                       Bs. {Number(material.price).toFixed(2)}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Dialog>
+                      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                           <Button
                             variant="outline"
