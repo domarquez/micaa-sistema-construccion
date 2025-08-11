@@ -120,11 +120,38 @@ export default function AdminMaterials() {
     });
 
     try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        toast({
+          title: "Error de autenticación",
+          description: "No se encontró token de autenticación. Inicia sesión nuevamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const url = `/api/admin/materials/${editingMaterial.id}/price`;
       console.log('Making API request to:', url);
       console.log('Request payload:', { price });
 
-      const response = await apiRequest("PUT", url, { price });
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ price }),
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        throw new Error(`Error ${response.status}: ${errorText}`);
+      }
+
       const result = await response.json();
       console.log("API response success:", result);
       
