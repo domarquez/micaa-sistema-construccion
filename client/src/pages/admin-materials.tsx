@@ -60,7 +60,48 @@ export default function AdminMaterials() {
     queryKey: ["/api/material-categories"],
   });
 
-  // Remove mutation - using direct approach now
+  // Material price update mutation
+  const updatePriceMutation = useMutation({
+    mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        throw new Error('Token de autenticación no encontrado');
+      }
+
+      const response = await fetch(`/api/admin/materials/${materialId}/price`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ price }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${errorText}`);
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
+      toast({
+        title: "✓ Precio actualizado",
+        description: "El precio se ha actualizado correctamente.",
+      });
+      setEditingMaterial(null);
+      setNewPrice("");
+      setIsDialogOpen(false);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error al actualizar",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   // Global price adjustment mutation
   const globalAdjustmentMutation = useMutation({
@@ -97,7 +138,7 @@ export default function AdminMaterials() {
     setIsDialogOpen(true);
   };
 
-  const handleSavePrice = async () => {
+  const handleSavePrice = () => {
     if (!editingMaterial || !newPrice) {
       console.log("Missing material or price data");
       return;
@@ -113,75 +154,13 @@ export default function AdminMaterials() {
       return;
     }
 
-    console.log("Starting price update...", {
+    console.log("Starting price update using mutation...", {
       materialId: editingMaterial.id,
       materialName: editingMaterial.name,
       newPrice: price
     });
 
-    try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        toast({
-          title: "Error de autenticación",
-          description: "No se encontró token de autenticación. Inicia sesión nuevamente.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const url = `/api/admin/materials/${editingMaterial.id}/price`;
-      console.log('Making API request to:', url);
-      console.log('Request payload:', { price });
-
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ price }),
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API error response:', errorText);
-        throw new Error(`Error ${response.status}: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log("API response success:", result);
-      
-      // Update UI
-      await queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
-      
-      toast({
-        title: "✓ Precio actualizado",
-        description: `Precio cambiado a Bs. ${price.toFixed(2)}`,
-      });
-      
-      setEditingMaterial(null);
-      setNewPrice("");
-      setIsDialogOpen(false);
-      
-      console.log("Price update completed successfully");
-      
-    } catch (error: any) {
-      console.error("Complete error details:", {
-        error: error,
-        message: error.message,
-        stack: error.stack
-      });
-      
-      toast({
-        title: "Error al actualizar",
-        description: `No se pudo actualizar el precio: ${error.message || 'Error desconocido'}`,
-        variant: "destructive",
-      });
-    }
+    updatePriceMutation.mutate({ materialId: editingMaterial.id, price });
   };
 
   const handleGlobalAdjustment = (factor: number) => {
@@ -359,10 +338,15 @@ export default function AdminMaterials() {
             <div className="flex gap-2">
               <Button
                 onClick={handleSavePrice}
+                disabled={updatePriceMutation.isPending}
                 className="flex-1"
               >
-                <Save className="h-4 w-4 mr-2" />
-                Guardar
+                {updatePriceMutation.isPending ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                {updatePriceMutation.isPending ? 'Guardando...' : 'Guardar'}
               </Button>
               <Button
                 variant="outline"
