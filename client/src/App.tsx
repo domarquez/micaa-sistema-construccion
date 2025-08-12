@@ -102,7 +102,7 @@ function AuthenticatedLayout() {
               <Route path="/import-companies" component={ImportCompanies} />
         <Route path="/review-companies" component={ReviewCompanies} />
         <Route path="/simple-import" component={SimpleImport} />
-              <Route path="/admin/materials" component={AdminMaterialsCRUD} />
+              <Route path="/admin/materials" component={AdminMaterials} />
               <Route path="/admin/prices" component={AdminMaterials} />
               <Route path="/admin/users" component={AdminUsers} />
               <Route path="/admin/suppliers" component={AdminSuppliers} />
