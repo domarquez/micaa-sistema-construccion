@@ -1284,6 +1284,43 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // NUEVA RUTA ALTERNATIVA PARA ACTUALIZAR PRECIOS
+  app.post("/api/admin/update-material-price", requireAdmin, async (req: any, res) => {
+    try {
+      console.log("=== NUEVA RUTA PARA ACTUALIZAR PRECIO ===");
+      console.log("Request body:", req.body);
+      console.log("User:", req.user?.username, "Role:", req.user?.role);
+      
+      const { materialId, price } = req.body;
+      
+      if (!materialId || !price || price <= 0) {
+        console.log("Invalid data provided:", { materialId, price });
+        return res.status(400).json({ message: "Datos inválidos" });
+      }
+
+      console.log("Updating material", materialId, "to price", price);
+      const updatedMaterial = await db.update(materials)
+        .set({ price: parseFloat(price) })
+        .where(eq(materials.id, parseInt(materialId)))
+        .returning();
+
+      if (updatedMaterial.length === 0) {
+        console.log("Material not found:", materialId);
+        return res.status(404).json({ message: "Material no encontrado" });
+      }
+
+      console.log("Material updated successfully:", updatedMaterial[0]);
+      res.json({ 
+        success: true,
+        material: updatedMaterial[0],
+        message: "Precio actualizado exitosamente" 
+      });
+    } catch (error) {
+      console.error("Error updating material price:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
   app.post("/api/admin/bulk-price-update", requireAdmin, async (req, res) => {
     try {
       const { adjustmentFactor, categoryId } = req.body;

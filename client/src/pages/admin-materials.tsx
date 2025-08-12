@@ -60,7 +60,7 @@ export default function AdminMaterials() {
     queryKey: ["/api/material-categories"],
   });
 
-  // Material price update mutation
+  // Material price update mutation - NUEVA IMPLEMENTACION
   const updatePriceMutation = useMutation({
     mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
       const token = localStorage.getItem('auth_token');
@@ -68,21 +68,29 @@ export default function AdminMaterials() {
         throw new Error('Token de autenticación no encontrado');
       }
 
-      const response = await fetch(`/api/admin/materials/${materialId}/price`, {
-        method: "PUT",
+      console.log("Using NEW route: /api/admin/update-material-price");
+      console.log("Sending data:", { materialId, price });
+
+      const response = await fetch("/api/admin/update-material-price", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ price }),
+        body: JSON.stringify({ materialId, price }),
       });
 
+      console.log("Response status:", response.status);
+      
       if (!response.ok) {
         const errorText = await response.text();
+        console.error("Error response:", errorText);
         throw new Error(`Error ${response.status}: ${errorText}`);
       }
 
-      return response.json();
+      const result = await response.json();
+      console.log("Success response:", result);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
