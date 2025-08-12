@@ -314,63 +314,70 @@ export default function AdminMaterials() {
         </CardContent>
       </Card>
 
-      {/* Price Edit Dialog - moved outside of table loop */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent aria-describedby="dialog-description">
-          <DialogHeader>
-            <DialogTitle>Editar Precio Base</DialogTitle>
-            <p id="dialog-description" className="text-sm text-gray-600">
+      {/* Price Edit Dialog - NUEVA IMPLEMENTACION SIMPLE */}
+      {isDialogOpen && editingMaterial && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">Editar Precio Base</h3>
+            <p className="text-sm text-gray-600 mb-4">
               Actualiza el precio base del material seleccionado
             </p>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Material</label>
-              <p className="text-gray-600">{editingMaterial?.name}</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium block">Material</label>
+                <p className="text-gray-600">{editingMaterial.name}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium block">Precio Actual</label>
+                <p className="text-gray-600">Bs. {Number(editingMaterial.price).toFixed(2)}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium block">Nuevo Precio</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newPrice}
+                  onChange={(e) => setNewPrice(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full"
+                />
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-medium">Precio Actual</label>
-              <p className="text-gray-600">Bs. {editingMaterial?.price ? Number(editingMaterial.price).toFixed(2) : '0.00'}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium">Nuevo Precio</label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={newPrice}
-                onChange={(e) => setNewPrice(e.target.value)}
-                placeholder="0.00"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
+
+            <div className="flex gap-2 mt-6">
+              <button
                 onClick={handleSavePrice}
                 disabled={updatePriceMutation.isPending}
-                className="flex-1"
+                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
               >
                 {updatePriceMutation.isPending ? (
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    Guardando...
+                  </>
                 ) : (
-                  <Save className="h-4 w-4 mr-2" />
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Guardar
+                  </>
                 )}
-                {updatePriceMutation.isPending ? 'Guardando...' : 'Guardar'}
-              </Button>
-              <Button
-                variant="outline"
+              </button>
+              <button
                 onClick={() => {
                   setIsDialogOpen(false);
                   setEditingMaterial(null);
                   setNewPrice("");
                 }}
-                className="flex-1"
+                className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
               >
                 Cancelar
-              </Button>
+              </button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 }
