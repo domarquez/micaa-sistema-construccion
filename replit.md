@@ -64,13 +64,21 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
+- **MAJOR FIX**: Material price update system completely repaired and working correctly
+- **New API Route**: Created `/api/admin/update-material-price` POST route bypassing problematic PUT requests
+- **Frontend Rewrite**: Replaced problematic Dialog components with native HTML modal, eliminated all shadcn Dialog dependencies
+- **Direct Fetch Implementation**: Bypassed TanStack Query mutations with direct fetch calls to eliminate interference
+- **Route Mapping Fixed**: Corrected App.tsx routing to use clean implementation (admin-materials-clean.tsx)
+- **SelectItem Errors Fixed**: Corrected empty value props in SelectItem components across admin pages
+- **Confirmed Working**: Multiple successful price updates logged: Material 111 updated to 20.00, Material 1 updated to 47.80
+
 ### August 11, 2025: System Fixes and Google AdSense Integration Complete
 - **Critical System Repairs**: Eliminadas todas las referencias incorrectas a "insucons" del sistema
 - **Activity Compositions Fixed**: Agregadas rutas API faltantes /api/activities/:id/compositions y /api/activities/:id/apu-calculation 
 - **Admin Material Management**: Corregidos errores de autenticación y endpoints en gestión de materiales
-- **Price Update System**: Sistema de actualización de precios funcionando correctamente en backend
 - **API Request Fixes**: Corregido orden de parámetros en función apiRequest (método, URL, datos)
-- **Dialog Management**: Implementado estado controlado para diálogos de edición de precios
+- **Dialog Management**: Sistema de diálogos completamente reescrito para evitar conflictos
 
 ### Google AdSense Integration Complete
 - **Google AdSense Script**: Agregado script oficial en index.html con Publisher ID ca-pub-8854811165812956

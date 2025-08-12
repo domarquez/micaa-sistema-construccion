@@ -147,7 +147,7 @@ export default function AdminSuppliers() {
     const matchesSearch = supplier.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          supplier.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          supplier.user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === "" || 
+    const matchesStatus = selectedStatus === "" || selectedStatus === "all" || 
                          (selectedStatus === "active" && supplier.isActive) ||
                          (selectedStatus === "inactive" && !supplier.isActive);
     return matchesSearch && matchesStatus;
@@ -187,7 +187,7 @@ export default function AdminSuppliers() {
             <SelectValue placeholder="Todos los estados" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos los estados</SelectItem>
+            <SelectItem value="all">Todos los estados</SelectItem>
             <SelectItem value="active">Activos</SelectItem>
             <SelectItem value="inactive">Inactivos</SelectItem>
           </SelectContent>
