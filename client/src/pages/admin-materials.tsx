@@ -60,56 +60,8 @@ export default function AdminMaterials() {
     queryKey: ["/api/material-categories"],
   });
 
-  // Material price update mutation - NUEVA IMPLEMENTACION
-  const updatePriceMutation = useMutation({
-    mutationFn: async ({ materialId, price }: { materialId: number; price: number }) => {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        throw new Error('Token de autenticación no encontrado');
-      }
-
-      console.log("Using NEW route: /api/admin/update-material-price");
-      console.log("Sending data:", { materialId, price });
-
-      const response = await fetch("/api/admin/update-material-price", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ materialId, price }),
-      });
-
-      console.log("Response status:", response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error response:", errorText);
-        throw new Error(`Error ${response.status}: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log("Success response:", result);
-      return result;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
-      toast({
-        title: "✓ Precio actualizado",
-        description: "El precio se ha actualizado correctamente.",
-      });
-      setEditingMaterial(null);
-      setNewPrice("");
-      setIsDialogOpen(false);
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error al actualizar",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  // Estado para el loading manual
+  const [isSaving, setIsSaving] = useState(false);
 
   // Global price adjustment mutation
   const globalAdjustmentMutation = useMutation({
@@ -146,29 +98,75 @@ export default function AdminMaterials() {
     setIsDialogOpen(true);
   };
 
-  const handleSavePrice = () => {
+  const handleSavePrice = async () => {
     if (!editingMaterial || !newPrice) {
-      console.log("Missing material or price data");
+      alert("Faltan datos del material o precio");
       return;
     }
     
     const price = parseFloat(newPrice);
     if (isNaN(price) || price <= 0) {
-      toast({
-        title: "Error",
-        description: "Por favor ingresa un precio válido.",
-        variant: "destructive",
-      });
+      alert("Por favor ingresa un precio válido.");
       return;
     }
 
-    console.log("Starting price update using mutation...", {
-      materialId: editingMaterial.id,
-      materialName: editingMaterial.name,
-      newPrice: price
-    });
+    setIsSaving(true);
+    
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        alert('No se encontró token de autenticación. Inicia sesión nuevamente.');
+        setIsSaving(false);
+        return;
+      }
 
-    updatePriceMutation.mutate({ materialId: editingMaterial.id, price });
+      console.log("=== USANDO FETCH DIRECTO ===");
+      console.log("URL: /api/admin/update-material-price");
+      console.log("Method: POST");
+      console.log("Data:", { materialId: editingMaterial.id, price });
+
+      const response = await window.fetch("/api/admin/update-material-price", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          materialId: editingMaterial.id, 
+          price: price 
+        }),
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        alert(`Error ${response.status}: ${errorText}`);
+        setIsSaving(false);
+        return;
+      }
+
+      const result = await response.json();
+      console.log("Success response:", result);
+      
+      // Recargar los materiales
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/materials"] });
+      
+      alert(`✓ Precio actualizado exitosamente a Bs. ${price.toFixed(2)}`);
+      
+      // Cerrar modal
+      setEditingMaterial(null);
+      setNewPrice("");
+      setIsDialogOpen(false);
+      setIsSaving(false);
+      
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert(`Error al actualizar precio: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      setIsSaving(false);
+    }
   };
 
   const handleGlobalAdjustment = (factor: number) => {
@@ -349,10 +347,10 @@ export default function AdminMaterials() {
             <div className="flex gap-2 mt-6">
               <button
                 onClick={handleSavePrice}
-                disabled={updatePriceMutation.isPending}
+                disabled={isSaving}
                 className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
               >
-                {updatePriceMutation.isPending ? (
+                {isSaving ? (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                     Guardando...
