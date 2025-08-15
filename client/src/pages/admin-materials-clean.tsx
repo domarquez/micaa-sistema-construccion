@@ -137,28 +137,31 @@ export default function AdminMaterials() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Materiales</h1>
-          <p className="text-gray-600">Administra precios y materiales del sistema</p>
+          <h1 className="text-xl md:text-3xl font-bold">
+            <span className="hidden sm:inline">Gestión de Materiales</span>
+            <span className="sm:hidden">Materiales</span>
+          </h1>
+          <p className="text-sm md:text-base text-gray-600">Administra precios y materiales del sistema</p>
         </div>
       </div>
 
       {/* Filters */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <Search className="h-4 w-4 md:h-5 md:w-5" />
             Filtros
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="p-4 md:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Buscar Material</label>
               <Input
-                placeholder="Buscar por nombre o descripción..."
+                placeholder="Buscar por nombre..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
@@ -186,24 +189,26 @@ export default function AdminMaterials() {
 
       {/* Materials Table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Lista de Materiales ({filteredMaterials.length})
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <DollarSign className="h-4 w-4 md:h-5 md:w-5" />
+            <span className="hidden sm:inline">Lista de Materiales ({filteredMaterials.length})</span>
+            <span className="sm:hidden">Materiales ({filteredMaterials.length})</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 md:p-6">
           {materialsLoading ? (
-            <div className="text-center py-4">Cargando materiales...</div>
+            <div className="text-center py-8">Cargando materiales...</div>
           ) : (
-            <Table>
+            <div className="overflow-x-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Material</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Unidad</TableHead>
-                  <TableHead>Precio (Bs.)</TableHead>
-                  <TableHead>Acciones</TableHead>
+                  <TableHead className="min-w-[200px]">Material</TableHead>
+                  <TableHead className="hidden md:table-cell">Categoría</TableHead>
+                  <TableHead className="hidden sm:table-cell">Unidad</TableHead>
+                  <TableHead className="text-right">Precio (Bs.)</TableHead>
+                  <TableHead className="w-[100px]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -211,22 +216,28 @@ export default function AdminMaterials() {
                   const category = categories.find(cat => cat.id === material.categoryId);
                   return (
                     <TableRow key={material.id}>
-                      <TableCell>
+                      <TableCell className="min-w-[200px]">
                         <div>
-                          <p className="font-medium">{material.name}</p>
+                          <p className="font-medium text-sm md:text-base">{material.name}</p>
                           {material.description && (
-                            <p className="text-sm text-gray-500">{material.description}</p>
+                            <p className="text-xs md:text-sm text-gray-500 hidden sm:block">{material.description}</p>
                           )}
+                          <div className="md:hidden flex gap-2 mt-1">
+                            {category && (
+                              <Badge variant="outline" className="text-xs">{category.name}</Badge>
+                            )}
+                            <span className="text-xs text-gray-500">{material.unit}</span>
+                          </div>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden md:table-cell">
                         {category && (
                           <Badge variant="outline">{category.name}</Badge>
                         )}
                       </TableCell>
-                      <TableCell>{material.unit}</TableCell>
-                      <TableCell>
-                        <span className="font-mono">
+                      <TableCell className="hidden sm:table-cell">{material.unit}</TableCell>
+                      <TableCell className="text-right">
+                        <span className="font-mono font-semibold">
                           {Number(material.price).toFixed(2)}
                         </span>
                       </TableCell>
@@ -234,27 +245,29 @@ export default function AdminMaterials() {
                         <Button
                           size="sm"
                           onClick={() => handleEditPrice(material)}
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 w-full sm:w-auto"
                         >
                           <DollarSign className="h-3 w-3" />
-                          Editar
+                          <span className="hidden sm:inline">Editar</span>
+                          <span className="sm:hidden">$</span>
                         </Button>
                       </TableCell>
                     </TableRow>
                   );
                 })}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
 
       {/* Modal simple SIN shadcn */}
       {showModal && editingMaterial && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 max-w-md mx-4 shadow-xl">
-            <h3 className="text-lg font-semibold mb-4">Editar Precio Base</h3>
-            <p className="text-sm text-gray-600 mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md mx-auto shadow-xl">
+            <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Editar Precio Base</h3>
+            <p className="text-sm text-gray-600 mb-3 md:mb-4">
               Actualiza el precio base del material seleccionado
             </p>
             
@@ -281,11 +294,11 @@ export default function AdminMaterials() {
               </div>
             </div>
 
-            <div className="flex gap-2 mt-6">
+            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-6">
               <button
                 onClick={handleSavePrice}
                 disabled={isSaving}
-                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
+                className="flex-1 bg-blue-600 text-white px-3 md:px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center text-sm md:text-base"
               >
                 {isSaving ? (
                   <>
@@ -305,7 +318,7 @@ export default function AdminMaterials() {
                   setEditingMaterial(null);
                   setNewPrice("");
                 }}
-                className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+                className="flex-1 bg-gray-200 text-gray-800 px-3 md:px-4 py-2 rounded hover:bg-gray-300 text-sm md:text-base"
               >
                 Cancelar
               </button>

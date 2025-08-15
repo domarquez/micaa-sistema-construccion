@@ -33,7 +33,7 @@ export default function PriceSettingsPage() {
   // Update price settings mutation
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: Partial<PriceSettings>) => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       return await fetch('/api/price-settings', {
         method: 'PUT',
         headers: { 
@@ -62,7 +62,7 @@ export default function PriceSettingsPage() {
   // Apply global price adjustment mutation
   const applyAdjustmentMutation = useMutation({
     mutationFn: async (data: { factor: number; updatedBy: string }) => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       return await fetch('/api/apply-price-adjustment', {
         method: 'POST',
         headers: { 
