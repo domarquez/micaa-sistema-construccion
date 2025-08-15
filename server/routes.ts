@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { db } from './db';
 import { storage as dbStorage } from './storage';
-import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions } from '../shared/schema';
+import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import { JwtPayload } from 'jsonwebtoken';
 
@@ -1345,6 +1345,122 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error("Error bulk updating prices:", error);
       res.status(500).json({ message: "Failed to update prices" });
+    }
+  });
+
+  // PRICE SETTINGS ROUTES
+  // Get current price settings
+  app.get("/api/price-settings", async (req, res) => {
+    try {
+      const settings = await db.select().from(priceSettings).orderBy(desc(priceSettings.lastUpdated)).limit(1);
+      
+      if (settings.length === 0) {
+        // Create default settings if none exist
+        const defaultSettings = await db.insert(priceSettings).values({
+          usdExchangeRate: "6.96",
+          inflationFactor: "1.0000",
+          globalAdjustmentFactor: "1.0000",
+          updatedBy: "Sistema"
+        }).returning();
+        
+        res.json(defaultSettings[0]);
+      } else {
+        res.json(settings[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching price settings:", error);
+      res.status(500).json({ message: "Failed to fetch price settings" });
+    }
+  });
+
+  // Update price settings
+  app.put("/api/price-settings", requireAuth, async (req: any, res) => {
+    try {
+      const { usdExchangeRate, inflationFactor, globalAdjustmentFactor, updatedBy } = req.body;
+      
+      console.log("=== UPDATING PRICE SETTINGS ===");
+      console.log("Request body:", req.body);
+      console.log("User:", req.user?.username);
+
+      // Get current settings or create default
+      const currentSettings = await db.select().from(priceSettings).orderBy(desc(priceSettings.lastUpdated)).limit(1);
+      
+      let updatedSettings;
+      if (currentSettings.length === 0) {
+        // Insert new settings
+        updatedSettings = await db.insert(priceSettings).values({
+          usdExchangeRate: usdExchangeRate || "6.96",
+          inflationFactor: inflationFactor || "1.0000",
+          globalAdjustmentFactor: globalAdjustmentFactor || "1.0000",
+          updatedBy: updatedBy || req.user?.username || "Usuario"
+        }).returning();
+      } else {
+        // Update existing settings
+        const updateData: any = {
+          lastUpdated: new Date(),
+          updatedBy: updatedBy || req.user?.username || "Usuario"
+        };
+        
+        if (usdExchangeRate !== undefined) updateData.usdExchangeRate = usdExchangeRate;
+        if (inflationFactor !== undefined) updateData.inflationFactor = inflationFactor;
+        if (globalAdjustmentFactor !== undefined) updateData.globalAdjustmentFactor = globalAdjustmentFactor;
+        
+        updatedSettings = await db.update(priceSettings)
+          .set(updateData)
+          .where(eq(priceSettings.id, currentSettings[0].id))
+          .returning();
+      }
+
+      console.log("Settings updated successfully:", updatedSettings[0]);
+      res.json(updatedSettings[0]);
+    } catch (error) {
+      console.error("Error updating price settings:", error);
+      res.status(500).json({ message: "Failed to update price settings" });
+    }
+  });
+
+  // Apply global price adjustment to all materials
+  app.post("/api/apply-price-adjustment", requireAuth, async (req: any, res) => {
+    try {
+      const { factor, updatedBy } = req.body;
+      
+      console.log("=== APPLYING GLOBAL PRICE ADJUSTMENT ===");
+      console.log("Factor:", factor, "Updated by:", updatedBy);
+      
+      if (!factor || factor <= 0) {
+        return res.status(400).json({ message: "Factor de ajuste inválido" });
+      }
+
+      // Apply adjustment to all materials
+      const updatedMaterials = await db.update(materials)
+        .set({ 
+          price: sql`${materials.price} * ${factor}`,
+          updatedAt: new Date()
+        })
+        .returning();
+
+      // Update the global adjustment factor in settings
+      const currentSettings = await db.select().from(priceSettings).orderBy(desc(priceSettings.lastUpdated)).limit(1);
+      
+      if (currentSettings.length > 0) {
+        await db.update(priceSettings)
+          .set({
+            globalAdjustmentFactor: factor.toString(),
+            lastUpdated: new Date(),
+            updatedBy: updatedBy || req.user?.username || "Usuario"
+          })
+          .where(eq(priceSettings.id, currentSettings[0].id));
+      }
+
+      console.log(`Applied factor ${factor} to ${updatedMaterials.length} materials`);
+      res.json({ 
+        affectedMaterials: updatedMaterials.length,
+        factor: factor,
+        message: "Ajuste global aplicado exitosamente"
+      });
+    } catch (error) {
+      console.error("Error applying price adjustment:", error);
+      res.status(500).json({ message: "Failed to apply price adjustment" });
     }
   });
 

@@ -27,14 +27,19 @@ export default function PriceSettingsPage() {
   if (settings && !usdRate) {
     setUsdRate(settings.usdExchangeRate);
     setInflationFactor(settings.inflationFactor);
+    setGlobalFactor(settings.globalAdjustmentFactor);
   }
 
   // Update price settings mutation
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: Partial<PriceSettings>) => {
+      const token = localStorage.getItem('token');
       return await fetch('/api/price-settings', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(data)
       }).then(res => res.json());
     },
@@ -57,9 +62,13 @@ export default function PriceSettingsPage() {
   // Apply global price adjustment mutation
   const applyAdjustmentMutation = useMutation({
     mutationFn: async (data: { factor: number; updatedBy: string }) => {
+      const token = localStorage.getItem('token');
       return await fetch('/api/apply-price-adjustment', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(data)
       }).then(res => res.json());
     },
@@ -85,6 +94,7 @@ export default function PriceSettingsPage() {
     updateSettingsMutation.mutate({
       usdExchangeRate: usdRate,
       inflationFactor: inflationFactor,
+      globalAdjustmentFactor: globalFactor,
       updatedBy: updatedBy
     });
   };
