@@ -135,25 +135,28 @@ export default function Labor() {
     : 0;
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
+    <div className="container mx-auto py-4 md:py-8 px-4">
+      <div className="mb-6 md:mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <Users className="h-8 w-8 text-primary" />
+          <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
           <div>
-            <h1 className="text-3xl font-bold">Mano de Obra</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-xl md:text-3xl font-bold">
+              <span className="hidden sm:inline">Mano de Obra</span>
+              <span className="sm:hidden">Mano de Obra</span>
+            </h1>
+            <p className="text-sm md:text-base text-muted-foreground">
               Categorías de mano de obra con tarifas horarias para construcción en Bolivia
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Categorías</p>
-                  <p className="text-2xl font-bold">{laborCategories.length}</p>
+                  <p className="text-xs md:text-sm font-medium text-muted-foreground">Total Categorías</p>
+                  <p className="text-lg md:text-2xl font-bold">{laborCategories.length}</p>
                 </div>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </div>
@@ -161,11 +164,11 @@ export default function Labor() {
           </Card>
           
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Especialistas</p>
-                  <p className="text-2xl font-bold">{specialists.length}</p>
+                  <p className="text-xs md:text-sm font-medium text-muted-foreground">Especialistas</p>
+                  <p className="text-lg md:text-2xl font-bold">{specialists.length}</p>
                 </div>
                 <Star className="h-4 w-4 text-muted-foreground" />
               </div>
@@ -173,11 +176,11 @@ export default function Labor() {
           </Card>
           
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Calificados</p>
-                  <p className="text-2xl font-bold">{skilled.length}</p>
+                  <p className="text-xs md:text-sm font-medium text-muted-foreground">Calificados</p>
+                  <p className="text-lg md:text-2xl font-bold">{skilled.length}</p>
                 </div>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </div>
@@ -185,11 +188,14 @@ export default function Labor() {
           </Card>
           
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Tarifa Promedio</p>
-                  <p className="text-2xl font-bold">{formatPrice(averageRate.toString())}</p>
+                  <p className="text-xs md:text-sm font-medium text-muted-foreground">
+                    <span className="hidden sm:inline">Tarifa Promedio</span>
+                    <span className="sm:hidden">Promedio</span>
+                  </p>
+                  <p className="text-lg md:text-2xl font-bold">{formatPrice(averageRate.toString())}</p>
                 </div>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </div>
@@ -202,27 +208,28 @@ export default function Labor() {
         {/* Especialistas */}
         {specialists.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                👨‍🔧 Especialistas
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                👨‍🔧 <span className="hidden sm:inline">Especialistas</span><span className="sm:hidden">Especialistas</span>
                 <Badge variant="destructive">{specialists.length}</Badge>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 Mano de obra altamente especializada con certificaciones específicas
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Categoría</TableHead>
-                    <TableHead>Descripción</TableHead>
-                    <TableHead>Nivel</TableHead>
-                    <TableHead>Unidad</TableHead>
-                    <TableHead className="text-right">Tarifa Horaria</TableHead>
-                    {user?.role === "admin" && <TableHead className="text-right">Acciones</TableHead>}
-                  </TableRow>
-                </TableHeader>
+            <CardContent className="p-0 md:p-6">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[150px]">Categoría</TableHead>
+                      <TableHead className="hidden md:table-cell">Descripción</TableHead>
+                      <TableHead className="hidden sm:table-cell">Nivel</TableHead>
+                      <TableHead className="hidden sm:table-cell">Unidad</TableHead>
+                      <TableHead className="text-right">Tarifa</TableHead>
+                      {user?.role === "admin" && <TableHead className="text-right">Acciones</TableHead>}
+                    </TableRow>
+                  </TableHeader>
                 <TableBody>
                   {specialists.map((labor) => (
                     <TableRow key={labor.id}>
@@ -287,7 +294,8 @@ export default function Labor() {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         )}

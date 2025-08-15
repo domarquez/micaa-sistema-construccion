@@ -307,6 +307,45 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Update labor category hourly rate (admin only)
+  router.put('/labor-categories/:id', requireAuth, async (req, res) => {
+    try {
+      const user = req.user;
+      if (user.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { id } = req.params;
+      const { hourlyRate } = req.body;
+
+      if (!hourlyRate || isNaN(parseFloat(hourlyRate))) {
+        return res.status(400).json({ error: 'Valid hourly rate is required' });
+      }
+
+      const result = await db.update(laborCategories)
+        .set({ 
+          hourlyRate: hourlyRate,
+          updatedAt: new Date()
+        })
+        .where(eq(laborCategories.id, parseInt(id)))
+        .returning();
+
+      if (result.length === 0) {
+        return res.status(404).json({ error: 'Labor category not found' });
+      }
+
+      console.log(`Labor category ${id} updated: hourly rate = ${hourlyRate} BOB`);
+      res.json({ 
+        success: true, 
+        message: 'Hourly rate updated successfully',
+        category: result[0]
+      });
+    } catch (error) {
+      console.error('Labor category update error:', error);
+      res.status(500).json({ error: 'Failed to update labor category' });
+    }
+  });
+
   // City price factors
   router.get('/city-factors', async (req, res) => {
     try {
