@@ -59,32 +59,33 @@ export default function Dashboard() {
   const recentBudgetsDisplay = recentBudgets?.slice(0, 3) || [];
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-on-surface">Panel Principal</h1>
-          <p className="text-gray-600 mt-1">
-            Vista general del sistema MICA
+          <h1 className="text-2xl md:text-3xl font-bold text-on-surface">Panel Principal</h1>
+          <p className="text-sm md:text-base text-gray-600 mt-1">
+            Vista general del sistema MICAA
           </p>
         </div>
         <Link href="/budgets/new">
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2 w-full sm:w-auto">
             <Plus className="w-4 h-4" />
-            Nuevo Presupuesto
+            <span className="hidden sm:inline">Nuevo Presupuesto</span>
+            <span className="sm:hidden">Nuevo</span>
           </Button>
         </Link>
       </div>
 
       {/* Compact Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 md:gap-3">
         <Card className="shadow-material">
-          <CardContent className="p-3">
+          <CardContent className="p-2 md:p-3">
             <div className="flex flex-col items-center text-center">
-              <Users className="w-5 h-5 text-primary mb-1" />
+              <Users className="w-4 h-4 md:w-5 md:h-5 text-primary mb-1" />
               {statsLoading ? (
-                <Skeleton className="h-5 w-12 mb-1" />
+                <Skeleton className="h-4 md:h-5 w-8 md:w-12 mb-1" />
               ) : (
-                <p className="text-lg font-bold text-on-surface">
+                <p className="text-sm md:text-lg font-bold text-on-surface">
                   {formatNumber(stats?.totalUsers || 0)}
                 </p>
               )}
@@ -94,13 +95,13 @@ export default function Dashboard() {
         </Card>
 
         <Card className="shadow-material">
-          <CardContent className="p-3">
+          <CardContent className="p-2 md:p-3">
             <div className="flex flex-col items-center text-center">
-              <Calculator className="w-5 h-5 text-green-600 mb-1" />
+              <Calculator className="w-4 h-4 md:w-5 md:h-5 text-green-600 mb-1" />
               {statsLoading ? (
-                <Skeleton className="h-5 w-12 mb-1" />
+                <Skeleton className="h-4 md:h-5 w-8 md:w-12 mb-1" />
               ) : (
-                <p className="text-lg font-bold text-on-surface">
+                <p className="text-sm md:text-lg font-bold text-on-surface">
                   {formatNumber(stats?.activeBudgets || 0)}
                 </p>
               )}
@@ -251,15 +252,15 @@ export default function Dashboard() {
       <AdInFeed className="max-w-4xl mx-auto" />
 
       {/* Recent Activity and Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Recent Budgets */}
         <Card className="shadow-material">
-          <CardHeader className="border-b border-gray-200">
-            <CardTitle className="text-lg font-semibold text-on-surface">
+          <CardHeader className="border-b border-gray-200 p-4 md:p-6">
+            <CardTitle className="text-base md:text-lg font-semibold text-on-surface">
               Presupuestos Recientes
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4">
+          <CardContent className="p-3 md:p-4">
             {budgetsLoading ? (
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (

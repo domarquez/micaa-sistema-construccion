@@ -267,29 +267,31 @@ export default function Materials() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Materials Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-on-surface">Gestión de Materiales</h2>
-          <p className="text-gray-600">Administrar materiales y precios</p>
+          <h2 className="text-xl md:text-2xl font-bold text-on-surface">Gestión de Materiales</h2>
+          <p className="text-sm md:text-base text-gray-600">Administrar materiales y precios</p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <Button
             variant="outline"
-            className="bg-secondary text-white hover:bg-secondary-variant"
+            className="bg-secondary text-white hover:bg-secondary-variant w-full sm:w-auto"
             onClick={handleImport}
             disabled={importMutation.isPending}
           >
             <Upload className="w-4 h-4 mr-2" />
-            {importMutation.isPending ? 'Importando...' : 'Importar Archivo SQL'}
+            <span className="hidden md:inline">{importMutation.isPending ? 'Importando...' : 'Importar Archivo SQL'}</span>
+            <span className="md:hidden">{importMutation.isPending ? 'Importando...' : 'Importar'}</span>
           </Button>
           <Button
             onClick={() => setShowForm(true)}
-            className="bg-primary text-white hover:bg-primary-variant"
+            className="bg-primary text-white hover:bg-primary-variant w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Agregar Material
+            <span className="hidden sm:inline">Agregar Material</span>
+            <span className="sm:hidden">Agregar</span>
           </Button>
         </div>
       </div>
@@ -316,8 +318,8 @@ export default function Materials() {
 
       {/* Search and Filters */}
       <Card className="shadow-material">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardContent className="p-4 md:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
                 Buscar Material
@@ -352,11 +354,12 @@ export default function Materials() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-end">
+            <div className="flex items-end sm:col-span-2 lg:col-span-1">
               <Button
                 onClick={() => refetchMaterials()}
                 className="w-full bg-primary text-white hover:bg-primary-variant"
               >
+                <Search className="w-4 h-4 mr-2 sm:hidden" />
                 Buscar
               </Button>
             </div>
@@ -366,8 +369,8 @@ export default function Materials() {
 
       {/* Materials Table */}
       <Card className="shadow-material overflow-hidden">
-        <CardHeader className="border-b border-gray-200">
-          <CardTitle className="text-lg font-semibold text-on-surface">
+        <CardHeader className="border-b border-gray-200 p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg font-semibold text-on-surface">
             Lista de Materiales
           </CardTitle>
         </CardHeader>

@@ -128,16 +128,16 @@ export default function Marketplace() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
       <div className="flex flex-col space-y-4">
         <div>
-          <h2 className="text-2xl font-bold text-on-surface">Marketplace de Materiales</h2>
-          <p className="text-gray-600">Encuentra las mejores ofertas de materiales de construcción</p>
+          <h2 className="text-xl md:text-2xl font-bold text-on-surface">Marketplace de Materiales</h2>
+          <p className="text-sm md:text-base text-gray-600">Encuentra las mejores ofertas de materiales de construcción</p>
         </div>
 
         {/* Filtros */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input

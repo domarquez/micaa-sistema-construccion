@@ -29,35 +29,38 @@ export default function AppHeader() {
 
   return (
     <header className="bg-white shadow-material sticky top-0 z-50 border-b">
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center space-x-4">
-          <SidebarTrigger className="lg:hidden" />
-          <MicaaLogo size="md" showText={true} />
-          <div className="hidden sm:block ml-2">
-            <p className="text-xs text-gray-600">Sistema de Cómputos y Presupuestos</p>
+      <div className="flex h-14 md:h-16 items-center justify-between px-3 sm:px-4 md:px-6">
+        <div className="flex items-center space-x-2 md:space-x-4 min-w-0">
+          <SidebarTrigger className="md:hidden flex-shrink-0" />
+          <div className="flex items-center space-x-2 min-w-0">
+            <MicaaLogo size="sm" showText={false} className="md:hidden" />
+            <MicaaLogo size="md" showText={true} className="hidden md:block" />
+            <div className="hidden lg:block">
+              <p className="text-xs text-gray-600">Sistema de Cómputos y Presupuestos</p>
+            </div>
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-4">
           <ContactForm 
             triggerText="Contacto"
             triggerVariant="outline"
-            className="hidden md:flex"
+            className="hidden lg:flex"
           />
           
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+          <Button variant="ghost" size="icon" className="relative h-8 w-8 md:h-10 md:w-10">
+            <Bell className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
               3
             </span>
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
+              <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full">
+                <Avatar className="h-7 w-7 md:h-8 md:w-8">
                   <AvatarImage src="" alt={user?.username || "Usuario"} />
-                  <AvatarFallback className="bg-primary text-white">
+                  <AvatarFallback className="bg-primary text-white text-xs md:text-sm">
                     {getUserInitials(user)}
                   </AvatarFallback>
                 </Avatar>

@@ -104,26 +104,27 @@ export default function Budgets() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Budgets Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-on-surface">Gestión de Presupuestos</h2>
-          <p className="text-gray-600">Crear y administrar presupuestos de construcción</p>
+          <h2 className="text-xl md:text-2xl font-bold text-on-surface">Gestión de Presupuestos</h2>
+          <p className="text-sm md:text-base text-gray-600">Crear y administrar presupuestos de construcción</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
-          className="bg-primary text-white hover:bg-primary-variant shadow-material"
+          className="bg-primary text-white hover:bg-primary-variant shadow-material w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo Presupuesto
+          <span className="hidden sm:inline">Nuevo Presupuesto</span>
+          <span className="sm:hidden">Nuevo</span>
         </Button>
       </div>
 
       {/* Budgets List */}
       <Card className="shadow-material overflow-hidden">
-        <CardHeader className="border-b border-gray-200">
-          <CardTitle className="text-lg font-semibold text-on-surface">
+        <CardHeader className="border-b border-gray-200 p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg font-semibold text-on-surface">
             Lista de Presupuestos
           </CardTitle>
         </CardHeader>

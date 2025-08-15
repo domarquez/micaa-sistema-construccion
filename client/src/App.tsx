@@ -74,11 +74,11 @@ function Router() {
 function AuthenticatedLayout() {
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-surface">
+      <div className="min-h-screen bg-surface flex">
         <AppSidebar />
-        <div className="flex flex-col flex-1 lg:ml-64">
+        <div className="flex flex-col flex-1 min-w-0">
           <AppHeader />
-          <main className="flex-1">
+          <main className="flex-1 p-4 md:p-6 overflow-auto">
             <Switch>
               <Route path="/" component={Dashboard} />
               <Route path="/dashboard" component={Dashboard} />

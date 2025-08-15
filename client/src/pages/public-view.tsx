@@ -137,26 +137,28 @@ export default function PublicView() {
       </div>
       {/* Header Público */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <MicaaLogo size="lg" showText={true} />
-              <div>
-                <p className="text-gray-600 dark:text-gray-400 text-lg">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 md:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
+              <MicaaLogo size="md" showText={true} className="md:hidden" />
+              <MicaaLogo size="lg" showText={true} className="hidden md:block" />
+              <div className="hidden lg:block">
+                <p className="text-gray-600 dark:text-gray-400 text-sm lg:text-lg">
                   Explora materiales y proveedores de construcción en Bolivia
                 </p>
               </div>
             </div>
-            <div className="flex space-x-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
               <ContactForm 
                 triggerText="Contacto"
                 triggerVariant="outline"
-                className="flex items-center space-x-2"
+                className="hidden md:flex items-center space-x-2"
               />
-              <Button variant="outline" onClick={() => window.location.href = "/login"}>
-                Iniciar Sesión
+              <Button variant="outline" onClick={() => window.location.href = "/login"} className="w-full sm:w-auto">
+                <span className="sm:hidden">Iniciar</span>
+                <span className="hidden sm:inline">Iniciar Sesión</span>
               </Button>
-              <Button onClick={() => window.location.href = "/register"}>
+              <Button onClick={() => window.location.href = "/register"} className="w-full sm:w-auto">
                 Registrarse
               </Button>
             </div>
@@ -172,7 +174,7 @@ export default function PublicView() {
       {/* Mobile Ad - Solo móvil */}
       <AdMobile className="md:hidden" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Publicidad Dual - Lado a Lado - Primero */}
         {advertisements && advertisements.length > 0 && showAd && (
           <div className="relative">
@@ -246,122 +248,122 @@ export default function PublicView() {
         <BannerAd />
 
         {/* Métricas Compactas del Sistema */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 md:gap-3">
           <Card className="shadow-material">
-            <CardContent className="p-4">
+            <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Users className="w-6 h-6 text-primary mb-2" />
+                <Users className="w-4 h-4 md:w-6 md:h-6 text-primary mb-1 md:mb-2" />
                 {statsLoading ? (
-                  <Skeleton className="h-6 w-12 mb-1" />
+                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-xl font-bold text-on-surface">
+                  <p className="text-sm md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalUsers || 0)}
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Usuarios</p>
-                <p className="text-xs text-green-600 mt-1">Registrados</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Registrados</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-material">
-            <CardContent className="p-4">
+            <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Calculator className="w-6 h-6 text-green-600 mb-2" />
+                <Calculator className="w-4 h-4 md:w-6 md:h-6 text-green-600 mb-1 md:mb-2" />
                 {statsLoading ? (
-                  <Skeleton className="h-6 w-12 mb-1" />
+                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-xl font-bold text-on-surface">
+                  <p className="text-sm md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.activeBudgets || 0)}
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Presupuestos</p>
-                <p className="text-xs text-green-600 mt-1">Creados</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Creados</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-material">
-            <CardContent className="p-4">
+            <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Building2 className="w-6 h-6 text-orange-600 mb-2" />
+                <Building2 className="w-4 h-4 md:w-6 md:h-6 text-orange-600 mb-1 md:mb-2" />
                 {statsLoading ? (
-                  <Skeleton className="h-6 w-12 mb-1" />
+                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-xl font-bold text-on-surface">
+                  <p className="text-sm md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalProjects || 0)}
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Proyectos</p>
-                <p className="text-xs text-green-600 mt-1">En desarrollo</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">En desarrollo</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-material">
-            <CardContent className="p-4">
+            <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Truck className="w-6 h-6 text-purple-600 mb-2" />
+                <Truck className="w-4 h-4 md:w-6 md:h-6 text-purple-600 mb-1 md:mb-2" />
                 {statsLoading ? (
-                  <Skeleton className="h-6 w-12 mb-1" />
+                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-xl font-bold text-on-surface">
+                  <p className="text-sm md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalSuppliers || 0)}
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Proveedores</p>
-                <p className="text-xs text-green-600 mt-1">Activos</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Activos</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-material">
-            <CardContent className="p-4">
+            <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Package className="w-6 h-6 text-blue-600 mb-2" />
+                <Package className="w-4 h-4 md:w-6 md:h-6 text-blue-600 mb-1 md:mb-2" />
                 {statsLoading ? (
-                  <Skeleton className="h-6 w-12 mb-1" />
+                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-xl font-bold text-on-surface">
+                  <p className="text-sm md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalMaterials || 0)}
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Materiales</p>
-                <p className="text-xs text-green-600 mt-1">Disponibles</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Disponibles</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-material">
-            <CardContent className="p-4">
+            <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Combine className="w-6 h-6 text-teal-600 mb-2" />
+                <Combine className="w-4 h-4 md:w-6 md:h-6 text-teal-600 mb-1 md:mb-2" />
                 {statsLoading ? (
-                  <Skeleton className="h-6 w-12 mb-1" />
+                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-xl font-bold text-on-surface">
+                  <p className="text-sm md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalActivities || 0)}
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Actividades</p>
-                <p className="text-xs text-green-600 mt-1">Registradas</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Registradas</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-material">
-            <CardContent className="p-4">
+            <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <TrendingUp className="w-6 h-6 text-yellow-600 mb-2" />
+                <TrendingUp className="w-4 h-4 md:w-6 md:h-6 text-yellow-600 mb-1 md:mb-2" />
                 {statsLoading ? (
-                  <Skeleton className="h-6 w-16 mb-1" />
+                  <Skeleton className="h-4 md:h-6 w-12 md:w-16 mb-1" />
                 ) : (
-                  <p className="text-sm font-bold text-on-surface">
+                  <p className="text-xs md:text-sm font-bold text-on-surface">
                     {formatCurrency(stats?.totalProjectValue || 0).replace(' Bs', '')} Bs
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Valor Total</p>
-                <p className="text-xs text-green-600 mt-1">Acumulado</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Acumulado</p>
               </div>
             </CardContent>
           </Card>
@@ -374,19 +376,20 @@ export default function PublicView() {
 
         {/* Growth Chart */}
         <Card className="shadow-material">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
-              Crecimiento del Sistema (Últimos 6 Meses)
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+              <BarChart3 className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline">Crecimiento del Sistema (Últimos 6 Meses)</span>
+              <span className="sm:hidden">Crecimiento</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             {growthLoading ? (
-              <div className="h-64 flex items-center justify-center">
+              <div className="h-48 md:h-64 flex items-center justify-center">
                 <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
               </div>
             ) : (
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={growthData || []}>
                     <CartesianGrid strokeDasharray="3 3" />
