@@ -135,11 +135,14 @@ export default function AdminUsers() {
   });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Usuarios</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-xl md:text-3xl font-bold">
+            <span className="hidden sm:inline">Gestión de Usuarios</span>
+            <span className="sm:hidden">Usuarios</span>
+          </h1>
+          <p className="text-sm md:text-base text-gray-600 mt-2">
             Administra roles, permisos y estado de usuarios del sistema
           </p>
         </div>
@@ -150,7 +153,7 @@ export default function AdminUsers() {
       </div>
 
       {/* Controles y filtros */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
         <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -164,7 +167,7 @@ export default function AdminUsers() {
         </div>
         
         <Select value={selectedRole} onValueChange={setSelectedRole}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="Todos los roles" />
           </SelectTrigger>
           <SelectContent>
@@ -229,35 +232,41 @@ export default function AdminUsers() {
 
       {/* Tabla de usuarios */}
       <Card>
-        <CardHeader>
-          <CardTitle>Usuarios ({filteredUsers.length})</CardTitle>
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg">Usuarios ({filteredUsers.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 md:p-6">
           {isLoading ? (
             <div className="text-center py-8">Cargando usuarios...</div>
           ) : (
-            <Table>
+            <div className="overflow-x-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Usuario</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Nombre Completo</TableHead>
-                  <TableHead>Rol</TableHead>
+                  <TableHead className="min-w-[120px]">Usuario</TableHead>
+                  <TableHead className="hidden lg:table-cell">Email</TableHead>
+                  <TableHead className="hidden xl:table-cell">Nombre Completo</TableHead>
+                  <TableHead className="hidden sm:table-cell">Rol</TableHead>
                   <TableHead>Estado</TableHead>
-                  <TableHead>Registro</TableHead>
-                  <TableHead>Acciones</TableHead>
+                  <TableHead className="hidden md:table-cell">Registro</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredUsers.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{`${user.firstName || ''} ${user.lastName || ''}`.trim() || 'N/A'}</TableCell>
-                    <TableCell>{getRoleBadge(user.role)}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex flex-col">
+                        <span>{user.username}</span>
+                        <span className="lg:hidden text-xs text-muted-foreground">{user.email}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">{user.email}</TableCell>
+                    <TableCell className="hidden xl:table-cell">{`${user.firstName || ''} ${user.lastName || ''}`.trim() || 'N/A'}</TableCell>
+                    <TableCell className="hidden sm:table-cell">{getRoleBadge(user.role)}</TableCell>
                     <TableCell>{getStatusBadge(user.isActive)}</TableCell>
-                    <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-right">
                       <div className="flex space-x-2">
                         <Dialog>
                           <DialogTrigger asChild>
@@ -325,7 +334,8 @@ export default function AdminUsers() {
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

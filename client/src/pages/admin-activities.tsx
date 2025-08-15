@@ -181,11 +181,14 @@ export default function AdminActivities() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Actividades</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-xl md:text-3xl font-bold">
+            <span className="hidden sm:inline">Gestión de Actividades</span>
+            <span className="sm:hidden">Actividades</span>
+          </h1>
+          <p className="text-sm md:text-base text-gray-600 mt-2">
             Organiza las actividades por fases de construcción
           </p>
         </div>
@@ -253,7 +256,7 @@ export default function AdminActivities() {
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 items-stretch sm:items-center">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
@@ -264,7 +267,7 @@ export default function AdminActivities() {
               />
             </div>
             <Select value={selectedPhase} onValueChange={setSelectedPhase}>
-              <SelectTrigger className="w-64">
+              <SelectTrigger className="w-full sm:w-64">
                 <SelectValue placeholder="Todas las fases" />
               </SelectTrigger>
               <SelectContent>
@@ -282,22 +285,23 @@ export default function AdminActivities() {
 
       {/* Activities Table */}
       <Card>
-        <CardHeader>
-          <CardTitle>Actividades ({filteredActivities.length})</CardTitle>
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg">Actividades ({filteredActivities.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 md:p-6">
           {activitiesLoading ? (
             <div className="flex items-center justify-center py-8">
               <RefreshCw className="h-8 w-8 animate-spin" />
             </div>
           ) : (
-            <Table>
+            <div className="overflow-x-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Actividad</TableHead>
-                  <TableHead>Fase Actual</TableHead>
-                  <TableHead>Unidad</TableHead>
-                  <TableHead className="text-right">Precio Unitario</TableHead>
+                  <TableHead className="min-w-[180px]">Actividad</TableHead>
+                  <TableHead className="hidden sm:table-cell">Fase Actual</TableHead>
+                  <TableHead className="hidden md:table-cell">Unidad</TableHead>
+                  <TableHead className="text-right">Precio</TableHead>
                   <TableHead className="text-center">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -306,13 +310,19 @@ export default function AdminActivities() {
                   <TableRow key={activity.id}>
                     <TableCell>
                       <div className="font-medium">{activity.name}</div>
+                      <div className="sm:hidden text-xs text-muted-foreground mt-1">
+                        <Badge className={getPhaseColor(activity.phaseId)} variant="outline">
+                          {phaseMap[activity.phaseId] || 'Sin fase'}
+                        </Badge>
+                        <span className="md:hidden ml-2">{activity.unit}</span>
+                      </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       <Badge className={getPhaseColor(activity.phaseId)}>
                         {phaseMap[activity.phaseId] || 'Sin fase'}
                       </Badge>
                     </TableCell>
-                    <TableCell>{activity.unit}</TableCell>
+                    <TableCell className="hidden md:table-cell">{activity.unit}</TableCell>
                     <TableCell className="text-right font-mono">
                       Bs. {typeof activity.unitPrice === 'number' ? activity.unitPrice.toFixed(2) : parseFloat(activity.unitPrice || '0').toFixed(2)}
                     </TableCell>
@@ -324,8 +334,9 @@ export default function AdminActivities() {
                             size="sm"
                             onClick={() => handleEditPhase(activity)}
                           >
-                            <Move className="h-4 w-4 mr-2" />
-                            Cambiar Fase
+                            <Move className="h-4 w-4 mr-1 sm:mr-2" />
+                            <span className="hidden sm:inline">Cambiar Fase</span>
+                            <span className="sm:hidden">Cambiar</span>
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
@@ -376,7 +387,8 @@ export default function AdminActivities() {
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

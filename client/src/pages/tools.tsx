@@ -170,13 +170,16 @@ export default function Tools() {
   const basicTools = tools.filter(tool => parseFloat(tool.unitPrice) < 20);
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
+    <div className="container mx-auto py-4 md:py-8 px-4">
+      <div className="mb-6 md:mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <Wrench className="h-8 w-8 text-primary" />
+          <Wrench className="h-6 w-6 md:h-8 md:w-8 text-primary" />
           <div>
-            <h1 className="text-3xl font-bold">Herramientas y Equipos</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-xl md:text-3xl font-bold">
+              <span className="hidden sm:inline">Herramientas y Equipos</span>
+              <span className="sm:hidden">Herramientas</span>
+            </h1>
+            <p className="text-sm md:text-base text-muted-foreground">
               Catálogo de herramientas con precios reales para construcción en Bolivia
             </p>
           </div>
@@ -225,25 +228,26 @@ export default function Tools() {
         {/* Equipo Pesado */}
         {expensiveTools.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                🚛 Equipo Pesado
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                🚛 <span className="hidden sm:inline">Equipo Pesado</span><span className="sm:hidden">Pesado</span>
                 <Badge variant="destructive">{expensiveTools.length}</Badge>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 Equipos especializados de alto valor (más de 50 BOB/hora)
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Herramienta</TableHead>
-                    <TableHead>Descripción</TableHead>
-                    <TableHead>Unidad</TableHead>
-                    <TableHead className="text-right">Precio Unitario</TableHead>
-                  </TableRow>
-                </TableHeader>
+            <CardContent className="p-0 md:p-6">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[200px]">Herramienta</TableHead>
+                      <TableHead className="hidden md:table-cell">Descripción</TableHead>
+                      <TableHead className="hidden sm:table-cell">Unidad</TableHead>
+                      <TableHead className="text-right">Precio</TableHead>
+                    </TableRow>
+                  </TableHeader>
                 <TableBody>
                   {expensiveTools.map((tool) => (
                     user?.role === 'admin' ? (
@@ -256,18 +260,22 @@ export default function Tools() {
                             {tool.name}
                           </div>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">{tool.description}</TableCell>
-                        <TableCell>
+                        <TableCell className="hidden md:table-cell text-muted-foreground">{tool.description}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
                           <Badge variant="outline">{tool.unit}</Badge>
                         </TableCell>
                         <TableCell className="text-right font-semibold text-red-600">
+                          <div className="flex flex-col sm:hidden text-xs text-muted-foreground">
+                            <span>{tool.unit}</span>
+                          </div>
                           {formatPrice(tool.unitPrice)}
                         </TableCell>
                       </TableRow>
                     )
                   ))}
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -275,45 +283,50 @@ export default function Tools() {
         {/* Herramientas Moderadas */}
         {moderateTools.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                🔧 Herramientas Especializadas
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                🔧 <span className="hidden sm:inline">Herramientas Especializadas</span><span className="sm:hidden">Especializadas</span>
                 <Badge variant="secondary">{moderateTools.length}</Badge>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 Herramientas de uso frecuente (20-50 BOB/hora)
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Herramienta</TableHead>
-                    <TableHead>Descripción</TableHead>
-                    <TableHead>Unidad</TableHead>
-                    <TableHead className="text-right">Precio Unitario</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {moderateTools.map((tool) => (
-                    <TableRow key={tool.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{getToolIcon(tool.name)}</span>
-                          {tool.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">{tool.description}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{tool.unit}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-semibold text-orange-600">
-                        {formatPrice(tool.unitPrice)}
-                      </TableCell>
+            <CardContent className="p-0 md:p-6">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[200px]">Herramienta</TableHead>
+                      <TableHead className="hidden md:table-cell">Descripción</TableHead>
+                      <TableHead className="hidden sm:table-cell">Unidad</TableHead>
+                      <TableHead className="text-right">Precio</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {moderateTools.map((tool) => (
+                      <TableRow key={tool.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{getToolIcon(tool.name)}</span>
+                            {tool.name}
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-muted-foreground">{tool.description}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant="outline">{tool.unit}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold text-orange-600">
+                          <div className="flex flex-col sm:hidden text-xs text-muted-foreground">
+                            <span>{tool.unit}</span>
+                          </div>
+                          {formatPrice(tool.unitPrice)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -321,45 +334,50 @@ export default function Tools() {
         {/* Herramientas Básicas */}
         {basicTools.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                🛠️ Herramientas Básicas
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                🛠️ <span className="hidden sm:inline">Herramientas Básicas</span><span className="sm:hidden">Básicas</span>
                 <Badge variant="default">{basicTools.length}</Badge>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 Herramientas de uso general (menos de 20 BOB/hora)
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Herramienta</TableHead>
-                    <TableHead>Descripción</TableHead>
-                    <TableHead>Unidad</TableHead>
-                    <TableHead className="text-right">Precio Unitario</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {basicTools.map((tool) => (
-                    <TableRow key={tool.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{getToolIcon(tool.name)}</span>
-                          {tool.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">{tool.description}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{tool.unit}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-semibold text-green-600">
-                        {formatPrice(tool.unitPrice)}
-                      </TableCell>
+            <CardContent className="p-0 md:p-6">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[200px]">Herramienta</TableHead>
+                      <TableHead className="hidden md:table-cell">Descripción</TableHead>
+                      <TableHead className="hidden sm:table-cell">Unidad</TableHead>
+                      <TableHead className="text-right">Precio</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {basicTools.map((tool) => (
+                      <TableRow key={tool.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{getToolIcon(tool.name)}</span>
+                            {tool.name}
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-muted-foreground">{tool.description}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant="outline">{tool.unit}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold text-green-600">
+                          <div className="flex flex-col sm:hidden text-xs text-muted-foreground">
+                            <span>{tool.unit}</span>
+                          </div>
+                          {formatPrice(tool.unitPrice)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         )}
