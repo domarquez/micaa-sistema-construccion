@@ -64,6 +64,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### August 16, 2025: Enhanced User Interface and Notifications System ✓
+- **User Profile Enhancement**: Información del usuario expandida con tipo de usuario, rol, ubicación, fecha de último acceso
+- **Dynamic Permissions Display**: Lista de opciones disponibles según el rol del usuario (admin vs regular)
+- **Notification System**: Sistema de notificaciones completamente funcional con campana roja y conteo dinámico
+- **Interactive Notifications**: Panel de notificaciones con iconos específicos, marcado como leído y notificaciones dinámicas según rol
+- **Responsive Design**: Diseño optimizado para móviles y desktop en información de usuario y notificaciones
+- **Admin Features Display**: Notificaciones especiales para usuarios administrativos con funciones disponibles
+
 ### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
 - **MAJOR FIX**: Material price update system completely repaired and working correctly
 - **New API Route**: Created `/api/admin/update-material-price` POST route bypassing problematic PUT requests
