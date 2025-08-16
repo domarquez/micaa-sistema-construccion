@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { users, materials, activities, constructionPhases, materialCategories, customActivities, customActivityCompositions, laborCategories, tools } from '../shared/schema';
+import { users, materials, activities, constructionPhases, materialCategories, customActivities, customActivityCompositions, laborCategories, tools, userActivities, userActivityCompositions, activityCompositions } from '../shared/schema';
 import { eq, like, desc, asc, and } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -183,6 +183,144 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error('Activities fetch error:', error);
       res.status(500).json({ error: 'Failed to fetch activities' });
+    }
+  });
+
+  // Get activity compositions 
+  router.get('/activities/:id/compositions', async (req: Request, res: Response) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      console.log(`🔍 Getting compositions for activity ${activityId}`);
+      let compositions;
+
+      // Check if this is a custom activity (ID > 10000)
+      if (activityId > 10000) {
+        const realActivityId = activityId - 10000;
+        console.log(`🔧 Getting compositions for custom activity ${activityId} (real ID: ${realActivityId})`);
+        compositions = await db.select()
+          .from(userActivityCompositions)
+          .where(eq(userActivityCompositions.userActivityId, realActivityId));
+      } else {
+        console.log(`🔧 Getting compositions for original activity ${activityId}`);
+        compositions = await db.select()
+          .from(activityCompositions)
+          .where(eq(activityCompositions.activityId, activityId));
+      }
+
+      console.log(`📋 Found ${compositions.length} compositions for activity ${activityId}`);
+      res.json(compositions);
+    } catch (error) {
+      console.error('Activity compositions fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch activity compositions' });
+    }
+  });
+
+  // Get activity APU calculation
+  router.get('/activities/:id/apu-calculation', async (req: Request, res: Response) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      // Import APU calculator
+      const { calculateAPU } = await import('./apu-calculator');
+      const calculation = await calculateAPU(activityId);
+      
+      res.json(calculation);
+    } catch (error) {
+      console.error('APU calculation error:', error);
+      res.status(500).json({ error: 'Failed to calculate APU' });
+    }
+  });
+
+  // Duplicate activity for user customization
+  router.post('/activities/:id/duplicate', async (req: Request, res: Response) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      // Get user ID from auth token
+      let userId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          userId = decoded.userId;
+        } catch (error) {
+          return res.status(401).json({ error: 'Invalid authentication token' });
+        }
+      } else {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      // Get original activity
+      const [originalActivity] = await db.select().from(activities).where(eq(activities.id, activityId));
+      if (!originalActivity) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+
+      // Check if user already has this activity duplicated
+      const existingDuplicate = await db.select()
+        .from(userActivities)
+        .where(and(
+          eq(userActivities.userId, userId),
+          eq(userActivities.originalActivityId, activityId)
+        ));
+
+      if (existingDuplicate.length > 0) {
+        return res.status(400).json({ error: 'Activity already duplicated by this user' });
+      }
+
+      // Create user activity
+      const [userActivity] = await db.insert(userActivities).values({
+        userId,
+        originalActivityId: activityId,
+        originalActivityName: originalActivity.name,
+        customActivityName: `${originalActivity.name} (Personalizada)`,
+        phaseId: originalActivity.phaseId,
+        unit: originalActivity.unit,
+        description: originalActivity.description,
+        reason: 'Actividad duplicada para personalización'
+      }).returning();
+
+      // Get original activity compositions
+      const originalCompositions = await db.select()
+        .from(activityCompositions)
+        .where(eq(activityCompositions.activityId, activityId));
+
+      // Copy compositions to user activity
+      if (originalCompositions.length > 0) {
+        await db.insert(userActivityCompositions).values(
+          originalCompositions.map(comp => ({
+            userActivityId: userActivity.id,
+            materialId: comp.materialId,
+            laborId: comp.laborId,
+            toolId: comp.toolId,
+            description: comp.description,
+            unit: comp.unit,
+            quantity: comp.quantity,
+            unitCost: comp.unitCost,
+            type: comp.type
+          }))
+        );
+      }
+
+      res.json({
+        message: 'Activity duplicated successfully',
+        userActivityId: userActivity.id,
+        customActivityId: userActivity.id + 10000
+      });
+    } catch (error) {
+      console.error('Activity duplication error:', error);
+      res.status(500).json({ error: 'Failed to duplicate activity' });
     }
   });
 
