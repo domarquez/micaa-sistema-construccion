@@ -439,6 +439,7 @@ export async function registerRoutes(app: any) {
         const updated = await db.update(userMaterialPrices)
           .set({
             price: customPrice.toString(),
+            customMaterialName: `${material[0].name} (Personalizado)`,
             reason: reason || 'Precio personalizado actualizado',
             updatedAt: new Date()
           })
@@ -452,7 +453,7 @@ export async function registerRoutes(app: any) {
           .values({
             userId,
             originalMaterialName: material[0].name,
-            customMaterialName: material[0].name,
+            customMaterialName: `${material[0].name} (Personalizado)`,
             price: customPrice.toString(),
             unit: material[0].unit,
             reason: reason || 'Precio personalizado'

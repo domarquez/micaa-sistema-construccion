@@ -256,6 +256,8 @@ export const consultationMessages = pgTable("consultation_messages", {
   respondedAt: timestamp("responded_at"),
 });
 
+
+
 // Relations
 export const constructionPhasesRelations = relations(constructionPhases, ({ many }) => ({
   activities: many(activities),
