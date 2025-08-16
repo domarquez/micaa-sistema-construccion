@@ -6,19 +6,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, ArrowLeft, Plus } from "lucide-react";
 import { Link } from "wouter";
 import CustomActivityManagerDB from "@/components/custom-activity-manager-db";
-import ActivityCompositionEditor from "@/components/activity-composition-editor";
+import CustomActivityEditor from "@/components/custom-activity-editor";
 import { apiRequest } from "@/lib/queryClient";
 
 interface CustomActivity {
-  id: string;
-  originalActivityId?: number;
-  customName: string;
-  originalName?: string;
+  id: number;
+  userId: number;
+  name: string;
   unit: string;
   description?: string;
-  materials: any[];
-  labor: any[];
-  equipment: any[];
+  phaseId: number;
+  phase?: { id: number; name: string; };
   createdAt: string;
   updatedAt: string;
 }
@@ -47,34 +45,20 @@ export default function CustomActivities() {
     setEditingActivity(activity);
   };
 
-  const handleSaveActivity = (updatedActivity: CustomActivity) => {
-    // Update localStorage
-    const activities = JSON.parse(localStorage.getItem('userCustomActivities') || '[]');
-    const index = activities.findIndex((a: CustomActivity) => a.id === updatedActivity.id);
-    
-    if (index >= 0) {
-      activities[index] = updatedActivity;
-      localStorage.setItem('userCustomActivities', JSON.stringify(activities));
-    }
-    
-    setEditingActivity(null);
-  };
-
-  const handleCancelEdit = () => {
+  const handleBackFromEdit = () => {
     setEditingActivity(null);
   };
 
   const handleActivitySelect = (activity: CustomActivity) => {
     // For now, just show a message. Later can integrate with budget creation
-    alert(`Actividad "${activity.customName}" seleccionada. Funcionalidad de agregar a presupuesto próximamente.`);
+    alert(`Actividad "${activity.name}" seleccionada. Funcionalidad de agregar a presupuesto próximamente.`);
   };
 
   if (editingActivity) {
     return (
-      <ActivityCompositionEditor
+      <CustomActivityEditor
         activity={editingActivity}
-        onSave={handleSaveActivity}
-        onCancel={handleCancelEdit}
+        onBack={handleBackFromEdit}
       />
     );
   }
