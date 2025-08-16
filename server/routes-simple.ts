@@ -379,6 +379,66 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Custom Activities endpoints
+  router.get('/custom-activities', async (req: Request, res: Response) => {
+    try {
+      // Return empty array for now - custom activities will be implemented later
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch custom activities' });
+    }
+  });
+
+  router.post('/custom-activities', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const { name, unit, description, phaseId } = req.body;
+      
+      if (!name || !unit || !phaseId) {
+        return res.status(400).json({ message: "Nombre, unidad y fase son requeridos" });
+      }
+
+      // Create a new custom activity
+      const newActivity = {
+        id: Date.now(), // Temporary ID generation
+        name,
+        unit,
+        description: description || '',
+        phaseId: parseInt(phaseId),
+        isCustom: true,
+        userId: req.user.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // For now, just return success - in a full implementation this would save to database
+      res.json({
+        message: "Actividad personalizada creada exitosamente",
+        activity: newActivity
+      });
+    } catch (error) {
+      console.error('Create custom activity error:', error);
+      res.status(500).json({ message: "Error al crear la actividad personalizada" });
+    }
+  });
+
+  router.get('/user-activities', async (req: Request, res: Response) => {
+    try {
+      // Return empty array for now
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch user activities' });
+    }
+  });
+
+  router.get('/budgets', async (req: Request, res: Response) => {
+    try {
+      // Return empty array for now
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch budgets' });
+    }
+  });
+
   // Health check route
   router.get('/health', (req: Request, res: Response) => {
     res.json({ 
