@@ -220,8 +220,7 @@ export const priceSettings = pgTable("price_settings", {
   updatedBy: text("updated_by"),
 });
 
-export type PriceSettings = typeof priceSettings.$inferSelect;
-export type InsertPriceSettings = typeof priceSettings.$inferInsert;
+
 
 export const cityPriceFactors = pgTable("city_price_factors", {
   id: serial("id").primaryKey(),

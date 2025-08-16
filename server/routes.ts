@@ -1,6 +1,5 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { storage as dbStorage } from './storage';
 import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -10,8 +9,13 @@ interface CustomJwtPayload extends JwtPayload {
   userId: number;
 }
 
+// Extended request interface for authentication
+interface AuthRequest extends Request {
+  user?: any;
+}
+
 // Middleware de autenticación
-const requireAuth = async (req: Request & { user?: any }, res: Response, next: any) => {
+const requireAuth = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -119,19 +123,19 @@ export async function registerRoutes(app: any) {
       }
       
       // Build the query
-      let materialsQuery = db.select().from(materials);
-      
+      let materialsData;
       if (whereConditions.length > 0) {
-        materialsQuery = materialsQuery.where(whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions));
+        const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
+        materialsData = await db.select().from(materials).where(whereClause).limit(parseInt(limit as string));
+      } else {
+        materialsData = await db.select().from(materials).limit(parseInt(limit as string));
       }
-      
-      const materialsData = await materialsQuery.limit(parseInt(limit as string));
       
       // Get all categories
       const categories = await db.select().from(materialCategories).orderBy(asc(materialCategories.name));
       
       // Get user's custom prices if authenticated
-      let userCustomPrices = [];
+      let userCustomPrices: any[] = [];
       if (userId) {
         userCustomPrices = await db.select().from(userMaterialPrices).where(eq(userMaterialPrices.userId, userId));
           console.log('🔧 Found custom prices for user:', userId, 'count:', userCustomPrices.length);
@@ -143,7 +147,7 @@ export async function registerRoutes(app: any) {
       }
       
       // Combine materials with category information and create duplicates for custom pricing
-      let allMaterials = [];
+      let allMaterials: any[] = [];
       
       // Add original materials
       materialsData.forEach(material => {
@@ -239,26 +243,27 @@ export async function registerRoutes(app: any) {
       }
       
       // Build activities query
-      let activitiesQuery = db.select().from(activities);
-      
+      let activitiesData;
       if (whereConditions.length > 0) {
         const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
-        activitiesQuery = activitiesQuery.where(whereClause);
+        activitiesData = await db.select().from(activities).where(whereClause)
+          .limit(parseInt(limit as string))
+          .offset(parseInt(offset as string));
+      } else {
+        activitiesData = await db.select().from(activities)
+          .limit(parseInt(limit as string))
+          .offset(parseInt(offset as string));
       }
-      
-      const activitiesData = await activitiesQuery
-        .limit(parseInt(limit as string))
-        .offset(parseInt(offset as string));
       
       // Get total count for pagination
-      let countQuery = db.select({ count: sql`count(*)`.as('count') }).from(activities);
-      
+      let totalCountResult;
       if (whereConditions.length > 0) {
         const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
-        countQuery = countQuery.where(whereClause);
+        totalCountResult = await db.select({ count: sql`count(*)`.as('count') }).from(activities).where(whereClause);
+      } else {
+        totalCountResult = await db.select({ count: sql`count(*)`.as('count') }).from(activities);
       }
       
-      const totalCountResult = await countQuery;
       const totalCount = Number(totalCountResult[0]?.count) || 0;
       
       // Get all phases
