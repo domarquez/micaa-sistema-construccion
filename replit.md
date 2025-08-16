@@ -64,13 +64,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### August 16, 2025: Enhanced User Interface and Notifications System ✓
-- **User Profile Enhancement**: Información del usuario expandida con tipo de usuario, rol, ubicación, fecha de último acceso
-- **Dynamic Permissions Display**: Lista de opciones disponibles según el rol del usuario (admin vs regular)
-- **Notification System**: Sistema de notificaciones completamente funcional con campana roja y conteo dinámico
-- **Interactive Notifications**: Panel de notificaciones con iconos específicos, marcado como leído y notificaciones dinámicas según rol
-- **Responsive Design**: Diseño optimizado para móviles y desktop en información de usuario y notificaciones
-- **Admin Features Display**: Notificaciones especiales para usuarios administrativos con funciones disponibles
+### August 16, 2025: Material Personalization System Complete & Activities APU Fixed ✓
+- **Material Duplication Working**: Sistema de precios personalizados funcionando con materiales duplicados (verde para personalizados, blanco para originales)
+- **JWT Authentication Fixed**: Corrección del import de JWT para validación correcta de tokens en el backend
+- **Activity Interface Clean**: Eliminadas referencias a "insucons.com" y opción "Nueva Actividad" removida 
+- **APU Calculator Enhanced**: Sistema de cálculo boliviano completo con cargas sociales (55%), IVA (14.94%), gastos generales (8%), utilidad (15%) e IT (3.09%)
+- **Activity Duplication Ready**: Preparado para implementar sistema de duplicación igual que materiales (próximo paso)
+- **User Authentication**: Token correctamente enviado desde frontend a backend para mostrar precios personalizados
 
 ### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
 - **MAJOR FIX**: Material price update system completely repaired and working correctly

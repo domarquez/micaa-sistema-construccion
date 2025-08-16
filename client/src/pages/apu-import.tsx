@@ -177,7 +177,7 @@ export default function APUImport() {
           <CardContent>
             <div className="space-y-4">
               <p className="text-gray-700">
-                Haz clic en el botón para importar TODAS las composiciones de actividades desde insucons.com.
+                Haz clic en el botón para importar TODAS las composiciones de actividades del sistema.
                 Este proceso importará todos los grupos y todos los APUs disponibles.
               </p>
               

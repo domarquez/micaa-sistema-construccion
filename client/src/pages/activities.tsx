@@ -90,12 +90,8 @@ export default function Activities() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Actividades de Construcción con APU</h1>
-          <p className="text-gray-600 mt-2">Actividades con análisis de precios unitarios importados desde insucons.com</p>
+          <p className="text-gray-600 mt-2">Actividades con análisis de precios unitarios para proyectos de construcción</p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Actividad
-        </Button>
       </div>
 
       <div className="mb-6 space-y-4">

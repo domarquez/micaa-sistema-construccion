@@ -6,7 +6,28 @@ export interface APUCalculationResult {
   activityId: number;
   activityName: string;
   unit: string;
-  totalCost: number;
+  // Totales básicos
+  materialsTotal: number;
+  laborTotal: number;
+  equipmentTotal: number;
+  // Totales con cargas
+  laborWithCharges: number;
+  equipmentWithTools: number;
+  // Costos adicionales
+  administrativeCost: number;
+  utilityCost: number;
+  taxCost: number;
+  totalUnitPrice: number;
+  // Desglose detallado
+  breakdown: {
+    laborCharges: number;
+    laborIVA: number;
+    tools: number;
+    administrativePercentage: number;
+    utilityPercentage: number;
+    taxPercentage: number;
+  };
+  // Datos detallados
   materials: {
     id: number;
     name: string;
@@ -23,7 +44,7 @@ export interface APUCalculationResult {
     unitCost: number;
     subtotal: number;
   }[];
-  tools: {
+  equipment: {
     id: number;
     name: string;
     unit: string;
@@ -31,11 +52,6 @@ export interface APUCalculationResult {
     unitCost: number;
     subtotal: number;
   }[];
-  breakdown: {
-    materialsCost: number;
-    laborCost: number;
-    toolsCost: number;
-  };
 }
 
 export async function calculateAPU(activityId: number): Promise<APUCalculationResult> {
@@ -51,15 +67,15 @@ export async function calculateAPU(activityId: number): Promise<APUCalculationRe
 
   const materialsData = [];
   const laborData = [];
-  const toolsData = [];
+  const equipmentData = [];
 
   let materialsCost = 0;
   let laborCost = 0;
-  let toolsCost = 0;
+  let equipmentCost = 0;
 
   for (const comp of compositions) {
-    const quantity = parseFloat(comp.quantity);
-    const unitCost = parseFloat(comp.unitCost);
+    const quantity = parseFloat(comp.quantity) || 0;
+    const unitCost = parseFloat(comp.unitCost) || 0;
     const subtotal = quantity * unitCost;
 
     if (comp.type === 'material' && comp.materialId) {
@@ -88,10 +104,10 @@ export async function calculateAPU(activityId: number): Promise<APUCalculationRe
         });
         laborCost += subtotal;
       }
-    } else if (comp.type === 'tool' && comp.toolId) {
+    } else if (comp.type === 'equipment' && comp.toolId) {
       const [tool] = await db.select().from(tools).where(eq(tools.id, comp.toolId));
       if (tool) {
-        toolsData.push({
+        equipmentData.push({
           id: tool.id,
           name: tool.name,
           unit: comp.unit,
@@ -99,25 +115,56 @@ export async function calculateAPU(activityId: number): Promise<APUCalculationRe
           unitCost,
           subtotal
         });
-        toolsCost += subtotal;
+        equipmentCost += subtotal;
       }
     }
   }
 
-  const totalCost = materialsCost + laborCost + toolsCost;
+  // Cálculos según normativa boliviana
+  const laborCharges = laborCost * 0.55; // 55% cargas sociales
+  const laborWithCharges = laborCost + laborCharges;
+  const laborIVA = laborWithCharges * 0.1494; // 14.94% IVA de M.O.
+  const laborFinal = laborWithCharges + laborIVA;
+  
+  const tools = equipmentCost * 0.05; // 5% herramientas
+  const equipmentWithTools = equipmentCost + tools;
+  
+  const subtotalCost = materialsCost + laborFinal + equipmentWithTools;
+  
+  const administrativeCost = subtotalCost * 0.08; // 8% gastos generales
+  const utilityCost = (subtotalCost + administrativeCost) * 0.15; // 15% utilidad
+  const taxCost = (subtotalCost + administrativeCost + utilityCost) * 0.0309; // 3.09% IT
+  
+  const totalUnitPrice = subtotalCost + administrativeCost + utilityCost + taxCost;
 
   return {
     activityId: activity.id,
     activityName: activity.name,
     unit: activity.unit,
-    totalCost,
+    // Totales básicos
+    materialsTotal: materialsCost,
+    laborTotal: laborCost,
+    equipmentTotal: equipmentCost,
+    // Totales con cargas
+    laborWithCharges: laborFinal,
+    equipmentWithTools,
+    // Costos adicionales
+    administrativeCost,
+    utilityCost,
+    taxCost,
+    totalUnitPrice,
+    // Desglose detallado
+    breakdown: {
+      laborCharges,
+      laborIVA,
+      tools,
+      administrativePercentage: 8.0,
+      utilityPercentage: 15.0,
+      taxPercentage: 3.09
+    },
+    // Datos detallados
     materials: materialsData,
     labor: laborData,
-    tools: toolsData,
-    breakdown: {
-      materialsCost,
-      laborCost,
-      toolsCost
-    }
+    equipment: equipmentData
   };
 }
