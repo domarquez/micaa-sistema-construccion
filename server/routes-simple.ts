@@ -3,10 +3,14 @@ import { db } from './db';
 import { users, materials, activities, constructionPhases, materialCategories } from '../shared/schema';
 import { eq, like, desc, asc } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
   userId: number;
+  username: string;
+  email: string;
+  role: string;
 }
 
 // Extended request interface for authentication
@@ -189,6 +193,189 @@ export async function registerRoutes(app: any) {
       res.json(phases);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch construction phases' });
+    }
+  });
+
+  // Authentication routes
+  router.post('/auth/login', async (req: Request, res: Response) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ message: "Usuario y contraseña son requeridos" });
+      }
+
+      // Find user by username
+      const userResults = await db.select().from(users).where(eq(users.username, username)).limit(1);
+      
+      if (userResults.length === 0) {
+        return res.status(401).json({ message: "Credenciales incorrectas" });
+      }
+
+      const user = userResults[0];
+
+      // Check if user is active
+      if (!user.isActive) {
+        return res.status(401).json({ message: "Cuenta desactivada. Contacte al administrador" });
+      }
+
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Credenciales incorrectas" });
+      }
+
+      // Generate token
+      const token = jwt.sign(
+        { 
+          userId: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role 
+        },
+        process.env.JWT_SECRET || 'micaa-secret-key',
+        { expiresIn: '7d' }
+      );
+
+      // Update last login (optional - can be skipped for simplicity)
+      try {
+        await db.update(users)
+          .set({ lastLogin: new Date() })
+          .where(eq(users.id, user.id));
+      } catch (updateError) {
+        // Don't fail login if update fails
+        console.warn('Failed to update last login:', updateError);
+      }
+
+      res.json({
+        message: "Login exitoso",
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          userType: user.userType
+        }
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  router.get('/auth/me', async (req: Request, res: Response) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "Token no proporcionado" });
+      }
+
+      const token = authHeader.substring(7);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as CustomJwtPayload;
+      
+      const userResults = await db.select().from(users).where(eq(users.id, decoded.userId)).limit(1);
+      
+      if (userResults.length === 0) {
+        return res.status(401).json({ message: "Usuario no encontrado" });
+      }
+
+      const user = userResults[0];
+      
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        userType: user.userType
+      });
+    } catch (error) {
+      res.status(401).json({ message: "Token inválido" });
+    }
+  });
+
+  // Public endpoints for frontend
+  router.get('/public/materials', async (req: Request, res: Response) => {
+    try {
+      const materialsData = await db.select().from(materials).limit(20);
+      const categories = await db.select().from(materialCategories);
+      
+      const materialsWithCategories = materialsData.map(material => {
+        const category = categories.find(c => c.id === material.categoryId);
+        return {
+          ...material,
+          category: category || { id: 0, name: 'Sin Categoría' }
+        };
+      });
+      
+      res.json(materialsWithCategories);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch public materials' });
+    }
+  });
+
+  router.get('/public/material-categories', async (req: Request, res: Response) => {
+    try {
+      const categories = await db.select().from(materialCategories).limit(10);
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch public categories' });
+    }
+  });
+
+  router.get('/public/suppliers', async (req: Request, res: Response) => {
+    try {
+      // Return empty array for now since suppliers table might not be populated
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch suppliers' });
+    }
+  });
+
+  router.get('/public/dual-advertisements', async (req: Request, res: Response) => {
+    try {
+      // Return empty array for now
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch advertisements' });
+    }
+  });
+
+  router.get('/statistics', async (req: Request, res: Response) => {
+    try {
+      // Basic statistics
+      const materialsCount = await db.select().from(materials);
+      const activitiesCount = await db.select().from(activities);
+      const usersCount = await db.select().from(users);
+      
+      res.json({
+        totalMaterials: materialsCount.length,
+        totalActivities: activitiesCount.length,
+        totalUsers: usersCount.length,
+        totalSuppliers: 0
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch statistics' });
+    }
+  });
+
+  router.get('/growth-data', async (req: Request, res: Response) => {
+    try {
+      // Return mock growth data for charts
+      res.json([
+        { month: 'Ene', users: 120, projects: 45 },
+        { month: 'Feb', users: 150, projects: 52 },
+        { month: 'Mar', users: 180, projects: 61 },
+        { month: 'Abr', users: 210, projects: 73 },
+        { month: 'May', users: 240, projects: 84 },
+        { month: 'Jun', users: 280, projects: 92 }
+      ]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch growth data' });
     }
   });
 
