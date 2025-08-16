@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { db } from './db';
 import { storage as dbStorage } from './storage';
-import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices } from '../shared/schema';
+import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
@@ -213,6 +213,20 @@ export async function registerRoutes(app: any) {
     try {
       const { search, phase, limit = '100', offset = '0' } = req.query;
       
+      // Try to get user ID from auth token (optional)
+      let userId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          userId = decoded.userId;
+          console.log('🔍 Activities request with user ID:', userId);
+        } catch (error) {
+          console.log('⚠️ Activities request without valid auth');
+        }
+      }
+      
       // Build where conditions
       let whereConditions = [];
       
@@ -251,13 +265,60 @@ export async function registerRoutes(app: any) {
       const phases = await db.select().from(constructionPhases);
       
       // Combine activities with phase information
-      const activitiesWithPhases = activitiesData.map(activity => {
+      let activitiesWithPhases = activitiesData.map(activity => {
         const phase = phases.find(p => p.id === activity.phaseId);
         return {
           ...activity,
-          phase: phase || { id: 0, name: 'Sin Fase', description: '' }
+          phase: phase || { id: 0, name: 'Sin Fase', description: '' },
+          isOriginal: true,
+          hasCustomActivity: false
         };
       });
+
+      // If user is authenticated, get their custom activities and merge them
+      if (userId) {
+        const userCustomActivities = await db.select({
+          id: userActivities.id,
+          originalActivityId: userActivities.originalActivityId,
+          customActivityName: userActivities.customActivityName,
+          phaseId: userActivities.phaseId,
+          unit: userActivities.unit,
+          description: userActivities.description,
+        })
+          .from(userActivities)
+          .where(eq(userActivities.userId, userId));
+
+        console.log(`🔧 Found ${userCustomActivities.length} custom activities for user ${userId}`);
+
+        // Add custom activities to the results
+        const customActivitiesFormatted = userCustomActivities.map(customActivity => {
+          const phase = phases.find(p => p.id === customActivity.phaseId);
+          return {
+            id: customActivity.id + 10000, // Use a different ID range to avoid conflicts
+            phaseId: customActivity.phaseId,
+            name: customActivity.customActivityName,
+            unit: customActivity.unit,
+            description: customActivity.description,
+            unitPrice: "0",
+            phase: phase || { id: 0, name: 'Sin Fase', description: '' },
+            isOriginal: false,
+            hasCustomActivity: true,
+            originalActivityId: customActivity.originalActivityId
+          };
+        });
+
+        // Mark original activities that have custom versions
+        activitiesWithPhases = activitiesWithPhases.map(activity => {
+          const hasCustom = userCustomActivities.some(custom => custom.originalActivityId === activity.id);
+          return {
+            ...activity,
+            hasCustomActivity: hasCustom
+          };
+        });
+
+        // Merge original and custom activities
+        activitiesWithPhases = [...activitiesWithPhases, ...customActivitiesFormatted];
+      }
       
       res.json({
         activities: activitiesWithPhases,
@@ -307,6 +368,94 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error('APU calculation error:', error);
       res.status(500).json({ error: 'Failed to calculate APU' });
+    }
+  });
+
+  // Duplicate activity for user customization
+  router.post('/activities/:id/duplicate', async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      // Get user ID from auth token
+      let userId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          userId = decoded.userId;
+        } catch (error) {
+          return res.status(401).json({ error: 'Invalid authentication token' });
+        }
+      } else {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      // Get original activity
+      const [originalActivity] = await db.select().from(activities).where(eq(activities.id, activityId));
+      if (!originalActivity) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+
+      // Check if user already has this activity duplicated
+      const existingDuplicate = await db.select()
+        .from(userActivities)
+        .where(and(
+          eq(userActivities.userId, userId),
+          eq(userActivities.originalActivityId, activityId)
+        ));
+
+      if (existingDuplicate.length > 0) {
+        return res.status(400).json({ error: 'Activity already duplicated by this user' });
+      }
+
+      // Create user activity
+      const [userActivity] = await db.insert(userActivities).values({
+        userId,
+        originalActivityId: activityId,
+        originalActivityName: originalActivity.name,
+        customActivityName: `${originalActivity.name} (Personalizada)`,
+        phaseId: originalActivity.phaseId,
+        unit: originalActivity.unit,
+        description: originalActivity.description,
+        reason: 'Actividad duplicada para personalización'
+      }).returning();
+
+      // Get original activity compositions
+      const originalCompositions = await db.select()
+        .from(activityCompositions)
+        .where(eq(activityCompositions.activityId, activityId));
+
+      // Duplicate compositions for user activity
+      if (originalCompositions.length > 0) {
+        const userCompositions = originalCompositions.map(comp => ({
+          userActivityId: userActivity.id,
+          materialId: comp.materialId,
+          laborId: comp.laborId,
+          toolId: comp.toolId,
+          description: comp.description,
+          unit: comp.unit,
+          quantity: comp.quantity,
+          unitCost: comp.unitCost,
+          type: comp.type
+        }));
+
+        await db.insert(userActivityCompositions).values(userCompositions);
+      }
+
+      console.log(`✅ Activity ${activityId} duplicated for user ${userId} as user activity ${userActivity.id}`);
+      
+      res.json({
+        success: true,
+        userActivity,
+        message: 'Activity duplicated successfully'
+      });
+    } catch (error) {
+      console.error('Activity duplication error:', error);
+      res.status(500).json({ error: 'Failed to duplicate activity' });
     }
   });
 

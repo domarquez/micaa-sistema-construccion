@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Plus, Search, Building2, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Plus, Search, Building2, Eye, ChevronLeft, ChevronRight, Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,10 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ActivityDetailDialog from "@/components/activity-detail-dialog";
 import { formatCurrency } from "@/lib/utils";
-import type { ActivityWithPhase } from "@shared/schema";
+import { queryClient, getQueryFn, apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
+import type { ActivityWithPhase, ActivityWithCustomData } from "@shared/schema";
 
 interface ActivitiesResponse {
-  activities: ActivityWithPhase[];
+  activities: ActivityWithCustomData[];
   totalCount: number;
   currentPage: number;
   totalPages: number;
@@ -25,7 +28,11 @@ export default function Activities() {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(50);
 
-  const { data: activitiesResponse, isLoading } = useQuery<ActivitiesResponse>({
+  const [customizingActivity, setCustomizingActivity] = useState<ActivityWithCustomData | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const { data: activitiesResponse, isLoading, refetch: refetchActivities } = useQuery<ActivitiesResponse>({
     queryKey: ["/api/activities", { 
       search: searchTerm, 
       phase: selectedPhase, 
@@ -33,20 +40,8 @@ export default function Activities() {
       limit: limit,
       withCompositions: true 
     }],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        withCompositions: 'true',
-        limit: limit.toString(),
-        offset: ((currentPage - 1) * limit).toString()
-      });
-      
-      if (searchTerm) params.append('search', searchTerm);
-      if (selectedPhase) params.append('phase', selectedPhase);
-      
-      const response = await fetch(`/api/activities?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch activities');
-      return response.json();
-    },
+    queryFn: getQueryFn({ on401: "throw" }),
+    enabled: !!user, // Solo hacer la query si hay usuario autenticado
   });
 
   const { data: phases } = useQuery({
@@ -55,6 +50,29 @@ export default function Activities() {
       const response = await fetch("/api/construction-phases");
       if (!response.ok) throw new Error('Failed to fetch phases');
       return response.json();
+    },
+  });
+
+  // Mutation para duplicar actividad
+  const duplicateActivityMutation = useMutation({
+    mutationFn: async (activityId: number) => {
+      const response = await apiRequest('POST', `/api/activities/${activityId}/duplicate`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
+      toast({
+        title: "Actividad duplicada",
+        description: "La actividad ha sido duplicada exitosamente. Ahora puedes personalizarla.",
+      });
+      refetchActivities();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "No se pudo duplicar la actividad.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -83,7 +101,7 @@ export default function Activities() {
     }
     acc[phaseName].push(activity);
     return acc;
-  }, {} as Record<string, ActivityWithPhase[]>);
+  }, {} as Record<string, ActivityWithCustomData[]>);
 
   return (
     <div className="container mx-auto p-6">
@@ -183,7 +201,9 @@ export default function Activities() {
                   {phaseActivities.map((activity) => (
                     <div
                       key={activity.id}
-                      className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                      className={`flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors ${
+                        activity.hasCustomActivity && !activity.isOriginal ? 'bg-green-50 border-green-200' : ''
+                      }`}
                     >
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-900">
@@ -191,6 +211,9 @@ export default function Activities() {
                             .replace(/^ANÁLISIS DE PRECIOS UNITARIOS \(APU\) DE:\s*/i, '')
                             .replace(/^APU DE:\s*/i, '')
                           }
+                          {activity.hasCustomActivity && !activity.isOriginal && (
+                            <span className="text-green-600 text-sm ml-2">(Personalizada)</span>
+                          )}
                         </h4>
                         <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
                         <div className="flex items-center gap-4 mt-2">
@@ -205,20 +228,35 @@ export default function Activities() {
                         </div>
                       </div>
                       
-                      {/* Botón Ver APU - ahora todas las actividades mostradas tienen composiciones */}
-                      <ActivityDetailDialog
-                        activityId={activity.id}
-                        activityName={activity.name
-                          .replace(/^ANÁLISIS DE PRECIOS UNITARIOS \(APU\) DE:\s*/i, '')
-                          .replace(/^APU DE:\s*/i, '')
-                        }
-                        unitPrice={activity.unitPrice || "0"}
-                      >
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
-                          Ver APU
-                        </Button>
-                      </ActivityDetailDialog>
+                      <div className="flex gap-2">
+                        {/* Botón Duplicar - solo mostrar para actividades originales y si el usuario está autenticado */}
+                        {user && activity.isOriginal !== false && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => duplicateActivityMutation.mutate(activity.id)}
+                            disabled={duplicateActivityMutation.isPending}
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Duplicar
+                          </Button>
+                        )}
+                        
+                        {/* Botón Ver APU */}
+                        <ActivityDetailDialog
+                          activityId={activity.id}
+                          activityName={activity.name
+                            .replace(/^ANÁLISIS DE PRECIOS UNITARIOS \(APU\) DE:\s*/i, '')
+                            .replace(/^APU DE:\s*/i, '')
+                          }
+                          unitPrice={activity.unitPrice || "0"}
+                        >
+                          <Button variant="outline" size="sm">
+                            <Eye className="h-4 w-4 mr-2" />
+                            Ver APU
+                          </Button>
+                        </ActivityDetailDialog>
+                      </div>
                     </div>
                   ))}
                 </div>

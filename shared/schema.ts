@@ -69,6 +69,37 @@ export const userMaterialPrices = pgTable("user_material_prices", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Actividades personalizadas por usuario
+export const userActivities = pgTable("user_activities", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  originalActivityId: integer("original_activity_id").notNull().references(() => activities.id),
+  originalActivityName: text("original_activity_name").notNull(),
+  customActivityName: text("custom_activity_name").notNull(),
+  phaseId: integer("phase_id").notNull().references(() => constructionPhases.id),
+  unit: text("unit").notNull(),
+  description: text("description"),
+  reason: text("reason"), // Motivo de la personalización
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Composiciones personalizadas para actividades de usuario
+export const userActivityCompositions = pgTable("user_activity_compositions", {
+  id: serial("id").primaryKey(),
+  userActivityId: integer("user_activity_id").notNull().references(() => userActivities.id),
+  materialId: integer("material_id").references(() => materials.id),
+  laborId: integer("labor_id").references(() => laborCategories.id),
+  toolId: integer("tool_id").references(() => tools.id),
+  description: text("description").notNull(),
+  unit: text("unit").notNull(),
+  quantity: decimal("quantity", { precision: 12, scale: 4 }).notNull(),
+  unitCost: decimal("unit_cost", { precision: 12, scale: 4 }).notNull(),
+  type: text("type").notNull(), // 'material', 'labor', 'equipment'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Sistema de publicidad para empresas
 export const companyAdvertisements = pgTable("company_advertisements", {
   id: serial("id").primaryKey(),
@@ -500,6 +531,21 @@ export const insertUserMaterialPriceSchema = createInsertSchema(userMaterialPric
   price: z.union([z.string(), z.number()]).transform(val => String(val)),
 });
 
+export const insertUserActivitySchema = createInsertSchema(userActivities).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserActivityCompositionSchema = createInsertSchema(userActivityCompositions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  quantity: z.union([z.string(), z.number()]).transform(val => String(val)),
+  unitCost: z.union([z.string(), z.number()]).transform(val => String(val)),
+});
+
 export const insertCompanyAdvertisementSchema = createInsertSchema(companyAdvertisements).omit({
   id: true,
   createdAt: true,
@@ -636,6 +682,18 @@ export type ActivityCompositionWithDetails = ActivityComposition & {
 
 export type ConsultationMessage = typeof consultationMessages.$inferSelect;
 export type InsertConsultationMessage = z.infer<typeof insertConsultationMessageSchema>;
+
+export type UserActivity = typeof userActivities.$inferSelect;
+export type InsertUserActivity = z.infer<typeof insertUserActivitySchema>;
+export type UserActivityComposition = typeof userActivityCompositions.$inferSelect;
+export type InsertUserActivityComposition = z.infer<typeof insertUserActivityCompositionSchema>;
+
+// Tipos extendidos para actividades
+export interface ActivityWithCustomData extends ActivityWithPhase {
+  isOriginal?: boolean;
+  hasCustomActivity?: boolean;
+  customActivity?: UserActivity;
+}
 
 export type ConsultationMessageWithUser = ConsultationMessage & {
   user?: User;
