@@ -452,6 +452,7 @@ export async function registerRoutes(app: any) {
         const newCustomPrice = await db.insert(userMaterialPrices)
           .values({
             userId,
+            materialId: materialId, // Agregar material_id
             originalMaterialName: material[0].name,
             customMaterialName: `${material[0].name} (Personalizado)`,
             price: customPrice.toString(),

@@ -59,6 +59,7 @@ export const materials = pgTable("materials", {
 export const userMaterialPrices = pgTable("user_material_prices", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  materialId: integer("material_id").references(() => materials.id), // Referencia opcional al material original
   originalMaterialName: text("original_material_name").notNull(), // Nombre original del material
   customMaterialName: text("custom_material_name").notNull(), // Nombre personalizado por el usuario
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
