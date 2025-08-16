@@ -283,7 +283,9 @@ export default function Materials() {
             <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
               Los precios que modifiques aquí son privados y solo los verás en tus proyectos. 
               Otros usuarios seguirán viendo los precios originales del sistema. 
-              Los materiales con precios personalizados aparecen marcados con <User className="w-4 h-4 inline mx-1" />.
+              Los materiales con precios personalizados aparecen marcados con <User className="w-4 h-4 inline mx-1" /> y tienen 
+              <span className="bg-blue-50 px-2 py-1 rounded-md border border-blue-200 mx-1">fondo azul claro</span> 
+              para indicar que son precios modificados.
             </p>
           </div>
         </div>
@@ -355,12 +357,12 @@ export default function Materials() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Material</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Precio Unitario</TableHead>
-                  <TableHead>Unidad</TableHead>
-                  <TableHead>Última Actualización</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead className="min-w-[200px]">Material</TableHead>
+                  <TableHead className="min-w-[120px]">Categoría</TableHead>
+                  <TableHead className="min-w-[130px]">Precio Unitario</TableHead>
+                  <TableHead className="min-w-[80px]">Unidad</TableHead>
+                  <TableHead className="min-w-[140px] hidden sm:table-cell">Última Actualización</TableHead>
+                  <TableHead className="text-right min-w-[120px]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -380,9 +382,9 @@ export default function Materials() {
                         <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                         <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                         <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                        <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-20" /></TableCell>
                         <TableCell>
-                          <div className="flex justify-end space-x-2">
+                          <div className="flex justify-end space-x-1 sm:space-x-2">
                             <Skeleton className="w-8 h-8 rounded" />
                             <Skeleton className="w-8 h-8 rounded" />
                           </div>
@@ -394,7 +396,10 @@ export default function Materials() {
                   materials.map((material) => {
                     const IconComponent = getIconForCategory(material.category.name);
                     return (
-                      <TableRow key={material.id} className="hover:bg-gray-50">
+                      <TableRow 
+                        key={material.id} 
+                        className={`hover:bg-gray-50 ${material.hasCustomPrice ? 'bg-blue-50 border-l-4 border-blue-300' : ''}`}
+                      >
                         <TableCell>
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -424,7 +429,7 @@ export default function Materials() {
                             </span>
                             {material.hasCustomPrice && material.customPrice && (
                               <>
-                                <span className="text-blue-600 font-bold">
+                                <span className="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-md border border-blue-200">
                                   {formatCurrency(Number(material.customPrice.customPrice))}
                                 </span>
                                 <User className="w-4 h-4 text-blue-600" />
@@ -435,11 +440,11 @@ export default function Materials() {
                         <TableCell className="text-gray-500">
                           {material.unit}
                         </TableCell>
-                        <TableCell className="text-gray-500">
+                        <TableCell className="text-gray-500 hidden sm:table-cell">
                           {formatRelativeTime(material.lastUpdated!)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex justify-end space-x-2">
+                          <div className="flex justify-end space-x-1 sm:space-x-2">
                             {material.hasCustomPrice ? (
                               <Button
                                 variant="ghost"
