@@ -77,6 +77,7 @@ export default function Materials() {
       }
     ],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: !!user, // Solo hacer la query si hay usuario autenticado
   });
 
   // Debounced search

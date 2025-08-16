@@ -97,12 +97,15 @@ export async function registerRoutes(app: any) {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         try {
           const token = authHeader.substring(7);
+          console.log('🔑 Token received:', token.substring(0, 20) + '...');
           const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
           userId = decoded.userId;
           console.log('🔍 Materials request with user ID:', userId);
         } catch (error) {
-          console.log('⚠️ Materials request without valid auth');
+          console.log('⚠️ Token validation failed:', error instanceof Error ? error.message : error);
         }
+      } else {
+        console.log('⚠️ No Authorization header found');
       }
       
       // Build where conditions
