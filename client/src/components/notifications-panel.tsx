@@ -1,59 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, X, Check, AlertTriangle, Info, CheckCircle } from "lucide-react";
+import { Bell, X, Check, AlertTriangle, Info, CheckCircle, Settings, Users, TrendingUp } from "lucide-react";
 import { formatRelativeTime } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Notification {
   id: string;
-  type: "info" | "warning" | "success" | "error";
+  type: "info" | "warning" | "success" | "error" | "admin";
   title: string;
   message: string;
   timestamp: Date;
   read: boolean;
 }
 
+// Global notifications store (simplified for demo)
+let globalNotifications: Notification[] = [
+  {
+    id: "1",
+    type: "success",
+    title: "Sistema de mano de obra actualizado",
+    message: "Los precios de mano de obra se han actualizado correctamente. Todas las categorías están disponibles para edición.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 15),
+    read: false
+  },
+  {
+    id: "2", 
+    type: "info",
+    title: "Panel administrativo disponible",
+    message: "Accede a todas las funciones administrativas: gestión de usuarios, precios, materiales y herramientas",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1),
+    read: false
+  }
+];
+
+export function NotificationsBadge() {
+  const unreadCount = globalNotifications.filter(n => !n.read).length;
+  
+  if (unreadCount === 0) return null;
+  
+  return (
+    <span className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+      {unreadCount}
+    </span>
+  );
+}
+
 export function NotificationsPanel() {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      type: "info",
-      title: "Sistema actualizado",
-      message: "Nueva versión del sistema disponible con mejoras en el cálculo de APUs",
-      timestamp: new Date(Date.now() - 1000 * 60 * 30),
-      read: false
-    },
-    {
-      id: "2", 
-      type: "success",
-      title: "Presupuesto aprobado",
-      message: "El presupuesto del Proyecto Santa Cruz ha sido aprobado",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-      read: false
-    },
-    {
-      id: "3",
-      type: "warning",
-      title: "Precios actualizados",
-      message: "Los precios de materiales han sido actualizados. Revise sus presupuestos activos",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-      read: true
-    }
-  ]);
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>(globalNotifications);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
+    const updatedNotifications = notifications.map(n => n.id === id ? { ...n, read: true } : n);
+    setNotifications(updatedNotifications);
+    globalNotifications = updatedNotifications; // Update global store
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(n => ({ ...n, read: true }))
-    );
+    const updatedNotifications = notifications.map(n => ({ ...n, read: true }));
+    setNotifications(updatedNotifications);
+    globalNotifications = updatedNotifications; // Update global store
   };
 
   const getIcon = (type: string) => {
@@ -61,9 +70,30 @@ export function NotificationsPanel() {
       case "success": return <CheckCircle className="w-4 h-4 text-green-600" />;
       case "warning": return <AlertTriangle className="w-4 h-4 text-yellow-600" />;
       case "error": return <X className="w-4 h-4 text-red-600" />;
+      case "admin": return <Settings className="w-4 h-4 text-purple-600" />;
       default: return <Info className="w-4 h-4 text-blue-600" />;
     }
   };
+
+  // Dynamic notification system based on user role
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      // Admin-specific notifications
+      const hasAdminNotifications = globalNotifications.some(n => n.id === "admin-features");
+      if (!hasAdminNotifications) {
+        const newNotification = {
+          id: "admin-features",
+          type: "admin" as const,
+          title: "Funciones administrativas activas",
+          message: "Tienes acceso completo al panel de administración, gestión de usuarios, precios y configuraciones del sistema",
+          timestamp: new Date(),
+          read: false
+        };
+        globalNotifications = [newNotification, ...globalNotifications];
+        setNotifications(globalNotifications);
+      }
+    }
+  }, [user]);
 
   return (
     <Card className="w-80">

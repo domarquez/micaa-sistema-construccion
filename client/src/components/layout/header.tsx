@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Bell, User, Construction, LogOut, Mail } from "lucide-react";
+import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ContactForm } from "@/components/contact-form";
 import { MicaaLogo } from "@/components/micaa-logo";
+import { NotificationsPanel, NotificationsBadge } from "@/components/notifications-panel";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 
 export default function AppHeader() {
   const { user, logout } = useAuth();
@@ -25,6 +28,23 @@ export default function AppHeader() {
       return user.username.slice(0, 2).toUpperCase();
     }
     return "U";
+  };
+
+  const getUserTypeLabel = (userType: string) => {
+    switch (userType) {
+      case 'architect': return 'Arquitecto';
+      case 'constructor': return 'Constructor';
+      case 'supplier': return 'Proveedor';
+      default: return 'Usuario';
+    }
+  };
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case 'admin': return 'Administrador';
+      case 'user': return 'Usuario';
+      default: return role;
+    }
   };
 
   return (
@@ -48,12 +68,17 @@ export default function AppHeader() {
             className="hidden lg:flex"
           />
           
-          <Button variant="ghost" size="icon" className="relative h-8 w-8 md:h-10 md:w-10">
-            <Bell className="w-4 h-4 md:w-5 md:h-5" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-              3
-            </span>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative h-8 w-8 md:h-10 md:w-10">
+                <Bell className="w-4 h-4 md:w-5 md:h-5" />
+                <NotificationsBadge />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+              <NotificationsPanel />
+            </PopoverContent>
+          </Popover>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -66,23 +91,69 @@ export default function AppHeader() {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuContent className="w-72" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {user?.firstName && user?.lastName 
-                      ? `${user.firstName} ${user.lastName}`
-                      : user?.username
-                    }
-                  </p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user?.email}
-                  </p>
-                  {user?.role === 'admin' && (
-                    <p className="text-xs leading-none text-blue-600 font-medium">
-                      Administrador
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium leading-none">
+                      {user?.firstName && user?.lastName 
+                        ? `${user.firstName} ${user.lastName}`
+                        : user?.username
+                      }
                     </p>
-                  )}
+                    <div className="flex gap-1">
+                      {user?.role === 'admin' && (
+                        <Badge variant="destructive" className="text-xs">
+                          <Shield className="w-3 h-3 mr-1" />
+                          Admin
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Mail className="w-3 h-3" />
+                      {user?.email}
+                    </div>
+                    
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <User className="w-3 h-3" />
+                      {getUserTypeLabel((user as any)?.userType || '')} • {getRoleLabel(user?.role || '')}
+                    </div>
+                    
+                    {(user as any)?.city && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="w-3 h-3" />
+                        {(user as any).city}, {(user as any)?.country || 'Bolivia'}
+                      </div>
+                    )}
+                    
+                    {user?.lastLogin && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Calendar className="w-3 h-3" />
+                        Último acceso: {new Date(user.lastLogin).toLocaleDateString()}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="pt-2">
+                    <div className="text-xs font-medium text-green-600 mb-1">
+                      Opciones disponibles:
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 text-xs text-gray-600">
+                      <span>• Crear presupuestos</span>
+                      <span>• Ver materiales</span>
+                      <span>• Calcular APUs</span>
+                      <span>• Gestionar proyectos</span>
+                      {user?.role === 'admin' && (
+                        <>
+                          <span>• Panel administrativo</span>
+                          <span>• Gestión de usuarios</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
