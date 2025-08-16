@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { users, materials, activities, constructionPhases, materialCategories } from '../shared/schema';
-import { eq, like, desc, asc } from 'drizzle-orm';
+import { users, materials, activities, constructionPhases, materialCategories, customActivities, customActivityCompositions, laborCategories, tools } from '../shared/schema';
+import { eq, like, desc, asc, and } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
@@ -380,11 +380,26 @@ export async function registerRoutes(app: any) {
   });
 
   // Custom Activities endpoints
-  router.get('/custom-activities', async (req: Request, res: Response) => {
+  router.get('/custom-activities', requireAuth, async (req: AuthRequest, res: Response) => {
     try {
-      // Return empty array for now - custom activities will be implemented later
-      res.json([]);
+      const userCustomActivities = await db.select().from(customActivities)
+        .where(eq(customActivities.userId, req.user.id))
+        .orderBy(desc(customActivities.createdAt));
+      
+      // Get phase information for each activity
+      const phases = await db.select().from(constructionPhases);
+      
+      const activitiesWithPhases = userCustomActivities.map(activity => {
+        const phase = phases.find(p => p.id === activity.phaseId);
+        return {
+          ...activity,
+          phase: phase || { id: 0, name: 'Sin Fase' }
+        };
+      });
+      
+      res.json(activitiesWithPhases);
     } catch (error) {
+      console.error('Fetch custom activities error:', error);
       res.status(500).json({ error: 'Failed to fetch custom activities' });
     }
   });
@@ -397,20 +412,15 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ message: "Nombre, unidad y fase son requeridos" });
       }
 
-      // Create a new custom activity
-      const newActivity = {
-        id: Date.now(), // Temporary ID generation
+      // Insert the new custom activity into the database
+      const [newActivity] = await db.insert(customActivities).values({
+        userId: req.user.id,
         name,
         unit,
         description: description || '',
-        phaseId: parseInt(phaseId),
-        isCustom: true,
-        userId: req.user.id,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
+        phaseId: parseInt(phaseId)
+      }).returning();
 
-      // For now, just return success - in a full implementation this would save to database
       res.json({
         message: "Actividad personalizada creada exitosamente",
         activity: newActivity
@@ -418,6 +428,156 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error('Create custom activity error:', error);
       res.status(500).json({ message: "Error al crear la actividad personalizada" });
+    }
+  });
+
+  // Custom Activity Compositions endpoints
+  router.get('/custom-activities/:id/compositions', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      
+      // Verify the activity belongs to the user
+      const [activity] = await db.select().from(customActivities)
+        .where(and(
+          eq(customActivities.id, activityId),
+          eq(customActivities.userId, req.user.id)
+        ))
+        .limit(1);
+      
+      if (!activity) {
+        return res.status(404).json({ message: "Actividad no encontrada" });
+      }
+      
+      // Get compositions for this activity
+      const compositions = await db.select().from(customActivityCompositions)
+        .where(eq(customActivityCompositions.customActivityId, activityId))
+        .orderBy(customActivityCompositions.type, customActivityCompositions.description);
+      
+      res.json(compositions);
+    } catch (error) {
+      console.error('Fetch compositions error:', error);
+      res.status(500).json({ error: 'Failed to fetch compositions' });
+    }
+  });
+
+  router.post('/custom-activities/:id/compositions', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const { description, unit, quantity, unitCost, type, materialId, laborId, toolId } = req.body;
+      
+      if (!description || !unit || !quantity || !unitCost || !type) {
+        return res.status(400).json({ message: "Todos los campos son requeridos" });
+      }
+      
+      // Verify the activity belongs to the user
+      const [activity] = await db.select().from(customActivities)
+        .where(and(
+          eq(customActivities.id, activityId),
+          eq(customActivities.userId, req.user.id)
+        ))
+        .limit(1);
+      
+      if (!activity) {
+        return res.status(404).json({ message: "Actividad no encontrada" });
+      }
+      
+      // Insert new composition
+      const [newComposition] = await db.insert(customActivityCompositions).values({
+        customActivityId: activityId,
+        description,
+        unit,
+        quantity: quantity.toString(),
+        unitCost: unitCost.toString(),
+        type,
+        materialId: materialId || null,
+        laborId: laborId || null,
+        toolId: toolId || null
+      }).returning();
+      
+      res.json({
+        message: "Composición agregada exitosamente",
+        composition: newComposition
+      });
+    } catch (error) {
+      console.error('Create composition error:', error);
+      res.status(500).json({ message: "Error al crear la composición" });
+    }
+  });
+
+  router.put('/custom-activities/:id/compositions/:compositionId', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const compositionId = parseInt(req.params.compositionId);
+      const { description, unit, quantity, unitCost } = req.body;
+      
+      // Verify the activity belongs to the user
+      const [activity] = await db.select().from(customActivities)
+        .where(and(
+          eq(customActivities.id, activityId),
+          eq(customActivities.userId, req.user.id)
+        ))
+        .limit(1);
+      
+      if (!activity) {
+        return res.status(404).json({ message: "Actividad no encontrada" });
+      }
+      
+      // Update composition
+      const [updatedComposition] = await db.update(customActivityCompositions)
+        .set({
+          description,
+          unit,
+          quantity: quantity.toString(),
+          unitCost: unitCost.toString()
+        })
+        .where(and(
+          eq(customActivityCompositions.id, compositionId),
+          eq(customActivityCompositions.customActivityId, activityId)
+        ))
+        .returning();
+      
+      if (!updatedComposition) {
+        return res.status(404).json({ message: "Composición no encontrada" });
+      }
+      
+      res.json({
+        message: "Composición actualizada exitosamente",
+        composition: updatedComposition
+      });
+    } catch (error) {
+      console.error('Update composition error:', error);
+      res.status(500).json({ message: "Error al actualizar la composición" });
+    }
+  });
+
+  router.delete('/custom-activities/:id/compositions/:compositionId', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const compositionId = parseInt(req.params.compositionId);
+      
+      // Verify the activity belongs to the user
+      const [activity] = await db.select().from(customActivities)
+        .where(and(
+          eq(customActivities.id, activityId),
+          eq(customActivities.userId, req.user.id)
+        ))
+        .limit(1);
+      
+      if (!activity) {
+        return res.status(404).json({ message: "Actividad no encontrada" });
+      }
+      
+      // Delete composition
+      await db.delete(customActivityCompositions)
+        .where(and(
+          eq(customActivityCompositions.id, compositionId),
+          eq(customActivityCompositions.customActivityId, activityId)
+        ));
+      
+      res.json({ message: "Composición eliminada exitosamente" });
+    } catch (error) {
+      console.error('Delete composition error:', error);
+      res.status(500).json({ message: "Error al eliminar la composición" });
     }
   });
 
@@ -436,6 +596,57 @@ export async function registerRoutes(app: any) {
       res.json([]);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch budgets' });
+    }
+  });
+
+  // Catalogs for compositions
+  router.get('/catalog/materials', async (req: Request, res: Response) => {
+    try {
+      const { search, limit = '20' } = req.query;
+      
+      let materialsData;
+      if (search && typeof search === 'string') {
+        materialsData = await db.select({
+          id: materials.id,
+          name: materials.name,
+          unit: materials.unit,
+          price: materials.price,
+          categoryId: materials.categoryId
+        }).from(materials)
+        .where(like(materials.name, `%${search}%`))
+        .limit(parseInt(limit as string));
+      } else {
+        materialsData = await db.select({
+          id: materials.id,
+          name: materials.name,
+          unit: materials.unit,
+          price: materials.price,
+          categoryId: materials.categoryId
+        }).from(materials)
+        .limit(parseInt(limit as string));
+      }
+      
+      res.json(materialsData);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch materials catalog' });
+    }
+  });
+
+  router.get('/catalog/labor', async (req: Request, res: Response) => {
+    try {
+      // For now return empty array - labor categories need to be implemented
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch labor catalog' });
+    }
+  });
+
+  router.get('/catalog/tools', async (req: Request, res: Response) => {
+    try {
+      // For now return empty array - tools need to be implemented
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch tools catalog' });
     }
   });
 
