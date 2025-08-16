@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, ArrowLeft, Plus } from "lucide-react";
 import { Link } from "wouter";
-import CustomActivityManager from "@/components/custom-activity-manager";
+import CustomActivityManagerDB from "@/components/custom-activity-manager-db";
 import ActivityCompositionEditor from "@/components/activity-composition-editor";
+import { apiRequest } from "@/lib/queryClient";
 
 interface CustomActivity {
   id: string;
@@ -23,6 +25,23 @@ interface CustomActivity {
 
 export default function CustomActivities() {
   const [editingActivity, setEditingActivity] = useState<CustomActivity | null>(null);
+
+  // Load statistics from database
+  const { data: customActivities } = useQuery({
+    queryKey: ['/api/custom-activities'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/custom-activities');
+      return response.json();
+    }
+  });
+
+  const { data: userActivities } = useQuery({
+    queryKey: ['/api/user-activities'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/user-activities');
+      return response.json();
+    }
+  });
 
   const handleEditActivity = (activity: CustomActivity) => {
     setEditingActivity(activity);
@@ -89,9 +108,9 @@ export default function CustomActivities() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Actividades Creadas</p>
+                <p className="text-sm font-medium text-gray-600">Actividades Nuevas</p>
                 <p className="text-2xl font-bold text-primary">
-                  {JSON.parse(localStorage.getItem('userCustomActivities') || '[]').length}
+                  {customActivities?.length || 0}
                 </p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
@@ -105,9 +124,9 @@ export default function CustomActivities() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Materiales Personalizados</p>
+                <p className="text-sm font-medium text-gray-600">Total Actividades</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {JSON.parse(localStorage.getItem('userMaterialPrices') || '[]').length}
+                  {(customActivities?.length || 0) + (userActivities?.length || 0)}
                 </p>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
@@ -121,10 +140,9 @@ export default function CustomActivities() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Actividades Copiadas</p>
+                <p className="text-sm font-medium text-gray-600">Actividades Duplicadas</p>
                 <p className="text-2xl font-bold text-orange-600">
-                  {JSON.parse(localStorage.getItem('userCustomActivities') || '[]')
-                    .filter((a: CustomActivity) => a.originalActivityId).length}
+                  {userActivities?.length || 0}
                 </p>
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
@@ -144,9 +162,7 @@ export default function CustomActivities() {
         </TabsList>
 
         <TabsContent value="activities" className="space-y-6">
-          <CustomActivityManager
-            onActivitySelect={handleActivitySelect}
-          />
+          <CustomActivityManagerDB />
         </TabsContent>
 
         <TabsContent value="materials" className="space-y-6">

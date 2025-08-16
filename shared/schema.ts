@@ -100,6 +100,34 @@ export const userActivityCompositions = pgTable("user_activity_compositions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Actividades completamente nuevas creadas por usuario (no duplicadas)
+export const customActivities = pgTable("custom_activities", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
+  unit: text("unit").notNull(),
+  description: text("description"),
+  phaseId: integer("phase_id").references(() => constructionPhases.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Composiciones para actividades completamente nuevas
+export const customActivityCompositions = pgTable("custom_activity_compositions", {
+  id: serial("id").primaryKey(),
+  customActivityId: integer("custom_activity_id").notNull().references(() => customActivities.id),
+  materialId: integer("material_id").references(() => materials.id),
+  laborId: integer("labor_id").references(() => laborCategories.id),
+  toolId: integer("tool_id").references(() => tools.id),
+  description: text("description").notNull(),
+  unit: text("unit").notNull(),
+  quantity: decimal("quantity", { precision: 12, scale: 4 }).notNull(),
+  unitCost: decimal("unit_cost", { precision: 12, scale: 4 }).notNull(),
+  type: text("type").notNull(), // 'material', 'labor', 'equipment'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Sistema de publicidad para empresas
 export const companyAdvertisements = pgTable("company_advertisements", {
   id: serial("id").primaryKey(),

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { db } from './db';
 import { storage as dbStorage } from './storage';
-import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions } from '../shared/schema';
+import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
@@ -657,6 +657,172 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error('Composition deletion error:', error);
       res.status(500).json({ error: 'Failed to delete composition' });
+    }
+  });
+
+  // Get user activities for statistics
+  router.get('/user-activities', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      
+      const userDuplicatedActivities = await db.select({
+        id: userActivities.id,
+        originalActivityId: userActivities.originalActivityId,
+        customActivityName: userActivities.customActivityName,
+        phaseId: userActivities.phaseId,
+        unit: userActivities.unit,
+        description: userActivities.description,
+        createdAt: userActivities.createdAt,
+        updatedAt: userActivities.updatedAt
+      })
+      .from(userActivities)
+      .where(eq(userActivities.userId, userId))
+      .orderBy(desc(userActivities.createdAt));
+
+      console.log(`📋 Found ${userDuplicatedActivities.length} duplicated activities for user ${userId}`);
+      res.json(userDuplicatedActivities);
+    } catch (error) {
+      console.error('Error fetching user activities:', error);
+      res.status(500).json({ error: 'Failed to fetch user activities' });
+    }
+  });
+
+  // ==================== CUSTOM ACTIVITIES (COMPLETELY NEW) ====================
+  
+  // Get all custom activities for authenticated user
+  router.get('/custom-activities', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      
+      const userCustomActivities = await db.select({
+        id: customActivities.id,
+        name: customActivities.name,
+        unit: customActivities.unit,
+        description: customActivities.description,
+        phaseId: customActivities.phaseId,
+        createdAt: customActivities.createdAt,
+        updatedAt: customActivities.updatedAt,
+        phaseName: constructionPhases.name
+      })
+      .from(customActivities)
+      .leftJoin(constructionPhases, eq(customActivities.phaseId, constructionPhases.id))
+      .where(eq(customActivities.userId, userId))
+      .orderBy(desc(customActivities.createdAt));
+
+      console.log(`📋 Found ${userCustomActivities.length} custom activities for user ${userId}`);
+      res.json(userCustomActivities);
+    } catch (error) {
+      console.error('Error fetching custom activities:', error);
+      res.status(500).json({ error: 'Failed to fetch custom activities' });
+    }
+  });
+
+  // Create new custom activity
+  router.post('/custom-activities', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { name, unit, description, phaseId } = req.body;
+
+      if (!name || !unit) {
+        return res.status(400).json({ error: 'Name and unit are required' });
+      }
+
+      const [newActivity] = await db.insert(customActivities).values({
+        userId,
+        name,
+        unit,
+        description,
+        phaseId: phaseId || null
+      }).returning();
+
+      console.log(`✅ Created custom activity "${name}" for user ${userId}`);
+      res.status(201).json(newActivity);
+    } catch (error) {
+      console.error('Error creating custom activity:', error);
+      res.status(500).json({ error: 'Failed to create custom activity' });
+    }
+  });
+
+  // Get compositions for custom activity
+  router.get('/custom-activities/:id/compositions', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const activityId = parseInt(req.params.id);
+
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      // Verify user owns the activity
+      const [activity] = await db.select()
+        .from(customActivities)
+        .where(and(
+          eq(customActivities.id, activityId),
+          eq(customActivities.userId, userId)
+        ));
+
+      if (!activity) {
+        return res.status(404).json({ error: 'Custom activity not found or access denied' });
+      }
+
+      // Get compositions
+      const compositions = await db.select()
+        .from(customActivityCompositions)
+        .where(eq(customActivityCompositions.customActivityId, activityId))
+        .orderBy(customActivityCompositions.type, customActivityCompositions.description);
+
+      console.log(`📋 Found ${compositions.length} compositions for custom activity ${activityId}`);
+      res.json(compositions);
+    } catch (error) {
+      console.error('Error fetching custom activity compositions:', error);
+      res.status(500).json({ error: 'Failed to fetch compositions' });
+    }
+  });
+
+  // Add composition to custom activity
+  router.post('/custom-activities/:id/compositions', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const activityId = parseInt(req.params.id);
+      const { type, description, unit, quantity, unitCost, materialId, laborId, toolId } = req.body;
+
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      if (!type || !description || !unit) {
+        return res.status(400).json({ error: 'Type, description, and unit are required' });
+      }
+
+      // Verify user owns the activity
+      const [activity] = await db.select()
+        .from(customActivities)
+        .where(and(
+          eq(customActivities.id, activityId),
+          eq(customActivities.userId, userId)
+        ));
+
+      if (!activity) {
+        return res.status(404).json({ error: 'Custom activity not found or access denied' });
+      }
+
+      const [newComposition] = await db.insert(customActivityCompositions).values({
+        customActivityId: activityId,
+        type,
+        description,
+        unit,
+        quantity: quantity || 0,
+        unitCost: unitCost || 0,
+        materialId,
+        laborId,
+        toolId
+      }).returning();
+
+      console.log(`✅ Added composition "${description}" to custom activity ${activityId}`);
+      res.status(201).json(newComposition);
+    } catch (error) {
+      console.error('Error adding custom activity composition:', error);
+      res.status(500).json({ error: 'Failed to add composition' });
     }
   });
 
