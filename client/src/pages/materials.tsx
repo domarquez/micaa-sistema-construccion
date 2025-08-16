@@ -44,7 +44,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { formatCurrency, formatRelativeTime, debounce } from "@/lib/utils";
-import { queryClient, getQueryFn } from "@/lib/queryClient";
+import { queryClient, getQueryFn, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import MaterialForm from "@/components/materials/material-form";
 import type { MaterialWithCategory, MaterialWithCustomPrice, MaterialCategory } from "@shared/schema";
@@ -91,12 +91,7 @@ export default function Materials() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/materials/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete material');
-      }
+      await apiRequest('DELETE', `/api/materials/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/materials"] });
@@ -116,14 +111,10 @@ export default function Materials() {
 
   const customPriceMutation = useMutation({
     mutationFn: async ({ materialId, customPrice, reason }: { materialId: number, customPrice: number, reason?: string }) => {
-      const response = await fetch(`/api/materials/${materialId}/custom-price`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customPrice, reason }),
+      const response = await apiRequest('POST', `/api/materials/${materialId}/custom-price`, {
+        customPrice,
+        reason
       });
-      if (!response.ok) {
-        throw new Error('Failed to save custom price');
-      }
       return response.json();
     },
     onSuccess: () => {
@@ -144,12 +135,7 @@ export default function Materials() {
 
   const removeCustomPriceMutation = useMutation({
     mutationFn: async (materialId: number) => {
-      const response = await fetch(`/api/materials/${materialId}/custom-price`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to remove custom price');
-      }
+      await apiRequest('DELETE', `/api/materials/${materialId}/custom-price`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/materials"] });
