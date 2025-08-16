@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Package, Users, Wrench, Edit, Save, X, Plus, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -155,17 +156,70 @@ export default function ActivityDetailDialog({
     }
   };
 
+  const [showAddModal, setShowAddModal] = useState<{open: boolean, type: string}>({open: false, type: ''});
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [quantity, setQuantity] = useState('1');
+
+  // Get catalogs for selection
+  const { data: materialsCatalog } = useQuery({
+    queryKey: ["/api/materials"],
+    queryFn: getQueryFn({ on401: "throw" }),
+    enabled: showAddModal.open && showAddModal.type === 'material'
+  });
+
+  const { data: laborCatalog } = useQuery({
+    queryKey: ["/api/labor-categories"],
+    queryFn: getQueryFn({ on401: "throw" }),
+    enabled: showAddModal.open && showAddModal.type === 'labor'
+  });
+
+  const { data: toolsCatalog } = useQuery({
+    queryKey: ["/api/tools"],
+    queryFn: getQueryFn({ on401: "throw" }),
+    enabled: showAddModal.open && showAddModal.type === 'equipment'
+  });
+
   const handleAddComposition = (type: string) => {
-    const description = prompt(`Descripción para nueva ${type === 'material' ? 'material' : type === 'labor' ? 'mano de obra' : 'equipo'}:`);
-    if (description) {
-      addCompositionMutation.mutate({
-        type,
-        description,
-        unit: type === 'material' ? 'UN' : type === 'labor' ? 'HR' : 'HR',
-        quantity: 1,
-        unitCost: 0
-      });
+    setShowAddModal({open: true, type});
+    setSelectedItem(null);
+    setQuantity('1');
+  };
+
+  const handleConfirmAdd = () => {
+    if (!selectedItem) return;
+    
+    let compositionData;
+    if (showAddModal.type === 'material') {
+      compositionData = {
+        type: 'material',
+        materialId: selectedItem.id,
+        description: selectedItem.name,
+        unit: selectedItem.unit,
+        quantity: parseFloat(quantity),
+        unitCost: parseFloat(selectedItem.price)
+      };
+    } else if (showAddModal.type === 'labor') {
+      compositionData = {
+        type: 'labor',
+        laborId: selectedItem.id,
+        description: selectedItem.name,
+        unit: selectedItem.unit,
+        quantity: parseFloat(quantity),
+        unitCost: parseFloat(selectedItem.hourlyRate)
+      };
+    } else if (showAddModal.type === 'equipment') {
+      compositionData = {
+        type: 'equipment',
+        toolId: selectedItem.id,
+        description: selectedItem.name,
+        unit: selectedItem.unit,
+        quantity: parseFloat(quantity),
+        unitCost: parseFloat(selectedItem.unitPrice)
+      };
     }
+
+    addCompositionMutation.mutate(compositionData);
+    setShowAddModal({open: false, type: ''});
   };
 
   // Group compositions by type for detailed tables
@@ -604,6 +658,129 @@ export default function ActivityDetailDialog({
           ) : null}
         </div>
       </DialogContent>
+
+      {/* Add Composition Modal */}
+      <Dialog open={showAddModal.open} onOpenChange={(open) => setShowAddModal({open, type: showAddModal.type})}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Agregar {showAddModal.type === 'material' ? 'Material' : showAddModal.type === 'labor' ? 'Mano de Obra' : 'Equipo'}
+            </DialogTitle>
+            <DialogDescription>
+              Selecciona un elemento del catálogo y especifica la cantidad
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {showAddModal.type === 'material' && materialsCatalog && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Material:</label>
+                <Select value={selectedItem?.id?.toString() || ""} onValueChange={(value) => {
+                  const material = materialsCatalog.find((m: any) => m.id.toString() === value);
+                  setSelectedItem(material);
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un material" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {materialsCatalog.map((material: any) => (
+                      <SelectItem key={material.id} value={material.id.toString()}>
+                        {material.name} - {formatCurrency(parseFloat(material.price))} / {material.unit}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {showAddModal.type === 'labor' && laborCatalog && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Mano de Obra:</label>
+                <Select value={selectedItem?.id?.toString() || ""} onValueChange={(value) => {
+                  const labor = laborCatalog.find((l: any) => l.id.toString() === value);
+                  setSelectedItem(labor);
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona mano de obra" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {laborCatalog.map((labor: any) => (
+                      <SelectItem key={labor.id} value={labor.id.toString()}>
+                        {labor.name} - {formatCurrency(parseFloat(labor.hourlyRate))} / {labor.unit}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {showAddModal.type === 'equipment' && toolsCatalog && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Equipo:</label>
+                <Select value={selectedItem?.id?.toString() || ""} onValueChange={(value) => {
+                  const tool = toolsCatalog.find((t: any) => t.id.toString() === value);
+                  setSelectedItem(tool);
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un equipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {toolsCatalog.map((tool: any) => (
+                      <SelectItem key={tool.id} value={tool.id.toString()}>
+                        {tool.name} - {formatCurrency(parseFloat(tool.unitPrice))} / {tool.unit}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Cantidad:</label>
+              <Input
+                type="number"
+                step="0.01"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder="Ingresa la cantidad"
+              />
+            </div>
+
+            {selectedItem && (
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium">Resumen:</h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  {selectedItem.name} × {quantity} {selectedItem.unit}
+                </p>
+                <p className="text-sm font-medium mt-1">
+                  Costo unitario: {formatCurrency(parseFloat(
+                    selectedItem.price || selectedItem.hourlyRate || selectedItem.unitPrice
+                  ))}
+                </p>
+                <p className="text-sm font-medium">
+                  Total: {formatCurrency(
+                    parseFloat(quantity || '0') * parseFloat(
+                      selectedItem.price || selectedItem.hourlyRate || selectedItem.unitPrice
+                    )
+                  )}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowAddModal({open: false, type: ''})}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleConfirmAdd} 
+              disabled={!selectedItem || addCompositionMutation.isPending}
+            >
+              {addCompositionMutation.isPending ? 'Agregando...' : 'Agregar'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
