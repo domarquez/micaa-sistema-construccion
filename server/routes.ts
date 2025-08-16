@@ -128,22 +128,47 @@ export async function registerRoutes(app: any) {
         userCustomPrices = await db.select().from(userMaterialPrices).where(eq(userMaterialPrices.userId, userId));
       }
       
-      // Combine materials with category information and custom pricing
-      const materialsWithCategories = materialsData.map(material => {
+      // Combine materials with category information and create duplicates for custom pricing
+      let allMaterials = [];
+      
+      // Add original materials
+      materialsData.forEach(material => {
         const category = categories.find(c => c.id === material.categoryId);
-        const customPrice = userCustomPrices.find(cp => cp.originalMaterialName === material.name);
-        
-        return {
+        allMaterials.push({
           ...material,
           category: category || { id: 0, name: 'Sin Categoría' },
-          hasCustomPrice: !!customPrice,
-          customPrice: customPrice ? {
-            customPrice: customPrice.price,
-            customName: customPrice.customMaterialName,
-            reason: customPrice.reason
-          } : null
-        };
+          hasCustomPrice: false,
+          customPrice: null,
+          isOriginal: true
+        });
       });
+      
+      // Add custom price materials as separate entries
+      if (userId) {
+        userCustomPrices.forEach(customPrice => {
+          const originalMaterial = materialsData.find(m => m.name === customPrice.originalMaterialName);
+          if (originalMaterial) {
+            const category = categories.find(c => c.id === originalMaterial.categoryId);
+            allMaterials.push({
+              ...originalMaterial,
+              id: `custom_${originalMaterial.id}_${customPrice.id}`, // Unique ID for custom version
+              name: customPrice.customMaterialName,
+              price: parseFloat(customPrice.price),
+              category: category || { id: 0, name: 'Sin Categoría' },
+              hasCustomPrice: true,
+              customPrice: {
+                customPrice: customPrice.price,
+                customName: customPrice.customMaterialName,
+                reason: customPrice.reason,
+                originalName: customPrice.originalMaterialName
+              },
+              isOriginal: false
+            });
+          }
+        });
+      }
+      
+      const materialsWithCategories = allMaterials;
       
       // Sort materials by category name, then by material name
       materialsWithCategories.sort((a, b) => {

@@ -283,9 +283,9 @@ export default function Materials() {
             <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
               Los precios que modifiques aquí son privados y solo los verás en tus proyectos. 
               Otros usuarios seguirán viendo los precios originales del sistema. 
-              Los materiales con precios personalizados aparecen marcados con <User className="w-4 h-4 inline mx-1" /> y tienen 
-              <span className="bg-blue-50 px-2 py-1 rounded-md border border-blue-200 mx-1">fondo azul claro</span> 
-              para indicar que son precios modificados.
+              Los materiales con precios personalizados aparecen duplicados con 
+              <span className="bg-green-50 px-2 py-1 rounded-md border border-green-200 mx-1">fondo verde</span> 
+              para que siempre puedas comparar con el precio original del sistema.
             </p>
           </div>
         </div>
@@ -398,7 +398,13 @@ export default function Materials() {
                     return (
                       <TableRow 
                         key={material.id} 
-                        className={`hover:bg-gray-50 ${material.hasCustomPrice ? 'bg-blue-50 border-l-4 border-blue-300' : ''}`}
+                        className={`hover:bg-gray-50 ${
+                          material.hasCustomPrice 
+                            ? 'bg-green-50 border-l-4 border-green-400' 
+                            : material.isOriginal === false 
+                              ? 'bg-gray-50 border-l-4 border-gray-300' 
+                              : ''
+                        }`}
                       >
                         <TableCell>
                           <div className="flex items-center space-x-3">
