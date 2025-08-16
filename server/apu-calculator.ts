@@ -73,52 +73,105 @@ export async function calculateAPU(activityId: number): Promise<APUCalculationRe
   let laborCost = 0;
   let equipmentCost = 0;
 
+  console.log(`🔍 APU Calculation for Activity ${activityId}: Found ${compositions.length} compositions`);
+  
   for (const comp of compositions) {
     const quantity = parseFloat(comp.quantity) || 0;
     const unitCost = parseFloat(comp.unitCost) || 0;
     const subtotal = quantity * unitCost;
+    
+    console.log(`📋 Composition: type=${comp.type}, quantity=${quantity}, unitCost=${unitCost}, subtotal=${subtotal}`);
 
-    if (comp.type === 'material' && comp.materialId) {
-      const [material] = await db.select().from(materials).where(eq(materials.id, comp.materialId));
-      if (material) {
-        materialsData.push({
-          id: material.id,
-          name: material.name,
-          unit: comp.unit,
-          quantity,
-          unitCost,
-          subtotal
-        });
-        materialsCost += subtotal;
+    if (comp.type === 'material') {
+      let materialName = comp.description || 'Material desconocido';
+      let materialId = comp.materialId || 0;
+      
+      // Si hay material_id, buscar el material en la base de datos
+      if (comp.materialId) {
+        const [material] = await db.select().from(materials).where(eq(materials.id, comp.materialId));
+        if (material) {
+          materialName = material.name;
+          materialId = material.id;
+          console.log(`✅ Material found: ${materialName}`);
+        } else {
+          console.log(`❌ Material not found for ID: ${comp.materialId}, using description: ${materialName}`);
+        }
+      } else {
+        console.log(`📝 Material from description: ${materialName}`);
       }
-    } else if (comp.type === 'labor' && comp.laborId) {
-      const [labor] = await db.select().from(laborCategories).where(eq(laborCategories.id, comp.laborId));
-      if (labor) {
-        laborData.push({
-          id: labor.id,
-          name: labor.name,
-          unit: comp.unit,
-          quantity,
-          unitCost,
-          subtotal
-        });
-        laborCost += subtotal;
+      
+      materialsData.push({
+        id: materialId,
+        name: materialName,
+        unit: comp.unit,
+        quantity,
+        unitCost,
+        subtotal
+      });
+      materialsCost += subtotal;
+      
+    } else if (comp.type === 'labor') {
+      let laborName = comp.description || 'Mano de obra desconocida';
+      let laborId = comp.laborId || 0;
+      
+      // Si hay labor_id, buscar en la base de datos
+      if (comp.laborId) {
+        const [labor] = await db.select().from(laborCategories).where(eq(laborCategories.id, comp.laborId));
+        if (labor) {
+          laborName = labor.name;
+          laborId = labor.id;
+          console.log(`✅ Labor found: ${laborName}`);
+        } else {
+          console.log(`❌ Labor not found for ID: ${comp.laborId}, using description: ${laborName}`);
+        }
+      } else {
+        console.log(`📝 Labor from description: ${laborName}`);
       }
-    } else if (comp.type === 'equipment' && comp.toolId) {
-      const [tool] = await db.select().from(tools).where(eq(tools.id, comp.toolId));
-      if (tool) {
-        equipmentData.push({
-          id: tool.id,
-          name: tool.name,
-          unit: comp.unit,
-          quantity,
-          unitCost,
-          subtotal
-        });
-        equipmentCost += subtotal;
+      
+      laborData.push({
+        id: laborId,
+        name: laborName,
+        unit: comp.unit,
+        quantity,
+        unitCost,
+        subtotal
+      });
+      laborCost += subtotal;
+      
+    } else if (comp.type === 'equipment' || comp.type === 'tool') {
+      let toolName = comp.description || 'Equipo desconocido';
+      let toolId = comp.toolId || 0;
+      
+      // Si hay tool_id, buscar en la base de datos
+      if (comp.toolId) {
+        const [tool] = await db.select().from(tools).where(eq(tools.id, comp.toolId));
+        if (tool) {
+          toolName = tool.name;
+          toolId = tool.id;
+          console.log(`✅ Equipment found: ${toolName}`);
+        } else {
+          console.log(`❌ Equipment not found for ID: ${comp.toolId}, using description: ${toolName}`);
+        }
+      } else {
+        console.log(`📝 Equipment from description: ${toolName}`);
       }
+      
+      equipmentData.push({
+        id: toolId,
+        name: toolName,
+        unit: comp.unit,
+        quantity,
+        unitCost,
+        subtotal
+      });
+      equipmentCost += subtotal;
+      
+    } else {
+      console.log(`⚠️ Unknown composition type: type=${comp.type}`);
     }
   }
+  
+  console.log(`💰 Totals - Materials: ${materialsCost}, Labor: ${laborCost}, Equipment: ${equipmentCost}`);
 
   // Cálculos según normativa boliviana
   const laborCharges = laborCost * 0.55; // 55% cargas sociales
@@ -126,8 +179,8 @@ export async function calculateAPU(activityId: number): Promise<APUCalculationRe
   const laborIVA = laborWithCharges * 0.1494; // 14.94% IVA de M.O.
   const laborFinal = laborWithCharges + laborIVA;
   
-  const tools = equipmentCost * 0.05; // 5% herramientas
-  const equipmentWithTools = equipmentCost + tools;
+  const toolsPercentage = equipmentCost * 0.05; // 5% herramientas
+  const equipmentWithTools = equipmentCost + toolsPercentage;
   
   const subtotalCost = materialsCost + laborFinal + equipmentWithTools;
   
@@ -157,7 +210,7 @@ export async function calculateAPU(activityId: number): Promise<APUCalculationRe
     breakdown: {
       laborCharges,
       laborIVA,
-      tools,
+      tools: toolsPercentage,
       administrativePercentage: 8.0,
       utilityPercentage: 15.0,
       taxPercentage: 3.09
