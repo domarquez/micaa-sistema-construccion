@@ -316,8 +316,17 @@ export async function registerRoutes(app: any) {
           };
         });
 
-        // Merge original and custom activities
-        activitiesWithPhases = [...activitiesWithPhases, ...customActivitiesFormatted];
+        // Insert custom activities right after their originals
+        const mergedActivities = [];
+        for (const activity of activitiesWithPhases) {
+          mergedActivities.push(activity);
+          // Find if there's a custom version of this activity
+          const customActivity = customActivitiesFormatted.find(custom => custom.originalActivityId === activity.id);
+          if (customActivity) {
+            mergedActivities.push(customActivity);
+          }
+        }
+        activitiesWithPhases = mergedActivities;
       }
       
       res.json({
@@ -341,10 +350,23 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ error: 'Invalid activity ID' });
       }
 
-      const compositions = await db.select()
-        .from(activityCompositions)
-        .where(eq(activityCompositions.activityId, activityId));
+      let compositions;
+      
+      // Check if this is a custom activity (ID > 10000)
+      if (activityId > 10000) {
+        const realActivityId = activityId - 10000;
+        console.log(`🔧 Getting compositions for custom activity ${activityId} (real ID: ${realActivityId})`);
+        compositions = await db.select()
+          .from(userActivityCompositions)
+          .where(eq(userActivityCompositions.userActivityId, realActivityId));
+      } else {
+        console.log(`🔧 Getting compositions for original activity ${activityId}`);
+        compositions = await db.select()
+          .from(activityCompositions)
+          .where(eq(activityCompositions.activityId, activityId));
+      }
 
+      console.log(`📋 Found ${compositions.length} compositions for activity ${activityId}`);
       res.json(compositions);
     } catch (error) {
       console.error('Activity compositions fetch error:', error);
@@ -456,6 +478,185 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error('Activity duplication error:', error);
       res.status(500).json({ error: 'Failed to duplicate activity' });
+    }
+  });
+
+  // Update user activity composition
+  router.put('/user-activities/:userActivityId/compositions/:compositionId', async (req, res) => {
+    try {
+      const userActivityId = parseInt(req.params.userActivityId);
+      const compositionId = parseInt(req.params.compositionId);
+      const { quantity, unitCost, description } = req.body;
+
+      if (isNaN(userActivityId) || isNaN(compositionId)) {
+        return res.status(400).json({ error: 'Invalid IDs' });
+      }
+
+      // Get user ID from auth token
+      let userId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          userId = decoded.userId;
+        } catch (error) {
+          return res.status(401).json({ error: 'Invalid authentication token' });
+        }
+      } else {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      // Verify the user owns this activity
+      const [userActivity] = await db.select()
+        .from(userActivities)
+        .where(and(
+          eq(userActivities.id, userActivityId),
+          eq(userActivities.userId, userId)
+        ));
+
+      if (!userActivity) {
+        return res.status(404).json({ error: 'User activity not found or access denied' });
+      }
+
+      // Update the composition
+      const [updatedComposition] = await db.update(userActivityCompositions)
+        .set({
+          quantity: quantity ? String(quantity) : undefined,
+          unitCost: unitCost ? String(unitCost) : undefined,
+          description: description || undefined,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(userActivityCompositions.id, compositionId),
+          eq(userActivityCompositions.userActivityId, userActivityId)
+        ))
+        .returning();
+
+      if (!updatedComposition) {
+        return res.status(404).json({ error: 'Composition not found' });
+      }
+
+      console.log(`✅ Updated composition ${compositionId} for user activity ${userActivityId}`);
+      res.json({ success: true, composition: updatedComposition });
+    } catch (error) {
+      console.error('Composition update error:', error);
+      res.status(500).json({ error: 'Failed to update composition' });
+    }
+  });
+
+  // Add new composition to user activity
+  router.post('/user-activities/:userActivityId/compositions', async (req, res) => {
+    try {
+      const userActivityId = parseInt(req.params.userActivityId);
+      const { type, description, unit, quantity, unitCost, materialId, laborId, toolId } = req.body;
+
+      if (isNaN(userActivityId)) {
+        return res.status(400).json({ error: 'Invalid user activity ID' });
+      }
+
+      // Get user ID from auth token
+      let userId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          userId = decoded.userId;
+        } catch (error) {
+          return res.status(401).json({ error: 'Invalid authentication token' });
+        }
+      } else {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      // Verify the user owns this activity
+      const [userActivity] = await db.select()
+        .from(userActivities)
+        .where(and(
+          eq(userActivities.id, userActivityId),
+          eq(userActivities.userId, userId)
+        ));
+
+      if (!userActivity) {
+        return res.status(404).json({ error: 'User activity not found or access denied' });
+      }
+
+      // Create new composition
+      const [newComposition] = await db.insert(userActivityCompositions).values({
+        userActivityId,
+        type: type || 'material',
+        description: description || '',
+        unit: unit || 'UN',
+        quantity: String(quantity || 1),
+        unitCost: String(unitCost || 0),
+        materialId: materialId || null,
+        laborId: laborId || null,
+        toolId: toolId || null
+      }).returning();
+
+      console.log(`✅ Added new composition to user activity ${userActivityId}`);
+      res.json({ success: true, composition: newComposition });
+    } catch (error) {
+      console.error('Composition creation error:', error);
+      res.status(500).json({ error: 'Failed to create composition' });
+    }
+  });
+
+  // Delete user activity composition
+  router.delete('/user-activities/:userActivityId/compositions/:compositionId', async (req, res) => {
+    try {
+      const userActivityId = parseInt(req.params.userActivityId);
+      const compositionId = parseInt(req.params.compositionId);
+
+      if (isNaN(userActivityId) || isNaN(compositionId)) {
+        return res.status(400).json({ error: 'Invalid IDs' });
+      }
+
+      // Get user ID from auth token
+      let userId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          userId = decoded.userId;
+        } catch (error) {
+          return res.status(401).json({ error: 'Invalid authentication token' });
+        }
+      } else {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      // Verify the user owns this activity
+      const [userActivity] = await db.select()
+        .from(userActivities)
+        .where(and(
+          eq(userActivities.id, userActivityId),
+          eq(userActivities.userId, userId)
+        ));
+
+      if (!userActivity) {
+        return res.status(404).json({ error: 'User activity not found or access denied' });
+      }
+
+      // Delete the composition
+      const deletedComposition = await db.delete(userActivityCompositions)
+        .where(and(
+          eq(userActivityCompositions.id, compositionId),
+          eq(userActivityCompositions.userActivityId, userActivityId)
+        ))
+        .returning();
+
+      if (deletedComposition.length === 0) {
+        return res.status(404).json({ error: 'Composition not found' });
+      }
+
+      console.log(`✅ Deleted composition ${compositionId} from user activity ${userActivityId}`);
+      res.json({ success: true, message: 'Composition deleted successfully' });
+    } catch (error) {
+      console.error('Composition deletion error:', error);
+      res.status(500).json({ error: 'Failed to delete composition' });
     }
   });
 

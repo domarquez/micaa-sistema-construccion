@@ -1,5 +1,5 @@
 import { db } from './db';
-import { activities, activityCompositions, materials, laborCategories, tools } from '../shared/schema';
+import { activities, activityCompositions, materials, laborCategories, tools, userActivities, userActivityCompositions } from '../shared/schema';
 import { eq } from 'drizzle-orm';
 
 export interface APUCalculationResult {
@@ -55,15 +55,44 @@ export interface APUCalculationResult {
 }
 
 export async function calculateAPU(activityId: number): Promise<APUCalculationResult> {
-  // Get activity information
-  const [activity] = await db.select().from(activities).where(eq(activities.id, activityId));
+  console.log(`🔍 APU Calculation for Activity ${activityId}: Starting calculation`);
   
-  if (!activity) {
-    throw new Error(`Activity with ID ${activityId} not found`);
+  // Check if this is a custom activity (ID > 10000)
+  let isCustomActivity = activityId > 10000;
+  let realActivityId = isCustomActivity ? activityId - 10000 : activityId;
+  
+  // Get activity details (for custom activities, get from user_activities)
+  let activity;
+  let compositions;
+  
+  if (isCustomActivity) {
+    console.log(`🔧 Processing custom activity with real ID: ${realActivityId}`);
+    const [userActivity] = await db.select().from(userActivities).where(eq(userActivities.id, realActivityId));
+    if (!userActivity) {
+      console.error(`❌ User Activity with ID ${realActivityId} not found`);
+      throw new Error(`User Activity with ID ${realActivityId} not found`);
+    }
+    activity = {
+      id: activityId,
+      name: userActivity.customActivityName,
+      unit: userActivity.unit,
+      description: userActivity.description
+    };
+    
+    // Get compositions from user_activity_compositions
+    compositions = await db.select().from(userActivityCompositions).where(eq(userActivityCompositions.userActivityId, realActivityId));
+  } else {
+    console.log(`🔧 Processing original activity: ${activityId}`);
+    const [originalActivity] = await db.select().from(activities).where(eq(activities.id, activityId));
+    if (!originalActivity) {
+      console.error(`❌ Activity with ID ${activityId} not found`);
+      throw new Error(`Activity with ID ${activityId} not found`);
+    }
+    activity = originalActivity;
+    
+    // Get compositions from activity_compositions
+    compositions = await db.select().from(activityCompositions).where(eq(activityCompositions.activityId, activityId));
   }
-
-  // Get activity compositions
-  const compositions = await db.select().from(activityCompositions).where(eq(activityCompositions.activityId, activityId));
 
   const materialsData = [];
   const laborData = [];

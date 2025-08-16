@@ -64,13 +64,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### August 16, 2025: Material Personalization System Complete & Activities APU Fixed ✓
-- **Material Duplication Working**: Sistema de precios personalizados funcionando con materiales duplicados (verde para personalizados, blanco para originales)
-- **JWT Authentication Fixed**: Corrección del import de JWT para validación correcta de tokens en el backend
-- **Activity Interface Clean**: Eliminadas referencias a "insucons.com" y opción "Nueva Actividad" removida 
-- **APU Calculator Enhanced**: Sistema de cálculo boliviano completo con cargas sociales (55%), IVA (14.94%), gastos generales (8%), utilidad (15%) e IT (3.09%)
-- **Activity Duplication Ready**: Preparado para implementar sistema de duplicación igual que materiales (próximo paso)
-- **User Authentication**: Token correctamente enviado desde frontend a backend para mostrar precios personalizados
+### August 16, 2025: Complete Activity Duplication System Implemented ✓
+- **Activity Duplication System**: Sistema completo de duplicación de actividades implementado con tables user_activities y user_activity_compositions
+- **Custom Activity Ordering**: Actividades personalizadas aparecen inmediatamente después de su actividad original con fondo verde
+- **APU Calculator for Custom Activities**: Calculator modificado para trabajar con actividades personalizadas (ID > 10000) usando composiciones de user_activity_compositions
+- **Composition Management**: Sistema de composiciones funcionando para actividades personalizadas con endpoints separados
+- **Authentication Integration**: Sistema de autenticación requerido para duplicar actividades y acceso basado en tokens
+- **Visual Feedback**: Actividades personalizadas mostradas en verde con etiqueta "(Personalizada)" y botón duplicar solo para originales
+- **Database Schema**: Nuevas tablas user_activities y user_activity_compositions creadas y funcionando correctamente
 
 ### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
 - **MAJOR FIX**: Material price update system completely repaired and working correctly
