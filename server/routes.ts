@@ -3,7 +3,7 @@ import { db } from './db';
 import { storage as dbStorage } from './storage';
 import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
-import { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -21,10 +21,9 @@ const requireAuth = async (req: Request & { user?: any }, res: Response, next: a
     const token = authHeader.substring(7);
     
     // Verificar token JWT
-    const jwt = await import('jsonwebtoken');
     let decoded: CustomJwtPayload;
     try {
-      decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as CustomJwtPayload;
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as CustomJwtPayload;
     } catch (error) {
       return res.status(401).json({ message: "Token inválido" });
     }
@@ -98,7 +97,7 @@ export async function registerRoutes(app: any) {
         try {
           const token = authHeader.substring(7);
           console.log('🔑 Token received:', token.substring(0, 20) + '...');
-          const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
           userId = decoded.userId;
           console.log('🔍 Materials request with user ID:', userId);
         } catch (error) {
