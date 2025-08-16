@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -19,8 +21,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Package, Users, Wrench } from "lucide-react";
+import { Package, Users, Wrench, Edit, Save, X, Plus, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import type { ActivityComposition } from "@shared/schema";
 
 interface ActivityDetailDialogProps {
@@ -37,6 +42,14 @@ export default function ActivityDetailDialog({
   children 
 }: ActivityDetailDialogProps) {
   const [open, setOpen] = useState(false);
+  const [editingComposition, setEditingComposition] = useState<number | null>(null);
+  const [editValues, setEditValues] = useState<{[key: number]: {quantity: string, unitCost: string, description: string}}>({});
+  const { user } = useAuth();
+  const { toast } = useToast();
+  
+  // Check if this is a custom activity that can be edited
+  const isCustomActivity = activityId > 10000;
+  const realActivityId = isCustomActivity ? activityId - 10000 : activityId;
 
   const { data: compositions, isLoading } = useQuery<ActivityComposition[]>({
     queryKey: ["/api/activities", activityId, "compositions"],
@@ -57,6 +70,103 @@ export default function ActivityDetailDialog({
     },
     enabled: open && activityId > 0,
   });
+
+  // Mutations for editing custom activity compositions
+  const updateCompositionMutation = useMutation({
+    mutationFn: async ({ compositionId, data }: { compositionId: number, data: any }) => {
+      const response = await apiRequest('PUT', `/api/user-activities/${realActivityId}/compositions/${compositionId}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/activities", activityId, "compositions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activities", activityId, "apu-calculation"] });
+      setEditingComposition(null);
+      toast({ title: "Éxito", description: "Composición actualizada correctamente" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "No se pudo actualizar la composición", variant: "destructive" });
+    }
+  });
+
+  const deleteCompositionMutation = useMutation({
+    mutationFn: async (compositionId: number) => {
+      const response = await apiRequest('DELETE', `/api/user-activities/${realActivityId}/compositions/${compositionId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/activities", activityId, "compositions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activities", activityId, "apu-calculation"] });
+      toast({ title: "Éxito", description: "Composición eliminada correctamente" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "No se pudo eliminar la composición", variant: "destructive" });
+    }
+  });
+
+  const addCompositionMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest('POST', `/api/user-activities/${realActivityId}/compositions`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/activities", activityId, "compositions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activities", activityId, "apu-calculation"] });
+      toast({ title: "Éxito", description: "Nueva composición agregada correctamente" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "No se pudo agregar la composición", variant: "destructive" });
+    }
+  });
+
+  const handleEdit = (compositionId: number, composition: ActivityComposition) => {
+    setEditingComposition(compositionId);
+    setEditValues({
+      ...editValues,
+      [compositionId]: {
+        quantity: composition.quantity || '0',
+        unitCost: composition.unitCost || '0',
+        description: composition.description || ''
+      }
+    });
+  };
+
+  const handleSave = (compositionId: number) => {
+    const values = editValues[compositionId];
+    if (values) {
+      updateCompositionMutation.mutate({
+        compositionId,
+        data: {
+          quantity: parseFloat(values.quantity),
+          unitCost: parseFloat(values.unitCost),
+          description: values.description
+        }
+      });
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingComposition(null);
+    setEditValues({});
+  };
+
+  const handleDelete = (compositionId: number) => {
+    if (confirm('¿Estás seguro de que quieres eliminar esta composición?')) {
+      deleteCompositionMutation.mutate(compositionId);
+    }
+  };
+
+  const handleAddComposition = (type: string) => {
+    const description = prompt(`Descripción para nueva ${type === 'material' ? 'material' : type === 'labor' ? 'mano de obra' : 'equipo'}:`);
+    if (description) {
+      addCompositionMutation.mutate({
+        type,
+        description,
+        unit: type === 'material' ? 'UN' : type === 'labor' ? 'HR' : 'HR',
+        quantity: 1,
+        unitCost: 0
+      });
+    }
+  };
 
   // Group compositions by type for detailed tables
   const materials = compositions?.filter(c => c.type === 'material') || [];
@@ -214,6 +324,17 @@ export default function ActivityDetailDialog({
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-sm text-gray-600">
+                        Total materiales: {formatCurrency(materials.reduce((sum, m) => sum + parseFloat(m.quantity) * parseFloat(m.unitCost), 0))}
+                      </div>
+                      {isCustomActivity && user && (
+                        <Button size="sm" onClick={() => handleAddComposition('material')}>
+                          <Plus className="h-4 w-4 mr-1" />
+                          Agregar Material
+                        </Button>
+                      )}
+                    </div>
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -222,18 +343,85 @@ export default function ActivityDetailDialog({
                           <TableHead className="text-right">Cantidad</TableHead>
                           <TableHead className="text-right">Precio Unit.</TableHead>
                           <TableHead className="text-right">Total</TableHead>
+                          {isCustomActivity && user && <TableHead className="text-right">Acciones</TableHead>}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {materials.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-medium">{item.description}</TableCell>
-                            <TableCell>{item.unit}</TableCell>
-                            <TableCell className="text-right">{parseFloat(item.quantity).toFixed(3)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(parseFloat(item.unitCost))}</TableCell>
-                            <TableCell className="text-right font-medium">
-                              {formatCurrency(parseFloat(item.quantity) * parseFloat(item.unitCost))}
+                        {materials.map((item) => (
+                          <TableRow key={item.id}>
+                            <TableCell className="font-medium">
+                              {editingComposition === item.id ? (
+                                <Input
+                                  value={editValues[item.id]?.description || ''}
+                                  onChange={(e) => setEditValues({
+                                    ...editValues,
+                                    [item.id]: { ...editValues[item.id], description: e.target.value }
+                                  })}
+                                  className="w-full"
+                                />
+                              ) : item.description}
                             </TableCell>
+                            <TableCell>{item.unit}</TableCell>
+                            <TableCell className="text-right">
+                              {editingComposition === item.id ? (
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={editValues[item.id]?.quantity || '0'}
+                                  onChange={(e) => setEditValues({
+                                    ...editValues,
+                                    [item.id]: { ...editValues[item.id], quantity: e.target.value }
+                                  })}
+                                  className="w-20 text-right"
+                                />
+                              ) : parseFloat(item.quantity).toFixed(3)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {editingComposition === item.id ? (
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={editValues[item.id]?.unitCost || '0'}
+                                  onChange={(e) => setEditValues({
+                                    ...editValues,
+                                    [item.id]: { ...editValues[item.id], unitCost: e.target.value }
+                                  })}
+                                  className="w-24 text-right"
+                                />
+                              ) : formatCurrency(parseFloat(item.unitCost))}
+                            </TableCell>
+                            <TableCell className="text-right font-medium">
+                              {editingComposition === item.id ? 
+                                formatCurrency(
+                                  parseFloat(editValues[item.id]?.quantity || '0') * 
+                                  parseFloat(editValues[item.id]?.unitCost || '0')
+                                ) :
+                                formatCurrency(parseFloat(item.quantity) * parseFloat(item.unitCost))
+                              }
+                            </TableCell>
+                            {isCustomActivity && user && (
+                              <TableCell className="text-right">
+                                {editingComposition === item.id ? (
+                                  <div className="flex gap-1">
+                                    <Button size="sm" onClick={() => handleSave(item.id)} disabled={updateCompositionMutation.isPending}>
+                                      <Save className="h-3 w-3" />
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={handleCancel}>
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div className="flex gap-1">
+                                    <Button size="sm" variant="outline" onClick={() => handleEdit(item.id, item)}>
+                                      <Edit className="h-3 w-3" />
+                                    </Button>
+                                    <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </TableCell>
+                            )}
                           </TableRow>
                         ))}
                       </TableBody>
@@ -253,6 +441,17 @@ export default function ActivityDetailDialog({
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-sm text-gray-600">
+                        Total mano de obra: {formatCurrency(labor.reduce((sum, l) => sum + parseFloat(l.quantity) * parseFloat(l.unitCost), 0))}
+                      </div>
+                      {isCustomActivity && user && (
+                        <Button size="sm" onClick={() => handleAddComposition('labor')}>
+                          <Plus className="h-4 w-4 mr-1" />
+                          Agregar Mano de Obra
+                        </Button>
+                      )}
+                    </div>
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -261,18 +460,85 @@ export default function ActivityDetailDialog({
                           <TableHead className="text-right">Cantidad</TableHead>
                           <TableHead className="text-right">Precio Unit.</TableHead>
                           <TableHead className="text-right">Total</TableHead>
+                          {isCustomActivity && user && <TableHead className="text-right">Acciones</TableHead>}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {labor.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-medium">{item.description}</TableCell>
-                            <TableCell>{item.unit}</TableCell>
-                            <TableCell className="text-right">{parseFloat(item.quantity).toFixed(3)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(parseFloat(item.unitCost))}</TableCell>
-                            <TableCell className="text-right font-medium">
-                              {formatCurrency(parseFloat(item.quantity) * parseFloat(item.unitCost))}
+                        {labor.map((item) => (
+                          <TableRow key={item.id}>
+                            <TableCell className="font-medium">
+                              {editingComposition === item.id ? (
+                                <Input
+                                  value={editValues[item.id]?.description || ''}
+                                  onChange={(e) => setEditValues({
+                                    ...editValues,
+                                    [item.id]: { ...editValues[item.id], description: e.target.value }
+                                  })}
+                                  className="w-full"
+                                />
+                              ) : item.description}
                             </TableCell>
+                            <TableCell>{item.unit}</TableCell>
+                            <TableCell className="text-right">
+                              {editingComposition === item.id ? (
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={editValues[item.id]?.quantity || '0'}
+                                  onChange={(e) => setEditValues({
+                                    ...editValues,
+                                    [item.id]: { ...editValues[item.id], quantity: e.target.value }
+                                  })}
+                                  className="w-20 text-right"
+                                />
+                              ) : parseFloat(item.quantity).toFixed(3)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {editingComposition === item.id ? (
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={editValues[item.id]?.unitCost || '0'}
+                                  onChange={(e) => setEditValues({
+                                    ...editValues,
+                                    [item.id]: { ...editValues[item.id], unitCost: e.target.value }
+                                  })}
+                                  className="w-24 text-right"
+                                />
+                              ) : formatCurrency(parseFloat(item.unitCost))}
+                            </TableCell>
+                            <TableCell className="text-right font-medium">
+                              {editingComposition === item.id ? 
+                                formatCurrency(
+                                  parseFloat(editValues[item.id]?.quantity || '0') * 
+                                  parseFloat(editValues[item.id]?.unitCost || '0')
+                                ) :
+                                formatCurrency(parseFloat(item.quantity) * parseFloat(item.unitCost))
+                              }
+                            </TableCell>
+                            {isCustomActivity && user && (
+                              <TableCell className="text-right">
+                                {editingComposition === item.id ? (
+                                  <div className="flex gap-1">
+                                    <Button size="sm" onClick={() => handleSave(item.id)} disabled={updateCompositionMutation.isPending}>
+                                      <Save className="h-3 w-3" />
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={handleCancel}>
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div className="flex gap-1">
+                                    <Button size="sm" variant="outline" onClick={() => handleEdit(item.id, item)}>
+                                      <Edit className="h-3 w-3" />
+                                    </Button>
+                                    <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </TableCell>
+                            )}
                           </TableRow>
                         ))}
                       </TableBody>
