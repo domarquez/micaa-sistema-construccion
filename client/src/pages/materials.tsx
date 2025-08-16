@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatRelativeTime, debounce } from "@/lib/utils";
 import { queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 import MaterialForm from "@/components/materials/material-form";
 import type { MaterialWithCategory, MaterialWithCustomPrice, MaterialCategory } from "@shared/schema";
 import AdInFeed from "@/components/ads/AdInFeed";
@@ -57,6 +58,7 @@ export default function Materials() {
   const [customizingMaterial, setCustomizingMaterial] = useState<MaterialWithCustomPrice | null>(null);
   const [newCustomPrice, setNewCustomPrice] = useState("");
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const { data: categories, isLoading: categoriesLoading } = useQuery<MaterialCategory[]>({
     queryKey: ["/api/material-categories"],
@@ -486,23 +488,31 @@ export default function Materials() {
                                 <User className="w-4 h-4" />
                               </Button>
                             )}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEdit(material)}
-                              className="text-primary hover:text-primary-variant"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(material.id)}
-                              className="text-red-600 hover:text-red-900"
-                              disabled={deleteMutation.isPending}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            {/* Solo mostrar edición admin si el usuario es admin */}
+                            {user?.role === 'admin' && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEdit(material)}
+                                className="text-primary hover:text-primary-variant"
+                                title="Editar material (Solo Admin)"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {/* Solo mostrar eliminación si el usuario es admin */}
+                            {user?.role === 'admin' && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDelete(material.id)}
+                                className="text-red-600 hover:text-red-900"
+                                disabled={deleteMutation.isPending}
+                                title="Eliminar material (Solo Admin)"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>

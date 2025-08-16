@@ -81,10 +81,11 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  // Materials routes with category information
-  router.get('/materials', async (req: Request, res: Response) => {
+  // Materials routes with category information and custom pricing
+  router.get('/materials', requireAuth, async (req: any, res: Response) => {
     try {
       const { search, category, limit = '50' } = req.query;
+      const userId = req.user?.id;
       
       // Build where conditions
       let whereConditions = [];
@@ -109,12 +110,26 @@ export async function registerRoutes(app: any) {
       // Get all categories
       const categories = await db.select().from(materialCategories).orderBy(asc(materialCategories.name));
       
-      // Combine materials with category information
+      // Get user's custom prices if authenticated
+      let userCustomPrices = [];
+      if (userId) {
+        userCustomPrices = await db.select().from(userMaterialPrices).where(eq(userMaterialPrices.userId, userId));
+      }
+      
+      // Combine materials with category information and custom pricing
       const materialsWithCategories = materialsData.map(material => {
         const category = categories.find(c => c.id === material.categoryId);
+        const customPrice = userCustomPrices.find(cp => cp.originalMaterialName === material.name);
+        
         return {
           ...material,
-          category: category || { id: 0, name: 'Sin Categoría' }
+          category: category || { id: 0, name: 'Sin Categoría' },
+          hasCustomPrice: !!customPrice,
+          customPrice: customPrice ? {
+            customPrice: customPrice.price,
+            customName: customPrice.customMaterialName,
+            reason: customPrice.reason
+          } : null
         };
       });
       
@@ -353,6 +368,90 @@ export async function registerRoutes(app: any) {
       res.json(factors);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch city factors' });
+    }
+  });
+
+  // User custom material pricing endpoints
+  router.post('/materials/:id/custom-price', requireAuth, async (req: any, res) => {
+    try {
+      const materialId = parseInt(req.params.id);
+      const { customPrice, reason } = req.body;
+      const userId = req.user.id;
+
+      if (!customPrice || customPrice <= 0) {
+        return res.status(400).json({ error: 'Precio personalizado inválido' });
+      }
+
+      // Get the original material
+      const material = await db.select().from(materials).where(eq(materials.id, materialId)).limit(1);
+      if (material.length === 0) {
+        return res.status(404).json({ error: 'Material no encontrado' });
+      }
+
+      // Check if user already has a custom price for this material
+      const existingCustomPrice = await db.select()
+        .from(userMaterialPrices)
+        .where(and(
+          eq(userMaterialPrices.userId, userId),
+          eq(userMaterialPrices.originalMaterialName, material[0].name)
+        ))
+        .limit(1);
+
+      if (existingCustomPrice.length > 0) {
+        // Update existing custom price
+        const updated = await db.update(userMaterialPrices)
+          .set({
+            price: customPrice.toString(),
+            reason: reason || 'Precio personalizado actualizado',
+            updatedAt: new Date()
+          })
+          .where(eq(userMaterialPrices.id, existingCustomPrice[0].id))
+          .returning();
+
+        res.json({ success: true, customPrice: updated[0] });
+      } else {
+        // Create new custom price
+        const newCustomPrice = await db.insert(userMaterialPrices)
+          .values({
+            userId,
+            originalMaterialName: material[0].name,
+            customMaterialName: material[0].name,
+            price: customPrice.toString(),
+            unit: material[0].unit,
+            reason: reason || 'Precio personalizado'
+          })
+          .returning();
+
+        res.json({ success: true, customPrice: newCustomPrice[0] });
+      }
+    } catch (error) {
+      console.error('Error saving custom price:', error);
+      res.status(500).json({ error: 'Error al guardar precio personalizado' });
+    }
+  });
+
+  router.delete('/materials/:id/custom-price', requireAuth, async (req: any, res) => {
+    try {
+      const materialId = parseInt(req.params.id);
+      const userId = req.user.id;
+
+      // Get the original material
+      const material = await db.select().from(materials).where(eq(materials.id, materialId)).limit(1);
+      if (material.length === 0) {
+        return res.status(404).json({ error: 'Material no encontrado' });
+      }
+
+      // Delete user's custom price
+      await db.delete(userMaterialPrices)
+        .where(and(
+          eq(userMaterialPrices.userId, userId),
+          eq(userMaterialPrices.originalMaterialName, material[0].name)
+        ));
+
+      res.json({ success: true, message: 'Precio personalizado eliminado' });
+    } catch (error) {
+      console.error('Error removing custom price:', error);
+      res.status(500).json({ error: 'Error al eliminar precio personalizado' });
     }
   });
 
