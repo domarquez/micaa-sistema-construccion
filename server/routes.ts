@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { db } from './db';
 import { storage as dbStorage } from './storage';
-import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings } from '../shared/schema';
+import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import { JwtPayload } from 'jsonwebtoken';
 
@@ -82,10 +82,22 @@ export async function registerRoutes(app: any) {
   });
 
   // Materials routes with category information and custom pricing
-  router.get('/materials', requireAuth, async (req: any, res: Response) => {
+  router.get('/materials', async (req, res) => {
     try {
       const { search, category, limit = '50' } = req.query;
-      const userId = req.user?.id;
+      
+      // Try to get user ID from auth token if present (optional)
+      let userId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          userId = decoded.userId;
+        } catch (error) {
+          // Token invalid or expired, continue without user context
+        }
+      }
       
       // Build where conditions
       let whereConditions = [];

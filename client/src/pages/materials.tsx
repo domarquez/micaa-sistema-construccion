@@ -44,7 +44,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { formatCurrency, formatRelativeTime, debounce } from "@/lib/utils";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, getQueryFn } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import MaterialForm from "@/components/materials/material-form";
 import type { MaterialWithCategory, MaterialWithCustomPrice, MaterialCategory } from "@shared/schema";
@@ -76,19 +76,7 @@ export default function Materials() {
         category: selectedCategory && selectedCategory !== "all" ? selectedCategory : undefined 
       }
     ],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (searchQuery.length > 0) {
-        params.append('search', searchQuery);
-      }
-      if (selectedCategory && selectedCategory !== "all") {
-        params.append('category', selectedCategory);
-      }
-      
-      const response = await fetch(`/api/materials?${params.toString()}`);
-      if (!response.ok) throw new Error('Failed to fetch materials');
-      return response.json();
-    },
+    queryFn: getQueryFn({ on401: "throw" }),
   });
 
   // Debounced search
