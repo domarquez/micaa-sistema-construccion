@@ -55,8 +55,7 @@ export default function ActivityDetailDialog({
   const { data: compositions, isLoading } = useQuery<ActivityComposition[]>({
     queryKey: ["/api/activities", activityId, "compositions"],
     queryFn: async () => {
-      const response = await fetch(`/api/activities/${activityId}/compositions`);
-      if (!response.ok) throw new Error('Failed to fetch compositions');
+      const response = await apiRequest('GET', `/api/activities/${activityId}/compositions`);
       return response.json();
     },
     enabled: open && activityId > 0,
@@ -65,8 +64,7 @@ export default function ActivityDetailDialog({
   const { data: apuCalculation, isLoading: calculationLoading } = useQuery({
     queryKey: ["/api/activities", activityId, "apu-calculation"],
     queryFn: async () => {
-      const response = await fetch(`/api/activities/${activityId}/apu-calculation`);
-      if (!response.ok) throw new Error('Failed to fetch APU calculation');
+      const response = await apiRequest('GET', `/api/activities/${activityId}/apu-calculation`);
       return response.json();
     },
     enabled: open && activityId > 0,
@@ -163,19 +161,28 @@ export default function ActivityDetailDialog({
   // Get catalogs for selection
   const { data: materialsCatalog } = useQuery({
     queryKey: ["/api/materials"],
-    queryFn: getQueryFn({ on401: "throw" }),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/materials');
+      return response.json();
+    },
     enabled: showAddModal.open && showAddModal.type === 'material'
   });
 
   const { data: laborCatalog } = useQuery({
     queryKey: ["/api/labor-categories"],
-    queryFn: getQueryFn({ on401: "throw" }),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/labor-categories');
+      return response.json();
+    },
     enabled: showAddModal.open && showAddModal.type === 'labor'
   });
 
   const { data: toolsCatalog } = useQuery({
     queryKey: ["/api/tools"],
-    queryFn: getQueryFn({ on401: "throw" }),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/tools');
+      return response.json();
+    },
     enabled: showAddModal.open && showAddModal.type === 'equipment'
   });
 
