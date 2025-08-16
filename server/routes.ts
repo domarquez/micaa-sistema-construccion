@@ -1023,6 +1023,27 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Fix composition connections - Development tool
+  app.post('/api/admin/fix-composition-connections', requireAuth, async (req: Request, res: Response) => {
+    try {
+      if (req.user?.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { fixCompositionConnections } = await import('./fix-composition-connections.js');
+      const results = await fixCompositionConnections();
+      
+      res.json({
+        success: true,
+        message: 'Composition connections fixed successfully',
+        results
+      });
+    } catch (error) {
+      console.error('❌ Error fixing composition connections:', error);
+      res.status(500).json({ error: 'Failed to fix composition connections' });
+    }
+  });
+
   app.get("/api/growth-data", async (req, res) => {
     try {
       // Generate realistic growth data for the last 6 months
