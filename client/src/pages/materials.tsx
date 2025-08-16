@@ -118,10 +118,13 @@ export default function Materials() {
       return response.json();
     },
     onSuccess: () => {
+      // Forzar recarga completa de materiales
       queryClient.invalidateQueries({ queryKey: ["/api/materials"] });
+      queryClient.refetchQueries({ queryKey: ["/api/materials"] });
+      refetchMaterials();
       toast({
         title: "Precio personalizado guardado",
-        description: "Tu precio personalizado ha sido guardado. Solo tu lo verás en tus proyectos.",
+        description: "Tu precio personalizado ha sido guardado. Ahora verás el material duplicado con fondo verde.",
       });
     },
     onError: () => {
@@ -138,7 +141,10 @@ export default function Materials() {
       await apiRequest('DELETE', `/api/materials/${materialId}/custom-price`);
     },
     onSuccess: () => {
+      // Forzar recarga para eliminar duplicado
       queryClient.invalidateQueries({ queryKey: ["/api/materials"] });
+      queryClient.refetchQueries({ queryKey: ["/api/materials"] });
+      refetchMaterials();
       toast({
         title: "Precio restaurado",
         description: "Se ha restaurado el precio original del sistema.",

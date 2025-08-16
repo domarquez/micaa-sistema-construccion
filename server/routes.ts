@@ -153,7 +153,7 @@ export async function registerRoutes(app: any) {
               ...originalMaterial,
               id: `custom_${originalMaterial.id}_${customPrice.id}`, // Unique ID for custom version
               name: customPrice.customMaterialName,
-              price: parseFloat(customPrice.price),
+              price: parseFloat(customPrice.price.toString()),
               category: category || { id: 0, name: 'Sin Categoría' },
               hasCustomPrice: true,
               customPrice: {
