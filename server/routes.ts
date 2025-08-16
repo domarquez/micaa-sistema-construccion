@@ -84,6 +84,11 @@ export async function registerRoutes(app: any) {
   // Materials routes with category information and custom pricing
   router.get('/materials', async (req, res) => {
     try {
+      // Deshabilitar caché
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      
       const { search, category, limit = '50' } = req.query;
       
       // Try to get user ID from auth token if present (optional)
@@ -94,8 +99,9 @@ export async function registerRoutes(app: any) {
           const token = authHeader.substring(7);
           const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
           userId = decoded.userId;
+          console.log('🔍 Materials request with user ID:', userId);
         } catch (error) {
-          // Token invalid or expired, continue without user context
+          console.log('⚠️ Materials request without valid auth');
         }
       }
       
@@ -126,6 +132,12 @@ export async function registerRoutes(app: any) {
       let userCustomPrices = [];
       if (userId) {
         userCustomPrices = await db.select().from(userMaterialPrices).where(eq(userMaterialPrices.userId, userId));
+          console.log('🔧 Found custom prices for user:', userId, 'count:', userCustomPrices.length);
+        userCustomPrices.forEach(cp => {
+          console.log(`  - ${cp.originalMaterialName} -> ${cp.customMaterialName} (${cp.price})`);
+        });
+      } else {
+        console.log('📋 No user authentication, showing public materials only');
       }
       
       // Combine materials with category information and create duplicates for custom pricing
