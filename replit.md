@@ -79,6 +79,15 @@ Preferred communication style: Simple, everyday language.
 - **Server Running Successfully**: Application now starts and serves on port 5000
 - **Database Connection Verified**: PostgreSQL connection established and working properly
 
+### August 17, 2025: Complete Budget Integration for Custom Activities Fixed ✓
+- **Bridge Activities System**: Custom activities correctly saved in budgets using bridge activities that create temporary entries in activities table  
+- **Personalized Names Display**: Custom activities appear with correct names followed by "(Personalizada)" in saved budgets
+- **Database Optimization**: System reuses existing bridge activities to prevent unnecessary duplication
+- **Complete Data Persistence**: Quantities, prices, and custom activity names save and display correctly in budget details
+- **Verified Integration**: Confirmed through API testing that budget items include proper activity names and isCustomActivity flags
+- **Enhanced Budget Details**: Budget detail view correctly shows custom activities with personalized naming
+- **Full Custom Activity Workflow**: From creation to budget inclusion, all functionality working seamlessly
+
 ### August 17, 2025: Complete Activity System with Visual Interface Fixed ✓
 - **Visual Activity System**: Activities duplicadas now display correctly in green with "Personalizada" labels in main activities list
 - **Custom Activities Page**: Enhanced to show both duplicated activities (green section) and manually created activities
