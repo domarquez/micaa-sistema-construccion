@@ -813,14 +813,14 @@ export async function registerRoutes(app: any) {
     try {
       console.log("Datos recibidos para crear presupuesto:", req.body);
       
-      const { projectId, phaseActivities, total } = req.body;
+      const { projectId, phaseId, total, status } = req.body;
       
       if (!projectId) {
         return res.status(400).json({ message: "ID del proyecto es requerido" });
       }
       
-      if (!phaseActivities || Object.keys(phaseActivities).length === 0) {
-        return res.status(400).json({ message: "Debe seleccionar al menos una actividad" });
+      if (!total || total <= 0) {
+        return res.status(400).json({ message: "El total del presupuesto debe ser mayor a 0" });
       }
       
       // Verificar que el proyecto pertenece al usuario
@@ -836,48 +836,79 @@ export async function registerRoutes(app: any) {
       // Crear el presupuesto
       const budgetData = {
         projectId: projectId,
+        phaseId: phaseId || null,
         total: total.toString(),
-        status: 'draft'
+        status: status || 'draft'
       };
       
       console.log("Creando presupuesto:", budgetData);
       
       const [budget] = await db.insert(budgets).values(budgetData).returning();
       
-      console.log("Presupuesto creado:", budget);
-      
-      // Crear los items del presupuesto
-      const budgetItemsData = [];
-      
-      for (const [phaseId, activities] of Object.entries(phaseActivities)) {
-        for (const activity of activities as any[]) {
-          budgetItemsData.push({
-            budgetId: budget.id,
-            activityId: activity.id,
-            phaseId: parseInt(phaseId),
-            quantity: activity.quantity.toString(),
-            unitPrice: activity.unitPrice.toString(),
-            subtotal: activity.subtotal.toString()
-          });
-        }
-      }
-      
-      console.log("Creando items del presupuesto:", budgetItemsData);
-      
-      if (budgetItemsData.length > 0) {
-        await db.insert(budgetItems).values(budgetItemsData);
-      }
-      
-      console.log("Presupuesto y items creados exitosamente");
+      console.log("Presupuesto creado exitosamente:", budget);
       
       res.status(201).json({
-        budget,
+        id: budget.id,
+        projectId: budget.projectId,
+        phaseId: budget.phaseId,
+        total: budget.total,
+        status: budget.status,
+        createdAt: budget.createdAt,
+        updatedAt: budget.updatedAt,
         message: "Presupuesto creado exitosamente"
       });
       
     } catch (error) {
       console.error("Error creating budget:", error);
       res.status(500).json({ message: "Error al crear el presupuesto" });
+    }
+  });
+
+  // Budget items creation endpoint
+  router.post('/budget-items', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      console.log("Datos recibidos para crear item del presupuesto:", req.body);
+      
+      const { budgetId, activityId, phaseId, quantity, unitPrice, subtotal } = req.body;
+      
+      if (!budgetId || !activityId || !quantity || !unitPrice) {
+        return res.status(400).json({ message: "Todos los campos son requeridos" });
+      }
+      
+      // Verificar que el presupuesto existe y pertenece a un proyecto del usuario
+      const budgetCheck = await db.select({
+        budgetId: budgets.id,
+        projectUserId: projects.userId
+      })
+        .from(budgets)
+        .innerJoin(projects, eq(budgets.projectId, projects.id))
+        .where(and(eq(budgets.id, budgetId), eq(projects.userId, req.user.id)))
+        .limit(1);
+      
+      if (budgetCheck.length === 0) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
+      }
+      
+      const itemData = {
+        budgetId: budgetId,
+        activityId: activityId,
+        phaseId: phaseId || null,
+        quantity: quantity.toString(),
+        unitPrice: unitPrice.toString(),
+        subtotal: subtotal.toString()
+      };
+      
+      console.log("Creando item del presupuesto:", itemData);
+      
+      const [item] = await db.insert(budgetItems).values(itemData).returning();
+      
+      console.log("Item del presupuesto creado:", item);
+      
+      res.status(201).json(item);
+      
+    } catch (error) {
+      console.error("Error creating budget item:", error);
+      res.status(500).json({ message: "Error al crear el item del presupuesto" });
     }
   });
 
