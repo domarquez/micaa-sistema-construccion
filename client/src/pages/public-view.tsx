@@ -12,6 +12,8 @@ import AdHeader from "@/components/ads/AdHeader";
 import AdInFeed from "@/components/ads/AdInFeed";
 import AdFooter from "@/components/ads/AdFooter";
 import AdMobile from "@/components/ads/AdMobile";
+import { AdCarousel } from "@/components/advertising/ad-carousel";
+import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
 import {
   Table,
   TableBody,
@@ -273,6 +275,12 @@ export default function PublicView() {
 
         {/* Banner Ad después del header */}
         <BannerAd />
+
+        {/* Carrusel de Publicidades de Proveedores */}
+        <AdCarousel />
+
+        {/* Ticker de Noticias de Construcción */}
+        <ConstructionNewsTicker />
 
         {/* Métricas Compactas del Sistema - Optimizado para móviles */}
         <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 mobile-padding">
