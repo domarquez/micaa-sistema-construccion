@@ -142,19 +142,31 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   useEffect(() => {
     if (budget && budgetData && allActivities && constructionPhases && 
         typeof budgetData === 'object' && 'project' in budgetData && 'items' in budgetData) {
-      setCurrentProject(budgetData.project);
+      setCurrentProject(budgetData.project as any);
       
       // Organizar elementos por fases
       const phaseGroups: Record<number, BudgetItemData[]> = {};
       
-      budgetData.items.forEach((item: any) => {
+      (budgetData.items as any[]).forEach((item: any) => {
         if (!item.phaseId) return;
         
         if (!phaseGroups[item.phaseId]) {
           phaseGroups[item.phaseId] = [];
         }
         
-        const activity = allActivities.find(a => a.id === item.activityId);
+        // For custom activities, use the activity data from the backend response
+        // For system activities, find them in allActivities
+        let activity = allActivities.find(a => a.id === item.activityId);
+        
+        // If not found in allActivities (like bridge activities), use the activity data from the item
+        if (!activity && item.activity) {
+          activity = {
+            id: item.activity.id,
+            name: item.activity.name,
+            unit: item.activity.unit,
+            phaseId: item.phaseId
+          } as any;
+        }
         
         phaseGroups[item.phaseId].push({
           id: item.id.toString(),
@@ -636,6 +648,12 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                                     className="w-full p-2 border rounded text-sm"
                                   >
                                     <option value={0}>Seleccionar actividad...</option>
+                                    {/* Show current activity if it's a custom activity */}
+                                    {item.activity && !allActivities.find(a => a.id === item.activityId) && (
+                                      <option key={item.activity.id} value={item.activity.id} style={{backgroundColor: '#dcfce7'}}>
+                                        {item.activity.name}
+                                      </option>
+                                    )}
                                     {allActivities
                                       ?.filter(activity => activity.phaseId === phaseData.phaseId)
                                       ?.map((activity) => (
