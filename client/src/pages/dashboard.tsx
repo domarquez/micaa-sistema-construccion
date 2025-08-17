@@ -24,6 +24,8 @@ import type { BudgetWithProject } from "@shared/schema";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import AdInFeed from "@/components/ads/AdInFeed";
 import AdFooter from "@/components/ads/AdFooter";
+import { AdCarousel } from "@/components/advertising/ad-carousel";
+import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
 
 interface Statistics {
   totalMaterials: number;
@@ -190,6 +192,12 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Construction News Ticker */}
+      <ConstructionNewsTicker />
+
+      {/* Supplier Advertisements Carousel */}
+      <AdCarousel />
 
       {/* Growth Chart */}
       <Card className="shadow-material">

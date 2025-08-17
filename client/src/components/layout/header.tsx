@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus } from "lucide-react";
+import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus, Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ContactForm } from "@/components/contact-form";
 import { MicaaLogo } from "@/components/micaa-logo";
@@ -51,7 +51,10 @@ export default function AppHeader() {
     <header className="bg-white shadow-material sticky top-0 z-50 border-b">
       <div className="flex h-12 sm:h-14 md:h-16 items-center justify-between px-2 sm:px-3 md:px-6">
         <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4 min-w-0">
-          <SidebarTrigger className="md:hidden flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8" />
+          <SidebarTrigger className="md:hidden flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8">
+            <Menu className="h-4 w-4" />
+            <span className="sr-only">Abrir menú</span>
+          </SidebarTrigger>
           <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
             <MicaaLogo size="sm" showText={false} className="md:hidden scale-75 sm:scale-90" />
             <MicaaLogo size="md" showText={true} className="hidden md:block" />
