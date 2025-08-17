@@ -121,17 +121,29 @@ export default function Budgets() {
           
           if (budgetResponse.ok) {
             budgetDetails = await budgetResponse.json();
+            console.log('✅ Datos del presupuesto obtenidos exitosamente');
+          } else {
+            console.log('❌ Error de autenticación:', budgetResponse.status);
           }
         } catch (error) {
-          console.log('Error obteniendo datos detallados, usando datos básicos');
+          console.log('❌ Error de conexión:', error);
         }
+      } else {
+        console.log('❌ Sin token disponible');
       }
+
+      // Depuración: verificar qué datos tenemos
+      console.log('Budget details:', budgetDetails);
+      console.log('Has items:', budgetDetails?.items?.length);
+      console.log('Token available:', !!token);
 
       // Si tenemos datos detallados, generar APU completo
       if (budgetDetails && budgetDetails.items && budgetDetails.items.length > 0) {
+        console.log('Generando APU completo con', budgetDetails.items.length, 'items');
         await generateDetailedAPU(budget, budgetDetails, token);
       } else {
         // Si no hay datos detallados, generar PDF básico
+        console.log('Generando PDF básico - motivo:', !budgetDetails ? 'No budgetDetails' : !budgetDetails.items ? 'No items array' : 'Items array empty');
         await generateBasicPDF(budget);
       }
       
@@ -365,8 +377,18 @@ export default function Budgets() {
     const doc = new jsPDF();
     
     const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 20;
+    const margin = 15;
     let yPosition = 20;
+
+    // Función para verificar si necesita nueva página
+    const checkNewPage = (requiredSpace = 20) => {
+      if (yPosition > 270 - requiredSpace) {
+        doc.addPage();
+        yPosition = 20;
+        return true;
+      }
+      return false;
+    };
 
     // Encabezado empresarial
     doc.setFontSize(18);
@@ -378,7 +400,7 @@ export default function Budgets() {
 
     // Título del documento
     doc.setFontSize(16);
-    doc.text('RESUMEN DE PRESUPUESTO', pageWidth / 2, yPosition, { align: 'center' });
+    doc.text('PRESUPUESTO DE OBRA', pageWidth / 2, yPosition, { align: 'center' });
     yPosition += 20;
 
     // Información del proyecto
@@ -389,6 +411,8 @@ export default function Budgets() {
     yPosition += 8;
     doc.text(`UBICACION: ${budget.project?.location || 'No especificada'}`, margin, yPosition);
     yPosition += 8;
+    doc.text(`CIUDAD: ${budget.project?.city || 'No especificada'}`, margin, yPosition);
+    yPosition += 8;
     doc.text(`FECHA: ${new Date().toLocaleDateString('es-BO')}`, margin, yPosition);
     yPosition += 8;
     doc.text(`PRESUPUESTO #${budget.id}`, margin, yPosition);
@@ -396,36 +420,93 @@ export default function Budgets() {
     doc.text(`FASE: ${budget.phase?.name || 'Multifase'}`, margin, yPosition);
     yPosition += 20;
 
-    // Total destacado
-    doc.setFontSize(16);
-    doc.text('TOTAL GENERAL:', margin, yPosition);
-    doc.text(`Bs ${parseFloat(budget.total).toFixed(2)}`, margin + 120, yPosition);
-    yPosition += 20;
+    // Obtener actividades del presupuesto de la lista actual
+    checkNewPage(50);
+    doc.setFontSize(12);
+    doc.text('RESUMEN DE ACTIVIDADES:', margin, yPosition);
+    yPosition += 10;
 
-    // Nota
-    doc.setFontSize(10);
-    doc.text('NOTA: Para obtener el desglose APU completo, inicie sesión', margin, yPosition);
+    // Encabezados de tabla
+    doc.setFontSize(9);
+    doc.text('ITEM', margin, yPosition);
+    doc.text('DESCRIPCION', margin + 20, yPosition);
+    doc.text('UND', margin + 120, yPosition);
+    doc.text('CANTIDAD', margin + 140, yPosition);
+    doc.text('SUBTOTAL (Bs)', margin + 170, yPosition);
     yPosition += 6;
-    doc.text('en MICAA y utilice la función de descarga detallada.', margin, yPosition);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 8;
+
+    // Nota sobre datos
+    doc.setFontSize(8);
+    doc.text('NOTA: Para el desglose completo APU (Análisis de Precios Unitarios) con', margin, yPosition);
+    yPosition += 4;
+    doc.text('materiales, mano de obra y herramientas, mantenga la sesión activa en MICAA.', margin, yPosition);
     yPosition += 15;
 
-    // Condiciones
-    doc.setFontSize(8);
+    // Total destacado
+    checkNewPage(30);
+    doc.setFontSize(14);
+    doc.text('RESUMEN FINANCIERO:', margin, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    doc.text('TOTAL GENERAL:', margin, yPosition);
+    doc.text(`Bs ${parseFloat(budget.total).toFixed(2)}`, margin + 120, yPosition);
+    yPosition += 15;
+
+    // Información adicional si está disponible
+    if (budget.project?.equipmentPercentage) {
+      doc.setFontSize(10);
+      doc.text('PORCENTAJES APLICADOS:', margin, yPosition);
+      yPosition += 6;
+      doc.setFontSize(9);
+      doc.text(`• Equipos y herramientas: ${budget.project.equipmentPercentage}%`, margin + 5, yPosition);
+      yPosition += 4;
+      if (budget.project.administrativePercentage) {
+        doc.text(`• Gastos administrativos: ${budget.project.administrativePercentage}%`, margin + 5, yPosition);
+        yPosition += 4;
+      }
+      if (budget.project.utilityPercentage) {
+        doc.text(`• Utilidad: ${budget.project.utilityPercentage}%`, margin + 5, yPosition);
+        yPosition += 4;
+      }
+      if (budget.project.taxPercentage) {
+        doc.text(`• Impuestos: ${budget.project.taxPercentage}%`, margin + 5, yPosition);
+        yPosition += 4;
+      }
+      yPosition += 8;
+    }
+
+    // Condiciones generales
+    checkNewPage(40);
+    doc.setFontSize(10);
     doc.text('CONDICIONES GENERALES:', margin, yPosition);
-    yPosition += 6;
+    yPosition += 8;
+    doc.setFontSize(8);
     doc.text('• Validez de la oferta: 30 días calendario', margin + 5, yPosition);
     yPosition += 4;
     doc.text('• Moneda: Bolivianos (Bs)', margin + 5, yPosition);
     yPosition += 4;
     doc.text('• Precios incluyen materiales, mano de obra y gastos generales', margin + 5, yPosition);
+    yPosition += 4;
+    doc.text('• Para modificaciones, contactar a MICAA', margin + 5, yPosition);
+    yPosition += 4;
+    doc.text('• Este documento es un resumen. El APU completo requiere acceso autenticado', margin + 5, yPosition);
+    yPosition += 15;
+
+    // Pie de página
+    doc.setFontSize(7);
+    doc.text('Generado por MICAA - Sistema Integral de Construcción y Arquitectura', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 4;
+    doc.text('Para obtener el APU completo con análisis detallado, acceda a su cuenta en MICAA', pageWidth / 2, yPosition, { align: 'center' });
 
     // Descargar
     const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
-    doc.save(`Presupuesto_Resumen_${projectName}_${budget.id}.pdf`);
+    doc.save(`Presupuesto_${projectName}_${budget.id}.pdf`);
     
     toast({
-      title: "PDF básico generado",
-      description: "Se descargó un resumen del presupuesto. Para APU completo, mantenga la sesión activa.",
+      title: "Presupuesto generado",
+      description: "Se descargó el resumen del presupuesto. Para APU completo, mantenga la sesión activa.",
     });
   };
 
