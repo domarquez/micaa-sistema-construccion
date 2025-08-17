@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Package, Store, Search, Menu, X, User, UserPlus } from "lucide-react";
+import { MobileAdCarousel } from "@/components/mobile/mobile-ad-carousel";
+import { MobileNewsTicker } from "@/components/mobile/mobile-news-ticker";
 
 export default function MobileSimple() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -149,6 +151,12 @@ export default function MobileSimple() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Advertisement Carousel */}
+        <MobileAdCarousel />
+
+        {/* Construction News Ticker */}
+        <MobileNewsTicker />
 
         {/* Search */}
         <div className="relative">
