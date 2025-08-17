@@ -133,30 +133,59 @@ export default function PublicView() {
       <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-40">
         <SidebarAd />
       </div>
-      {/* Header Público */}
+      {/* Header Público - Mobile Optimized */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 md:py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center space-x-2 md:space-x-4">
-              <MicaaLogo size="md" showText={true} className="md:hidden" />
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 md:py-4">
+          <div className="flex flex-col gap-3">
+            {/* Logo y descripción */}
+            <div className="flex items-center justify-center sm:justify-start space-x-2">
+              <MicaaLogo size="sm" showText={true} className="sm:hidden scale-90" />
+              <MicaaLogo size="md" showText={true} className="hidden sm:block md:hidden" />
               <MicaaLogo size="lg" showText={true} className="hidden md:block" />
-              <div className="hidden lg:block">
-                <p className="text-gray-600 dark:text-gray-400 text-sm lg:text-lg">
-                  Explora materiales y proveedores de construcción en Bolivia
-                </p>
-              </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+            
+            {/* Descripción para móviles */}
+            <div className="text-center sm:text-left sm:hidden">
+              <p className="text-gray-600 dark:text-gray-400 text-xs leading-tight">
+                Materiales y proveedores de construcción en Bolivia
+              </p>
+            </div>
+            
+            {/* Descripción para tablet/desktop */}
+            <div className="hidden sm:block lg:hidden text-center sm:text-left">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Explora materiales y proveedores de construcción en Bolivia
+              </p>
+            </div>
+            
+            {/* Descripción completa para desktop */}
+            <div className="hidden lg:block">
+              <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg">
+                Explora materiales y proveedores de construcción en Bolivia
+              </p>
+            </div>
+            
+            {/* Botones de acción */}
+            <div className="flex flex-row gap-2 w-full">
               <ContactForm 
                 triggerText="Contacto"
                 triggerVariant="outline"
-                className="hidden md:flex items-center space-x-2"
+                className="hidden md:flex items-center space-x-2 flex-1"
               />
-              <Button variant="outline" onClick={() => window.location.href = "/login"} className="w-full sm:w-auto">
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = "/login"} 
+                className="flex-1 text-xs sm:text-sm py-2"
+                size="sm"
+              >
                 <span className="sm:hidden">Iniciar</span>
                 <span className="hidden sm:inline">Iniciar Sesión</span>
               </Button>
-              <Button onClick={() => window.location.href = "/register"} className="w-full sm:w-auto">
+              <Button 
+                onClick={() => window.location.href = "/register"} 
+                className="flex-1 text-xs sm:text-sm py-2"
+                size="sm"
+              >
                 Registrarse
               </Button>
             </div>
@@ -172,7 +201,7 @@ export default function PublicView() {
       {/* Mobile Ad - Solo móvil */}
       <AdMobile className="md:hidden" />
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 md:py-6 space-y-4 md:space-y-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4 md:py-6 space-y-2 sm:space-y-4 md:space-y-6">
         {/* Publicidad Dual - Lado a Lado - Primero */}
         {advertisements && advertisements.length > 0 && showAd && (
           <div className="relative">
@@ -433,22 +462,24 @@ export default function PublicView() {
         {/* AdSense In-Feed - Entre estadísticas y contenido */}
         <AdInFeed className="max-w-4xl mx-auto" />
 
-        {/* Navegación por pestañas */}
+        {/* Navegación por pestañas - Mobile Optimized */}
         <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
           <Button
             variant={activeTab === "materials" ? "default" : "ghost"}
             onClick={() => setActiveTab("materials")}
-            className="flex-1"
+            className="flex-1 text-xs sm:text-sm h-9 sm:h-10"
+            size="sm"
           >
-            <Package className="w-4 h-4 mr-2" />
+            <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             Materiales
           </Button>
           <Button
             variant={activeTab === "suppliers" ? "default" : "ghost"}
             onClick={() => setActiveTab("suppliers")}
-            className="flex-1"
+            className="flex-1 text-xs sm:text-sm h-9 sm:h-10"
+            size="sm"
           >
-            <Store className="w-4 h-4 mr-2" />
+            <Store className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             Proveedores
           </Button>
         </div>
@@ -457,15 +488,15 @@ export default function PublicView() {
         <Card>
           <CardContent className="p-4">
             <div className="space-y-4">
-              {/* Barra de búsqueda */}
+              {/* Barra de búsqueda - Mobile Optimized */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 sm:w-4 sm:h-4" />
                 <Input
                   type="text"
                   placeholder={`Buscar ${activeTab === "materials" ? "materiales" : "proveedores"}...`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-8 sm:pl-10 text-sm h-9 sm:h-10"
                 />
               </div>
 
@@ -475,22 +506,23 @@ export default function PublicView() {
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                     Filtrar por categoría:
                   </label>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
                     <button
                       onClick={() => setSelectedCategory("all")}
-                      className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                      className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm transition-colors ${
                         selectedCategory === "all"
                           ? "bg-primary text-white"
                           : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
                       }`}
                     >
-                      Todas las categorías
+                      <span className="sm:hidden">Todas</span>
+                      <span className="hidden sm:inline">Todas las categorías</span>
                     </button>
                     {categories.map((category) => (
                       <button
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id.toString())}
-                        className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                        className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm transition-colors ${
                           selectedCategory === category.id.toString()
                             ? "bg-primary text-white"
                             : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
@@ -509,11 +541,12 @@ export default function PublicView() {
         {/* Contenido según pestaña activa */}
         {activeTab === "materials" && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Package className="w-5 h-5" />
-                <span>Materiales de Construcción</span>
-                <Badge variant="secondary">Vista Limitada</Badge>
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="flex items-center space-x-2 text-sm sm:text-base">
+                <Package className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="sm:hidden">Materiales</span>
+                <span className="hidden sm:inline">Materiales de Construcción</span>
+                <Badge variant="secondary" className="text-xs">Vista Limitada</Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
