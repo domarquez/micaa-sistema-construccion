@@ -305,9 +305,14 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     }
   };
 
-  // Función para duplicar proyecto (crear una copia)
+  // Función para duplicar proyecto (crear una copia con presupuesto)
   const duplicateProjectMutation = useMutation({
     mutationFn: async (data: ProjectFormData) => {
+      if (!currentProject || !budget) {
+        throw new Error('Proyecto y presupuesto requeridos para duplicar');
+      }
+
+      // Crear proyecto duplicado
       const projectData = {
         name: `${data.name} (Copia)`,
         client: data.client || null,
@@ -322,23 +327,64 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         socialChargesPercentage: data.socialChargesPercentage || "71.18",
       };
       
-      console.log("Duplicando proyecto:", projectData);
+      console.log("Duplicando proyecto completo:", projectData);
       
-      const response = await apiRequest("POST", "/api/projects", projectData);
-      if (!response.ok) {
+      const projectResponse = await apiRequest("POST", "/api/projects", projectData);
+      if (!projectResponse.ok) {
         throw new Error('Error al duplicar el proyecto');
       }
-      return response.json();
+      
+      const newProject = await projectResponse.json();
+      console.log("Proyecto duplicado:", newProject);
+
+      // Crear presupuesto duplicado para el nuevo proyecto
+      const totalGeneral = phases.reduce((sum, phase) => sum + phase.total, 0);
+      
+      const budgetResponse = await apiRequest("POST", "/api/budgets", {
+        projectId: newProject.id,
+        phaseId: null,
+        total: totalGeneral,
+        status: "active"
+      });
+      
+      if (!budgetResponse.ok) {
+        throw new Error('Error al crear presupuesto duplicado');
+      }
+      
+      const newBudget = await budgetResponse.json();
+      console.log("Presupuesto duplicado:", newBudget);
+
+      // Copiar elementos del presupuesto
+      for (const phaseData of phases) {
+        for (const item of phaseData.items) {
+          if (item.activityId > 0 && item.quantity > 0) {
+            await apiRequest("POST", "/api/budget-items", {
+              budgetId: newBudget.id,
+              activityId: item.activityId,
+              phaseId: phaseData.phaseId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              subtotal: item.subtotal
+            });
+          }
+        }
+      }
+
+      return { project: newProject, budget: newBudget };
     },
-    onSuccess: (project) => {
-      console.log("Proyecto duplicado exitosamente:", project);
-      setCurrentProject(project);
+    onSuccess: (data) => {
+      console.log("Duplicación completa exitosa:", data);
+      setCurrentProject(data.project);
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
       
       toast({
-        title: "Proyecto duplicado",
-        description: "Se ha creado una copia del proyecto para editar",
+        title: "Proyecto duplicado exitosamente",
+        description: "Se creó una copia completa del proyecto y presupuesto. Ahora puedes editarla sin afectar el original.",
       });
+      
+      // Cerrar el modal para que el usuario vea la nueva lista
+      onClose();
     },
     onError: (error) => {
       console.error("Error al duplicar proyecto:", error);
@@ -352,7 +398,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
   // Función para duplicar proyecto
   const handleDuplicateProject = () => {
-    if (currentProject) {
+    if (currentProject && !duplicateProjectMutation.isPending) {
       const formData = form.getValues();
       duplicateProjectMutation.mutate(formData);
     }
