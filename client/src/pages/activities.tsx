@@ -222,7 +222,7 @@ export default function Activities() {
                     <div
                       key={activity.id}
                       className={`flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors ${
-                        activity.hasCustomActivity && !activity.isOriginal ? 'bg-green-50 border-green-200' : ''
+                        activity.hasCustomActivity && !activity.isOriginal ? 'bg-green-50 border-green-300 shadow-sm' : ''
                       }`}
                     >
                       <div className="flex-1">
@@ -232,7 +232,7 @@ export default function Activities() {
                             .replace(/^APU DE:\s*/i, '')
                           }
                           {activity.hasCustomActivity && !activity.isOriginal && (
-                            <span className="text-green-600 text-sm ml-2">(Personalizada)</span>
+                            <span className="text-green-700 font-semibold text-sm ml-2 bg-green-100 px-2 py-1 rounded">(Personalizada)</span>
                           )}
                         </h4>
                         <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
