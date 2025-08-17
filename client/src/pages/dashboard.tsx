@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import PublicView from "./public-view";
+import MobilePublicView from "./mobile-public-view";
 import { 
   Package, 
   Calculator, 
@@ -50,9 +51,18 @@ interface GrowthData {
 export default function Dashboard() {
   const { user, isAnonymous } = useAuth();
 
-  // If user is anonymous, show public view
+  // Show mobile-specific public view for anonymous users on mobile
   if (isAnonymous) {
-    return <PublicView />;
+    return (
+      <>
+        <div className="md:hidden">
+          <MobilePublicView />
+        </div>
+        <div className="hidden md:block">
+          <PublicView />
+        </div>
+      </>
+    );
   }
 
   const { data: stats, isLoading: statsLoading } = useQuery<Statistics>({
