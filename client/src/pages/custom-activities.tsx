@@ -41,8 +41,21 @@ export default function CustomActivities() {
     }
   });
 
-  const handleEditActivity = (activity: CustomActivity) => {
-    setEditingActivity(activity);
+  const handleEditActivity = (activity: any) => {
+    // Convert user activity to CustomActivity format for editing
+    const editableActivity = {
+      id: activity.id,
+      userId: activity.userId,
+      name: activity.customActivityName || activity.name,
+      unit: activity.unit,
+      description: activity.description,
+      phaseId: activity.phaseId,
+      phase: activity.phase,
+      createdAt: activity.createdAt,
+      updatedAt: activity.updatedAt,
+      customActivityId: activity.customActivityId || activity.id + 10000
+    };
+    setEditingActivity(editableActivity);
   };
 
   const handleBackFromEdit = () => {
@@ -146,6 +159,61 @@ export default function CustomActivities() {
         </TabsList>
 
         <TabsContent value="activities" className="space-y-6">
+          {/* Actividades Duplicadas (Verde) */}
+          {userActivities && userActivities.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-green-700">🟢 Actividades Duplicadas del Sistema</CardTitle>
+                <p className="text-sm text-gray-600">
+                  Actividades que duplicaste desde el catálogo principal y puedes personalizar
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {userActivities.map((activity: any) => (
+                    <div 
+                      key={activity.id} 
+                      className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">
+                          {activity.customActivityName}
+                          <span className="text-green-700 font-semibold text-sm ml-2 bg-green-100 px-2 py-1 rounded">
+                            (Personalizada)
+                          </span>
+                        </h4>
+                        <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                            {activity.phase?.name || 'Sin Fase'}
+                          </span>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                            Unidad: {activity.unit}
+                          </span>
+                          <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                            ID: {activity.customActivityId}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditActivity(activity)}
+                          className="gap-2"
+                        >
+                          <Settings className="w-4 h-4" />
+                          Editar
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* Actividades Creadas Manualmente */}
           <CustomActivityManagerDB />
         </TabsContent>
 

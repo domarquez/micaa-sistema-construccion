@@ -79,17 +79,15 @@ Preferred communication style: Simple, everyday language.
 - **Server Running Successfully**: Application now starts and serves on port 5000
 - **Database Connection Verified**: PostgreSQL connection established and working properly
 
-### August 16, 2025: Complete Activity Duplication System Restored & APU Calculator Fixed ✓
-- **Missing Routes Implemented**: Added missing activity duplication, composition fetching, and APU calculation routes to routes-simple.ts
-- **Activity Duplication Working**: `/api/activities/:id/duplicate` endpoint functioning correctly with user authentication
-- **APU Calculation Restored**: `/api/activities/:id/apu-calculation` endpoint working with full price breakdowns and material/labor/equipment analysis
-- **Activity Compositions Fixed**: `/api/activities/:id/compositions` endpoint returns correct composition data for both original and custom activities
-- **User Activities List Fixed**: `/api/user-activities` endpoint now properly returns user's duplicated activities with phase information and custom activity IDs
-- **Authentication Integration**: All endpoints require proper JWT authentication and user validation
-- **Database Schema Working**: user_activities and user_activity_compositions tables functioning correctly
-- **Custom Activity Editor**: New CustomActivityEditor component created for editing activity compositions with real-time cost calculations
-- **Complete API Integration**: All endpoints moved from localStorage to database-backed operations
-- **Successful Duplications**: Multiple activities successfully duplicated (IDs 162, 168, 36, 100) with proper custom activity ID generation (10001-10004)
+### August 17, 2025: Complete Activity System with Visual Interface Fixed ✓
+- **Visual Activity System**: Activities duplicadas now display correctly in green with "Personalizada" labels in main activities list
+- **Custom Activities Page**: Enhanced to show both duplicated activities (green section) and manually created activities
+- **Color Coding System**: Duplicated activities appear with green background, green borders, and highlighted "Personalizada" text
+- **Smart Button Logic**: Original activities show "Duplicar" or "✓ Ya Duplicada" based on duplication status
+- **Integrated Activities List**: `/api/activities` endpoint returns both original and personalized activities in correct order
+- **Edit Functionality**: Activity editing works for both duplicated and manually created activities
+- **6 Working Duplicated Activities**: Successfully tested with activities 162, 168, 36, 100, 415, 261 (IDs 10001-10006)
+- **Complete User Experience**: Full workflow from duplication to editing to APU calculation functional
 
 ### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
 - **MAJOR FIX**: Material price update system completely repaired and working correctly
