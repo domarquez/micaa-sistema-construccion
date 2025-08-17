@@ -210,42 +210,62 @@ export default function Budgets() {
 
     let totalGeneral = 0;
 
-    // Procesar cada item del presupuesto
-    for (let i = 0; i < budgetDetails.items.length; i++) {
-      const item = budgetDetails.items[i];
-      
-      checkNewPage(60);
-      
-      // Encabezado del item
-      doc.setFontSize(12);
-      doc.text(`ITEM ${(i + 1).toString().padStart(2, '0')}: ${item.activity?.name || 'Actividad sin nombre'}`, margin, yPosition);
-      if (item.isCustomActivity) {
-        doc.text('(Personalizada)', margin + 120, yPosition);
+    // Agrupar items por fase
+    const itemsByPhase = budgetDetails.items.reduce((acc: any, item: any) => {
+      const phaseName = item.activity?.phase?.name || 'Sin Fase';
+      if (!acc[phaseName]) {
+        acc[phaseName] = [];
       }
+      acc[phaseName].push(item);
+      return acc;
+    }, {});
+
+    // Procesar cada fase y sus items
+    for (const [phaseName, phaseItems] of Object.entries(itemsByPhase)) {
+      checkNewPage(40);
+      
+      // Título de la fase
+      doc.setFontSize(14);
+      doc.text(`FASE: ${phaseName}`, margin, yPosition);
       yPosition += 8;
+      doc.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 12;
 
-      doc.setFontSize(10);
-      doc.text(`Unidad: ${item.activity?.unit || 'und'}`, margin, yPosition);
-      doc.text(`Cantidad: ${parseFloat(item.quantity || 0).toFixed(2)}`, margin + 60, yPosition);
-      doc.text(`P. Unit: Bs ${parseFloat(item.unitPrice || 0).toFixed(2)}`, margin + 120, yPosition);
-      yPosition += 6;
-      doc.text(`Subtotal: Bs ${parseFloat(item.subtotal || 0).toFixed(2)}`, margin, yPosition);
-      yPosition += 10;
+      // Procesar items de esta fase
+      for (let index = 0; index < (phaseItems as any[]).length; index++) {
+        const item = (phaseItems as any[])[index];
+        checkNewPage(60);
+        
+        // Encabezado del item
+        doc.setFontSize(12);
+        doc.text(`ITEM ${(index + 1).toString().padStart(2, '0')}: ${item.activity?.name || 'Actividad sin nombre'}`, margin, yPosition);
+        if (item.isCustomActivity) {
+          doc.text('(Personalizada)', margin + 120, yPosition);
+        }
+        yPosition += 8;
 
-      totalGeneral += parseFloat(item.subtotal || 0);
+        doc.setFontSize(10);
+        doc.text(`Unidad: ${item.activity?.unit || 'und'}`, margin, yPosition);
+        doc.text(`Cantidad: ${parseFloat(item.quantity || 0).toFixed(2)}`, margin + 60, yPosition);
+        doc.text(`P. Unit: Bs ${parseFloat(item.unitPrice || 0).toFixed(2)}`, margin + 120, yPosition);
+        yPosition += 6;
+        doc.text(`Subtotal: Bs ${parseFloat(item.subtotal || 0).toFixed(2)}`, margin, yPosition);
+        yPosition += 10;
 
-      // Obtener APU de la actividad si existe y tenemos token
-      if (item.activity?.id && token) {
-        try {
-          const apuResponse = await fetch(`/api/activities/${item.activity.id}/apu-calculation`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
+        totalGeneral += parseFloat(item.subtotal || 0);
 
-          if (apuResponse.ok) {
-            const apuData = await apuResponse.json();
+        // Obtener APU de la actividad si existe y tenemos token
+        if (item.activity?.id && token) {
+          try {
+            const apuResponse = await fetch(`/api/activities/${item.activity.id}/apu-calculation`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (apuResponse.ok) {
+              const apuData = await apuResponse.json();
             
             // Título APU
             doc.setFontSize(9);
@@ -342,10 +362,18 @@ export default function Budgets() {
         }
       }
 
-      // Separador entre items
-      yPosition += 5;
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 10;
+        // Separador entre items
+        yPosition += 5;
+        doc.line(margin, yPosition, pageWidth - margin, yPosition);
+        yPosition += 10;
+      }
+
+      // Subtotal de la fase
+      const phaseTotal = (phaseItems as any[]).reduce((total: number, item: any) => total + parseFloat(item.subtotal || 0), 0);
+      checkNewPage(15);
+      doc.setFontSize(11);
+      doc.text(`SUBTOTAL FASE ${phaseName}: Bs ${phaseTotal.toFixed(2)}`, margin, yPosition);
+      yPosition += 15;
     }
 
     // Total general final
