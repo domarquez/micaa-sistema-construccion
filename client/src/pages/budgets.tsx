@@ -207,31 +207,80 @@ export default function Budgets() {
       return false;
     };
 
-    // Encabezado empresarial
-    doc.setFontSize(18);
-    doc.text('MICAA', margin, yPosition);
+    // Encabezado empresarial más profesional
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MICAA', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 10;
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Sistema Integral de Construcción y Arquitectura', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 6;
+    
     doc.setFontSize(10);
-    doc.text('Sistema Integral de Construccion y Arquitectura', margin, yPosition + 8);
-    doc.text('La Paz, Bolivia | contacto@micaa.store | +591 70000000', margin, yPosition + 16);
-    yPosition += 30;
-
-    // Título del documento
-    doc.setFontSize(16);
-    doc.text('ANALISIS DE PRECIOS UNITARIOS (APU)', pageWidth / 2, yPosition, { align: 'center' });
+    doc.text('Santa Cruz, Bolivia | contacto@micaa.store', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 15;
+    
+    // Línea decorativa
+    doc.setLineWidth(1.5);
+    doc.setDrawColor(0, 100, 150); // Color azul empresarial
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
     yPosition += 20;
 
-    // Información del proyecto
-    doc.setFontSize(11);
-    doc.text(`PROYECTO: ${budget.project?.name || 'Sin nombre'}`, margin, yPosition);
-    yPosition += 8;
-    doc.text(`CLIENTE: ${budget.project?.client || 'No especificado'}`, margin, yPosition);
-    yPosition += 8;
-    doc.text(`UBICACION: ${budget.project?.location || 'No especificada'}`, margin, yPosition);
-    yPosition += 8;
-    doc.text(`FECHA: ${new Date().toLocaleDateString('es-BO')}`, margin, yPosition);
-    yPosition += 8;
-    doc.text(`PRESUPUESTO #${budget.id}`, margin, yPosition);
-    yPosition += 15;
+    // Título del documento con mejor diseño
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 100, 150); // Color azul para el título
+    doc.text('ANÁLISIS DE PRECIOS UNITARIOS (APU)', pageWidth / 2, yPosition, { align: 'center' });
+    doc.setTextColor(0, 0, 0); // Volver a color negro
+    doc.setFont('helvetica', 'normal');
+    yPosition += 25;
+
+    // Información del proyecto en formato tabla profesional
+    checkNewPage(50);
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORMACIÓN DEL PROYECTO', margin, yPosition);
+    yPosition += 10;
+    
+    // Fondo gris para la información del proyecto
+    doc.setFillColor(245, 245, 245);
+    doc.rect(margin, yPosition - 5, pageWidth - 2 * margin, 45, 'F');
+    
+    // Líneas divisorias
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.5);
+    doc.line(margin, yPosition - 5, pageWidth - margin, yPosition - 5);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    
+    // Primera columna
+    doc.text('PROYECTO:', margin + 5, yPosition + 5);
+    doc.text('CLIENTE:', margin + 5, yPosition + 15);
+    doc.text('UBICACIÓN:', margin + 5, yPosition + 25);
+    
+    // Segunda columna - valores
+    doc.setFont('helvetica', 'normal');
+    doc.text(budget.project?.name || 'Sin nombre', margin + 50, yPosition + 5);
+    doc.text(budget.project?.client || 'No especificado', margin + 50, yPosition + 15);
+    doc.text(`${budget.project?.location || 'No especificada'}, ${budget.project?.city || 'Sin ciudad'}`, margin + 50, yPosition + 25);
+    
+    // Tercera columna
+    doc.setFont('helvetica', 'bold');
+    doc.text('FECHA:', margin + 110, yPosition + 5);
+    doc.text('PRESUPUESTO #:', margin + 110, yPosition + 15);
+    doc.text('ESTADO:', margin + 110, yPosition + 25);
+    
+    // Cuarta columna - valores
+    doc.setFont('helvetica', 'normal');
+    doc.text(new Date().toLocaleDateString('es-BO'), margin + 155, yPosition + 5);
+    doc.text(budget.id.toString(), margin + 155, yPosition + 15);
+    doc.text(budget.status === 'active' ? 'ACTIVO' : budget.status.toUpperCase(), margin + 155, yPosition + 25);
+    
+    yPosition += 50;
 
     let totalGeneral = 0;
 
@@ -249,33 +298,46 @@ export default function Budgets() {
     for (const [phaseName, phaseItems] of Object.entries(itemsByPhase)) {
       checkNewPage(40);
       
-      // Título de la fase
-      doc.setFontSize(14);
-      doc.text(`FASE: ${phaseName}`, margin, yPosition);
-      yPosition += 8;
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 12;
+      // Título de la fase más profesional
+      doc.setFillColor(0, 100, 150); // Fondo azul
+      doc.rect(margin, yPosition - 3, pageWidth - 2 * margin, 12, 'F');
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255); // Texto blanco
+      doc.text(`FASE: ${phaseName}`, margin + 5, yPosition + 5);
+      doc.setTextColor(0, 0, 0); // Volver a negro
+      doc.setFont('helvetica', 'normal');
+      yPosition += 20;
 
       // Procesar items de esta fase
       for (let index = 0; index < (phaseItems as any[]).length; index++) {
         const item = (phaseItems as any[])[index];
         checkNewPage(60);
         
-        // Encabezado del item
-        doc.setFontSize(12);
-        doc.text(`ITEM ${(index + 1).toString().padStart(2, '0')}: ${item.activity?.name || 'Actividad sin nombre'}`, margin, yPosition);
-        if (item.isCustomActivity) {
-          doc.text('(Personalizada)', margin + 120, yPosition);
+        // Encabezado del item con mejor diseño
+        doc.setFillColor(240, 240, 240); // Fondo gris claro
+        doc.rect(margin, yPosition - 2, pageWidth - 2 * margin, 20, 'F');
+        
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`ITEM ${(index + 1).toString().padStart(2, '0')}: ${item.activity?.name || 'Actividad sin nombre'}`, margin + 3, yPosition + 5);
+        if (item.activity?.isCustomActivity) {
+          doc.setTextColor(150, 0, 150); // Color púrpura para personalizada
+          doc.text('(Personalizada)', margin + 3, yPosition + 13);
+          doc.setTextColor(0, 0, 0);
         }
-        yPosition += 8;
-
-        doc.setFontSize(10);
-        doc.text(`Unidad: ${item.activity?.unit || 'und'}`, margin, yPosition);
-        doc.text(`Cantidad: ${parseFloat(item.quantity || 0).toFixed(2)}`, margin + 60, yPosition);
-        doc.text(`P. Unit: Bs ${parseFloat(item.unitPrice || 0).toFixed(2)}`, margin + 120, yPosition);
-        yPosition += 6;
-        doc.text(`Subtotal: Bs ${parseFloat(item.subtotal || 0).toFixed(2)}`, margin, yPosition);
-        yPosition += 10;
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text(`Unidad: ${item.activity?.unit || 'und'}`, margin + 120, yPosition + 5);
+        doc.text(`Cantidad: ${parseFloat(item.quantity || 0).toFixed(2)}`, margin + 120, yPosition + 9);
+        doc.text(`P. Unit: Bs ${parseFloat(item.unitPrice || 0).toFixed(2)}`, margin + 120, yPosition + 13);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Subtotal: Bs ${parseFloat(item.subtotal || 0).toFixed(2)}`, margin + 150, yPosition + 9);
+        doc.setFont('helvetica', 'normal');
+        yPosition += 25;
 
         totalGeneral += parseFloat(item.subtotal || 0);
 
@@ -401,18 +463,45 @@ export default function Budgets() {
       yPosition += 15;
     }
 
-    // Total general final
-    checkNewPage(30);
+    // Total general final con mejor diseño
+    checkNewPage(50);
+    
+    // Fondo para el resumen final
+    doc.setFillColor(0, 100, 150);
+    doc.rect(margin, yPosition - 5, pageWidth - 2 * margin, 30, 'F');
+    
     doc.setFontSize(14);
-    doc.text('RESUMEN GENERAL DEL PRESUPUESTO', margin, yPosition);
-    yPosition += 10;
-    doc.setFontSize(12);
-    doc.text(`TOTAL GENERAL: Bs ${totalGeneral.toFixed(2)}`, margin, yPosition);
-    yPosition += 15;
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('RESUMEN GENERAL DEL PRESUPUESTO', pageWidth / 2, yPosition + 8, { align: 'center' });
+    
+    doc.setFontSize(16);
+    doc.text(`TOTAL GENERAL: Bs ${totalGeneral.toFixed(2)}`, pageWidth / 2, yPosition + 20, { align: 'center' });
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    yPosition += 40;
 
-    // Pie de página
-    doc.setFontSize(7);
-    doc.text('Este APU ha sido elaborado con MICAA - Sistema Integral de Construcción', pageWidth / 2, yPosition, { align: 'center' });
+    // Pie de página profesional
+    checkNewPage(25);
+    yPosition += 10;
+    
+    // Línea divisoria
+    doc.setDrawColor(0, 100, 150);
+    doc.setLineWidth(1);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 8;
+    
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'italic');
+    doc.text('Este Análisis de Precios Unitarios ha sido elaborado con', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 5;
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text('MICAA - Sistema Integral de Construcción y Arquitectura', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 5;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text('Santa Cruz, Bolivia | contacto@micaa.store', pageWidth / 2, yPosition, { align: 'center' });
     
     // Descargar PDF
     const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
@@ -443,18 +532,35 @@ export default function Budgets() {
       return false;
     };
 
-    // Encabezado empresarial
-    doc.setFontSize(18);
-    doc.text('MICAA', margin, yPosition);
+    // Encabezado empresarial más profesional (versión básica)
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MICAA', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 10;
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Sistema Integral de Construcción y Arquitectura', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 6;
+    
     doc.setFontSize(10);
-    doc.text('Sistema Integral de Construccion y Arquitectura', margin, yPosition + 8);
-    doc.text('La Paz, Bolivia | contacto@micaa.store | +591 70000000', margin, yPosition + 16);
-    yPosition += 30;
+    doc.text('Santa Cruz, Bolivia | contacto@micaa.store', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 15;
+    
+    // Línea decorativa
+    doc.setLineWidth(1.5);
+    doc.setDrawColor(0, 100, 150);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 20;
 
     // Título del documento
-    doc.setFontSize(16);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 100, 150);
     doc.text('PRESUPUESTO DE OBRA', pageWidth / 2, yPosition, { align: 'center' });
-    yPosition += 20;
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    yPosition += 25;
 
     // Información del proyecto
     doc.setFontSize(11);
