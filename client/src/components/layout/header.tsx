@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus, Menu } from "lucide-react";
+import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus, Menu, X, Package, Store } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ContactForm } from "@/components/contact-form";
 import { MicaaLogo } from "@/components/micaa-logo";
@@ -20,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 export default function AppHeader() {
   const { user, logout, isAnonymous } = useAuth();
   const { toggleSidebar } = useSidebar();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getUserInitials = (user: any) => {
     if (user?.firstName && user?.lastName) {
@@ -56,9 +58,15 @@ export default function AppHeader() {
             variant="ghost" 
             size="icon" 
             className="md:hidden flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8"
-            onClick={toggleSidebar}
+            onClick={() => {
+              if (isAnonymous) {
+                setMobileMenuOpen(!mobileMenuOpen);
+              } else {
+                toggleSidebar();
+              }
+            }}
           >
-            <Menu className="h-4 w-4" />
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             <span className="sr-only">Abrir menú</span>
           </Button>
           <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
@@ -223,6 +231,66 @@ export default function AppHeader() {
           )}
         </div>
       </div>
+      
+      {/* Mobile Menu Overlay for Anonymous Users */}
+      {isAnonymous && mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg z-40">
+          <div className="px-4 py-3 space-y-3">
+            <div className="flex items-center justify-center space-x-3 py-2 border-b">
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => {
+                  window.location.href = "/login";
+                  setMobileMenuOpen(false);
+                }}
+                className="flex-1 text-sm"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Iniciar Sesión
+              </Button>
+              <Button 
+                size="sm"
+                onClick={() => {
+                  window.location.href = "/register";
+                  setMobileMenuOpen(false);
+                }}
+                className="flex-1 text-sm bg-orange-600 hover:bg-orange-700"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Registro Gratis
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="space-y-2">
+                <p className="font-medium text-gray-700">Explorar</p>
+                <div className="flex items-center text-gray-600">
+                  <Package className="w-4 h-4 mr-2" />
+                  Materiales
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <Store className="w-4 h-4 mr-2" />
+                  Proveedores  
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <p className="font-medium text-gray-700">Información</p>
+                <ContactForm 
+                  triggerText="Contacto"
+                  triggerVariant="ghost"
+                  className="justify-start p-0 text-left text-gray-600 hover:text-orange-600"
+                />
+                <div className="flex items-center text-gray-600">
+                  <Mail className="w-4 h-4 mr-2" />
+                  Soporte
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

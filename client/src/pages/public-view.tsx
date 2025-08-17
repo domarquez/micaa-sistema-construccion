@@ -41,7 +41,8 @@ import {
   TrendingUp,
   Combine,
   BarChart3,
-  Mail
+  Mail,
+  Construction
 } from "lucide-react";
 import { formatCurrency, formatNumber } from "@/lib/utils";
 import type { Material, MaterialCategory, SupplierCompany, AdvertisementWithSupplier } from "@shared/schema";
@@ -72,6 +73,11 @@ export default function PublicView() {
   const [showAd, setShowAd] = useState(true);
 
   // Consultas públicas sin autenticación
+  const { data: statistics, isLoading } = useQuery<Statistics>({
+    queryKey: ['/api/statistics'],
+    refetchInterval: 30000, // Actualizar cada 30 segundos
+  });
+  
   const { data: materials, isLoading: materialsLoading } = useQuery<Material[]>({
     queryKey: ["/api/public/materials"],
   });
@@ -84,9 +90,7 @@ export default function PublicView() {
     queryKey: ["/api/public/suppliers"],
   });
 
-  const { data: stats, isLoading: statsLoading } = useQuery<Statistics>({
-    queryKey: ["/api/statistics"],
-  });
+
 
   const { data: growthData, isLoading: growthLoading } = useQuery<GrowthData[]>({
     queryKey: ["/api/growth-data"],
@@ -130,80 +134,133 @@ export default function PublicView() {
   ) || [];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar Ad for Desktop */}
-      <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-40">
-        <SidebarAd />
-      </div>
-      {/* Header Público - Mobile Optimized */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 md:py-4">
-          <div className="flex flex-col gap-3">
-            {/* Logo y descripción */}
-            <div className="flex items-center justify-center sm:justify-start space-x-2">
-              <MicaaLogo size="sm" showText={true} className="sm:hidden scale-90" />
-              <MicaaLogo size="md" showText={true} className="hidden sm:block md:hidden" />
-              <MicaaLogo size="lg" showText={true} className="hidden md:block" />
-            </div>
-            
-            {/* Descripción para móviles */}
-            <div className="text-center sm:text-left sm:hidden">
-              <p className="text-gray-600 dark:text-gray-400 text-xs leading-tight">
-                Materiales y proveedores de construcción en Bolivia
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      {/* Container responsive principal */}
+      <div className="w-full max-w-none">
+        
+        {/* Hero Section - Mobile Optimized */}
+        <div className="relative bg-gradient-to-br from-orange-500 to-red-600 text-white">
+          <div className="w-full px-3 sm:px-4 md:px-6 py-8 sm:py-12 md:py-16">
+            <div className="text-center max-w-4xl mx-auto">
+              <div className="flex justify-center mb-4 sm:mb-6">
+                <MicaaLogo 
+                  size="lg" 
+                  showText={true} 
+                  className="text-white scale-75 sm:scale-90 md:scale-100" 
+                />
+              </div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight">
+                Sistema de Gestión de Construcción
+              </h1>
+              <p className="text-sm sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-orange-100 px-2">
+                Plataforma integral para cómputos, presupuestos y gestión de proyectos en Bolivia
               </p>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+                <Button 
+                  size="lg" 
+                  className="bg-white text-orange-600 hover:bg-orange-50 text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-2 sm:py-3 w-full sm:w-auto"
+                >
+                  <Construction className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  Iniciar Proyecto Temporal
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-white text-white hover:bg-white hover:text-orange-600 text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-2 sm:py-3 w-full sm:w-auto"
+                  onClick={() => window.location.href = "/register"}
+                >
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  Crear Cuenta Gratuita
+                </Button>
+              </div>
             </div>
-            
-            {/* Descripción para tablet/desktop */}
-            <div className="hidden sm:block lg:hidden text-center sm:text-left">
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Explora materiales y proveedores de construcción en Bolivia
-              </p>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-8 sm:h-16 bg-gradient-to-t from-gray-50 to-transparent"></div>
+        </div>
+
+        {/* Statistics Section - Mobile Optimized */}
+        <div className="w-full px-3 sm:px-4 md:px-6 -mt-4 sm:-mt-6 md:-mt-8 mb-8 sm:mb-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+            <Card className="bg-white shadow-lg">
+              <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+                <div className="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-blue-100 text-blue-600 rounded-full mb-2 sm:mb-3 md:mb-4">
+                  <Package className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                </div>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                  {isLoading ? (
+                    <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mx-auto" />
+                  ) : (
+                    formatNumber(statistics?.totalMaterials || 0)
+                  )}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-600 leading-tight">Materiales Disponibles</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-lg">
+              <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+                <div className="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-green-100 text-green-600 rounded-full mb-2 sm:mb-3 md:mb-4">
+                  <Calculator className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                </div>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                  {isLoading ? (
+                    <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mx-auto" />
+                  ) : (
+                    formatNumber(statistics?.totalActivities || 0)
+                  )}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-600 leading-tight">Actividades de Construcción</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-lg">
+              <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+                <div className="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-orange-100 text-orange-600 rounded-full mb-2 sm:mb-3 md:mb-4">
+                  <Building2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                </div>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                  {isLoading ? (
+                    <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mx-auto" />
+                  ) : (
+                    formatNumber(statistics?.totalSuppliers || 0)
+                  )}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-600 leading-tight">Empresas Proveedoras</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-lg">
+              <CardContent className="p-3 sm:p-4 md:p-6 text-center">
+                <div className="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-purple-100 text-purple-600 rounded-full mb-2 sm:mb-3 md:mb-4">
+                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                </div>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                  {isLoading ? (
+                    <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mx-auto" />
+                  ) : (
+                    `$${formatCurrency(statistics?.totalProjectValue || 0)}`
+                  )}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-600 leading-tight">Valor Total de Proyectos</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Advertising Carousel & News Ticker - Mobile Responsive */}
+        <div className="w-full px-3 sm:px-4 md:px-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+            <div className="w-full">
+              <AdCarousel />
             </div>
-            
-            {/* Descripción completa para desktop */}
-            <div className="hidden lg:block">
-              <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg">
-                Explora materiales y proveedores de construcción en Bolivia
-              </p>
-            </div>
-            
-            {/* Botones de acción */}
-            <div className="flex flex-row gap-2 w-full">
-              <ContactForm 
-                triggerText="Contacto"
-                triggerVariant="outline"
-                className="hidden md:flex items-center space-x-2 flex-1"
-              />
-              <Button 
-                variant="outline" 
-                onClick={() => window.location.href = "/login"} 
-                className="flex-1 text-xs sm:text-sm py-2"
-                size="sm"
-              >
-                <span className="sm:hidden">Iniciar</span>
-                <span className="hidden sm:inline">Iniciar Sesión</span>
-              </Button>
-              <Button 
-                onClick={() => window.location.href = "/register"} 
-                className="flex-1 text-xs sm:text-sm py-2"
-                size="sm"
-              >
-                Registrarse
-              </Button>
+            <div className="w-full">
+              <ConstructionNewsTicker />
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Header Ad - Desktop y Mobile */}
-      <div className="hidden md:block">
-        <AdHeader className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" />
-      </div>
-      
-      {/* Mobile Ad - Solo móvil */}
-      <AdMobile className="md:hidden" />
-
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4 md:py-6 space-y-2 sm:space-y-4 md:space-y-6">
+        {/* Main Content Container */}
+        <div className="w-full px-3 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 space-y-2 sm:space-y-4 md:space-y-6">
         {/* Publicidad Dual - Lado a Lado - Primero */}
         {advertisements && advertisements.length > 0 && showAd && (
           <div className="relative">
@@ -288,11 +345,11 @@ export default function PublicView() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
                 <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary mb-2 flex-shrink-0" />
-                {statsLoading ? (
+                {isLoading ? (
                   <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
                   <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
-                    {formatNumber(stats?.totalUsers || 0)}
+                    {formatNumber(statistics?.totalUsers || 0)}
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Usuarios</p>
@@ -305,11 +362,11 @@ export default function PublicView() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
                 <Calculator className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mb-2 flex-shrink-0" />
-                {statsLoading ? (
+                {isLoading ? (
                   <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
                   <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
-                    {formatNumber(stats?.activeBudgets || 0)}
+                    {formatNumber(statistics?.activeBudgets || 0)}
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Presupuestos</p>
@@ -322,11 +379,11 @@ export default function PublicView() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
                 <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mb-2 flex-shrink-0" />
-                {statsLoading ? (
+                {isLoading ? (
                   <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
                   <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
-                    {formatNumber(stats?.totalProjects || 0)}
+                    {formatNumber(statistics?.totalProjects || 0)}
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Proyectos</p>
@@ -339,11 +396,11 @@ export default function PublicView() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
                 <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 mb-2 flex-shrink-0" />
-                {statsLoading ? (
+                {isLoading ? (
                   <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
                   <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
-                    {formatNumber(stats?.totalSuppliers || 0)}
+                    {formatNumber(statistics?.totalSuppliers || 0)}
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Proveedores</p>
@@ -356,11 +413,11 @@ export default function PublicView() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
                 <Package className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mb-2 flex-shrink-0" />
-                {statsLoading ? (
+                {isLoading ? (
                   <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
                   <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
-                    {formatNumber(stats?.totalMaterials || 0)}
+                    {formatNumber(statistics?.totalMaterials || 0)}
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Materiales</p>
@@ -373,11 +430,11 @@ export default function PublicView() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
                 <Combine className="w-5 h-5 sm:w-6 sm:h-6 text-teal-600 mb-2 flex-shrink-0" />
-                {statsLoading ? (
+                {isLoading ? (
                   <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
                   <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
-                    {formatNumber(stats?.totalActivities || 0)}
+                    {formatNumber(statistics?.totalActivities || 0)}
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Actividades</p>
@@ -390,11 +447,11 @@ export default function PublicView() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
                 <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600 mb-2 flex-shrink-0" />
-                {statsLoading ? (
+                {isLoading ? (
                   <Skeleton className="h-5 sm:h-6 w-12 sm:w-16 mb-1" />
                 ) : (
                   <p className="text-xs sm:text-sm md:text-base font-bold text-on-surface">
-                    {formatCurrency(stats?.totalProjectValue || 0).replace(' Bs', '')} Bs
+                    {formatCurrency(statistics?.totalProjectValue || 0).replace(' Bs', '')} Bs
                   </p>
                 )}
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Valor Total</p>
@@ -770,6 +827,8 @@ export default function PublicView() {
         {/* AdSense Footer - Final de página */}
         <AdFooter />
       </footer>
+      
+      </div>
     </div>
   );
 }
