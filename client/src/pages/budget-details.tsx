@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Calendar, MapPin, User, FileText, Calculator, Download } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, User, FileText, Calculator, Download, Printer } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import ActivityBreakdown from "@/components/activity-breakdown";
 import type { BudgetWithProject, BudgetItemWithActivity } from "@shared/schema";
@@ -356,6 +356,14 @@ export default function BudgetDetails() {
           >
             <Download className="w-4 h-4" />
             <span>Descargar PDF</span>
+          </Button>
+          <Button
+            onClick={() => window.print()}
+            variant="outline"
+            className="flex items-center space-x-2"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Imprimir</span>
           </Button>
           <Badge
             variant={budget.status === 'active' ? 'default' : 

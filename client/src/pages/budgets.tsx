@@ -34,7 +34,8 @@ import {
   FolderRoot,
   Trash2,
   Eye,
-  Download
+  Download,
+  Printer
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
@@ -100,14 +101,6 @@ export default function Budgets() {
 
   const handleDownloadPDF = async (budget: BudgetWithProject) => {
     try {
-      // Redirigir a la página de detalles donde ya existe la funcionalidad de PDF
-      const response = await fetch(`/api/budgets/${budget.id}`);
-      if (!response.ok) {
-        throw new Error('Error al obtener datos del presupuesto');
-      }
-      
-      const budgetDetails = await response.json();
-      
       // Importar jsPDF dinámicamente
       const { default: jsPDF } = await import('jspdf');
       const doc = new jsPDF();
@@ -126,7 +119,7 @@ export default function Budgets() {
 
       // Título del documento
       doc.setFontSize(16);
-      doc.text('PRESUPUESTO DETALLADO DE CONSTRUCCION', pageWidth / 2, yPosition, { align: 'center' });
+      doc.text('PRESUPUESTO DE CONSTRUCCION', pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 20;
 
       // Información del proyecto
@@ -142,74 +135,57 @@ export default function Budgets() {
       doc.text(`PRESUPUESTO #${budget.id}`, margin, yPosition);
       yPosition += 15;
 
-      // Encabezado de tabla
-      doc.setFontSize(9);
-      doc.text('ITEM', margin, yPosition);
-      doc.text('DESCRIPCION', margin + 15, yPosition);
-      doc.text('UND', margin + 110, yPosition);
-      doc.text('CANT.', margin + 125, yPosition);
-      doc.text('P.UNIT. (Bs)', margin + 145, yPosition);
-      doc.text('TOTAL (Bs)', margin + 170, yPosition);
-      yPosition += 5;
-
-      // Línea separadora
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 8;
-
-      // Items del presupuesto
-      if (budgetDetails.items && budgetDetails.items.length > 0) {
-        budgetDetails.items.forEach((item: any, index: number) => {
-          if (yPosition > 270) {
-            doc.addPage();
-            yPosition = 30;
-          }
-          
-          const itemNumber = (index + 1).toString().padStart(2, '0');
-          const quantity = parseFloat(item.quantity || 0);
-          const unitPrice = parseFloat(item.unitPrice || 0);
-          const subtotal = parseFloat(item.subtotal || 0);
-          
-          let activityName = item.activity?.name || 'Actividad sin nombre';
-          if (activityName.length > 40) {
-            activityName = activityName.substring(0, 40) + '...';
-          }
-          
-          doc.text(itemNumber, margin, yPosition);
-          doc.text(activityName, margin + 15, yPosition);
-          doc.text(item.activity?.unit || 'und', margin + 110, yPosition);
-          doc.text(quantity.toFixed(2), margin + 125, yPosition);
-          doc.text(unitPrice.toFixed(2), margin + 145, yPosition);
-          doc.text(subtotal.toFixed(2), margin + 170, yPosition);
-          yPosition += 8;
-        });
-      }
-
-      // Total general
+      // Información básica del presupuesto
+      doc.setFontSize(12);
+      doc.text('RESUMEN GENERAL:', margin, yPosition);
       yPosition += 10;
-      doc.line(margin + 140, yPosition, pageWidth - margin, yPosition);
-      yPosition += 8;
-      doc.setFontSize(11);
-      doc.text('TOTAL GENERAL:', margin + 120, yPosition);
-      doc.text(`Bs ${parseFloat(budget.total).toFixed(2)}`, margin + 170, yPosition);
+      
+      doc.setFontSize(10);
+      doc.text(`Fase: ${budget.phase?.name || 'Multifase'}`, margin + 10, yPosition);
+      yPosition += 6;
+      doc.text(`Estado: ${budget.status === 'active' ? 'Activo' : budget.status === 'completed' ? 'Completado' : 'Borrador'}`, margin + 10, yPosition);
+      yPosition += 6;
+      doc.text(`Fecha de creación: ${new Date(budget.createdAt!).toLocaleDateString('es-BO')}`, margin + 10, yPosition);
+      yPosition += 15;
 
-      // Pie de página
+      // Total del presupuesto
+      doc.setFontSize(16);
+      doc.text('TOTAL GENERAL:', margin, yPosition);
+      doc.text(`Bs ${parseFloat(budget.total).toFixed(2)}`, margin + 120, yPosition);
       yPosition += 20;
+
+      // Notas importantes
       doc.setFontSize(8);
-      doc.text('Este presupuesto fue generado por MICAA - Sistema Integral de Construcción', margin, yPosition);
+      doc.text('NOTAS IMPORTANTES:', margin, yPosition);
+      yPosition += 6;
+      doc.text('• Este es un presupuesto resumen. Para detalles completos, visite la página de detalles.', margin + 5, yPosition);
+      yPosition += 4;
+      doc.text('• Los precios incluyen materiales, mano de obra y gastos generales.', margin + 5, yPosition);
+      yPosition += 4;
+      doc.text('• Validez de la oferta: 30 días calendario.', margin + 5, yPosition);
+      yPosition += 4;
+      doc.text('• Moneda: Bolivianos (Bs).', margin + 5, yPosition);
+      yPosition += 15;
+
+      // Pie de página profesional
+      doc.setFontSize(7);
+      doc.text('Este presupuesto ha sido elaborado con MICAA - Sistema Integral de Construcción', pageWidth / 2, yPosition, { align: 'center' });
+      doc.text('www.micaa.store | contacto@micaa.store | La Paz, Bolivia', pageWidth / 2, yPosition + 5, { align: 'center' });
       
       // Descargar PDF
-      doc.save(`Presupuesto_${budget.project?.name || 'Sin_nombre'}_${budget.id}.pdf`);
+      const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
+      doc.save(`Presupuesto_Resumen_${projectName}_${budget.id}.pdf`);
       
       toast({
-        title: "PDF generado",
-        description: "El presupuesto se ha descargado exitosamente",
+        title: "PDF generado exitosamente",
+        description: `Descargado: Presupuesto_Resumen_${budget.project?.name || 'proyecto'}_${budget.id}.pdf`,
       });
       
     } catch (error) {
       console.error('Error generando PDF:', error);
       toast({
-        title: "Error",
-        description: "No se pudo generar el PDF. Inténtelo nuevamente.",
+        title: "Error al generar PDF",
+        description: "Problema al crear el documento. Verifique que su navegador permita descargas.",
         variant: "destructive",
       });
     }
@@ -359,6 +335,15 @@ export default function Budgets() {
                               title="Descargar PDF del presupuesto"
                             >
                               <Download className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => window.open(`/budgets/${budget.id}`, '_blank')}
+                              className="text-orange-600 hover:text-orange-800"
+                              title="Abrir para imprimir"
+                            >
+                              <Printer className="w-4 h-4" />
                             </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
