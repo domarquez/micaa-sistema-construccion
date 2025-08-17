@@ -33,7 +33,8 @@ import {
   Building2,
   FolderRoot,
   Trash2,
-  Eye
+  Eye,
+  Download
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
@@ -95,6 +96,123 @@ export default function Budgets() {
 
   const handleDeleteProject = (projectId: number) => {
     deleteProjectMutation.mutate(projectId);
+  };
+
+  const handleDownloadPDF = async (budget: BudgetWithProject) => {
+    try {
+      // Redirigir a la página de detalles donde ya existe la funcionalidad de PDF
+      const response = await fetch(`/api/budgets/${budget.id}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener datos del presupuesto');
+      }
+      
+      const budgetDetails = await response.json();
+      
+      // Importar jsPDF dinámicamente
+      const { default: jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+      
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 20;
+      let yPosition = 20;
+
+      // Encabezado empresarial
+      doc.setFontSize(18);
+      doc.text('MICAA', margin, yPosition);
+      doc.setFontSize(10);
+      doc.text('Sistema Integral de Construccion y Arquitectura', margin, yPosition + 8);
+      doc.text('La Paz, Bolivia | contacto@micaa.store | +591 70000000', margin, yPosition + 16);
+      yPosition += 30;
+
+      // Título del documento
+      doc.setFontSize(16);
+      doc.text('PRESUPUESTO DETALLADO DE CONSTRUCCION', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 20;
+
+      // Información del proyecto
+      doc.setFontSize(11);
+      doc.text(`PROYECTO: ${budget.project?.name || 'Sin nombre'}`, margin, yPosition);
+      yPosition += 8;
+      doc.text(`CLIENTE: ${budget.project?.client || 'No especificado'}`, margin, yPosition);
+      yPosition += 8;
+      doc.text(`UBICACION: ${budget.project?.location || 'No especificada'}`, margin, yPosition);
+      yPosition += 8;
+      doc.text(`FECHA DE EMISION: ${new Date().toLocaleDateString('es-BO')}`, margin, yPosition);
+      yPosition += 8;
+      doc.text(`PRESUPUESTO #${budget.id}`, margin, yPosition);
+      yPosition += 15;
+
+      // Encabezado de tabla
+      doc.setFontSize(9);
+      doc.text('ITEM', margin, yPosition);
+      doc.text('DESCRIPCION', margin + 15, yPosition);
+      doc.text('UND', margin + 110, yPosition);
+      doc.text('CANT.', margin + 125, yPosition);
+      doc.text('P.UNIT. (Bs)', margin + 145, yPosition);
+      doc.text('TOTAL (Bs)', margin + 170, yPosition);
+      yPosition += 5;
+
+      // Línea separadora
+      doc.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+
+      // Items del presupuesto
+      if (budgetDetails.items && budgetDetails.items.length > 0) {
+        budgetDetails.items.forEach((item: any, index: number) => {
+          if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 30;
+          }
+          
+          const itemNumber = (index + 1).toString().padStart(2, '0');
+          const quantity = parseFloat(item.quantity || 0);
+          const unitPrice = parseFloat(item.unitPrice || 0);
+          const subtotal = parseFloat(item.subtotal || 0);
+          
+          let activityName = item.activity?.name || 'Actividad sin nombre';
+          if (activityName.length > 40) {
+            activityName = activityName.substring(0, 40) + '...';
+          }
+          
+          doc.text(itemNumber, margin, yPosition);
+          doc.text(activityName, margin + 15, yPosition);
+          doc.text(item.activity?.unit || 'und', margin + 110, yPosition);
+          doc.text(quantity.toFixed(2), margin + 125, yPosition);
+          doc.text(unitPrice.toFixed(2), margin + 145, yPosition);
+          doc.text(subtotal.toFixed(2), margin + 170, yPosition);
+          yPosition += 8;
+        });
+      }
+
+      // Total general
+      yPosition += 10;
+      doc.line(margin + 140, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+      doc.setFontSize(11);
+      doc.text('TOTAL GENERAL:', margin + 120, yPosition);
+      doc.text(`Bs ${parseFloat(budget.total).toFixed(2)}`, margin + 170, yPosition);
+
+      // Pie de página
+      yPosition += 20;
+      doc.setFontSize(8);
+      doc.text('Este presupuesto fue generado por MICAA - Sistema Integral de Construcción', margin, yPosition);
+      
+      // Descargar PDF
+      doc.save(`Presupuesto_${budget.project?.name || 'Sin_nombre'}_${budget.id}.pdf`);
+      
+      toast({
+        title: "PDF generado",
+        description: "El presupuesto se ha descargado exitosamente",
+      });
+      
+    } catch (error) {
+      console.error('Error generando PDF:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo generar el PDF. Inténtelo nuevamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getProjectIcon = (projectName: string) => {
@@ -228,17 +346,19 @@ export default function Budgets() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEdit(budget)}
-                              className="text-primary hover:text-primary-variant"
+                              className="text-green-600 hover:text-green-800"
+                              title="Editar presupuesto"
                             >
                               <FileText className="w-4 h-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
-                              disabled
-                              className="text-gray-400"
+                              onClick={() => handleDownloadPDF(budget)}
+                              className="text-purple-600 hover:text-purple-800"
+                              title="Descargar PDF del presupuesto"
                             >
-                              <Calculator className="w-4 h-4" />
+                              <Download className="w-4 h-4" />
                             </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>

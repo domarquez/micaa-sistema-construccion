@@ -88,15 +88,18 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Budget Details**: Budget detail view correctly shows custom activities with personalized naming
 - **Full Custom Activity Workflow**: From creation to budget inclusion, all functionality working seamlessly
 
-### August 17, 2025: Complete Activity System with Visual Interface Fixed ✓
-- **Visual Activity System**: Activities duplicadas now display correctly in green with "Personalizada" labels in main activities list
-- **Custom Activities Page**: Enhanced to show both duplicated activities (green section) and manually created activities
-- **Color Coding System**: Duplicated activities appear with green background, green borders, and highlighted "Personalizada" text
-- **Smart Button Logic**: Original activities show "Duplicar" or "✓ Ya Duplicada" based on duplication status
-- **Integrated Activities List**: `/api/activities` endpoint returns both original and personalized activities in correct order
-- **Edit Functionality**: Activity editing works for both duplicated and manually created activities
-- **6 Working Duplicated Activities**: Successfully tested with activities 162, 168, 36, 100, 415, 261 (IDs 10001-10006)
-- **Complete User Experience**: Full workflow from duplication to editing to APU calculation functional
+### August 17, 2025: Complete Budget Management & PDF Export System Fixed ✓
+- **Budget Edit vs Duplicate Issue Fixed**: Sistema now correctly updates existing budgets instead of creating duplicates
+- **Project Duplication Complete**: Full project+budget duplication working with proper protection against multiple clicks
+- **PDF Export Functionality**: Direct PDF download from budget list with professional formatting including:
+  - Company header (MICAA branding)
+  - Project information and client details
+  - Detailed item breakdown with quantities and prices
+  - Professional footer and document validation
+- **UI Icon Improvements**: Replaced confusing gray Calculator icon with clear Download icon (purple) with descriptive tooltips
+- **Action Button Clarity**: Color-coded buttons - Blue (View), Green (Edit), Purple (Download PDF), Red (Delete)
+- **Complete Export Integration**: PDF generation works from both budget list and detail views
+- **Professional Documentation**: Generated PDFs include proper business formatting for client presentation
 
 ### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
 - **MAJOR FIX**: Material price update system completely repaired and working correctly
