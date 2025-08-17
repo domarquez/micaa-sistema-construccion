@@ -1058,10 +1058,62 @@ export async function registerRoutes(app: any) {
       if (budgetCheck.length === 0) {
         return res.status(404).json({ message: "Presupuesto no encontrado" });
       }
+
+      let finalActivityId = activityId;
+      
+      // Check if this is a custom activity (ID > 20000) and create a bridge activity if needed
+      if (activityId > 20000) {
+        const customActivityId = activityId - 20000;
+        console.log(`🔧 Handling custom activity ${activityId} (real ID: ${customActivityId})`);
+        
+        // Get the custom activity details
+        const [customActivity] = await db.select()
+          .from(customActivities)
+          .where(and(
+            eq(customActivities.id, customActivityId),
+            eq(customActivities.userId, req.user.id)
+          ))
+          .limit(1);
+        
+        if (!customActivity) {
+          return res.status(404).json({ message: "Actividad personalizada no encontrada" });
+        }
+        
+        // Check if we already have a bridge activity for this custom activity
+        const [existingBridge] = await db.select()
+          .from(activities)
+          .where(and(
+            eq(activities.originalActivityId, customActivityId),
+            eq(activities.createdBy, req.user.id),
+            eq(activities.isSystemDefault, false)
+          ))
+          .limit(1);
+        
+        if (existingBridge) {
+          finalActivityId = existingBridge.id;
+          console.log(`📋 Using existing bridge activity ${finalActivityId} for custom activity ${customActivityId}`);
+        } else {
+          // Create a bridge activity in the activities table
+          const [bridgeActivity] = await db.insert(activities).values({
+            phaseId: customActivity.phaseId,
+            name: customActivity.name,
+            unit: customActivity.unit,
+            description: customActivity.description || "Actividad personalizada",
+            unitPrice: unitPrice.toString(),
+            createdBy: req.user.id,
+            originalActivityId: customActivityId,
+            isSystemDefault: false,
+            isPublic: false
+          }).returning();
+          
+          finalActivityId = bridgeActivity.id;
+          console.log(`✅ Created bridge activity ${finalActivityId} for custom activity ${customActivityId}`);
+        }
+      }
       
       const itemData = {
         budgetId: budgetId,
-        activityId: activityId,
+        activityId: finalActivityId,
         phaseId: phaseId || null,
         quantity: quantity.toString(),
         unitPrice: unitPrice.toString(),
