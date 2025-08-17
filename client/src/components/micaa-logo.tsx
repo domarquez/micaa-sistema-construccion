@@ -74,3 +74,5 @@ export function MicaaLogo({
     </div>
   );
 }
+
+export default MicaaLogo;

@@ -35,6 +35,7 @@ import Marketplace from "@/pages/marketplace";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import PublicView from "@/pages/public-view";
+import LandingPage from "@/pages/landing-page";
 import CustomActivities from "@/pages/custom-activities";
 import AccountSettings from "@/pages/account-settings";
 import NotFound from "@/pages/not-found";
@@ -62,8 +63,9 @@ function Router() {
         <Route path="/register" component={Register} />
         <Route path="/login" component={Login} />
         <Route path="/public" component={PublicView} />
-        <Route path="/" component={PublicView} />
-        <Route component={PublicView} />
+        <Route path="/old-public" component={PublicView} />
+        <Route path="/" component={LandingPage} />
+        <Route component={LandingPage} />
       </Switch>
     );
   }
