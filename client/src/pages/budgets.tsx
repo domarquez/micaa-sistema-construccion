@@ -366,7 +366,7 @@ export default function Budgets() {
     doc.text('referenciales y sujetos a modificaciones. Es responsabilidad del creador verificar precios actualizados.', margin, yPosition);
     
     // Pie de página MICAA pequeño
-    yPosition = pageHeight - 10;
+    yPosition = 842 - 10; // A4 height
     doc.setFontSize(7);
     doc.text('MICAA - Sistema Integral de Construcción y Arquitectura | Santa Cruz, Bolivia | contacto@micaa.store', pageWidth / 2, yPosition, { align: 'center' });
     
