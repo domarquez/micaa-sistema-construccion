@@ -1228,6 +1228,69 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  router.put('/projects/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      
+      if (!projectId) {
+        return res.status(400).json({ message: "ID de proyecto inválido" });
+      }
+
+      // Verificar que el proyecto pertenece al usuario
+      const existingProject = await db.select()
+        .from(projects)
+        .where(and(eq(projects.id, projectId), eq(projects.userId, req.user.id)))
+        .limit(1);
+      
+      if (existingProject.length === 0) {
+        return res.status(404).json({ message: "Proyecto no encontrado" });
+      }
+
+      const { 
+        name,
+        client,
+        location,
+        city,
+        country,
+        startDate,
+        equipmentPercentage,
+        administrativePercentage,
+        utilityPercentage,
+        taxPercentage,
+        socialChargesPercentage
+      } = req.body;
+
+      const projectData = {
+        name: name || existingProject[0].name,
+        client: client || existingProject[0].client,
+        location: location || existingProject[0].location,
+        city: city || existingProject[0].city,
+        country: country || existingProject[0].country,
+        startDate: startDate ? new Date(startDate) : existingProject[0].startDate,
+        equipmentPercentage: equipmentPercentage || existingProject[0].equipmentPercentage,
+        administrativePercentage: administrativePercentage || existingProject[0].administrativePercentage,
+        utilityPercentage: utilityPercentage || existingProject[0].utilityPercentage,
+        taxPercentage: taxPercentage || existingProject[0].taxPercentage,
+        socialChargesPercentage: socialChargesPercentage || existingProject[0].socialChargesPercentage,
+        updatedAt: new Date()
+      };
+      
+      console.log("Actualizando proyecto:", projectId, projectData);
+      
+      const [updatedProject] = await db
+        .update(projects)
+        .set(projectData)
+        .where(and(eq(projects.id, projectId), eq(projects.userId, req.user.id)))
+        .returning();
+      
+      console.log("Proyecto actualizado exitosamente:", updatedProject);
+      res.json(updatedProject);
+    } catch (error) {
+      console.error("Error updating project:", error);
+      res.status(500).json({ message: "Error al actualizar el proyecto" });
+    }
+  });
+
   router.delete('/projects/:id', requireAuth, async (req: AuthRequest, res: Response) => {
     try {
       const projectId = parseInt(req.params.id);

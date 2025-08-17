@@ -196,7 +196,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     }
   }, [budget, budgetData, allActivities, constructionPhases]);
 
-  // Crear proyecto
+  // Crear proyecto nuevo
   const createProjectMutation = useMutation({
     mutationFn: async (data: ProjectFormData) => {
       const projectData = {
@@ -213,7 +213,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         socialChargesPercentage: data.socialChargesPercentage || "71.18",
       };
       
-      console.log("Enviando datos del proyecto:", projectData);
+      console.log("Creando nuevo proyecto:", projectData);
       
       const response = await apiRequest("POST", "/api/projects", projectData);
       if (!response.ok) {
@@ -243,6 +243,120 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       });
     },
   });
+
+  // Actualizar proyecto existente
+  const updateProjectMutation = useMutation({
+    mutationFn: async (data: ProjectFormData) => {
+      if (!currentProject) {
+        throw new Error('No hay proyecto para actualizar');
+      }
+
+      const projectData = {
+        name: data.name,
+        client: data.client || null,
+        location: data.location || null,
+        city: data.city || null,
+        country: data.country || "Bolivia",
+        startDate: data.startDate || null,
+        equipmentPercentage: data.equipmentPercentage || "5.00",
+        administrativePercentage: data.administrativePercentage || "8.00",
+        utilityPercentage: data.utilityPercentage || "15.00",
+        taxPercentage: data.taxPercentage || "3.09",
+        socialChargesPercentage: data.socialChargesPercentage || "71.18",
+      };
+      
+      console.log("Actualizando proyecto existente:", currentProject.id, projectData);
+      
+      const response = await apiRequest("PUT", `/api/projects/${currentProject.id}`, projectData);
+      if (!response.ok) {
+        throw new Error('Error al actualizar el proyecto');
+      }
+      return response.json();
+    },
+    onSuccess: (project) => {
+      console.log("Proyecto actualizado exitosamente:", project);
+      setCurrentProject(project);
+      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+      
+      toast({
+        title: "Proyecto actualizado exitosamente",
+        description: "Los cambios han sido guardados",
+      });
+    },
+    onError: (error) => {
+      console.error("Error al actualizar proyecto:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el proyecto. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handler para el formulario del proyecto
+  const handleProjectSubmit = (data: ProjectFormData) => {
+    if (isEditing && currentProject) {
+      // Si estamos editando, actualizar el proyecto existente
+      updateProjectMutation.mutate(data);
+    } else {
+      // Si no estamos editando, crear un nuevo proyecto
+      createProjectMutation.mutate(data);
+    }
+  };
+
+  // Función para duplicar proyecto (crear una copia)
+  const duplicateProjectMutation = useMutation({
+    mutationFn: async (data: ProjectFormData) => {
+      const projectData = {
+        name: `${data.name} (Copia)`,
+        client: data.client || null,
+        location: data.location || null,
+        city: data.city || null,
+        country: data.country || "Bolivia",
+        startDate: data.startDate || null,
+        equipmentPercentage: data.equipmentPercentage || "5.00",
+        administrativePercentage: data.administrativePercentage || "8.00",
+        utilityPercentage: data.utilityPercentage || "15.00",
+        taxPercentage: data.taxPercentage || "3.09",
+        socialChargesPercentage: data.socialChargesPercentage || "71.18",
+      };
+      
+      console.log("Duplicando proyecto:", projectData);
+      
+      const response = await apiRequest("POST", "/api/projects", projectData);
+      if (!response.ok) {
+        throw new Error('Error al duplicar el proyecto');
+      }
+      return response.json();
+    },
+    onSuccess: (project) => {
+      console.log("Proyecto duplicado exitosamente:", project);
+      setCurrentProject(project);
+      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      
+      toast({
+        title: "Proyecto duplicado",
+        description: "Se ha creado una copia del proyecto para editar",
+      });
+    },
+    onError: (error) => {
+      console.error("Error al duplicar proyecto:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo duplicar el proyecto. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Función para duplicar proyecto
+  const handleDuplicateProject = () => {
+    if (currentProject) {
+      const formData = form.getValues();
+      duplicateProjectMutation.mutate(formData);
+    }
+  };
 
   // Guardar presupuesto completo
   const saveBudgetMutation = useMutation({
@@ -333,10 +447,6 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       });
     }
   });
-
-  const handleCreateProject = (data: ProjectFormData) => {
-    createProjectMutation.mutate(data);
-  };
 
   const addPhase = (phaseId: number) => {
     if (selectedPhases.includes(phaseId)) {
@@ -461,17 +571,22 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
         <div className="space-y-6">
           {/* Formulario del Proyecto */}
-          {!currentProject && (
+          {(!currentProject || isEditing) && (
             <Card>
               <CardHeader>
-                <CardTitle>Información del Proyecto</CardTitle>
+                <CardTitle>
+                  {isEditing ? "Editar Información del Proyecto" : "Información del Proyecto"}
+                </CardTitle>
                 <CardDescription>
-                  Complete los datos básicos del proyecto
+                  {isEditing 
+                    ? "Modifica los datos del proyecto. Los cambios se aplicarán al proyecto actual."
+                    : "Complete los datos básicos del proyecto"
+                  }
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleCreateProject)} className="space-y-4">
+                  <form onSubmit={form.handleSubmit(handleProjectSubmit)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
@@ -557,9 +672,28 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                       />
                     </div>
 
-                    <Button type="submit" disabled={createProjectMutation.isPending}>
-                      {createProjectMutation.isPending ? "Creando..." : "Crear Proyecto"}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        type="submit" 
+                        disabled={createProjectMutation.isPending || updateProjectMutation.isPending}
+                      >
+                        {createProjectMutation.isPending || updateProjectMutation.isPending 
+                          ? (isEditing ? "Actualizando..." : "Creando...") 
+                          : (isEditing ? "Actualizar Proyecto" : "Crear Proyecto")
+                        }
+                      </Button>
+                      
+                      {isEditing && currentProject && (
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          onClick={handleDuplicateProject}
+                          disabled={duplicateProjectMutation.isPending}
+                        >
+                          {duplicateProjectMutation.isPending ? "Duplicando..." : "Duplicar Proyecto"}
+                        </Button>
+                      )}
+                    </div>
                   </form>
                 </Form>
               </CardContent>
