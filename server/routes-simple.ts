@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { users, materials, activities, constructionPhases, materialCategories, customActivities, customActivityCompositions, laborCategories, tools, userActivities, userActivityCompositions, activityCompositions } from '../shared/schema';
+import { users, materials, activities, constructionPhases, materialCategories, customActivities, customActivityCompositions, laborCategories, tools, userActivities, userActivityCompositions, activityCompositions, projects } from '../shared/schema';
 import { eq, like, desc, asc, and } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -805,6 +805,70 @@ export async function registerRoutes(app: any) {
       res.json([]);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch budgets' });
+    }
+  });
+
+  // Project management routes
+  router.post('/projects', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      console.log("Datos recibidos para crear proyecto:", req.body);
+      
+      const { 
+        name,
+        client,
+        location,
+        city,
+        country,
+        startDate,
+        equipmentPercentage,
+        administrativePercentage,
+        utilityPercentage,
+        taxPercentage,
+        socialChargesPercentage
+      } = req.body;
+      
+      if (!name) {
+        return res.status(400).json({ message: "El nombre del proyecto es requerido" });
+      }
+      
+      const projectData = {
+        name,
+        client: client || null,
+        location: location || null,
+        city: city || null,
+        country: country || "Bolivia",
+        startDate: startDate ? new Date(startDate) : null,
+        userId: req.user.id,
+        equipmentPercentage: equipmentPercentage || "5.00",
+        administrativePercentage: administrativePercentage || "8.00",
+        utilityPercentage: utilityPercentage || "15.00",
+        taxPercentage: taxPercentage || "3.09",
+        socialChargesPercentage: socialChargesPercentage || "71.18"
+      };
+      
+      console.log("Datos del proyecto antes de insertar:", projectData);
+      
+      const [project] = await db.insert(projects).values(projectData).returning();
+      
+      console.log("Proyecto creado exitosamente:", project);
+      res.status(201).json(project);
+    } catch (error) {
+      console.error("Error creating project:", error);
+      res.status(500).json({ message: "Failed to create project" });
+    }
+  });
+
+  router.get('/projects', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const userProjects = await db.select()
+        .from(projects)
+        .where(eq(projects.userId, req.user.id))
+        .orderBy(desc(projects.createdAt));
+      
+      res.json(userProjects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      res.status(500).json({ error: 'Failed to fetch projects' });
     }
   });
 
