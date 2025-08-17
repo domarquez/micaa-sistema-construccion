@@ -81,27 +81,48 @@ export default function AppHeader() {
           </Popover>
           
           {isAnonymous ? (
-            /* Anonymous User Header */
-            <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="text-orange-600 border-orange-600">
-                <AlertTriangle className="w-3 h-3 mr-1" />
-                Modo Anónimo
+            /* Anonymous User Header - Mobile Responsive */
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs">
+                <AlertTriangle className="w-3 h-3 mr-1 hidden xs:block" />
+                <span className="hidden sm:inline">Modo Anónimo</span>
+                <span className="sm:hidden">Anónimo</span>
               </Badge>
               <Button 
                 size="sm" 
                 variant="outline"
                 onClick={() => window.location.href = "/login"}
-                className="hidden sm:flex"
+                className="hidden sm:flex text-xs px-2"
               >
                 <User className="w-3 h-3 mr-1" />
                 Iniciar Sesión
               </Button>
+              {/* Mobile dropdown for login/register */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild className="sm:hidden">
+                  <Button size="sm" variant="outline" className="px-2">
+                    <User className="w-3 h-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => window.location.href = "/login"}>
+                    <User className="w-3 h-3 mr-2" />
+                    Iniciar Sesión
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = "/register"}>
+                    <UserPlus className="w-3 h-3 mr-2" />
+                    Registro Gratis
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button 
                 size="sm"
                 onClick={() => window.location.href = "/register"}
+                className="hidden sm:flex text-xs px-2 bg-orange-600 hover:bg-orange-700"
               >
                 <UserPlus className="w-3 h-3 mr-1" />
-                Registrarse
+                <span className="hidden md:inline">Registro Gratis</span>
+                <span className="md:hidden">Registro</span>
               </Button>
             </div>
           ) : (
