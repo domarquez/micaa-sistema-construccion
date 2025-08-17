@@ -105,8 +105,6 @@ export default function PublicView() {
     // Abrir enlace si existe
     if (ad.linkUrl) {
       window.open(ad.linkUrl, '_blank');
-    } else if (ad.supplier.email) {
-      window.open(`mailto:${ad.supplier.email}`, '_blank');
     }
   };
 
@@ -266,7 +264,7 @@ export default function PublicView() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-material">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = "/login?redirect=budgets"}>
             <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
                 <Calculator className="w-4 h-4 md:w-6 md:h-6 text-green-600 mb-1 md:mb-2" />
@@ -278,12 +276,12 @@ export default function PublicView() {
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Presupuestos</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Creados</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Presupuestos</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = "/login?redirect=project-dashboard"}>
             <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
                 <Building2 className="w-4 h-4 md:w-6 md:h-6 text-orange-600 mb-1 md:mb-2" />
@@ -295,12 +293,12 @@ export default function PublicView() {
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Proyectos</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">En desarrollo</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Proyectos</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("suppliers")}>
             <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
                 <Truck className="w-4 h-4 md:w-6 md:h-6 text-purple-600 mb-1 md:mb-2" />
@@ -312,12 +310,12 @@ export default function PublicView() {
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Proveedores</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Activos</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Proveedores</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("materials")}>
             <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
                 <Package className="w-4 h-4 md:w-6 md:h-6 text-blue-600 mb-1 md:mb-2" />
@@ -329,12 +327,12 @@ export default function PublicView() {
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Materiales</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Disponibles</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Materiales</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = "/login?redirect=activities"}>
             <CardContent className="p-2 md:p-4">
               <div className="flex flex-col items-center text-center">
                 <Combine className="w-4 h-4 md:w-6 md:h-6 text-teal-600 mb-1 md:mb-2" />
@@ -346,7 +344,7 @@ export default function PublicView() {
                   </p>
                 )}
                 <p className="text-xs text-gray-600">Actividades</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Registradas</p>
+                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Actividades</p>
               </div>
             </CardContent>
           </Card>
