@@ -159,7 +159,10 @@ export default function CustomActivities() {
         </TabsList>
 
         <TabsContent value="activities" className="space-y-6">
-          {/* Actividades Duplicadas (Verde) */}
+          {/* Actividades Creadas Manualmente - PRIMERO */}
+          <CustomActivityManagerDB onEditActivity={handleEditActivity} />
+          
+          {/* Actividades Duplicadas (Verde) - SEGUNDO */}
           {userActivities && userActivities.length > 0 && (
             <Card>
               <CardHeader>
@@ -212,9 +215,6 @@ export default function CustomActivities() {
               </CardContent>
             </Card>
           )}
-          
-          {/* Actividades Creadas Manualmente */}
-          <CustomActivityManagerDB />
         </TabsContent>
 
         <TabsContent value="materials" className="space-y-6">

@@ -46,7 +46,11 @@ interface CustomActivityComposition {
   toolId?: number;
 }
 
-export default function CustomActivityManagerDB() {
+interface CustomActivityManagerDBProps {
+  onEditActivity?: (activity: CustomActivity) => void;
+}
+
+export default function CustomActivityManagerDB({ onEditActivity }: CustomActivityManagerDBProps) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<CustomActivity | null>(null);
   const [newActivityName, setNewActivityName] = useState("");
@@ -279,7 +283,12 @@ export default function CustomActivityManagerDB() {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="gap-1">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="gap-1"
+                      onClick={() => onEditActivity?.(activity)}
+                    >
                       <Edit3 className="w-3 h-3" />
                       Editar
                     </Button>
