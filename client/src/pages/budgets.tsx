@@ -61,6 +61,25 @@ export default function Budgets() {
 
   const { data: budgets, isLoading: budgetsLoading } = useQuery<BudgetWithProject[]>({
     queryKey: isAnonymous ? ["/api/anonymous/budgets"] : ["/api/budgets"],
+    queryFn: isAnonymous ? () => {
+      // Para usuarios anónimos, cargar desde sessionStorage
+      const anonymousProjects = JSON.parse(sessionStorage.getItem('anonymousProjects') || '[]');
+      return anonymousProjects.map((project: any) => ({
+        id: project.id,
+        project: {
+          id: project.id,
+          name: project.name,
+          client: project.client,
+          location: project.location,
+          city: project.city,
+          country: project.country
+        },
+        total: project.total.toString(),
+        status: 'active',
+        createdAt: project.createdAt,
+        phase: { id: 1, name: 'Temporal' }
+      }));
+    } : undefined,
     retry: false
   });
 

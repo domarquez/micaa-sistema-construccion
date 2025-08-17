@@ -31,6 +31,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { insertProjectSchema } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
 import PhaseAccordion from "./phase-accordion-simple";
 import type { 
   BudgetWithProject, 
@@ -60,6 +61,7 @@ interface BudgetFormProps {
 
 export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
   const { toast } = useToast();
+  const { isAnonymous } = useAuth();
   const [currentProject, setCurrentProject] = useState<Project | null>(budget?.project || null);
   const [selectedPhase, setSelectedPhase] = useState<number | null>(null);
   const [budgetItems, setBudgetItems] = useState<any[]>([]);
@@ -89,7 +91,7 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
     queryKey: ["/api/construction-phases"],
   });
 
-  const { data: cityFactors = [] } = useQuery({
+  const { data: cityFactors = [] } = useQuery<any[]>({
     queryKey: ["/api/city-price-factors"],
   });
 
@@ -207,7 +209,44 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
       return;
     }
 
-    saveBudgetMutation.mutate();
+    if (isAnonymous) {
+      // Para usuarios anónimos, crear proyecto temporal en memoria
+      handleAnonymousProject();
+    } else {
+      // Para usuarios autenticados, guardar normalmente
+      saveBudgetMutation.mutate();
+    }
+  };
+
+  const handleAnonymousProject = () => {
+    // Crear proyecto temporal para usuarios anónimos
+    const anonymousProject = {
+      id: Date.now(),
+      name: form.getValues('name') || 'Proyecto Sin Título',
+      client: form.getValues('client') || 'Cliente Temporal',
+      location: form.getValues('location') || 'Ubicación Temporal',
+      city: form.getValues('city') || 'Santa Cruz',
+      country: form.getValues('country') || 'Bolivia',
+      isAnonymous: true,
+      items: budgetItems,
+      total: budgetTotal,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Guardar en sessionStorage para que persista durante la sesión
+    const existingProjects = JSON.parse(sessionStorage.getItem('anonymousProjects') || '[]');
+    existingProjects.push(anonymousProject);
+    sessionStorage.setItem('anonymousProjects', JSON.stringify(existingProjects));
+
+    toast({
+      title: "Proyecto iniciado temporalmente",
+      description: "Tu proyecto se guardó en esta sesión. Regístrate para guardarlo permanentemente.",
+      variant: "default",
+    });
+
+    // Invalidar la consulta para que se actualice la lista
+    queryClient.invalidateQueries({ queryKey: ["/api/anonymous/budgets"] });
+    onClose();
   };
 
   return (
@@ -510,7 +549,7 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
               disabled={!currentProject || !selectedPhase}
               className="bg-primary hover:bg-primary-variant"
             >
-              Guardar Presupuesto
+              {isAnonymous ? "Iniciar Proyecto Temporal" : "Guardar Presupuesto"}
             </Button>
           </div>
         </div>

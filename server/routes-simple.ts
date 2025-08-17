@@ -546,7 +546,8 @@ export async function registerRoutes(app: any) {
   // Anonymous budget operations - accessible without authentication
   router.get('/anonymous/budgets', (req: Request, res: Response) => {
     try {
-      // Return empty array for anonymous users - they start fresh each session
+      // Para usuarios anónimos, los datos se manejan en el frontend con sessionStorage
+      // Aquí retornamos una estructura vacía que el frontend poblará
       res.json([]);
     } catch (error) {
       console.error('Error fetching anonymous budgets:', error);
