@@ -577,13 +577,34 @@ export async function registerRoutes(app: any) {
       const activitiesCount = await db.select().from(activities);
       const usersCount = await db.select().from(users);
       
+      // Count active budgets
+      const budgetsCount = await db.select().from(budgets);
+      
+      // Count projects
+      const projectsCount = await db.select().from(projects);
+      
+      // Count suppliers (users with supplier userType)
+      const suppliersCount = await db.select().from(users)
+        .where(eq(users.userType, 'supplier'));
+      
+      // Calculate total project value from budgets
+      const budgetTotals = await db.select({
+        total: sql<number>`COALESCE(SUM(${budgets.total}), 0)`
+      }).from(budgets);
+      
+      const totalProjectValue = budgetTotals[0]?.total || 0;
+      
       res.json({
         totalMaterials: materialsCount.length,
         totalActivities: activitiesCount.length,
         totalUsers: usersCount.length,
-        totalSuppliers: 0
+        activeBudgets: budgetsCount.length,
+        totalProjects: projectsCount.length,
+        totalSuppliers: suppliersCount.length,
+        totalProjectValue: Number(totalProjectValue)
       });
     } catch (error) {
+      console.error("Statistics error:", error);
       res.status(500).json({ error: 'Failed to fetch statistics' });
     }
   });
