@@ -88,25 +88,28 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Budget Details**: Budget detail view correctly shows custom activities with personalized naming
 - **Full Custom Activity Workflow**: From creation to budget inclusion, all functionality working seamlessly
 
-### August 17, 2025: Complete Budget Management & PDF Export System Fixed ✓
+### August 17, 2025: Complete Budget Management & Full APU PDF Export System ✓
 - **Budget Edit vs Duplicate Issue Fixed**: Sistema now correctly updates existing budgets instead of creating duplicates
 - **Project Duplication Complete**: Full project+budget duplication working with proper protection against multiple clicks
-- **Enhanced PDF Export Functionality**: Complete cotization PDF with detailed breakdown:
+- **Complete APU PDF Export System**: Full Análisis de Precios Unitarios (APU) generation with detailed breakdown:
   - Professional MICAA company header and business information
   - Complete project details (client, location, phase, dates)
-  - Detailed activity table with items, descriptions, units, quantities, unit prices
+  - Individual APU analysis for each budget activity item
+  - Detailed composition breakdown: Materials, Mano de Obra, Herramientas y Equipos
+  - Quantities, unit prices, and subtotals for each component
+  - APU summary totals by category (materials, labor, equipment)
   - Custom activity identification with "(Personalizada)" labels
-  - Multi-page support with repeating headers
-  - Accurate total calculations from actual budget data
-  - Professional terms and conditions section
+  - Multi-page support with automatic page breaks and space management
+  - Total general calculation from all activity subtotals
+  - Professional construction industry format following Bolivian standards
 - **UI Icon System**: Clear color-coded action buttons with tooltips:
   - Blue (Eye): View budget details
   - Green (FileText): Edit budget  
-  - Purple (Download): Download complete PDF cotization
+  - Purple (Download): Download complete APU PDF with full breakdown
   - Orange (Printer): Open for printing/detailed view
   - Red (Trash): Delete project
-- **Complete Export Integration**: PDF generation works from budget list with full authentication and data retrieval
-- **Professional Documentation**: Generated PDFs suitable for client presentation with complete pricing breakdown
+- **Complete APU Integration**: PDF generation retrieves full activity compositions via API calls
+- **Professional Construction Documentation**: Generated APU PDFs suitable for client presentation with industry-standard format
 
 ### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
 - **MAJOR FIX**: Material price update system completely repaired and working correctly
