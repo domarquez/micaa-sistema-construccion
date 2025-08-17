@@ -79,18 +79,17 @@ Preferred communication style: Simple, everyday language.
 - **Server Running Successfully**: Application now starts and serves on port 5000
 - **Database Connection Verified**: PostgreSQL connection established and working properly
 
-### August 16, 2025: Complete Activity Duplication & 100% Catalog Integration Implemented ✓
-- **Activity Duplication System**: Sistema completo de duplicación de actividades implementado con tables user_activities y user_activity_compositions
-- **Custom Activity Ordering**: Actividades personalizadas aparecen inmediatamente después de su actividad original con fondo verde
-- **APU Calculator for Custom Activities**: Calculator modificado para trabajar con actividades personalizadas (ID > 10000) usando composiciones de user_activity_compositions
-- **Composition Management**: Sistema de composiciones funcionando para actividades personalizadas con endpoints separados
-- **Authentication Integration**: Sistema de autenticación requerido para duplicar actividades y acceso basado en tokens
-- **Visual Feedback**: Actividades personalizadas mostradas en verde con etiqueta "(Personalizada)" y botón duplicar solo para originales
-- **Database Schema**: Nuevas tablas user_activities y user_activity_compositions creadas y funcionando correctamente
-- **100% Catalog Integration**: TODAS las composiciones conectadas a catálogos - 1,582 materiales, 1,026 mano de obra, 190 equipos
-- **Intelligent Material Matching**: Sistema de análisis de nombres para conectar automáticamente materiales similares del catálogo
-- **Automatic Price Updates**: Precios se actualizan automáticamente cuando se modifican en catálogos centrales
-- **Catalog Expansion**: Creados automáticamente 317 nuevos materiales, 22 categorías laborales, 8 herramientas desde composiciones
+### August 16, 2025: Complete Activity Duplication System Restored & APU Calculator Fixed ✓
+- **Missing Routes Implemented**: Added missing activity duplication, composition fetching, and APU calculation routes to routes-simple.ts
+- **Activity Duplication Working**: `/api/activities/:id/duplicate` endpoint functioning correctly with user authentication
+- **APU Calculation Restored**: `/api/activities/:id/apu-calculation` endpoint working with full price breakdowns and material/labor/equipment analysis
+- **Activity Compositions Fixed**: `/api/activities/:id/compositions` endpoint returns correct composition data for both original and custom activities
+- **User Activities List Fixed**: `/api/user-activities` endpoint now properly returns user's duplicated activities with phase information and custom activity IDs
+- **Authentication Integration**: All endpoints require proper JWT authentication and user validation
+- **Database Schema Working**: user_activities and user_activity_compositions tables functioning correctly
+- **Custom Activity Editor**: New CustomActivityEditor component created for editing activity compositions with real-time cost calculations
+- **Complete API Integration**: All endpoints moved from localStorage to database-backed operations
+- **Successful Duplications**: Multiple activities successfully duplicated (IDs 162, 168, 36, 100) with proper custom activity ID generation (10001-10004)
 
 ### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
 - **MAJOR FIX**: Material price update system completely repaired and working correctly

@@ -719,11 +719,32 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  router.get('/user-activities', async (req: Request, res: Response) => {
+  router.get('/user-activities', requireAuth, async (req: AuthRequest, res: Response) => {
     try {
-      // Return empty array for now
-      res.json([]);
+      console.log(`🔍 Fetching user activities for user ID: ${req.user.id}`);
+      
+      const userDuplicatedActivities = await db.select().from(userActivities)
+        .where(eq(userActivities.userId, req.user.id))
+        .orderBy(desc(userActivities.createdAt));
+      
+      console.log(`📋 Found ${userDuplicatedActivities.length} user activities`);
+      
+      // Get phase information for each activity
+      const phases = await db.select().from(constructionPhases);
+      
+      const activitiesWithPhases = userDuplicatedActivities.map(activity => {
+        const phase = phases.find(p => p.id === activity.phaseId);
+        return {
+          ...activity,
+          phase: phase || { id: 0, name: 'Sin Fase' },
+          // Add the custom activity ID format (original ID + 10000)
+          customActivityId: activity.id + 10000
+        };
+      });
+      
+      res.json(activitiesWithPhases);
     } catch (error) {
+      console.error('Fetch user activities error:', error);
       res.status(500).json({ error: 'Failed to fetch user activities' });
     }
   });
