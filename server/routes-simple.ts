@@ -177,12 +177,15 @@ export async function registerRoutes(app: any) {
       // Get all phases
       const phases = await db.select().from(constructionPhases);
       
-      // Get user duplicated activities if user is authenticated
+      // Get user duplicated activities and custom activities if user is authenticated
       let userDuplicatedActivities: any[] = [];
+      let userCustomActivities: any[] = [];
       if (userId) {
         userDuplicatedActivities = await db.select().from(userActivities)
           .where(eq(userActivities.userId, userId));
-        console.log(`🔍 Found ${userDuplicatedActivities.length} user duplicated activities for user ${userId}`);
+        userCustomActivities = await db.select().from(customActivities)
+          .where(eq(customActivities.userId, userId));
+        console.log(`🔍 Found ${userDuplicatedActivities.length} user duplicated activities and ${userCustomActivities.length} custom activities for user ${userId}`);
       }
       
       // Combine activities with phase information and user data
@@ -223,6 +226,31 @@ export async function registerRoutes(app: any) {
         }
       }
       
+      // Add completely custom activities (not duplicated from originals) 
+      if (userId && userCustomActivities.length > 0) {
+        for (const customActivity of userCustomActivities) {
+          const phase = phases.find(p => p.id === customActivity.phaseId);
+          activitiesWithPhases.push({
+            id: 20000 + customActivity.id, // Different range for custom activities  
+            phaseId: customActivity.phaseId,
+            name: customActivity.name,
+            unit: customActivity.unit,
+            description: customActivity.description,
+            unitPrice: "0.00", // Custom activities start with no price
+            createdBy: userId,
+            originalActivityId: null,
+            isSystemDefault: false,
+            isPublic: false,
+            createdAt: customActivity.createdAt,
+            updatedAt: customActivity.updatedAt,
+            phase: phase || { id: 0, name: 'Sin Fase', description: '' },
+            hasCustomActivity: false,
+            isOriginal: false, // This is a custom activity
+            isCustomCreated: true // Flag to identify manually created activities
+          });
+        }
+      }
+      
       res.json({
         activities: activitiesWithPhases,
         totalCount: activitiesWithPhases.length,
@@ -247,14 +275,23 @@ export async function registerRoutes(app: any) {
       console.log(`🔍 Getting compositions for activity ${activityId}`);
       let compositions;
 
-      // Check if this is a custom activity (ID > 10000)
-      if (activityId > 10000) {
+      // Check activity type by ID range
+      if (activityId > 20000) {
+        // Custom created activity
+        const realActivityId = activityId - 20000;
+        console.log(`🔧 Getting compositions for custom created activity ${activityId} (real ID: ${realActivityId})`);
+        compositions = await db.select()
+          .from(customActivityCompositions)
+          .where(eq(customActivityCompositions.customActivityId, realActivityId));
+      } else if (activityId > 10000) {
+        // Duplicated activity
         const realActivityId = activityId - 10000;
-        console.log(`🔧 Getting compositions for custom activity ${activityId} (real ID: ${realActivityId})`);
+        console.log(`🔧 Getting compositions for duplicated activity ${activityId} (real ID: ${realActivityId})`);
         compositions = await db.select()
           .from(userActivityCompositions)
           .where(eq(userActivityCompositions.userActivityId, realActivityId));
       } else {
+        // Original activity
         console.log(`🔧 Getting compositions for original activity ${activityId}`);
         compositions = await db.select()
           .from(activityCompositions)
