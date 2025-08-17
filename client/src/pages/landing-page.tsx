@@ -176,7 +176,7 @@ export default function LandingPage() {
             <div className="flex items-center space-x-3">
               <MicaaLogo size="lg" showText={true} />
               <div className="hidden md:block">
-                <p className="text-blue-100 text-sm">
+                <p className="text-orange-100 text-sm">
                   Sistema Integral de Construcción y Arquitectura
                 </p>
               </div>
@@ -185,18 +185,18 @@ export default function LandingPage() {
               <ContactForm 
                 triggerText="Contacto"
                 triggerVariant="outline"
-                className="hidden md:flex items-center space-x-2 text-white border-white hover:bg-white hover:text-blue-600"
+                className="flex items-center space-x-2 text-white border-white hover:bg-white hover:text-orange-600"
               />
               <Button 
                 variant="outline" 
                 onClick={() => window.location.href = "/login"} 
-                className="w-full sm:w-auto text-white border-white hover:bg-white hover:text-blue-600"
+                className="w-full sm:w-auto text-white border-white hover:bg-white hover:text-orange-600"
               >
                 Iniciar Sesión
               </Button>
               <Button 
                 onClick={() => window.location.href = "/register"} 
-                className="w-full sm:w-auto bg-white text-blue-600 hover:bg-blue-50"
+                className="w-full sm:w-auto bg-white text-orange-600 hover:bg-orange-50"
               >
                 Registrarse Gratis
               </Button>
