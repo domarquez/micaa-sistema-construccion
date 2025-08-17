@@ -315,29 +315,27 @@ export default function Budgets() {
         const item = (phaseItems as any[])[index];
         checkNewPage(60);
         
-        // Encabezado del item con mejor diseño
-        doc.setFillColor(240, 240, 240); // Fondo gris claro
-        doc.rect(margin, yPosition - 2, pageWidth - 2 * margin, 20, 'F');
+        // Encabezado del item más compacto
+        doc.setFillColor(240, 240, 240);
+        doc.rect(margin, yPosition - 1, pageWidth - 2 * margin, 12, 'F');
         
-        doc.setFontSize(11);
+        doc.setFontSize(9);
         doc.setFont('helvetica', 'bold');
-        doc.text(`ITEM ${(index + 1).toString().padStart(2, '0')}: ${item.activity?.name || 'Actividad sin nombre'}`, margin + 3, yPosition + 5);
+        doc.text(`${(index + 1).toString().padStart(2, '0')}. ${item.activity?.name || 'Actividad sin nombre'}`, margin + 2, yPosition + 4);
         if (item.activity?.isCustomActivity) {
-          doc.setTextColor(150, 0, 150); // Color púrpura para personalizada
-          doc.text('(Personalizada)', margin + 3, yPosition + 13);
+          doc.setTextColor(150, 0, 150);
+          doc.text('(P)', margin + 2, yPosition + 8);
           doc.setTextColor(0, 0, 0);
         }
         
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        doc.text(`Unidad: ${item.activity?.unit || 'und'}`, margin + 120, yPosition + 5);
-        doc.text(`Cantidad: ${parseFloat(item.quantity || 0).toFixed(2)}`, margin + 120, yPosition + 9);
-        doc.text(`P. Unit: Bs ${parseFloat(item.unitPrice || 0).toFixed(2)}`, margin + 120, yPosition + 13);
+        doc.setFontSize(8);
+        doc.text(`${item.activity?.unit || 'und'} | Cant: ${parseFloat(item.quantity || 0).toFixed(2)} | P.U: ${parseFloat(item.unitPrice || 0).toFixed(2)}`, margin + 100, yPosition + 4);
         
         doc.setFont('helvetica', 'bold');
-        doc.text(`Subtotal: Bs ${parseFloat(item.subtotal || 0).toFixed(2)}`, margin + 150, yPosition + 9);
+        doc.text(`Bs ${parseFloat(item.subtotal || 0).toFixed(2)}`, margin + 150, yPosition + 8);
         doc.setFont('helvetica', 'normal');
-        yPosition += 25;
+        yPosition += 15;
 
         totalGeneral += parseFloat(item.subtotal || 0);
 
@@ -354,92 +352,90 @@ export default function Budgets() {
             if (apuResponse.ok) {
               const apuData = await apuResponse.json();
             
-            // Título APU
-            doc.setFontSize(9);
-            doc.text('COMPOSICION Y ANALISIS DE PRECIOS:', margin, yPosition);
-            yPosition += 8;
-
-            // Encabezados de tabla
+            // Título APU compacto
             doc.setFontSize(8);
-            doc.text('DESCRIPCION', margin, yPosition);
-            doc.text('UND', margin + 80, yPosition);
-            doc.text('CANT', margin + 100, yPosition);
-            doc.text('P.UNIT', margin + 120, yPosition);
-            doc.text('PARCIAL', margin + 145, yPosition);
-            yPosition += 5;
-            doc.line(margin, yPosition, pageWidth - margin, yPosition);
+            doc.text('COMPOSICIÓN APU:', margin, yPosition);
             yPosition += 5;
 
-            // Materiales
+            // Encabezados compactos
+            doc.setFontSize(7);
+            doc.text('DESCRIPCIÓN', margin, yPosition);
+            doc.text('UND', margin + 70, yPosition);
+            doc.text('CANT', margin + 90, yPosition);
+            doc.text('P.U', margin + 110, yPosition);
+            doc.text('TOTAL', margin + 130, yPosition);
+            yPosition += 3;
+            doc.line(margin, yPosition, pageWidth - margin, yPosition);
+            yPosition += 3;
+
+            // Materiales compacto
             if (apuData.breakdown?.materials?.length > 0) {
-              doc.setFontSize(8);
-              doc.text('MATERIALES:', margin, yPosition);
-              yPosition += 5;
+              doc.setFontSize(7);
+              doc.text('MAT:', margin, yPosition);
+              yPosition += 3;
               
               apuData.breakdown.materials.forEach((material: any) => {
-                checkNewPage(8);
-                doc.text(material.name || 'Material', margin + 5, yPosition);
-                doc.text(material.unit || 'und', margin + 80, yPosition);
-                doc.text((material.quantity || 0).toFixed(2), margin + 100, yPosition);
-                doc.text((material.unitCost || 0).toFixed(2), margin + 120, yPosition);
-                doc.text((material.subtotal || 0).toFixed(2), margin + 145, yPosition);
-                yPosition += 4;
+                checkNewPage(5);
+                doc.text((material.name || 'Material').substring(0, 25), margin + 5, yPosition);
+                doc.text(material.unit || 'und', margin + 70, yPosition);
+                doc.text((material.quantity || 0).toFixed(1), margin + 90, yPosition);
+                doc.text((material.unitCost || 0).toFixed(1), margin + 110, yPosition);
+                doc.text((material.subtotal || 0).toFixed(2), margin + 130, yPosition);
+                yPosition += 3;
               });
-              yPosition += 3;
+              yPosition += 2;
             }
 
-            // Mano de obra
+            // Mano de obra compacto
             if (apuData.breakdown?.labor?.length > 0) {
-              checkNewPage(15);
-              doc.text('MANO DE OBRA:', margin, yPosition);
-              yPosition += 5;
+              checkNewPage(8);
+              doc.setFontSize(7);
+              doc.text('M.O:', margin, yPosition);
+              yPosition += 3;
               
               apuData.breakdown.labor.forEach((labor: any) => {
-                checkNewPage(8);
-                doc.text(labor.name || 'Trabajador', margin + 5, yPosition);
-                doc.text(labor.unit || 'hr', margin + 80, yPosition);
-                doc.text((labor.quantity || 0).toFixed(2), margin + 100, yPosition);
-                doc.text((labor.unitCost || 0).toFixed(2), margin + 120, yPosition);
-                doc.text((labor.subtotal || 0).toFixed(2), margin + 145, yPosition);
-                yPosition += 4;
+                checkNewPage(5);
+                doc.text((labor.name || 'Trabajador').substring(0, 25), margin + 5, yPosition);
+                doc.text(labor.unit || 'hr', margin + 70, yPosition);
+                doc.text((labor.quantity || 0).toFixed(1), margin + 90, yPosition);
+                doc.text((labor.unitCost || 0).toFixed(1), margin + 110, yPosition);
+                doc.text((labor.subtotal || 0).toFixed(2), margin + 130, yPosition);
+                yPosition += 3;
               });
-              yPosition += 3;
+              yPosition += 2;
             }
 
-            // Herramientas y equipos
+            // Herramientas compacto
             if (apuData.breakdown?.equipment?.length > 0) {
-              checkNewPage(15);
-              doc.text('HERRAMIENTAS Y EQUIPOS:', margin, yPosition);
-              yPosition += 5;
+              checkNewPage(8);
+              doc.setFontSize(7);
+              doc.text('HER:', margin, yPosition);
+              yPosition += 3;
               
               apuData.breakdown.equipment.forEach((equipment: any) => {
-                checkNewPage(8);
-                doc.text(equipment.name || 'Herramienta', margin + 5, yPosition);
-                doc.text(equipment.unit || 'hr', margin + 80, yPosition);
-                doc.text((equipment.quantity || 0).toFixed(2), margin + 100, yPosition);
-                doc.text((equipment.unitCost || 0).toFixed(2), margin + 120, yPosition);
-                doc.text((equipment.subtotal || 0).toFixed(2), margin + 145, yPosition);
-                yPosition += 4;
+                checkNewPage(5);
+                doc.text((equipment.name || 'Herramienta').substring(0, 25), margin + 5, yPosition);
+                doc.text(equipment.unit || 'hr', margin + 70, yPosition);
+                doc.text((equipment.quantity || 0).toFixed(1), margin + 90, yPosition);
+                doc.text((equipment.unitCost || 0).toFixed(1), margin + 110, yPosition);
+                doc.text((equipment.subtotal || 0).toFixed(2), margin + 130, yPosition);
+                yPosition += 3;
               });
-              yPosition += 3;
+              yPosition += 2;
             }
 
-            // Resumen del APU
-            checkNewPage(20);
-            doc.line(margin + 100, yPosition, pageWidth - margin, yPosition);
-            yPosition += 5;
-            doc.setFontSize(9);
-            doc.text('RESUMEN APU:', margin + 80, yPosition);
-            yPosition += 5;
-            doc.text(`Materiales: Bs ${(apuData.totals?.materials || 0).toFixed(2)}`, margin + 80, yPosition);
-            yPosition += 4;
-            doc.text(`Mano de obra: Bs ${(apuData.totals?.labor || 0).toFixed(2)}`, margin + 80, yPosition);
-            yPosition += 4;
-            doc.text(`Herramientas: Bs ${(apuData.totals?.equipment || 0).toFixed(2)}`, margin + 80, yPosition);
-            yPosition += 4;
-            doc.setFontSize(10);
-            doc.text(`TOTAL APU: Bs ${(apuData.totalUnitPrice || 0).toFixed(2)}`, margin + 80, yPosition);
-            yPosition += 10;
+            // Resumen del APU compacto
+            checkNewPage(12);
+            doc.line(margin + 90, yPosition, pageWidth - margin, yPosition);
+            yPosition += 3;
+            doc.setFontSize(7);
+            doc.text(`Mat: ${(apuData.totals?.materials || 0).toFixed(2)} | M.O: ${(apuData.totals?.labor || 0).toFixed(2)} | Her: ${(apuData.totals?.equipment || 0).toFixed(2)}`, margin + 90, yPosition);
+            yPosition += 3;
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`TOTAL APU: Bs ${(apuData.totalUnitPrice || 0).toFixed(2)}`, margin + 90, yPosition);
+            doc.setFont('helvetica', 'normal');
+            yPosition += 8;
           }
         } catch (error) {
           console.log(`Error obteniendo APU para actividad ${item.activity.id}:`, error);
@@ -449,18 +445,24 @@ export default function Budgets() {
         }
       }
 
-        // Separador entre items
-        yPosition += 5;
+        // Separador entre items más compacto
+        yPosition += 2;
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.3);
         doc.line(margin, yPosition, pageWidth - margin, yPosition);
-        yPosition += 10;
+        yPosition += 5;
       }
 
-      // Subtotal de la fase
+      // Subtotal de la fase más compacto
       const phaseTotal = (phaseItems as any[]).reduce((total: number, item: any) => total + parseFloat(item.subtotal || 0), 0);
-      checkNewPage(15);
-      doc.setFontSize(11);
-      doc.text(`SUBTOTAL FASE ${phaseName}: Bs ${phaseTotal.toFixed(2)}`, margin, yPosition);
-      yPosition += 15;
+      checkNewPage(10);
+      doc.setFillColor(230, 230, 230);
+      doc.rect(margin, yPosition - 2, pageWidth - 2 * margin, 8, 'F');
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`SUBTOTAL ${phaseName}: Bs ${phaseTotal.toFixed(2)}`, margin + 3, yPosition + 3);
+      doc.setFont('helvetica', 'normal');
+      yPosition += 12;
     }
 
     // Total general final con mejor diseño
@@ -502,6 +504,16 @@ export default function Budgets() {
     
     doc.setFont('helvetica', 'normal');
     doc.text('Santa Cruz, Bolivia | contacto@micaa.store', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 8;
+    
+    // Nota legal de responsabilidad
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'italic');
+    doc.text('NOTA LEGAL: MICAA se exime de toda responsabilidad por los precios expuestos,', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 4;
+    doc.text('los cuales son referenciales y sujetos a modificaciones de precios y diseño.', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 4;
+    doc.text('Es responsabilidad del creador del presupuesto verificar y ofrecer precios actualizados.', pageWidth / 2, yPosition, { align: 'center' });
     
     // Descargar PDF
     const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
