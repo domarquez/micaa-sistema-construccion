@@ -1164,6 +1164,87 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Update budget endpoint
+  router.put('/budgets/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const budgetId = parseInt(req.params.id);
+      const { total, status } = req.body;
+      
+      if (!budgetId) {
+        return res.status(400).json({ message: "ID de presupuesto inválido" });
+      }
+
+      // Verificar que el presupuesto existe y pertenece al usuario
+      const budgetCheck = await db.select({
+        budgetId: budgets.id,
+        projectUserId: projects.userId
+      })
+        .from(budgets)
+        .innerJoin(projects, eq(budgets.projectId, projects.id))
+        .where(and(eq(budgets.id, budgetId), eq(projects.userId, req.user.id)))
+        .limit(1);
+      
+      if (budgetCheck.length === 0) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
+      }
+
+      const updateData: any = {
+        updatedAt: new Date()
+      };
+
+      if (total !== undefined) updateData.total = total.toString();
+      if (status !== undefined) updateData.status = status;
+
+      console.log("Actualizando presupuesto:", budgetId, updateData);
+      
+      const [updatedBudget] = await db
+        .update(budgets)
+        .set(updateData)
+        .where(eq(budgets.id, budgetId))
+        .returning();
+      
+      console.log("Presupuesto actualizado:", updatedBudget);
+      res.json(updatedBudget);
+    } catch (error) {
+      console.error("Error updating budget:", error);
+      res.status(500).json({ message: "Error al actualizar el presupuesto" });
+    }
+  });
+
+  // Delete budget items endpoint
+  router.delete('/budgets/:id/items', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const budgetId = parseInt(req.params.id);
+      
+      if (!budgetId) {
+        return res.status(400).json({ message: "ID de presupuesto inválido" });
+      }
+
+      // Verificar que el presupuesto existe y pertenece al usuario
+      const budgetCheck = await db.select({
+        budgetId: budgets.id,
+        projectUserId: projects.userId
+      })
+        .from(budgets)
+        .innerJoin(projects, eq(budgets.projectId, projects.id))
+        .where(and(eq(budgets.id, budgetId), eq(projects.userId, req.user.id)))
+        .limit(1);
+      
+      if (budgetCheck.length === 0) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
+      }
+
+      // Eliminar todos los elementos del presupuesto
+      await db.delete(budgetItems).where(eq(budgetItems.budgetId, budgetId));
+      
+      console.log(`Elementos del presupuesto ${budgetId} eliminados`);
+      res.json({ message: "Elementos del presupuesto eliminados exitosamente" });
+    } catch (error) {
+      console.error("Error deleting budget items:", error);
+      res.status(500).json({ message: "Error al eliminar elementos del presupuesto" });
+    }
+  });
+
   // Project management routes
   router.post('/projects', requireAuth, async (req: AuthRequest, res: Response) => {
     try {

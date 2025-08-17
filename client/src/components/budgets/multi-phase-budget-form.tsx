@@ -362,7 +362,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   const saveBudgetMutation = useMutation({
     mutationFn: async () => {
       if (!currentProject) {
-        throw new Error("Proyecto requerido para crear presupuesto");
+        throw new Error("Proyecto requerido para guardar presupuesto");
       }
 
       // Validar que hay al menos una fase con actividades válidas
@@ -374,33 +374,60 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         throw new Error("Debe agregar al menos una actividad válida al presupuesto");
       }
 
-      // Crear UN solo presupuesto para el proyecto
       const totalGeneral = phases.reduce((sum, phase) => sum + phase.total, 0);
       
-      console.log("Creando presupuesto con total:", totalGeneral);
-      
-      const budgetResponse = await apiRequest("POST", "/api/budgets", {
-        projectId: currentProject.id,
-        phaseId: null, // Sin fase específica - presupuesto general
-        total: totalGeneral,
-        status: "active"
-      });
-      
-      if (!budgetResponse.ok) {
-        const errorText = await budgetResponse.text();
-        throw new Error(`Error al crear presupuesto: ${errorText}`);
-      }
-      
-      const newBudget = await budgetResponse.json();
-      console.log("Presupuesto creado:", newBudget);
+      let budgetToUse;
 
-      // Crear elementos del presupuesto organizados por fases
+      if (isEditing && budget) {
+        // MODO EDICIÓN: Actualizar presupuesto existente
+        console.log("Actualizando presupuesto existente:", budget.id, "con total:", totalGeneral);
+        
+        const budgetResponse = await apiRequest("PUT", `/api/budgets/${budget.id}`, {
+          total: totalGeneral,
+          status: "active"
+        });
+        
+        if (!budgetResponse.ok) {
+          const errorText = await budgetResponse.text();
+          throw new Error(`Error al actualizar presupuesto: ${errorText}`);
+        }
+        
+        budgetToUse = await budgetResponse.json();
+        console.log("Presupuesto actualizado:", budgetToUse);
+
+        // Eliminar elementos existentes del presupuesto
+        const deleteResponse = await apiRequest("DELETE", `/api/budgets/${budget.id}/items`);
+        if (!deleteResponse.ok) {
+          console.warn("Error eliminando items existentes, continuando...");
+        }
+        
+      } else {
+        // MODO CREACIÓN: Crear nuevo presupuesto
+        console.log("Creando nuevo presupuesto con total:", totalGeneral);
+        
+        const budgetResponse = await apiRequest("POST", "/api/budgets", {
+          projectId: currentProject.id,
+          phaseId: null,
+          total: totalGeneral,
+          status: "active"
+        });
+        
+        if (!budgetResponse.ok) {
+          const errorText = await budgetResponse.text();
+          throw new Error(`Error al crear presupuesto: ${errorText}`);
+        }
+        
+        budgetToUse = await budgetResponse.json();
+        console.log("Presupuesto creado:", budgetToUse);
+      }
+
+      // Crear los nuevos elementos del presupuesto
       let itemsCreated = 0;
       for (const phaseData of phases) {
         for (const item of phaseData.items) {
           if (item.activityId > 0 && item.quantity > 0) {
             console.log("Creando item:", {
-              budgetId: newBudget.id,
+              budgetId: budgetToUse.id,
               activityId: item.activityId,
               phaseId: phaseData.phaseId,
               quantity: item.quantity,
@@ -409,7 +436,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
             });
             
             const itemResponse = await apiRequest("POST", "/api/budget-items", {
-              budgetId: newBudget.id,
+              budgetId: budgetToUse.id,
               activityId: item.activityId,
               phaseId: phaseData.phaseId,
               quantity: item.quantity,
@@ -428,14 +455,15 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         }
       }
       
-      console.log(`Se crearon ${itemsCreated} elementos del presupuesto`);
-      return newBudget;
+      console.log(`Se ${isEditing ? 'actualizaron' : 'crearon'} ${itemsCreated} elementos del presupuesto`);
+      return budgetToUse;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/budgets/${budget?.id}`] });
       toast({
-        title: "Presupuesto guardado",
-        description: `Se creó el presupuesto con ${phases.filter(p => p.items.length > 0).length} fases correctamente.`,
+        title: isEditing ? "Presupuesto actualizado" : "Presupuesto guardado",
+        description: `Se ${isEditing ? 'actualizó' : 'creó'} el presupuesto con ${phases.filter(p => p.items.length > 0).length} fases correctamente.`,
       });
       onClose();
     },
