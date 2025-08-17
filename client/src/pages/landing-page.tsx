@@ -185,18 +185,18 @@ export default function LandingPage() {
               <ContactForm 
                 triggerText="Contacto"
                 triggerVariant="outline"
-                className="flex items-center space-x-2 text-white border-white hover:bg-white hover:text-orange-600"
+                className="flex items-center space-x-2 !text-white !border-white !bg-transparent hover:!bg-white hover:!text-orange-600 px-4 py-2 rounded transition-all duration-200"
               />
               <Button 
                 variant="outline" 
                 onClick={() => window.location.href = "/login"} 
-                className="w-full sm:w-auto text-white border-white hover:bg-white hover:text-orange-600"
+                className="w-full sm:w-auto !text-white !border-white !bg-transparent hover:!bg-white hover:!text-orange-600 px-4 py-2 transition-all duration-200"
               >
                 Iniciar Sesión
               </Button>
               <Button 
                 onClick={() => window.location.href = "/register"} 
-                className="w-full sm:w-auto bg-white text-orange-600 hover:bg-orange-50"
+                className="w-full sm:w-auto bg-white text-orange-600 hover:bg-orange-50 border-2 border-white px-4 py-2 font-semibold"
               >
                 Registrarse Gratis
               </Button>
