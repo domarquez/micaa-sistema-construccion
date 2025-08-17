@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Building2, Eye, ChevronLeft, ChevronRight, Copy } from "lucide-react";
+import { Plus, Search, Building2, Eye, ChevronLeft, ChevronRight, Copy, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +57,10 @@ export default function Activities() {
   const duplicateActivityMutation = useMutation({
     mutationFn: async (activityId: number) => {
       const response = await apiRequest('POST', `/api/activities/${activityId}/duplicate`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al duplicar actividad');
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -67,10 +71,12 @@ export default function Activities() {
       });
       refetchActivities();
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: "No se pudo duplicar la actividad.",
+        description: error.message === "Activity already duplicated" 
+          ? "Esta actividad ya fue duplicada anteriormente. Ve a 'Actividades Personalizadas' para editarla."
+          : "No se pudo duplicar la actividad.",
         variant: "destructive",
       });
     },
@@ -110,6 +116,16 @@ export default function Activities() {
           <h1 className="text-3xl font-bold text-gray-900">Actividades de Construcción con APU</h1>
           <p className="text-gray-600 mt-2">Actividades con análisis de precios unitarios para proyectos de construcción</p>
         </div>
+        {user && (
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => window.location.href = '/custom-activities'}
+          >
+            <Settings className="h-4 w-4" />
+            Mis Actividades Personalizadas
+          </Button>
+        )}
       </div>
 
       <div className="mb-6 space-y-4">
