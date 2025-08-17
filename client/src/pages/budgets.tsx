@@ -117,6 +117,24 @@ export default function Budgets() {
         return;
       }
 
+      // Verificar que el token funciona
+      const authCheck = await fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!authCheck.ok) {
+        localStorage.removeItem('token');
+        toast({
+          title: "Sesión expirada",
+          description: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente para generar el APU.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Obtener datos completos del presupuesto con items
       const budgetResponse = await fetch(`/api/budgets/${budget.id}`, {
         headers: {
@@ -126,6 +144,15 @@ export default function Budgets() {
       });
       
       if (!budgetResponse.ok) {
+        if (budgetResponse.status === 401) {
+          localStorage.removeItem('token');
+          toast({
+            title: "Sesión expirada",
+            description: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+            variant: "destructive",
+          });
+          return;
+        }
         throw new Error('Error al obtener datos del presupuesto');
       }
 
@@ -341,12 +368,93 @@ export default function Budgets() {
       
     } catch (error) {
       console.error('Error generando APU:', error);
+      
+      // Fallback: generar PDF básico sin APU detallado
       toast({
-        title: "Error al generar APU",
-        description: "No se pudo obtener el desglose completo. Intente nuevamente.",
-        variant: "destructive",
+        title: "Generando PDF básico...",
+        description: "No se pudo obtener APU completo, generando resumen",
       });
+      
+      try {
+        await generateBasicPDF(budget);
+      } catch (fallbackError) {
+        toast({
+          title: "Error al generar PDF",
+          description: "No se pudo crear ningún documento. Verifique su conexión.",
+          variant: "destructive",
+        });
+      }
     }
+  };
+
+  // Función para generar PDF básico como fallback
+  const generateBasicPDF = async (budget: BudgetWithProject) => {
+    const { default: jsPDF } = await import('jspdf');
+    const doc = new jsPDF();
+    
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    let yPosition = 20;
+
+    // Encabezado empresarial
+    doc.setFontSize(18);
+    doc.text('MICAA', margin, yPosition);
+    doc.setFontSize(10);
+    doc.text('Sistema Integral de Construccion y Arquitectura', margin, yPosition + 8);
+    doc.text('La Paz, Bolivia | contacto@micaa.store | +591 70000000', margin, yPosition + 16);
+    yPosition += 30;
+
+    // Título del documento
+    doc.setFontSize(16);
+    doc.text('RESUMEN DE PRESUPUESTO', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 20;
+
+    // Información del proyecto
+    doc.setFontSize(11);
+    doc.text(`PROYECTO: ${budget.project?.name || 'Sin nombre'}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`CLIENTE: ${budget.project?.client || 'No especificado'}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`UBICACION: ${budget.project?.location || 'No especificada'}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`FECHA: ${new Date().toLocaleDateString('es-BO')}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`PRESUPUESTO #${budget.id}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`FASE: ${budget.phase?.name || 'Multifase'}`, margin, yPosition);
+    yPosition += 20;
+
+    // Total destacado
+    doc.setFontSize(16);
+    doc.text('TOTAL GENERAL:', margin, yPosition);
+    doc.text(`Bs ${parseFloat(budget.total).toFixed(2)}`, margin + 120, yPosition);
+    yPosition += 20;
+
+    // Nota
+    doc.setFontSize(10);
+    doc.text('NOTA: Para obtener el desglose APU completo, inicie sesión', margin, yPosition);
+    yPosition += 6;
+    doc.text('en MICAA y utilice la función de descarga detallada.', margin, yPosition);
+    yPosition += 15;
+
+    // Condiciones
+    doc.setFontSize(8);
+    doc.text('CONDICIONES GENERALES:', margin, yPosition);
+    yPosition += 6;
+    doc.text('• Validez de la oferta: 30 días calendario', margin + 5, yPosition);
+    yPosition += 4;
+    doc.text('• Moneda: Bolivianos (Bs)', margin + 5, yPosition);
+    yPosition += 4;
+    doc.text('• Precios incluyen materiales, mano de obra y gastos generales', margin + 5, yPosition);
+
+    // Descargar
+    const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
+    doc.save(`Presupuesto_Resumen_${projectName}_${budget.id}.pdf`);
+    
+    toast({
+      title: "PDF básico generado",
+      description: "Se descargó un resumen del presupuesto. Para APU completo, mantenga la sesión activa.",
+    });
   };
 
   const getProjectIcon = (projectName: string) => {
@@ -490,7 +598,7 @@ export default function Budgets() {
                               size="icon"
                               onClick={() => handleDownloadPDF(budget)}
                               className="text-purple-600 hover:text-purple-800"
-                              title="Descargar PDF del presupuesto"
+                              title="Descargar APU completo con desglose detallado"
                             >
                               <Download className="w-4 h-4" />
                             </Button>
