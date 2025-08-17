@@ -102,42 +102,9 @@ export default function Budgets() {
   const handleDownloadPDF = async (budget: BudgetWithProject) => {
     try {
       toast({
-        title: "Generando PDF completo...",
-        description: "Obteniendo detalles de la cotización",
+        title: "Generando PDF...",
+        description: "Creando documento de cotización",
       });
-
-      // Obtener token de autenticación
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast({
-          title: "Sesión expirada",
-          description: "Por favor, inicia sesión nuevamente.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Obtener datos completos del presupuesto
-      const response = await fetch(`/api/budgets/${budget.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast({
-            title: "Sesión expirada",
-            description: "Por favor, inicia sesión nuevamente.",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw new Error('Error al obtener datos del presupuesto');
-      }
-
-      const budgetDetails = await response.json();
 
       // Importar jsPDF dinámicamente
       const { default: jsPDF } = await import('jspdf');
@@ -157,7 +124,7 @@ export default function Budgets() {
 
       // Título del documento
       doc.setFontSize(16);
-      doc.text('COTIZACION DETALLADA DE CONSTRUCCION', pageWidth / 2, yPosition, { align: 'center' });
+      doc.text('PRESUPUESTO DE CONSTRUCCION', pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 20;
 
       // Información del proyecto
@@ -175,89 +142,41 @@ export default function Budgets() {
       doc.text(`FASE: ${budget.phase?.name || 'Multifase'}`, margin, yPosition);
       yPosition += 15;
 
-      // Encabezado de tabla detallada
-      doc.setFontSize(9);
-      doc.text('ITEM', margin, yPosition);
-      doc.text('DESCRIPCION', margin + 15, yPosition);
-      doc.text('UND', margin + 100, yPosition);
-      doc.text('CANT.', margin + 115, yPosition);
-      doc.text('P.UNIT. (Bs)', margin + 135, yPosition);
-      doc.text('TOTAL (Bs)', margin + 165, yPosition);
-      yPosition += 5;
-
-      // Línea separadora
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 8;
-
-      let totalGeneral = 0;
-
-      // Items del presupuesto con detalles completos
-      if (budgetDetails.items && budgetDetails.items.length > 0) {
-        budgetDetails.items.forEach((item: any, index: number) => {
-          // Verificar si necesita nueva página
-          if (yPosition > 260) {
-            doc.addPage();
-            yPosition = 30;
-            
-            // Repetir encabezado en nueva página
-            doc.setFontSize(9);
-            doc.text('ITEM', margin, yPosition);
-            doc.text('DESCRIPCION', margin + 15, yPosition);
-            doc.text('UND', margin + 100, yPosition);
-            doc.text('CANT.', margin + 115, yPosition);
-            doc.text('P.UNIT. (Bs)', margin + 135, yPosition);
-            doc.text('TOTAL (Bs)', margin + 165, yPosition);
-            yPosition += 5;
-            doc.line(margin, yPosition, pageWidth - margin, yPosition);
-            yPosition += 8;
-          }
-          
-          const itemNumber = (index + 1).toString().padStart(2, '0');
-          const quantity = parseFloat(item.quantity || 0);
-          const unitPrice = parseFloat(item.unitPrice || 0);
-          const subtotal = parseFloat(item.subtotal || 0);
-          
-          totalGeneral += subtotal;
-          
-          let activityName = item.activity?.name || 'Actividad sin nombre';
-          
-          // Verificar si es actividad personalizada
-          if (item.isCustomActivity) {
-            activityName += ' (Personalizada)';
-          }
-          
-          // Truncar nombre si es muy largo
-          if (activityName.length > 35) {
-            activityName = activityName.substring(0, 32) + '...';
-          }
-          
-          doc.setFontSize(8);
-          doc.text(itemNumber, margin, yPosition);
-          doc.text(activityName, margin + 15, yPosition);
-          doc.text(item.activity?.unit || 'und', margin + 100, yPosition);
-          doc.text(quantity.toFixed(2), margin + 115, yPosition, { align: 'right' });
-          doc.text(unitPrice.toFixed(2), margin + 150, yPosition, { align: 'right' });
-          doc.text(subtotal.toFixed(2), margin + 185, yPosition, { align: 'right' });
-          yPosition += 6;
-        });
-      } else {
-        doc.setFontSize(10);
-        doc.text('No hay actividades registradas en este presupuesto', margin, yPosition);
-        yPosition += 10;
-      }
-
-      // Separador antes del total
-      yPosition += 10;
-      doc.line(margin + 130, yPosition, pageWidth - margin, yPosition);
-      yPosition += 8;
-
-      // Total general
+      // Información del presupuesto
       doc.setFontSize(12);
-      doc.text('TOTAL GENERAL:', margin + 100, yPosition);
-      doc.text(`Bs ${totalGeneral.toFixed(2)}`, margin + 185, yPosition, { align: 'right' });
+      doc.text('INFORMACION DEL PRESUPUESTO:', margin, yPosition);
+      yPosition += 10;
+      
+      doc.setFontSize(10);
+      doc.text(`Estado: ${budget.status === 'active' ? 'Activo' : budget.status === 'completed' ? 'Completado' : 'Borrador'}`, margin + 10, yPosition);
+      yPosition += 6;
+      doc.text(`Fecha de creación: ${new Date(budget.createdAt!).toLocaleDateString('es-BO')}`, margin + 10, yPosition);
+      yPosition += 6;
+      if (budget.updatedAt) {
+        doc.text(`Última actualización: ${new Date(budget.updatedAt).toLocaleDateString('es-BO')}`, margin + 10, yPosition);
+        yPosition += 6;
+      }
       yPosition += 15;
 
-      // Información adicional
+      // Total del presupuesto (destacado)
+      doc.setFontSize(16);
+      doc.text('TOTAL GENERAL:', margin, yPosition);
+      doc.text(`Bs ${parseFloat(budget.total).toFixed(2)}`, margin + 120, yPosition);
+      yPosition += 20;
+
+      // Nota sobre detalles
+      doc.setFontSize(10);
+      doc.text('NOTA IMPORTANTE:', margin, yPosition);
+      yPosition += 8;
+      doc.setFontSize(9);
+      doc.text('Para obtener el desglose detallado de actividades, cantidades y precios', margin + 5, yPosition);
+      yPosition += 5;
+      doc.text('unitarios, por favor visite la página de detalles del presupuesto en MICAA.', margin + 5, yPosition);
+      yPosition += 5;
+      doc.text('Este PDF contiene el resumen ejecutivo del proyecto.', margin + 5, yPosition);
+      yPosition += 15;
+
+      // Condiciones generales
       doc.setFontSize(8);
       doc.text('CONDICIONES GENERALES:', margin, yPosition);
       yPosition += 6;
@@ -268,27 +187,40 @@ export default function Budgets() {
       doc.text('• Moneda: Bolivianos (Bs)', margin + 5, yPosition);
       yPosition += 4;
       doc.text('• Precios sujetos a variación según disponibilidad de materiales', margin + 5, yPosition);
+      yPosition += 4;
+      doc.text('• Para modificaciones o consultas adicionales contactar a MICAA', margin + 5, yPosition);
+      yPosition += 15;
+
+      // Información de contacto
+      doc.setFontSize(9);
+      doc.text('CONTACTO MICAA:', margin, yPosition);
+      yPosition += 6;
+      doc.text('Email: contacto@micaa.store', margin + 5, yPosition);
+      yPosition += 4;
+      doc.text('Teléfono: +591 70000000', margin + 5, yPosition);
+      yPosition += 4;
+      doc.text('Dirección: La Paz, Bolivia', margin + 5, yPosition);
       yPosition += 10;
 
       // Pie de página profesional
       doc.setFontSize(7);
       doc.text('Este presupuesto ha sido elaborado con MICAA - Sistema Integral de Construcción', pageWidth / 2, yPosition, { align: 'center' });
-      doc.text('www.micaa.store | contacto@micaa.store | La Paz, Bolivia', pageWidth / 2, yPosition + 5, { align: 'center' });
+      doc.text('www.micaa.store | Transformando la construcción en Bolivia', pageWidth / 2, yPosition + 5, { align: 'center' });
       
       // Descargar PDF
       const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
-      doc.save(`Cotizacion_Completa_${projectName}_${budget.id}.pdf`);
+      doc.save(`Presupuesto_${projectName}_${budget.id}.pdf`);
       
       toast({
-        title: "Cotización PDF generada",
-        description: `Descargado: Cotizacion_Completa_${projectName}_${budget.id}.pdf`,
+        title: "PDF generado exitosamente",
+        description: `Descargado: Presupuesto_${projectName}_${budget.id}.pdf`,
       });
       
     } catch (error) {
       console.error('Error generando PDF:', error);
       toast({
         title: "Error al generar PDF",
-        description: "Problema al obtener los datos. Verifique su conexión e intente nuevamente.",
+        description: "No se pudo crear el documento. Verifique que su navegador permita descargas.",
         variant: "destructive",
       });
     }
