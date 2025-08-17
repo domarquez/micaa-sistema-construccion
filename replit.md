@@ -91,15 +91,22 @@ Preferred communication style: Simple, everyday language.
 ### August 17, 2025: Complete Budget Management & PDF Export System Fixed ✓
 - **Budget Edit vs Duplicate Issue Fixed**: Sistema now correctly updates existing budgets instead of creating duplicates
 - **Project Duplication Complete**: Full project+budget duplication working with proper protection against multiple clicks
-- **PDF Export Functionality**: Direct PDF download from budget list with professional formatting including:
-  - Company header (MICAA branding)
-  - Project information and client details
-  - Detailed item breakdown with quantities and prices
-  - Professional footer and document validation
-- **UI Icon Improvements**: Replaced confusing gray Calculator icon with clear Download icon (purple) with descriptive tooltips
-- **Action Button Clarity**: Color-coded buttons - Blue (View), Green (Edit), Purple (Download PDF), Red (Delete)
-- **Complete Export Integration**: PDF generation works from both budget list and detail views
-- **Professional Documentation**: Generated PDFs include proper business formatting for client presentation
+- **Enhanced PDF Export Functionality**: Complete cotization PDF with detailed breakdown:
+  - Professional MICAA company header and business information
+  - Complete project details (client, location, phase, dates)
+  - Detailed activity table with items, descriptions, units, quantities, unit prices
+  - Custom activity identification with "(Personalizada)" labels
+  - Multi-page support with repeating headers
+  - Accurate total calculations from actual budget data
+  - Professional terms and conditions section
+- **UI Icon System**: Clear color-coded action buttons with tooltips:
+  - Blue (Eye): View budget details
+  - Green (FileText): Edit budget  
+  - Purple (Download): Download complete PDF cotization
+  - Orange (Printer): Open for printing/detailed view
+  - Red (Trash): Delete project
+- **Complete Export Integration**: PDF generation works from budget list with full authentication and data retrieval
+- **Professional Documentation**: Generated PDFs suitable for client presentation with complete pricing breakdown
 
 ### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
 - **MAJOR FIX**: Material price update system completely repaired and working correctly
