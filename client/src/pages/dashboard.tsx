@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/useAuth";
+import PublicView from "./public-view";
 import { 
   Package, 
   Calculator, 
@@ -46,6 +48,13 @@ interface GrowthData {
 }
 
 export default function Dashboard() {
+  const { user, isAnonymous } = useAuth();
+
+  // If user is anonymous, show public view
+  if (isAnonymous) {
+    return <PublicView />;
+  }
+
   const { data: stats, isLoading: statsLoading } = useQuery<Statistics>({
     queryKey: ["/api/statistics"],
   });
