@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Building2, Eye, ChevronLeft, ChevronRight, Copy, Settings } from "lucide-react";
+import { Plus, Search, Building2, Eye, ChevronLeft, ChevronRight, Copy, Settings, Lock, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,8 +29,89 @@ export default function Activities() {
   const [limit, setLimit] = useState(50);
 
   const [customizingActivity, setCustomizingActivity] = useState<ActivityWithCustomData | null>(null);
-  const { user } = useAuth();
+  const { user, isAnonymous } = useAuth();
   const { toast } = useToast();
+
+  // Show registration notice for anonymous users
+  if (isAnonymous) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Building2 className="h-6 w-6 text-orange-600" />
+            <h1 className="text-2xl font-bold text-gray-900">Actividades de Construcción</h1>
+          </div>
+        </div>
+
+        <Card className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+          <CardContent className="p-8 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="bg-orange-600 text-white rounded-full p-4">
+                <Lock className="w-8 h-8" />
+              </div>
+            </div>
+            
+            <h2 className="text-xl font-bold text-orange-900 mb-3">
+              Actividades y Personalización - Funcionalidad Premium
+            </h2>
+            
+            <p className="text-orange-700 mb-6">
+              El acceso completo a las actividades de construcción, sus composiciones detalladas y la 
+              capacidad de personalizarlas están disponibles solo para usuarios registrados.
+            </p>
+
+            <div className="bg-white rounded-lg p-4 mb-6 border border-orange-200">
+              <h3 className="font-semibold text-orange-900 mb-3">¿Qué puedes hacer con las actividades?</h3>
+              <div className="text-left space-y-2 text-sm text-orange-700">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Ver más de 2,000 actividades de construcción estándar</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Acceder a composiciones detalladas de materiales y mano de obra</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Duplicar y personalizar actividades para tus proyectos</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Calcular precios unitarios (APU) automáticamente</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Organizar por fases de construcción</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button 
+                size="lg"
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+                onClick={() => window.location.href = "/register"}
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Crear Cuenta Gratis
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => window.location.href = "/login"}
+              >
+                Ya tengo cuenta
+              </Button>
+            </div>
+
+            <p className="text-xs text-orange-600 mt-4">
+              ✓ Registro 100% gratuito • ✓ +2,000 actividades • ✓ Personalización ilimitada
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const { data: activitiesResponse, isLoading, refetch: refetchActivities } = useQuery<ActivitiesResponse>({
     queryKey: ["/api/activities", { 
@@ -41,7 +122,7 @@ export default function Activities() {
       withCompositions: true 
     }],
     queryFn: getQueryFn({ on401: "throw" }),
-    enabled: !!user, // Solo hacer la query si hay usuario autenticado
+    enabled: !isAnonymous, // Solo hacer la query si no es usuario anónimo
   });
 
   const { data: phases } = useQuery({
