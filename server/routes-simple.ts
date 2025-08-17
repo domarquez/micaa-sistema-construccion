@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { users, materials, activities, constructionPhases, materialCategories, customActivities, customActivityCompositions, laborCategories, tools, userActivities, userActivityCompositions, activityCompositions, projects } from '../shared/schema';
+import { users, materials, activities, constructionPhases, materialCategories, customActivities, customActivityCompositions, laborCategories, tools, userActivities, userActivityCompositions, activityCompositions, projects, budgets, budgetItems } from '../shared/schema';
 import { eq, like, desc, asc, and } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -805,6 +805,79 @@ export async function registerRoutes(app: any) {
       res.json([]);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch budgets' });
+    }
+  });
+
+  // Budget creation endpoint
+  router.post('/budgets', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      console.log("Datos recibidos para crear presupuesto:", req.body);
+      
+      const { projectId, phaseActivities, total } = req.body;
+      
+      if (!projectId) {
+        return res.status(400).json({ message: "ID del proyecto es requerido" });
+      }
+      
+      if (!phaseActivities || Object.keys(phaseActivities).length === 0) {
+        return res.status(400).json({ message: "Debe seleccionar al menos una actividad" });
+      }
+      
+      // Verificar que el proyecto pertenece al usuario
+      const project = await db.select()
+        .from(projects)
+        .where(and(eq(projects.id, projectId), eq(projects.userId, req.user.id)))
+        .limit(1);
+      
+      if (project.length === 0) {
+        return res.status(404).json({ message: "Proyecto no encontrado" });
+      }
+      
+      // Crear el presupuesto
+      const budgetData = {
+        projectId: projectId,
+        total: total.toString(),
+        status: 'draft'
+      };
+      
+      console.log("Creando presupuesto:", budgetData);
+      
+      const [budget] = await db.insert(budgets).values(budgetData).returning();
+      
+      console.log("Presupuesto creado:", budget);
+      
+      // Crear los items del presupuesto
+      const budgetItemsData = [];
+      
+      for (const [phaseId, activities] of Object.entries(phaseActivities)) {
+        for (const activity of activities as any[]) {
+          budgetItemsData.push({
+            budgetId: budget.id,
+            activityId: activity.id,
+            phaseId: parseInt(phaseId),
+            quantity: activity.quantity.toString(),
+            unitPrice: activity.unitPrice.toString(),
+            subtotal: activity.subtotal.toString()
+          });
+        }
+      }
+      
+      console.log("Creando items del presupuesto:", budgetItemsData);
+      
+      if (budgetItemsData.length > 0) {
+        await db.insert(budgetItems).values(budgetItemsData);
+      }
+      
+      console.log("Presupuesto y items creados exitosamente");
+      
+      res.status(201).json({
+        budget,
+        message: "Presupuesto creado exitosamente"
+      });
+      
+    } catch (error) {
+      console.error("Error creating budget:", error);
+      res.status(500).json({ message: "Error al crear el presupuesto" });
     }
   });
 
