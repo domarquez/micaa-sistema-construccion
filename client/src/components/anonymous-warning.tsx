@@ -13,10 +13,10 @@ export function AnonymousWarning({ action = "realizar esta acción", className =
       <AlertTriangle className="h-4 w-4 text-orange-600 flex-shrink-0" />
       <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-orange-800 dark:text-orange-200 mb-1 text-sm sm:text-base">
+          <p className="font-semibold text-orange-800 dark:text-orange-200 mb-1 text-xs sm:text-sm">
             Modo Anónimo - Los datos no se guardarán
           </p>
-          <p className="text-xs sm:text-sm text-orange-700 dark:text-orange-300 leading-relaxed">
+          <p className="text-xs text-orange-700 dark:text-orange-300 leading-relaxed">
             Puedes {action}, pero los datos se perderán al cerrar la sesión. 
             Regístrate gratis para guardar tu trabajo permanentemente.
           </p>

@@ -575,14 +575,14 @@ export default function Budgets() {
       {/* Budgets Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-on-surface">Gestión de Presupuestos</h2>
-          <p className="text-sm md:text-base text-gray-600">Crear y administrar presupuestos de construcción</p>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-on-surface">Gestión de Presupuestos</h2>
+          <p className="text-xs sm:text-sm md:text-base text-gray-600">Crear y administrar presupuestos de construcción</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
-          className="bg-primary text-white hover:bg-primary-variant shadow-material w-full sm:w-auto"
+          className="bg-primary text-white hover:bg-primary-variant shadow-material w-full sm:w-auto text-xs sm:text-sm px-3 py-2 h-8 sm:h-9"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
           <span className="hidden sm:inline">Nuevo Presupuesto</span>
           <span className="sm:hidden">Nuevo</span>
         </Button>
@@ -601,13 +601,13 @@ export default function Budgets() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Proyecto</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Fase</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Creado</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Proyecto</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Cliente</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Fase</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Total</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Estado</TableHead>
+                  <TableHead className="text-xs sm:text-sm">Creado</TableHead>
+                  <TableHead className="text-right text-xs sm:text-sm">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -644,89 +644,90 @@ export default function Budgets() {
                     return (
                       <TableRow key={budget.id} className="hover:bg-gray-50">
                         <TableCell>
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                              <IconComponent className="w-5 h-5 text-white" />
+                          <div className="flex items-center space-x-2 sm:space-x-3">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center">
+                              <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-xs sm:text-sm font-medium text-gray-900">
                                 {budget.project.name}
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-xs text-gray-500">
                                 {budget.project.location || budget.project.city}
                               </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-gray-900">
+                        <TableCell className="text-gray-900 text-xs sm:text-sm">
                           {budget.project.client || 'No especificado'}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="text-xs">
                             {budget.phase ? budget.phase.name : "Multifase"}
                           </Badge>
                         </TableCell>
-                        <TableCell className="font-semibold">
+                        <TableCell className="font-semibold text-xs sm:text-sm">
                           {formatCurrency(budget.total)}
                         </TableCell>
                         <TableCell>
                           <Badge
                             variant={budget.status === 'active' ? 'default' : 
                                     budget.status === 'completed' ? 'secondary' : 'outline'}
+                            className="text-xs"
                           >
                             {budget.status === 'active' ? 'Activo' : 
                              budget.status === 'completed' ? 'Completado' : 'Borrador'}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-gray-500">
+                        <TableCell className="text-gray-500 text-xs">
                           {formatRelativeTime(budget.createdAt!)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex justify-end space-x-2">
+                          <div className="flex justify-end space-x-1 sm:space-x-2">
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => window.location.href = `/budgets/${budget.id}`}
-                              className="text-blue-600 hover:text-blue-800"
+                              className="text-blue-600 hover:text-blue-800 h-7 w-7 sm:h-8 sm:w-8"
                               title="Ver detalles del presupuesto"
                             >
-                              <Eye className="w-4 h-4" />
+                              <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEdit(budget)}
-                              className="text-green-600 hover:text-green-800"
+                              className="text-green-600 hover:text-green-800 h-7 w-7 sm:h-8 sm:w-8"
                               title="Editar presupuesto"
                             >
-                              <FileText className="w-4 h-4" />
+                              <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDownloadPDF(budget)}
-                              className="text-purple-600 hover:text-purple-800"
+                              className="text-purple-600 hover:text-purple-800 h-7 w-7 sm:h-8 sm:w-8"
                               title="Descargar APU completo con desglose detallado"
                             >
-                              <Download className="w-4 h-4" />
+                              <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => window.open(`/budgets/${budget.id}`, '_blank')}
-                              className="text-orange-600 hover:text-orange-800"
+                              className="text-orange-600 hover:text-orange-800 h-7 w-7 sm:h-8 sm:w-8"
                               title="Abrir para imprimir"
                             >
-                              <Printer className="w-4 h-4" />
+                              <Printer className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  className="text-red-500 hover:text-red-700 hover:bg-red-50 h-7 w-7 sm:h-8 sm:w-8"
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
@@ -837,43 +838,43 @@ export default function Budgets() {
                       </div>
                     </div>
 
-                    <div className="flex justify-center space-x-1">
+                    <div className="flex justify-center space-x-0.5 sm:space-x-1">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => window.location.href = `/budgets/${budget.id}`}
-                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 touch-target"
+                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 touch-target h-7 w-7"
                         title="Ver detalles"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-3 h-3" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEdit(budget)}
-                        className="text-green-600 hover:text-green-800 hover:bg-green-50 touch-target"
+                        className="text-green-600 hover:text-green-800 hover:bg-green-50 touch-target h-7 w-7"
                         title="Editar presupuesto"
                       >
-                        <FileText className="w-4 h-4" />
+                        <FileText className="w-3 h-3" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDownloadPDF(budget)}
-                        className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 touch-target"
+                        className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 touch-target h-7 w-7"
                         title="Descargar APU"
                       >
-                        <Download className="w-4 h-4" />
+                        <Download className="w-3 h-3" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 touch-target"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 touch-target h-7 w-7"
                             title="Eliminar"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3 h-3" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="mx-4 max-w-sm">

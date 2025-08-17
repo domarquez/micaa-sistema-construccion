@@ -142,8 +142,8 @@
   
   /* Mobile-specific utilities */
   .touch-target {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 38px;
+    min-width: 38px;
   }
   
   .scroll-touch {
@@ -183,6 +183,21 @@
   .mobile-full-width {
     width: 100vw;
     margin-left: calc(-50vw + 50%);
+  }
+  
+  /* Smaller fonts and spacing for mobile */
+  body {
+    font-size: 14px;
+  }
+  
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  
+  .table-mobile { font-size: 12px; }
+  
+  .mobile-compact {
+    padding: 0.25rem 0.5rem;
+    font-size: 11px;
   }
   
   .mobile-padding {
