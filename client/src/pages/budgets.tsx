@@ -106,12 +106,20 @@ export default function Budgets() {
         description: "Creando documento de presupuesto",
       });
 
+      // Debug: Verificar estado completo del localStorage
+      console.log('🔍 LocalStorage keys:', Object.keys(localStorage));
+      console.log('🔍 All localStorage content:', JSON.stringify(localStorage));
+
       // Intentar obtener datos completos del presupuesto con autenticación
       const token = localStorage.getItem('token');
       let budgetDetails = null;
       
+      console.log('🔍 Token disponible:', !!token);
+      console.log('🔍 Intentando obtener datos del presupuesto', budget.id);
+      
       if (token) {
         try {
+          console.log('📡 Haciendo petición al API...');
           const budgetResponse = await fetch(`/api/budgets/${budget.id}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -119,17 +127,34 @@ export default function Budgets() {
             },
           });
           
+          console.log('📡 Respuesta del API:', budgetResponse.status);
+          
           if (budgetResponse.ok) {
             budgetDetails = await budgetResponse.json();
             console.log('✅ Datos del presupuesto obtenidos exitosamente');
+            console.log('📊 Items encontrados:', budgetDetails?.items?.length);
           } else {
             console.log('❌ Error de autenticación:', budgetResponse.status);
+            const errorText = await budgetResponse.text();
+            console.log('❌ Error details:', errorText);
           }
         } catch (error) {
           console.log('❌ Error de conexión:', error);
         }
       } else {
-        console.log('❌ Sin token disponible');
+        console.log('❌ Sin token disponible - verificando otras opciones');
+        
+        // Intentar sin autenticación para ver si el presupuesto es público
+        try {
+          console.log('🔓 Intentando acceso sin autenticación...');
+          const publicResponse = await fetch(`/api/budgets/${budget.id}`);
+          if (publicResponse.ok) {
+            budgetDetails = await publicResponse.json();
+            console.log('✅ Datos obtenidos sin autenticación');
+          }
+        } catch (error) {
+          console.log('❌ No se puede acceder sin autenticación');
+        }
       }
 
       // Depuración: verificar qué datos tenemos
