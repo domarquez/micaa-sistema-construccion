@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus, Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ContactForm } from "@/components/contact-form";
@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function AppHeader() {
   const { user, logout, isAnonymous } = useAuth();
+  const { toggleSidebar } = useSidebar();
 
   const getUserInitials = (user: any) => {
     if (user?.firstName && user?.lastName) {
@@ -51,10 +52,15 @@ export default function AppHeader() {
     <header className="bg-white shadow-material sticky top-0 z-50 border-b">
       <div className="flex h-12 sm:h-14 md:h-16 items-center justify-between px-2 sm:px-3 md:px-6">
         <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4 min-w-0">
-          <SidebarTrigger className="md:hidden flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8"
+            onClick={toggleSidebar}
+          >
             <Menu className="h-4 w-4" />
             <span className="sr-only">Abrir menú</span>
-          </SidebarTrigger>
+          </Button>
           <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
             <MicaaLogo size="sm" showText={false} className="md:hidden scale-75 sm:scale-90" />
             <MicaaLogo size="md" showText={true} className="hidden md:block" />

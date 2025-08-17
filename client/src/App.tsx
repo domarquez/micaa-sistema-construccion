@@ -71,7 +71,7 @@ function AuthenticatedLayout() {
           <AppHeader />
           <main className="flex-1 p-4 md:p-6 overflow-auto">
             <Switch>
-              <Route path="/" component={Dashboard} />
+              <Route path="/" component={PublicView} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/materials" component={Materials} />
               <Route path="/activities" component={Activities} />
