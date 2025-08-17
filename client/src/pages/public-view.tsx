@@ -89,22 +89,31 @@ export default function PublicView() {
 
   const { data: categories, isLoading: categoriesLoading } = useQuery<MaterialCategory[]>({
     queryKey: ["/api/public/material-categories"],
+    staleTime: 30 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: suppliers, isLoading: suppliersLoading } = useQuery<SupplierCompany[]>({
     queryKey: ["/api/public/suppliers"],
+    staleTime: 15 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
-
-
 
   const { data: growthData, isLoading: growthLoading } = useQuery<GrowthData[]>({
     queryKey: ["/api/growth-data"],
+    staleTime: 10 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   // Publicidad dual lado a lado
   const { data: advertisements, refetch: refetchAds } = useQuery<AdvertisementWithSupplier[]>({
     queryKey: ["/api/public/dual-advertisements"],
-    refetchInterval: 30000, // Cambiar cada 30 segundos
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const handleAdClick = async (ad: AdvertisementWithSupplier) => {

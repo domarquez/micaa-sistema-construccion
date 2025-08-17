@@ -36,6 +36,7 @@ import Login from "@/pages/login";
 import Register from "@/pages/register";
 import PublicView from "@/pages/public-view";
 import LandingPage from "@/pages/landing-page";
+import MobileStatic from "@/pages/mobile-static";
 import CustomActivities from "@/pages/custom-activities";
 import AccountSettings from "@/pages/account-settings";
 import NotFound from "@/pages/not-found";
@@ -71,7 +72,7 @@ function AuthenticatedLayout() {
           <AppHeader />
           <main className="flex-1 p-4 md:p-6 overflow-auto">
             <Switch>
-              <Route path="/" component={Dashboard} />
+              <Route path="/" component={MobileStatic} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/materials" component={Materials} />
               <Route path="/activities" component={Activities} />
