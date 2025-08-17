@@ -41,6 +41,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
 import MultiphaseBudgetForm from "@/components/budgets/multi-phase-budget-form";
 import type { BudgetWithProject } from "@shared/schema";
+import { AnonymousWarning } from "@/components/anonymous-warning";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Budgets() {
   const [showForm, setShowForm] = useState(false);
@@ -48,6 +50,7 @@ export default function Budgets() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [location] = useLocation();
+  const { isAnonymous } = useAuth();
 
   // Auto-open form when accessing /budgets/new
   useEffect(() => {
@@ -57,7 +60,8 @@ export default function Budgets() {
   }, [location]);
 
   const { data: budgets, isLoading: budgetsLoading } = useQuery<BudgetWithProject[]>({
-    queryKey: ["/api/budgets"],
+    queryKey: isAnonymous ? ["/api/anonymous/budgets"] : ["/api/budgets"],
+    retry: false
   });
 
   const deleteProjectMutation = useMutation({
@@ -544,6 +548,11 @@ export default function Budgets() {
 
   return (
     <div className="space-y-4 md:space-y-6">
+      {/* Advertencia para usuarios anónimos */}
+      {isAnonymous && (
+        <AnonymousWarning action="crear y gestionar presupuestos" />
+      )}
+      
       {/* Budgets Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>

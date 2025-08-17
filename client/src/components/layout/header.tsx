@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar } from "lucide-react";
+import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ContactForm } from "@/components/contact-form";
 import { MicaaLogo } from "@/components/micaa-logo";
@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 
 export default function AppHeader() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAnonymous } = useAuth();
 
   const getUserInitials = (user: any) => {
     if (user?.firstName && user?.lastName) {
@@ -80,17 +80,43 @@ export default function AppHeader() {
             </PopoverContent>
           </Popover>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full">
-                <Avatar className="h-7 w-7 md:h-8 md:w-8">
-                  <AvatarImage src="" alt={user?.username || "Usuario"} />
-                  <AvatarFallback className="bg-primary text-white text-xs md:text-sm">
-                    {getUserInitials(user)}
-                  </AvatarFallback>
-                </Avatar>
+          {isAnonymous ? (
+            /* Anonymous User Header */
+            <div className="flex items-center space-x-2">
+              <Badge variant="outline" className="text-orange-600 border-orange-600">
+                <AlertTriangle className="w-3 h-3 mr-1" />
+                Modo Anónimo
+              </Badge>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => window.location.href = "/login"}
+                className="hidden sm:flex"
+              >
+                <User className="w-3 h-3 mr-1" />
+                Iniciar Sesión
               </Button>
-            </DropdownMenuTrigger>
+              <Button 
+                size="sm"
+                onClick={() => window.location.href = "/register"}
+              >
+                <UserPlus className="w-3 h-3 mr-1" />
+                Registrarse
+              </Button>
+            </div>
+          ) : (
+            /* Authenticated User Dropdown */
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full">
+                  <Avatar className="h-7 w-7 md:h-8 md:w-8">
+                    <AvatarImage src="" alt={user?.username || "Usuario"} />
+                    <AvatarFallback className="bg-primary text-white text-xs md:text-sm">
+                      {getUserInitials(user)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent className="w-72" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-2">
@@ -163,6 +189,7 @@ export default function AppHeader() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          )}
         </div>
       </div>
     </header>

@@ -57,19 +57,8 @@ function Router() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <Switch>
-        <Route path="/register" component={Register} />
-        <Route path="/login" component={Login} />
-        <Route path="/public" component={PublicView} />
-        <Route path="/old-public" component={PublicView} />
-        <Route path="/" component={LandingPage} />
-        <Route component={LandingPage} />
-      </Switch>
-    );
-  }
-
+  // Always show the full authenticated layout, but with anonymous mode
+  // Users can access everything without being logged in
   return <AuthenticatedLayout />;
 }
 
@@ -115,7 +104,10 @@ function AuthenticatedLayout() {
               <Route path="/admin/bulk-email" component={AdminBulkEmail} />
               <Route path="/admin/database" component={AdminDatabase} />
               <Route path="/marketplace" component={Marketplace} />
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
               <Route path="/public" component={PublicView} />
+              <Route path="/landing" component={LandingPage} />
               <Route path="/account-settings" component={AccountSettings} />
               <Route component={NotFound} />
             </Switch>

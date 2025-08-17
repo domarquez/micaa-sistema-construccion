@@ -543,6 +543,39 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Anonymous budget operations - accessible without authentication
+  router.get('/anonymous/budgets', (req: Request, res: Response) => {
+    try {
+      // Return empty array for anonymous users - they start fresh each session
+      res.json([]);
+    } catch (error) {
+      console.error('Error fetching anonymous budgets:', error);
+      res.status(500).json({ message: 'Error al cargar presupuestos anónimos' });
+    }
+  });
+
+  router.post('/anonymous/budgets', async (req: Request, res: Response) => {
+    try {
+      // For anonymous users, we'll create temporary budget data
+      // This won't be persisted to the database
+      const budgetData = req.body;
+      
+      // Add anonymous flag and temporary ID
+      const anonymousBudget = {
+        ...budgetData,
+        id: Date.now(), // Temporary ID based on timestamp
+        userId: null,
+        isAnonymous: true,
+        createdAt: new Date().toISOString(),
+      };
+      
+      res.json(anonymousBudget);
+    } catch (error) {
+      console.error('Error creating anonymous budget:', error);
+      res.status(500).json({ message: 'Error al crear presupuesto anónimo' });
+    }
+  });
+
   router.get('/public/material-categories', async (req: Request, res: Response) => {
     try {
       const categories = await db.select().from(materialCategories).limit(10);

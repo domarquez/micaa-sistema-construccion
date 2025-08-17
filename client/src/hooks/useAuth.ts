@@ -27,6 +27,8 @@ export function useAuth() {
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+  
+  const isAnonymous = !token;
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }): Promise<AuthResponse> => {
@@ -92,8 +94,9 @@ export function useAuth() {
 
   return {
     user,
-    isLoading,
+    isLoading: isLoading && !!token,
     isAuthenticated,
+    isAnonymous,
     isAdmin,
     login: loginMutation.mutate,
     register: registerMutation.mutate,
