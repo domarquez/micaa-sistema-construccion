@@ -124,56 +124,11 @@
     background-color: hsl(var(--secondary-variant));
   }
 
-  /* Mobile 360px optimizations */
-  @media (max-width: 360px) {
-    .mobile-360-text {
-      font-size: 0.7rem !important;
-      line-height: 1rem !important;
-    }
-    
-    .mobile-360-button {
-      padding: 0.25rem 0.5rem !important;
-      font-size: 0.7rem !important;
-      min-height: 28px !important;
-      max-height: 32px !important;
-    }
-    
-    .mobile-360-spacing {
-      gap: 0.25rem !important;
-      padding: 0.25rem !important;
-    }
-    
-    .mobile-360-logo {
-      transform: scale(0.6) !important;
-    }
-    
-    .mobile-360-icon {
-      width: 0.75rem !important;
-      height: 0.75rem !important;
-    }
-  }
-  
-  /* Extra small devices - 320px */
-  @media (max-width: 320px) {
-    .mobile-360-text {
-      font-size: 0.65rem !important;
-      line-height: 0.9rem !important;
-    }
-    
-    .mobile-360-button {
-      padding: 0.2rem 0.4rem !important;
-      font-size: 0.65rem !important;
-      min-height: 26px !important;
-      max-height: 30px !important;
-    }
-    
-    .mobile-360-logo {
-      transform: scale(0.5) !important;
-    }
-    
-    .mobile-360-icon {
-      width: 0.7rem !important;
-      height: 0.7rem !important;
+  /* Mobile responsive optimizations */
+  @media (max-width: 640px) {
+    .mobile-compact {
+      font-size: 0.875rem;
+      padding: 0.5rem;
     }
   }
   

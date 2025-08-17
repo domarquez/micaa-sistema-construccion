@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus, Menu, X, Package, Store } from "lucide-react";
+import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus, Menu, X, Package, Store, Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ContactForm } from "@/components/contact-form";
 import { MicaaLogo } from "@/components/micaa-logo";
@@ -52,12 +52,12 @@ export default function AppHeader() {
 
   return (
     <header className="bg-white shadow-material sticky top-0 z-50 border-b">
-      <div className="flex h-10 xs:h-11 sm:h-12 md:h-14 lg:h-16 items-center justify-between px-1 xs:px-2 sm:px-3 md:px-6">
-        <div className="flex items-center mobile-360-spacing min-w-0">
+      <div className="flex h-11 sm:h-12 md:h-14 lg:h-16 items-center justify-between px-2 sm:px-3 md:px-6">
+        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden flex-shrink-0 h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 mobile-360-button"
+            className="md:hidden flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9"
             onClick={() => {
               if (isAnonymous) {
                 setMobileMenuOpen(!mobileMenuOpen);
@@ -66,11 +66,11 @@ export default function AppHeader() {
               }
             }}
           >
-            {mobileMenuOpen ? <X className="h-3 w-3 xs:h-4 xs:w-4 mobile-360-icon" /> : <Menu className="h-3 w-3 xs:h-4 xs:w-4 mobile-360-icon" />}
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             <span className="sr-only">Abrir menú</span>
           </Button>
-          <div className="flex items-center mobile-360-spacing min-w-0">
-            <MicaaLogo size="sm" showText={false} className="md:hidden mobile-360-logo scale-50 xs:scale-65 sm:scale-75" />
+          <div className="flex items-center space-x-2 min-w-0">
+            <MicaaLogo size="sm" showText={false} className="md:hidden scale-75 sm:scale-90" />
             <MicaaLogo size="md" showText={true} className="hidden md:block" />
             <div className="hidden lg:block">
               <p className="text-xs text-gray-600">Sistema de Cómputos y Presupuestos</p>
@@ -106,26 +106,26 @@ export default function AppHeader() {
                 <span className="sm:hidden text-xs">Anónimo</span>
               </Badge>
               
-              {/* Mobile optimized buttons for 360px */}
-              <div className="flex items-center mobile-360-spacing">
+              {/* Mobile optimized buttons */}
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={() => window.location.href = "/login"}
-                  className="text-xs mobile-360-text mobile-360-button px-1 xs:px-2 py-1 h-6 xs:h-7 sm:h-8"
+                  className="text-xs px-2 py-1 h-7 sm:h-8"
                 >
-                  <User className="w-2.5 h-2.5 xs:w-3 xs:h-3 mobile-360-icon mr-0.5 xs:mr-1" />
-                  <span className="hidden xs:inline">Iniciar</span>
-                  <span className="xs:hidden">In</span>
+                  <User className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Iniciar</span>
+                  <span className="sm:hidden">Login</span>
                 </Button>
                 <Button 
                   size="sm"
                   onClick={() => window.location.href = "/register"}
-                  className="text-xs mobile-360-text mobile-360-button px-1 xs:px-2 py-1 h-6 xs:h-7 sm:h-8 bg-orange-600 hover:bg-orange-700"
+                  className="text-xs px-2 py-1 h-7 sm:h-8 bg-orange-600 hover:bg-orange-700"
                 >
-                  <UserPlus className="w-2.5 h-2.5 xs:w-3 xs:h-3 mobile-360-icon mr-0.5 xs:mr-1" />
-                  <span className="hidden xs:inline">Registro</span>
-                  <span className="xs:hidden">Reg</span>
+                  <UserPlus className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Registro</span>
+                  <span className="sm:hidden">Sign Up</span>
                 </Button>
               </div>
             </div>
@@ -218,12 +218,12 @@ export default function AppHeader() {
         </div>
       </div>
       
-      {/* Mobile Menu Overlay for Anonymous Users - 360px Optimized */}
+      {/* Mobile Menu Overlay for Anonymous Users */}
       {isAnonymous && mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg z-40">
-          <div className="px-2 xs:px-3 sm:px-4 py-2 xs:py-3 mobile-360-spacing">
-            {/* Primary Actions - 360px optimized */}
-            <div className="flex items-center mobile-360-spacing py-2 border-b border-gray-100">
+          <div className="px-3 sm:px-4 py-3">
+            {/* Primary Actions */}
+            <div className="flex items-center space-x-2 py-2 border-b border-gray-100">
               <Button 
                 size="sm" 
                 variant="outline"
@@ -231,11 +231,10 @@ export default function AppHeader() {
                   window.location.href = "/login";
                   setMobileMenuOpen(false);
                 }}
-                className="flex-1 mobile-360-text mobile-360-button text-xs xs:text-sm"
+                className="flex-1 text-sm"
               >
-                <User className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-4 sm:h-4 mobile-360-icon mr-1 xs:mr-2" />
-                <span className="hidden xs:inline">Iniciar Sesión</span>
-                <span className="xs:hidden">Iniciar</span>
+                <User className="w-3 h-3 mr-2" />
+                Iniciar Sesión
               </Button>
               <Button 
                 size="sm"
@@ -243,38 +242,80 @@ export default function AppHeader() {
                   window.location.href = "/register";
                   setMobileMenuOpen(false);
                 }}
-                className="flex-1 mobile-360-text mobile-360-button text-xs xs:text-sm bg-orange-600 hover:bg-orange-700"
+                className="flex-1 text-sm bg-orange-600 hover:bg-orange-700"
               >
-                <UserPlus className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-4 sm:h-4 mobile-360-icon mr-1 xs:mr-2" />
-                <span className="hidden xs:inline">Registro Gratis</span>
-                <span className="xs:hidden">Registro</span>
+                <UserPlus className="w-3 h-3 mr-2" />
+                Registro Gratis
               </Button>
             </div>
             
-            {/* Navigation Grid - 360px optimized */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 xs:gap-3 mobile-360-text">
-              <div className="space-y-1 xs:space-y-2">
-                <p className="font-medium text-gray-700 text-xs xs:text-sm">Explorar</p>
-                <div className="flex items-center text-gray-600 text-xs xs:text-sm py-1">
-                  <Package className="w-3 h-3 xs:w-4 xs:h-4 mobile-360-icon mr-1 xs:mr-2" />
-                  Materiales
+            {/* Complete Navigation Menu */}
+            <div className="space-y-3 pt-3">
+              {/* Main Navigation */}
+              <div className="grid grid-cols-2 gap-3">
+                <div 
+                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    // Navigate to materials section
+                    const materialsSection = document.querySelector('[data-tab="materials"]');
+                    if (materialsSection) {
+                      materialsSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Package className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>Materiales</span>
                 </div>
-                <div className="flex items-center text-gray-600 text-xs xs:text-sm py-1">
-                  <Store className="w-3 h-3 xs:w-4 xs:h-4 mobile-360-icon mr-1 xs:mr-2" />
-                  Proveedores  
+                <div 
+                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    const suppliersSection = document.querySelector('[data-tab="suppliers"]');
+                    if (suppliersSection) {
+                      suppliersSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Store className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>Proveedores</span>
                 </div>
               </div>
-              
-              <div className="space-y-1 xs:space-y-2">
-                <p className="font-medium text-gray-700 text-xs xs:text-sm">Información</p>
+
+              {/* Additional Options */}
+              <div className="grid grid-cols-2 gap-3">
+                <div 
+                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    window.location.href = "/login?redirect=activities";
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Construction className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>Actividades</span>
+                </div>
+                <div 
+                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    window.location.href = "/login?redirect=budgets";
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Calculator className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>Presupuestos</span>
+                </div>
+              </div>
+
+              {/* Information & Support */}
+              <div className="grid grid-cols-2 gap-3">
                 <ContactForm 
                   triggerText="Contacto"
                   triggerVariant="ghost"
-                  className="justify-start p-1 text-left text-gray-600 hover:text-orange-600 text-xs xs:text-sm mobile-360-text"
+                  className="justify-start p-2 text-left text-gray-600 hover:text-orange-600 text-sm rounded hover:bg-gray-50 transition-colors"
                 />
-                <div className="flex items-center text-gray-600 text-xs xs:text-sm py-1">
-                  <Mail className="w-3 h-3 xs:w-4 xs:h-4 mobile-360-icon mr-1 xs:mr-2" />
-                  Soporte
+                <div className="flex items-center text-gray-600 text-sm py-2 px-2">
+                  <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>Ayuda</span>
                 </div>
               </div>
             </div>
