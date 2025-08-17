@@ -185,7 +185,7 @@ export default function Budgets() {
                                 {budget.project.name}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {budget.project.location}
+                                {budget.project.location || budget.project.city}
                               </div>
                             </div>
                           </div>

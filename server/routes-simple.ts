@@ -804,28 +804,45 @@ export async function registerRoutes(app: any) {
       console.log(`Fetching budgets for user ${req.user.id}`);
       
       // Obtener presupuestos del usuario con información del proyecto
-      const userBudgets = await db.select({
-        id: budgets.id,
-        projectId: budgets.projectId,
-        phaseId: budgets.phaseId,
-        total: budgets.total,
-        status: budgets.status,
-        createdAt: budgets.createdAt,
-        updatedAt: budgets.updatedAt,
-        projectName: projects.name,
-        projectClient: projects.client,
-        projectLocation: projects.location,
-        projectCity: projects.city,
-        projectStartDate: projects.startDate
-      })
+      const userBudgets = await db.select()
         .from(budgets)
         .innerJoin(projects, eq(budgets.projectId, projects.id))
         .where(eq(projects.userId, req.user.id))
         .orderBy(desc(budgets.createdAt));
+
+      // Formatear los datos para el tipo BudgetWithProject
+      const formattedBudgets = userBudgets.map(row => ({
+        id: row.budgets.id,
+        projectId: row.budgets.projectId,
+        phaseId: row.budgets.phaseId,
+        total: row.budgets.total,
+        status: row.budgets.status,
+        createdAt: row.budgets.createdAt,
+        updatedAt: row.budgets.updatedAt,
+        project: {
+          id: row.projects.id,
+          name: row.projects.name,
+          client: row.projects.client,
+          location: row.projects.location,
+          city: row.projects.city,
+          country: row.projects.country,
+          startDate: row.projects.startDate,
+          userId: row.projects.userId,
+          status: row.projects.status,
+          equipmentPercentage: row.projects.equipmentPercentage,
+          administrativePercentage: row.projects.administrativePercentage,
+          utilityPercentage: row.projects.utilityPercentage,
+          taxPercentage: row.projects.taxPercentage,
+          socialChargesPercentage: row.projects.socialChargesPercentage,
+          createdAt: row.projects.createdAt,
+          updatedAt: row.projects.updatedAt
+        },
+        phase: null // Para presupuestos multifase
+      }));
       
-      console.log(`Found ${userBudgets.length} budgets for user ${req.user.id}`);
+      console.log(`Found ${formattedBudgets.length} budgets for user ${req.user.id}`);
       
-      res.json(userBudgets);
+      res.json(formattedBudgets);
     } catch (error) {
       console.error('Error fetching budgets:', error);
       res.status(500).json({ error: 'Failed to fetch budgets' });
