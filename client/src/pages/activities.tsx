@@ -222,7 +222,7 @@ export default function Activities() {
                     <div
                       key={activity.id}
                       className={`flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors ${
-                        activity.hasCustomActivity && !activity.isOriginal ? 'bg-green-50 border-green-300 shadow-sm' : ''
+                        !activity.isOriginal ? 'bg-green-50 border-green-300 shadow-sm' : ''
                       }`}
                     >
                       <div className="flex-1">
@@ -231,7 +231,7 @@ export default function Activities() {
                             .replace(/^ANÁLISIS DE PRECIOS UNITARIOS \(APU\) DE:\s*/i, '')
                             .replace(/^APU DE:\s*/i, '')
                           }
-                          {activity.hasCustomActivity && !activity.isOriginal && (
+                          {!activity.isOriginal && (
                             <span className="text-green-700 font-semibold text-sm ml-2 bg-green-100 px-2 py-1 rounded">(Personalizada)</span>
                           )}
                         </h4>
@@ -249,29 +249,34 @@ export default function Activities() {
                       </div>
                       
                       <div className="flex gap-2">
-                        {/* Botón Duplicar - solo mostrar para actividades originales y si el usuario está autenticado */}
-                        {user && activity.isOriginal !== false && !activity.hasCustomActivity && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => duplicateActivityMutation.mutate(activity.id)}
-                            disabled={duplicateActivityMutation.isPending}
-                          >
-                            <Copy className="h-4 w-4 mr-2" />
-                            Duplicar
-                          </Button>
-                        )}
-                        
-                        {/* Mostrar "Ya Duplicada" si ya tiene actividad personalizada */}
-                        {user && activity.hasCustomActivity && (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            disabled
-                            className="opacity-60"
-                          >
-                            ✓ Ya Duplicada
-                          </Button>
+                        {/* Solo mostrar botones para actividades originales */}
+                        {user && activity.isOriginal && (
+                          <>
+                            {/* Botón Duplicar - solo si no tiene actividad personalizada */}
+                            {!activity.hasCustomActivity && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => duplicateActivityMutation.mutate(activity.id)}
+                                disabled={duplicateActivityMutation.isPending}
+                              >
+                                <Copy className="h-4 w-4 mr-2" />
+                                Duplicar
+                              </Button>
+                            )}
+                            
+                            {/* Mostrar "Ya Duplicada" si ya tiene actividad personalizada */}
+                            {activity.hasCustomActivity && (
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                disabled
+                                className="opacity-60"
+                              >
+                                ✓ Ya Duplicada
+                              </Button>
+                            )}
+                          </>
                         )}
                         
                         {/* Botón Ver APU */}
