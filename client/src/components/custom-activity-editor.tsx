@@ -128,6 +128,10 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
   const addCompositionMutation = useMutation({
     mutationFn: async (data: any) => {
       const response = await apiRequest('POST', `/api/custom-activities/${activity.id}/compositions`, data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al agregar composición');
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -136,8 +140,13 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
       setShowAddDialog(false);
       resetForm();
     },
-    onError: () => {
-      toast({ title: "Error", description: "No se pudo agregar la composición", variant: "destructive" });
+    onError: (error: Error) => {
+      console.error('Error adding composition:', error);
+      toast({ 
+        title: "Error", 
+        description: error.message || "No se pudo agregar la composición", 
+        variant: "destructive" 
+      });
     }
   });
 
@@ -181,6 +190,26 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
       return;
     }
 
+    // Validate category selection for materials
+    if (newComposition.type === "material" && !newComposition.selectedCategoryId) {
+      toast({
+        title: "Error",
+        description: "Debe seleccionar una categoría para el material",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate material selection when using existing materials
+    if (newComposition.type === "material" && !newComposition.isNewMaterial && !newComposition.materialId) {
+      toast({
+        title: "Error",
+        description: "Debe seleccionar un material de la lista",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const quantity = parseFloat(newComposition.quantity);
     const unitCost = parseFloat(newComposition.unitCost);
 
@@ -202,9 +231,13 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
         type: newComposition.type
       };
 
+      console.log('Preparing composition data:', compositionData);
+      console.log('New composition state:', newComposition);
+
       // Add specific IDs based on type and handle new materials
       if (newComposition.type === "material") {
         if (newComposition.isNewMaterial) {
+          console.log('Creating new material...');
           // Create new material first
           const materialResponse = await apiRequest('POST', '/api/materials', {
             name: newComposition.description,
@@ -212,7 +245,14 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
             price: unitCost,
             categoryId: parseInt(newComposition.selectedCategoryId) || 1 // Use selected category
           });
+          
+          if (!materialResponse.ok) {
+            const errorData = await materialResponse.json();
+            throw new Error(`Error creating material: ${errorData.message || 'Unknown error'}`);
+          }
+          
           const newMaterial = await materialResponse.json();
+          console.log('New material created:', newMaterial);
           compositionData.materialId = newMaterial.id;
           
           // Invalidate materials cache to refresh list
@@ -226,11 +266,13 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
         compositionData.toolId = parseInt(newComposition.toolId);
       }
 
+      console.log('Final composition data to send:', compositionData);
       addCompositionMutation.mutate(compositionData);
     } catch (error) {
+      console.error('Error in handleAddComposition:', error);
       toast({
         title: "Error",
-        description: "Error al procesar la composición",
+        description: error instanceof Error ? error.message : "Error al procesar la composición",
         variant: "destructive"
       });
     }
