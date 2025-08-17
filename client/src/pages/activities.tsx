@@ -114,7 +114,11 @@ export default function Activities() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Actividades de Construcción con APU</h1>
-          <p className="text-gray-600 mt-2">Actividades con análisis de precios unitarios para proyectos de construcción</p>
+          <p className="text-gray-600 mt-2">
+            Actividades con análisis de precios unitarios para proyectos de construcción
+            <br />
+            <span className="text-sm">Solo puedes duplicar cada actividad una vez. Las actividades ya duplicadas muestran "✓ Ya Duplicada"</span>
+          </p>
         </div>
         {user && (
           <Button 
@@ -246,7 +250,7 @@ export default function Activities() {
                       
                       <div className="flex gap-2">
                         {/* Botón Duplicar - solo mostrar para actividades originales y si el usuario está autenticado */}
-                        {user && activity.isOriginal !== false && (
+                        {user && activity.isOriginal !== false && !activity.hasCustomActivity && (
                           <Button
                             variant="outline"
                             size="sm"
@@ -255,6 +259,18 @@ export default function Activities() {
                           >
                             <Copy className="h-4 w-4 mr-2" />
                             Duplicar
+                          </Button>
+                        )}
+                        
+                        {/* Mostrar "Ya Duplicada" si ya tiene actividad personalizada */}
+                        {user && activity.hasCustomActivity && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            disabled
+                            className="opacity-60"
+                          >
+                            ✓ Ya Duplicada
                           </Button>
                         )}
                         
