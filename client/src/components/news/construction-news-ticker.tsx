@@ -111,29 +111,30 @@ export function ConstructionNewsTicker() {
   return (
     <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden">
       <div 
-        className="p-4"
+        className="p-2 sm:p-3 md:p-4"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-semibold text-gray-700">
+        {/* Header - Mobile optimized */}
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="text-xs sm:text-sm font-semibold text-gray-700">
               Noticias de Construcción
             </span>
           </div>
           <div className="flex items-center space-x-1 text-xs text-gray-500">
-            <Clock className="w-3 h-3" />
-            <span>{formatTimeAgo(currentNews.publishedAt)}</span>
+            <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+            <span className="hidden sm:inline">{formatTimeAgo(currentNews.publishedAt)}</span>
+            <span className="sm:hidden text-xs">Actualizado</span>
           </div>
         </div>
 
-        {/* News Content */}
-        <div className="space-y-3">
-          <div className="flex items-start justify-between gap-3">
+        {/* News Content - Mobile first */}
+        <div className="space-y-2 sm:space-y-3">
+          <div className="flex items-start justify-between gap-2 sm:gap-3">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2 mb-1">
+              <div className="flex items-center space-x-1 sm:space-x-2 mb-1 flex-wrap">
                 <Badge 
                   variant="outline" 
                   className={`text-xs ${categoryColors[currentNews.category]}`}
@@ -145,11 +146,11 @@ export function ConstructionNewsTicker() {
                 </span>
               </div>
               
-              <h4 className="font-medium text-gray-900 text-sm leading-tight mb-1 line-clamp-2">
+              <h4 className="font-medium text-gray-900 text-xs sm:text-sm leading-tight mb-1 line-clamp-2">
                 {currentNews.title}
               </h4>
               
-              <p className="text-xs text-gray-600 line-clamp-2">
+              <p className="text-xs text-gray-600 line-clamp-2 hidden sm:block">
                 {currentNews.summary}
               </p>
             </div>

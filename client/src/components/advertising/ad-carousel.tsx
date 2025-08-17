@@ -101,58 +101,58 @@ export function AdCarousel() {
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
-          {/* Main Ad Content */}
-          <div className="flex flex-col md:flex-row">
+          {/* Main Ad Content - Mobile First */}
+          <div className="flex flex-col sm:flex-row">
             {/* Image */}
-            <div className="w-full md:w-1/3 bg-gray-100 relative overflow-hidden">
+            <div className="w-full sm:w-1/3 bg-gray-100 relative overflow-hidden">
               <img
                 src={currentAd.imageUrl}
                 alt={currentAd.title}
-                className="w-full h-40 md:h-32 object-cover"
+                className="w-full h-32 sm:h-28 md:h-32 object-cover"
                 onError={(e) => {
                   e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8Y2lyY2xlIGN4PSIxNDAiIGN5PSI5MCIgcj0iNSIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
                 }}
               />
-              <div className="absolute top-2 left-2">
-                <span className="text-xs bg-orange-600 text-white px-2 py-1 rounded">
+              <div className="absolute top-1 left-1 sm:top-2 sm:left-2">
+                <span className="text-xs bg-orange-600 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-xs">
                   {currentAd.category}
                 </span>
               </div>
             </div>
 
             {/* Content */}
-            <div className="flex-1 p-4">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm md:text-base line-clamp-1">
+            <div className="flex-1 p-2 sm:p-3 md:p-4">
+              <div className="flex justify-between items-start mb-1 sm:mb-2">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm md:text-base line-clamp-1">
                     {currentAd.title}
                   </h3>
-                  <p className="text-orange-600 font-medium text-xs md:text-sm">
+                  <p className="text-orange-600 font-medium text-xs">
                     {currentAd.company}
                   </p>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-orange-600 hover:text-orange-700 p-1"
+                  className="text-orange-600 hover:text-orange-700 p-1 ml-1"
                   onClick={() => window.open(currentAd.link, '_blank')}
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </div>
               
-              <p className="text-gray-600 text-xs md:text-sm line-clamp-2 mb-3">
+              <p className="text-gray-600 text-xs line-clamp-2 mb-2 sm:mb-3">
                 {currentAd.description}
               </p>
 
-              {/* Navigation dots */}
+              {/* Navigation dots - Mobile optimized */}
               <div className="flex justify-between items-center">
                 <div className="flex space-x-1">
                   {sampleAds.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => goToAd(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
+                      className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all ${
                         index === currentIndex 
                           ? 'bg-orange-600 w-4' 
                           : 'bg-gray-300 hover:bg-gray-400'
