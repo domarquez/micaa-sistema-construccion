@@ -102,289 +102,261 @@ export default function Budgets() {
   const handleDownloadPDF = async (budget: BudgetWithProject) => {
     try {
       toast({
-        title: "Generando APU completo...",
-        description: "Obteniendo análisis de precios unitarios",
+        title: "Generando PDF...",
+        description: "Creando documento de presupuesto",
       });
 
-      // Verificar autenticación
+      // Intentar obtener datos completos del presupuesto con autenticación
       const token = localStorage.getItem('token');
-      if (!token) {
-        toast({
-          title: "Sesión expirada",
-          description: "Por favor, inicia sesión para generar el APU completo.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Verificar que el token funciona
-      const authCheck = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!authCheck.ok) {
-        localStorage.removeItem('token');
-        toast({
-          title: "Sesión expirada",
-          description: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente para generar el APU.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Obtener datos completos del presupuesto con items
-      const budgetResponse = await fetch(`/api/budgets/${budget.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      let budgetDetails = null;
       
-      if (!budgetResponse.ok) {
-        if (budgetResponse.status === 401) {
-          localStorage.removeItem('token');
-          toast({
-            title: "Sesión expirada",
-            description: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
-            variant: "destructive",
+      if (token) {
+        try {
+          const budgetResponse = await fetch(`/api/budgets/${budget.id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           });
-          return;
-        }
-        throw new Error('Error al obtener datos del presupuesto');
-      }
-
-      const budgetDetails = await budgetResponse.json();
-
-      // Importar jsPDF dinámicamente
-      const { default: jsPDF } = await import('jspdf');
-      const doc = new jsPDF();
-      
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 15;
-      let yPosition = 20;
-
-      // Función para verificar si necesita nueva página
-      const checkNewPage = (requiredSpace = 20) => {
-        if (yPosition > 270 - requiredSpace) {
-          doc.addPage();
-          yPosition = 20;
-          return true;
-        }
-        return false;
-      };
-
-      // Encabezado empresarial
-      doc.setFontSize(18);
-      doc.text('MICAA', margin, yPosition);
-      doc.setFontSize(10);
-      doc.text('Sistema Integral de Construccion y Arquitectura', margin, yPosition + 8);
-      doc.text('La Paz, Bolivia | contacto@micaa.store | +591 70000000', margin, yPosition + 16);
-      yPosition += 30;
-
-      // Título del documento
-      doc.setFontSize(16);
-      doc.text('ANALISIS DE PRECIOS UNITARIOS (APU)', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 20;
-
-      // Información del proyecto
-      doc.setFontSize(11);
-      doc.text(`PROYECTO: ${budget.project?.name || 'Sin nombre'}`, margin, yPosition);
-      yPosition += 8;
-      doc.text(`CLIENTE: ${budget.project?.client || 'No especificado'}`, margin, yPosition);
-      yPosition += 8;
-      doc.text(`UBICACION: ${budget.project?.location || 'No especificada'}`, margin, yPosition);
-      yPosition += 8;
-      doc.text(`FECHA: ${new Date().toLocaleDateString('es-BO')}`, margin, yPosition);
-      yPosition += 8;
-      doc.text(`PRESUPUESTO #${budget.id}`, margin, yPosition);
-      yPosition += 15;
-
-      let totalGeneral = 0;
-
-      // Procesar cada item del presupuesto
-      if (budgetDetails.items && budgetDetails.items.length > 0) {
-        for (let i = 0; i < budgetDetails.items.length; i++) {
-          const item = budgetDetails.items[i];
           
-          checkNewPage(60);
-          
-          // Encabezado del item
-          doc.setFontSize(12);
-          doc.text(`ITEM ${(i + 1).toString().padStart(2, '0')}: ${item.activity?.name || 'Actividad sin nombre'}`, margin, yPosition);
-          if (item.isCustomActivity) {
-            doc.text('(Personalizada)', margin + 120, yPosition);
+          if (budgetResponse.ok) {
+            budgetDetails = await budgetResponse.json();
           }
-          yPosition += 8;
-
-          doc.setFontSize(10);
-          doc.text(`Unidad: ${item.activity?.unit || 'und'}`, margin, yPosition);
-          doc.text(`Cantidad: ${parseFloat(item.quantity || 0).toFixed(2)}`, margin + 60, yPosition);
-          doc.text(`P. Unit: Bs ${parseFloat(item.unitPrice || 0).toFixed(2)}`, margin + 120, yPosition);
-          yPosition += 6;
-          doc.text(`Subtotal: Bs ${parseFloat(item.subtotal || 0).toFixed(2)}`, margin, yPosition);
-          yPosition += 10;
-
-          totalGeneral += parseFloat(item.subtotal || 0);
-
-          // Obtener APU de la actividad si existe
-          if (item.activity?.id) {
-            try {
-              const apuResponse = await fetch(`/api/activities/${item.activity.id}/apu-calculation`, {
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-              });
-
-              if (apuResponse.ok) {
-                const apuData = await apuResponse.json();
-                
-                // Título APU
-                doc.setFontSize(9);
-                doc.text('COMPOSICION Y ANALISIS DE PRECIOS:', margin, yPosition);
-                yPosition += 8;
-
-                // Encabezados de tabla
-                doc.setFontSize(8);
-                doc.text('DESCRIPCION', margin, yPosition);
-                doc.text('UND', margin + 80, yPosition);
-                doc.text('CANT', margin + 100, yPosition);
-                doc.text('P.UNIT', margin + 120, yPosition);
-                doc.text('PARCIAL', margin + 145, yPosition);
-                yPosition += 5;
-                doc.line(margin, yPosition, pageWidth - margin, yPosition);
-                yPosition += 5;
-
-                // Materiales
-                if (apuData.breakdown?.materials?.length > 0) {
-                  doc.setFontSize(8);
-                  doc.text('MATERIALES:', margin, yPosition);
-                  yPosition += 5;
-                  
-                  apuData.breakdown.materials.forEach((material: any) => {
-                    checkNewPage(8);
-                    doc.text(material.name || 'Material', margin + 5, yPosition);
-                    doc.text(material.unit || 'und', margin + 80, yPosition);
-                    doc.text((material.quantity || 0).toFixed(2), margin + 100, yPosition);
-                    doc.text((material.unitCost || 0).toFixed(2), margin + 120, yPosition);
-                    doc.text((material.subtotal || 0).toFixed(2), margin + 145, yPosition);
-                    yPosition += 4;
-                  });
-                  yPosition += 3;
-                }
-
-                // Mano de obra
-                if (apuData.breakdown?.labor?.length > 0) {
-                  checkNewPage(15);
-                  doc.text('MANO DE OBRA:', margin, yPosition);
-                  yPosition += 5;
-                  
-                  apuData.breakdown.labor.forEach((labor: any) => {
-                    checkNewPage(8);
-                    doc.text(labor.name || 'Trabajador', margin + 5, yPosition);
-                    doc.text(labor.unit || 'hr', margin + 80, yPosition);
-                    doc.text((labor.quantity || 0).toFixed(2), margin + 100, yPosition);
-                    doc.text((labor.unitCost || 0).toFixed(2), margin + 120, yPosition);
-                    doc.text((labor.subtotal || 0).toFixed(2), margin + 145, yPosition);
-                    yPosition += 4;
-                  });
-                  yPosition += 3;
-                }
-
-                // Herramientas y equipos
-                if (apuData.breakdown?.equipment?.length > 0) {
-                  checkNewPage(15);
-                  doc.text('HERRAMIENTAS Y EQUIPOS:', margin, yPosition);
-                  yPosition += 5;
-                  
-                  apuData.breakdown.equipment.forEach((equipment: any) => {
-                    checkNewPage(8);
-                    doc.text(equipment.name || 'Herramienta', margin + 5, yPosition);
-                    doc.text(equipment.unit || 'hr', margin + 80, yPosition);
-                    doc.text((equipment.quantity || 0).toFixed(2), margin + 100, yPosition);
-                    doc.text((equipment.unitCost || 0).toFixed(2), margin + 120, yPosition);
-                    doc.text((equipment.subtotal || 0).toFixed(2), margin + 145, yPosition);
-                    yPosition += 4;
-                  });
-                  yPosition += 3;
-                }
-
-                // Resumen del APU
-                checkNewPage(20);
-                doc.line(margin + 100, yPosition, pageWidth - margin, yPosition);
-                yPosition += 5;
-                doc.setFontSize(9);
-                doc.text('RESUMEN APU:', margin + 80, yPosition);
-                yPosition += 5;
-                doc.text(`Materiales: Bs ${(apuData.totals?.materials || 0).toFixed(2)}`, margin + 80, yPosition);
-                yPosition += 4;
-                doc.text(`Mano de obra: Bs ${(apuData.totals?.labor || 0).toFixed(2)}`, margin + 80, yPosition);
-                yPosition += 4;
-                doc.text(`Herramientas: Bs ${(apuData.totals?.equipment || 0).toFixed(2)}`, margin + 80, yPosition);
-                yPosition += 4;
-                doc.setFontSize(10);
-                doc.text(`TOTAL APU: Bs ${(apuData.totalUnitPrice || 0).toFixed(2)}`, margin + 80, yPosition);
-                yPosition += 10;
-              }
-            } catch (error) {
-              console.log(`Error obteniendo APU para actividad ${item.activity.id}:`, error);
-              doc.setFontSize(8);
-              doc.text('APU no disponible para esta actividad', margin, yPosition);
-              yPosition += 8;
-            }
-          }
-
-          // Separador entre items
-          yPosition += 5;
-          doc.line(margin, yPosition, pageWidth - margin, yPosition);
-          yPosition += 10;
+        } catch (error) {
+          console.log('Error obteniendo datos detallados, usando datos básicos');
         }
       }
 
-      // Total general final
-      checkNewPage(30);
-      doc.setFontSize(14);
-      doc.text('RESUMEN GENERAL DEL PRESUPUESTO', margin, yPosition);
-      yPosition += 10;
-      doc.setFontSize(12);
-      doc.text(`TOTAL GENERAL: Bs ${totalGeneral.toFixed(2)}`, margin, yPosition);
-      yPosition += 15;
-
-      // Pie de página
-      doc.setFontSize(7);
-      doc.text('Este APU ha sido elaborado con MICAA - Sistema Integral de Construcción', pageWidth / 2, yPosition, { align: 'center' });
-      
-      // Descargar PDF
-      const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
-      doc.save(`APU_Completo_${projectName}_${budget.id}.pdf`);
-      
-      toast({
-        title: "APU generado exitosamente",
-        description: `Descargado: APU_Completo_${projectName}_${budget.id}.pdf`,
-      });
+      // Si tenemos datos detallados, generar APU completo
+      if (budgetDetails && budgetDetails.items && budgetDetails.items.length > 0) {
+        await generateDetailedAPU(budget, budgetDetails, token);
+      } else {
+        // Si no hay datos detallados, generar PDF básico
+        await generateBasicPDF(budget);
+      }
       
     } catch (error) {
-      console.error('Error generando APU:', error);
+      console.error('Error generando PDF:', error);
       
-      // Fallback: generar PDF básico sin APU detallado
-      toast({
-        title: "Generando PDF básico...",
-        description: "No se pudo obtener APU completo, generando resumen",
-      });
-      
+      // Fallback: generar PDF básico
       try {
         await generateBasicPDF(budget);
       } catch (fallbackError) {
         toast({
           title: "Error al generar PDF",
-          description: "No se pudo crear ningún documento. Verifique su conexión.",
+          description: "No se pudo crear el documento. Verifique su navegador.",
           variant: "destructive",
         });
       }
     }
+  };
+
+  // Función para generar APU detallado
+  const generateDetailedAPU = async (budget: BudgetWithProject, budgetDetails: any, token: string | null) => {
+    const { default: jsPDF } = await import('jspdf');
+    const doc = new jsPDF();
+    
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    let yPosition = 20;
+
+    // Función para verificar si necesita nueva página
+    const checkNewPage = (requiredSpace = 20) => {
+      if (yPosition > 270 - requiredSpace) {
+        doc.addPage();
+        yPosition = 20;
+        return true;
+      }
+      return false;
+    };
+
+    // Encabezado empresarial
+    doc.setFontSize(18);
+    doc.text('MICAA', margin, yPosition);
+    doc.setFontSize(10);
+    doc.text('Sistema Integral de Construccion y Arquitectura', margin, yPosition + 8);
+    doc.text('La Paz, Bolivia | contacto@micaa.store | +591 70000000', margin, yPosition + 16);
+    yPosition += 30;
+
+    // Título del documento
+    doc.setFontSize(16);
+    doc.text('ANALISIS DE PRECIOS UNITARIOS (APU)', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 20;
+
+    // Información del proyecto
+    doc.setFontSize(11);
+    doc.text(`PROYECTO: ${budget.project?.name || 'Sin nombre'}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`CLIENTE: ${budget.project?.client || 'No especificado'}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`UBICACION: ${budget.project?.location || 'No especificada'}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`FECHA: ${new Date().toLocaleDateString('es-BO')}`, margin, yPosition);
+    yPosition += 8;
+    doc.text(`PRESUPUESTO #${budget.id}`, margin, yPosition);
+    yPosition += 15;
+
+    let totalGeneral = 0;
+
+    // Procesar cada item del presupuesto
+    for (let i = 0; i < budgetDetails.items.length; i++) {
+      const item = budgetDetails.items[i];
+      
+      checkNewPage(60);
+      
+      // Encabezado del item
+      doc.setFontSize(12);
+      doc.text(`ITEM ${(i + 1).toString().padStart(2, '0')}: ${item.activity?.name || 'Actividad sin nombre'}`, margin, yPosition);
+      if (item.isCustomActivity) {
+        doc.text('(Personalizada)', margin + 120, yPosition);
+      }
+      yPosition += 8;
+
+      doc.setFontSize(10);
+      doc.text(`Unidad: ${item.activity?.unit || 'und'}`, margin, yPosition);
+      doc.text(`Cantidad: ${parseFloat(item.quantity || 0).toFixed(2)}`, margin + 60, yPosition);
+      doc.text(`P. Unit: Bs ${parseFloat(item.unitPrice || 0).toFixed(2)}`, margin + 120, yPosition);
+      yPosition += 6;
+      doc.text(`Subtotal: Bs ${parseFloat(item.subtotal || 0).toFixed(2)}`, margin, yPosition);
+      yPosition += 10;
+
+      totalGeneral += parseFloat(item.subtotal || 0);
+
+      // Obtener APU de la actividad si existe y tenemos token
+      if (item.activity?.id && token) {
+        try {
+          const apuResponse = await fetch(`/api/activities/${item.activity.id}/apu-calculation`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (apuResponse.ok) {
+            const apuData = await apuResponse.json();
+            
+            // Título APU
+            doc.setFontSize(9);
+            doc.text('COMPOSICION Y ANALISIS DE PRECIOS:', margin, yPosition);
+            yPosition += 8;
+
+            // Encabezados de tabla
+            doc.setFontSize(8);
+            doc.text('DESCRIPCION', margin, yPosition);
+            doc.text('UND', margin + 80, yPosition);
+            doc.text('CANT', margin + 100, yPosition);
+            doc.text('P.UNIT', margin + 120, yPosition);
+            doc.text('PARCIAL', margin + 145, yPosition);
+            yPosition += 5;
+            doc.line(margin, yPosition, pageWidth - margin, yPosition);
+            yPosition += 5;
+
+            // Materiales
+            if (apuData.breakdown?.materials?.length > 0) {
+              doc.setFontSize(8);
+              doc.text('MATERIALES:', margin, yPosition);
+              yPosition += 5;
+              
+              apuData.breakdown.materials.forEach((material: any) => {
+                checkNewPage(8);
+                doc.text(material.name || 'Material', margin + 5, yPosition);
+                doc.text(material.unit || 'und', margin + 80, yPosition);
+                doc.text((material.quantity || 0).toFixed(2), margin + 100, yPosition);
+                doc.text((material.unitCost || 0).toFixed(2), margin + 120, yPosition);
+                doc.text((material.subtotal || 0).toFixed(2), margin + 145, yPosition);
+                yPosition += 4;
+              });
+              yPosition += 3;
+            }
+
+            // Mano de obra
+            if (apuData.breakdown?.labor?.length > 0) {
+              checkNewPage(15);
+              doc.text('MANO DE OBRA:', margin, yPosition);
+              yPosition += 5;
+              
+              apuData.breakdown.labor.forEach((labor: any) => {
+                checkNewPage(8);
+                doc.text(labor.name || 'Trabajador', margin + 5, yPosition);
+                doc.text(labor.unit || 'hr', margin + 80, yPosition);
+                doc.text((labor.quantity || 0).toFixed(2), margin + 100, yPosition);
+                doc.text((labor.unitCost || 0).toFixed(2), margin + 120, yPosition);
+                doc.text((labor.subtotal || 0).toFixed(2), margin + 145, yPosition);
+                yPosition += 4;
+              });
+              yPosition += 3;
+            }
+
+            // Herramientas y equipos
+            if (apuData.breakdown?.equipment?.length > 0) {
+              checkNewPage(15);
+              doc.text('HERRAMIENTAS Y EQUIPOS:', margin, yPosition);
+              yPosition += 5;
+              
+              apuData.breakdown.equipment.forEach((equipment: any) => {
+                checkNewPage(8);
+                doc.text(equipment.name || 'Herramienta', margin + 5, yPosition);
+                doc.text(equipment.unit || 'hr', margin + 80, yPosition);
+                doc.text((equipment.quantity || 0).toFixed(2), margin + 100, yPosition);
+                doc.text((equipment.unitCost || 0).toFixed(2), margin + 120, yPosition);
+                doc.text((equipment.subtotal || 0).toFixed(2), margin + 145, yPosition);
+                yPosition += 4;
+              });
+              yPosition += 3;
+            }
+
+            // Resumen del APU
+            checkNewPage(20);
+            doc.line(margin + 100, yPosition, pageWidth - margin, yPosition);
+            yPosition += 5;
+            doc.setFontSize(9);
+            doc.text('RESUMEN APU:', margin + 80, yPosition);
+            yPosition += 5;
+            doc.text(`Materiales: Bs ${(apuData.totals?.materials || 0).toFixed(2)}`, margin + 80, yPosition);
+            yPosition += 4;
+            doc.text(`Mano de obra: Bs ${(apuData.totals?.labor || 0).toFixed(2)}`, margin + 80, yPosition);
+            yPosition += 4;
+            doc.text(`Herramientas: Bs ${(apuData.totals?.equipment || 0).toFixed(2)}`, margin + 80, yPosition);
+            yPosition += 4;
+            doc.setFontSize(10);
+            doc.text(`TOTAL APU: Bs ${(apuData.totalUnitPrice || 0).toFixed(2)}`, margin + 80, yPosition);
+            yPosition += 10;
+          }
+        } catch (error) {
+          console.log(`Error obteniendo APU para actividad ${item.activity.id}:`, error);
+          doc.setFontSize(8);
+          doc.text('APU no disponible para esta actividad', margin, yPosition);
+          yPosition += 8;
+        }
+      }
+
+      // Separador entre items
+      yPosition += 5;
+      doc.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 10;
+    }
+
+    // Total general final
+    checkNewPage(30);
+    doc.setFontSize(14);
+    doc.text('RESUMEN GENERAL DEL PRESUPUESTO', margin, yPosition);
+    yPosition += 10;
+    doc.setFontSize(12);
+    doc.text(`TOTAL GENERAL: Bs ${totalGeneral.toFixed(2)}`, margin, yPosition);
+    yPosition += 15;
+
+    // Pie de página
+    doc.setFontSize(7);
+    doc.text('Este APU ha sido elaborado con MICAA - Sistema Integral de Construcción', pageWidth / 2, yPosition, { align: 'center' });
+    
+    // Descargar PDF
+    const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
+    doc.save(`APU_Completo_${projectName}_${budget.id}.pdf`);
+    
+    toast({
+      title: "APU completo generado",
+      description: `Descargado: APU_Completo_${projectName}_${budget.id}.pdf`,
+    });
   };
 
   // Función para generar PDF básico como fallback
