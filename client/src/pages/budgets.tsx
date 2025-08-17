@@ -568,7 +568,8 @@ export default function Budgets() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -734,6 +735,155 @@ export default function Budgets() {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden mobile-grid p-4 space-y-4">
+            {budgetsLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i} className="p-4">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <Skeleton className="w-12 h-12 rounded-lg" />
+                    <div className="flex-1 min-w-0">
+                      <Skeleton className="h-4 w-full mb-2" />
+                      <Skeleton className="h-3 w-2/3" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                    <div className="flex justify-between">
+                      <Skeleton className="h-3 w-12" />
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                    </div>
+                    <div className="flex justify-center space-x-2 pt-2">
+                      {Array.from({ length: 4 }).map((_, j) => (
+                        <Skeleton key={j} className="w-10 h-10 rounded" />
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              ))
+            ) : budgets?.length ? (
+              budgets.map((budget) => {
+                const IconComponent = getProjectIcon(budget.project.name);
+                return (
+                  <Card key={budget.id} className="p-4 touch-target tap-highlight-none">
+                    <div className="flex items-start space-x-3 mb-3">
+                      <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                        <IconComponent className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm text-on-surface truncate mb-1">
+                          {budget.project.name}
+                        </h3>
+                        <p className="text-xs text-gray-600 truncate">
+                          {budget.project.client || 'Sin cliente'}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {budget.createdAt ? formatRelativeTime(budget.createdAt) : 'Fecha no disponible'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600">Fase:</span>
+                        <span className="text-xs font-medium">
+                          {budget.phase?.name || 'Multifase'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600">Total:</span>
+                        <span className="text-sm font-bold text-primary">
+                          {formatCurrency(parseFloat(budget.total))}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600">Estado:</span>
+                        <Badge variant="secondary" className="text-xs px-2 py-0">
+                          {budget.status === 'active' ? 'Activo' : 'Inactivo'}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => window.location.href = `/budgets/${budget.id}`}
+                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 touch-target"
+                        title="Ver detalles"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(budget)}
+                        className="text-green-600 hover:text-green-800 hover:bg-green-50 touch-target"
+                        title="Editar presupuesto"
+                      >
+                        <FileText className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDownloadPDF(budget)}
+                        className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 touch-target"
+                        title="Descargar APU"
+                      >
+                        <Download className="w-4 h-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 touch-target"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="mx-4 max-w-sm">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-base">¿Eliminar proyecto?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
+                              Se eliminará permanentemente "{budget.project.name}" y todos sus presupuestos.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteProject(budget.project.id)}
+                              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+                            >
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </Card>
+                );
+              })
+            ) : (
+              <div className="text-center py-12">
+                <Calculator className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                <p className="text-gray-500 mb-2">No hay presupuestos creados</p>
+                <p className="text-sm text-gray-400 mb-4">Cree su primer presupuesto para comenzar</p>
+                <Button
+                  onClick={() => setShowForm(true)}
+                  className="bg-primary text-white hover:bg-primary-variant mobile-button"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Crear Presupuesto
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

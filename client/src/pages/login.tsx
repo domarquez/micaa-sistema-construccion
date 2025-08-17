@@ -80,18 +80,19 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 safe-area-inset-top safe-area-inset-bottom">
       {/* Enlace para volver a vista pública */}
-      <div className="absolute top-4 left-4">
+      <div className="absolute top-4 left-4 z-10">
         <Link href="/public">
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="flex items-center gap-2 mobile-button tap-highlight-none">
             <ArrowLeft className="w-4 h-4" />
-            Ver versión pública
+            <span className="hidden xs:inline">Ver versión pública</span>
+            <span className="xs:hidden">Volver</span>
           </Button>
         </Link>
       </div>
 
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md mx-4 shadow-lg">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
             <Construction className="w-6 h-6 text-white" />

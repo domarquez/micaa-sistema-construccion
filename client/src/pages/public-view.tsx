@@ -245,123 +245,123 @@ export default function PublicView() {
         {/* Banner Ad después del header */}
         <BannerAd />
 
-        {/* Métricas Compactas del Sistema */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 md:gap-3">
-          <Card className="shadow-material">
-            <CardContent className="p-2 md:p-4">
+        {/* Métricas Compactas del Sistema - Optimizado para móviles */}
+        <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 mobile-padding">
+          <Card className="shadow-material touch-target tap-highlight-none">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
-                <Users className="w-4 h-4 md:w-6 md:h-6 text-primary mb-1 md:mb-2" />
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm md:text-xl font-bold text-on-surface">
+                  <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalUsers || 0)}
                   </p>
                 )}
-                <p className="text-xs text-gray-600">Usuarios</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Registrados</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Usuarios</p>
+                <p className="text-xs text-green-600 mt-1 hidden sm:block">Registrados</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = "/login?redirect=budgets"}>
-            <CardContent className="p-2 md:p-4">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow touch-target mobile-button tap-highlight-none" onClick={() => window.location.href = "/login?redirect=budgets"}>
+            <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
-                <Calculator className="w-4 h-4 md:w-6 md:h-6 text-green-600 mb-1 md:mb-2" />
+                <Calculator className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm md:text-xl font-bold text-on-surface">
+                  <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.activeBudgets || 0)}
                   </p>
                 )}
-                <p className="text-xs text-gray-600">Presupuestos</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Presupuestos</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Presupuestos</p>
+                <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Presupuestos</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = "/login?redirect=project-dashboard"}>
-            <CardContent className="p-2 md:p-4">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow touch-target mobile-button tap-highlight-none" onClick={() => window.location.href = "/login?redirect=project-dashboard"}>
+            <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
-                <Building2 className="w-4 h-4 md:w-6 md:h-6 text-orange-600 mb-1 md:mb-2" />
+                <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm md:text-xl font-bold text-on-surface">
+                  <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalProjects || 0)}
                   </p>
                 )}
-                <p className="text-xs text-gray-600">Proyectos</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Proyectos</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Proyectos</p>
+                <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Proyectos</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("suppliers")}>
-            <CardContent className="p-2 md:p-4">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow touch-target mobile-button tap-highlight-none" onClick={() => setActiveTab("suppliers")}>
+            <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
-                <Truck className="w-4 h-4 md:w-6 md:h-6 text-purple-600 mb-1 md:mb-2" />
+                <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm md:text-xl font-bold text-on-surface">
+                  <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalSuppliers || 0)}
                   </p>
                 )}
-                <p className="text-xs text-gray-600">Proveedores</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Proveedores</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Proveedores</p>
+                <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Proveedores</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("materials")}>
-            <CardContent className="p-2 md:p-4">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow touch-target mobile-button tap-highlight-none" onClick={() => setActiveTab("materials")}>
+            <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
-                <Package className="w-4 h-4 md:w-6 md:h-6 text-blue-600 mb-1 md:mb-2" />
+                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm md:text-xl font-bold text-on-surface">
+                  <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalMaterials || 0)}
                   </p>
                 )}
-                <p className="text-xs text-gray-600">Materiales</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Materiales</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Materiales</p>
+                <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Materiales</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow" onClick={() => window.location.href = "/login?redirect=activities"}>
-            <CardContent className="p-2 md:p-4">
+          <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow touch-target mobile-button tap-highlight-none" onClick={() => window.location.href = "/login?redirect=activities"}>
+            <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
-                <Combine className="w-4 h-4 md:w-6 md:h-6 text-teal-600 mb-1 md:mb-2" />
+                <Combine className="w-5 h-5 sm:w-6 sm:h-6 text-teal-600 mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 md:h-6 w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm md:text-xl font-bold text-on-surface">
+                  <p className="text-sm sm:text-lg md:text-xl font-bold text-on-surface">
                     {formatNumber(stats?.totalActivities || 0)}
                   </p>
                 )}
-                <p className="text-xs text-gray-600">Actividades</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Ver Actividades</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Actividades</p>
+                <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Actividades</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-material">
-            <CardContent className="p-2 md:p-4">
+          <Card className="shadow-material touch-target tap-highlight-none">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
-                <TrendingUp className="w-4 h-4 md:w-6 md:h-6 text-yellow-600 mb-1 md:mb-2" />
+                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600 mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 md:h-6 w-12 md:w-16 mb-1" />
+                  <Skeleton className="h-5 sm:h-6 w-12 sm:w-16 mb-1" />
                 ) : (
-                  <p className="text-xs md:text-sm font-bold text-on-surface">
+                  <p className="text-xs sm:text-sm md:text-base font-bold text-on-surface">
                     {formatCurrency(stats?.totalProjectValue || 0).replace(' Bs', '')} Bs
                   </p>
                 )}
-                <p className="text-xs text-gray-600">Valor Total</p>
-                <p className="text-xs text-green-600 mt-1 hidden md:block">Acumulado</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Valor Total</p>
+                <p className="text-xs text-green-600 mt-1 hidden sm:block">Acumulado</p>
               </div>
             </CardContent>
           </Card>

@@ -4,6 +4,16 @@ export default {
   darkMode: ["class"],
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    screens: {
+      'xs': '320px',    // Extra small devices
+      'sm': '640px',    // Small devices
+      'md': '768px',    // Medium devices 
+      'lg': '1024px',   // Large devices
+      'xl': '1280px',   // Extra large devices
+      '2xl': '1536px',  // 2X large devices
+      'mobile': {'max': '639px'}, // Mobile-first approach
+      'tablet': {'min': '640px', 'max': '1023px'}, // Tablet range
+    },
     extend: {
       borderRadius: {
         lg: "var(--radius)",
