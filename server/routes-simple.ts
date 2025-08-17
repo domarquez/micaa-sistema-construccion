@@ -799,11 +799,35 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  router.get('/budgets', async (req: Request, res: Response) => {
+  router.get('/budgets', requireAuth, async (req: AuthRequest, res: Response) => {
     try {
-      // Return empty array for now
-      res.json([]);
+      console.log(`Fetching budgets for user ${req.user.id}`);
+      
+      // Obtener presupuestos del usuario con información del proyecto
+      const userBudgets = await db.select({
+        id: budgets.id,
+        projectId: budgets.projectId,
+        phaseId: budgets.phaseId,
+        total: budgets.total,
+        status: budgets.status,
+        createdAt: budgets.createdAt,
+        updatedAt: budgets.updatedAt,
+        projectName: projects.name,
+        projectClient: projects.client,
+        projectLocation: projects.location,
+        projectCity: projects.city,
+        projectStartDate: projects.startDate
+      })
+        .from(budgets)
+        .innerJoin(projects, eq(budgets.projectId, projects.id))
+        .where(eq(projects.userId, req.user.id))
+        .orderBy(desc(budgets.createdAt));
+      
+      console.log(`Found ${userBudgets.length} budgets for user ${req.user.id}`);
+      
+      res.json(userBudgets);
     } catch (error) {
+      console.error('Error fetching budgets:', error);
       res.status(500).json({ error: 'Failed to fetch budgets' });
     }
   });
