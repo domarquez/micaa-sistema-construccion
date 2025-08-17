@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
 import { users, materials, activities, constructionPhases, materialCategories, customActivities, customActivityCompositions, laborCategories, tools, userActivities, userActivityCompositions, activityCompositions, projects, budgets, budgetItems } from '../shared/schema';
-import { eq, like, desc, asc, and } from 'drizzle-orm';
+import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
@@ -916,6 +916,9 @@ export async function registerRoutes(app: any) {
         subtotal: budgetItems.subtotal,
         activityName: activities.name,
         activityUnit: activities.unit,
+        activityIsSystemDefault: activities.isSystemDefault,
+        activityCreatedBy: activities.createdBy,
+        activityOriginalActivityId: activities.originalActivityId,
         phaseName: constructionPhases.name
       })
         .from(budgetItems)
@@ -923,6 +926,20 @@ export async function registerRoutes(app: any) {
         .leftJoin(constructionPhases, eq(budgetItems.phaseId, constructionPhases.id))
         .where(eq(budgetItems.budgetId, budgetId))
         .orderBy(budgetItems.id);
+      
+      // Get custom activities details for bridge activities
+      const customActivityIds = budgetItemsQuery
+        .filter(item => !item.activityIsSystemDefault && item.activityOriginalActivityId)
+        .map(item => item.activityOriginalActivityId!);
+      
+      let customActivitiesMap = new Map();
+      if (customActivityIds.length > 0) {
+        const customActivitiesData = await db.select()
+          .from(customActivities)
+          .where(sql`${customActivities.id} IN (${sql.join(customActivityIds.map(id => sql`${id}`), sql`, `)})`);
+        
+        customActivitiesMap = new Map(customActivitiesData.map(ca => [ca.id, ca]));
+      }
       
       // Formatear respuesta
       const budgetWithItems = {
@@ -952,21 +969,34 @@ export async function registerRoutes(app: any) {
           updatedAt: budgetRow.projects.updatedAt
         },
         phase: null,
-        items: budgetItemsQuery.map(item => ({
-          id: item.id,
-          budgetId: item.budgetId,
-          activityId: item.activityId,
-          phaseId: item.phaseId,
-          quantity: parseFloat(item.quantity),
-          unitPrice: parseFloat(item.unitPrice),
-          subtotal: parseFloat(item.subtotal),
-          activity: {
-            id: item.activityId,
-            name: item.activityName,
-            unit: item.activityUnit,
-            phase: item.phaseName ? { name: item.phaseName } : null
+        items: budgetItemsQuery.map(item => {
+          // Check if this is a bridge activity for a custom activity
+          let activityName = item.activityName;
+          let isCustomActivity = false;
+          
+          if (!item.activityIsSystemDefault && item.activityOriginalActivityId && customActivitiesMap.has(item.activityOriginalActivityId)) {
+            const customActivity = customActivitiesMap.get(item.activityOriginalActivityId);
+            activityName = `${customActivity.name} (Personalizada)`;
+            isCustomActivity = true;
           }
-        }))
+          
+          return {
+            id: item.id,
+            budgetId: item.budgetId,
+            activityId: item.activityId,
+            phaseId: item.phaseId,
+            quantity: parseFloat(item.quantity),
+            unitPrice: parseFloat(item.unitPrice),
+            subtotal: parseFloat(item.subtotal),
+            activity: {
+              id: item.activityId,
+              name: activityName,
+              unit: item.activityUnit,
+              phase: item.phaseName ? { name: item.phaseName } : null,
+              isCustomActivity
+            }
+          };
+        })
       };
       
       console.log(`Found budget ${budgetId} with ${budgetWithItems.items.length} items`);
@@ -1095,7 +1125,7 @@ export async function registerRoutes(app: any) {
         } else {
           // Create a bridge activity in the activities table
           const [bridgeActivity] = await db.insert(activities).values({
-            phaseId: customActivity.phaseId,
+            phaseId: customActivity.phaseId || 1, // Default to phase 1 if null
             name: customActivity.name,
             unit: customActivity.unit,
             description: customActivity.description || "Actividad personalizada",
