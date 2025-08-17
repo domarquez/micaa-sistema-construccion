@@ -35,7 +35,9 @@ import {
   Trash2,
   Eye,
   Download,
-  Printer
+  Printer,
+  Lock,
+  UserPlus
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
@@ -55,9 +57,14 @@ export default function Budgets() {
   // Auto-open form when accessing /budgets/new
   useEffect(() => {
     if (location === '/budgets/new') {
-      setShowForm(true);
+      if (isAnonymous) {
+        // Redirect anonymous users to registration
+        window.location.href = "/register";
+      } else {
+        setShowForm(true);
+      }
     }
-  }, [location]);
+  }, [location, isAnonymous]);
 
   const { data: budgets, isLoading: budgetsLoading } = useQuery<BudgetWithProject[]>({
     queryKey: isAnonymous ? ["/api/anonymous/budgets"] : ["/api/budgets"],

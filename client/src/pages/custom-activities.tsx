@@ -3,11 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, ArrowLeft, Plus } from "lucide-react";
+import { Settings, ArrowLeft, Plus, Lock, UserPlus } from "lucide-react";
 import { Link } from "wouter";
 import CustomActivityManagerDB from "@/components/custom-activity-manager-db";
 import CustomActivityEditor from "@/components/custom-activity-editor";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CustomActivity {
   id: number;
@@ -23,14 +24,16 @@ interface CustomActivity {
 
 export default function CustomActivities() {
   const [editingActivity, setEditingActivity] = useState<CustomActivity | null>(null);
+  const { isAnonymous } = useAuth();
 
-  // Load statistics from database
+  // Load statistics from database only if authenticated
   const { data: customActivities } = useQuery({
     queryKey: ['/api/custom-activities'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/custom-activities');
       return response.json();
-    }
+    },
+    enabled: !isAnonymous
   });
 
   const { data: userActivities } = useQuery({
@@ -38,7 +41,8 @@ export default function CustomActivities() {
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/user-activities');
       return response.json();
-    }
+    },
+    enabled: !isAnonymous
   });
 
   const handleEditActivity = (activity: any) => {
@@ -73,6 +77,89 @@ export default function CustomActivities() {
         activity={editingActivity}
         onBack={handleBackFromEdit}
       />
+    );
+  }
+
+  // Show registration notice for anonymous users
+  if (isAnonymous) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Settings className="h-6 w-6 text-orange-600" />
+            <h1 className="text-2xl font-bold text-gray-900">Actividades Personalizadas</h1>
+          </div>
+          <Link href="/dashboard">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Volver
+            </Button>
+          </Link>
+        </div>
+
+        <Card className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+          <CardContent className="p-8 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="bg-orange-600 text-white rounded-full p-4">
+                <Lock className="w-8 h-8" />
+              </div>
+            </div>
+            
+            <h2 className="text-xl font-bold text-orange-900 mb-3">
+              Funcionalidad Premium
+            </h2>
+            
+            <p className="text-orange-700 mb-6">
+              Las actividades personalizadas están disponibles solo para usuarios registrados. 
+              Esta funcionalidad te permite crear y gestionar actividades específicas para tus proyectos.
+            </p>
+
+            <div className="bg-white rounded-lg p-4 mb-6 border border-orange-200">
+              <h3 className="font-semibold text-orange-900 mb-3">¿Qué puedes hacer con actividades personalizadas?</h3>
+              <div className="text-left space-y-2 text-sm text-orange-700">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Crear actividades únicas para tu tipo de proyecto</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Definir composiciones de materiales y mano de obra</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Calcular APU (Análisis de Precios Unitarios) precisos</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
+                  <span>Reutilizar actividades en múltiples presupuestos</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button 
+                size="lg"
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+                onClick={() => window.location.href = "/register"}
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Crear Cuenta Gratis
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => window.location.href = "/login"}
+              >
+                Ya tengo cuenta
+              </Button>
+            </div>
+
+            <p className="text-xs text-orange-600 mt-4">
+              ✓ Registro 100% gratuito • ✓ Sin límites • ✓ Datos seguros
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 

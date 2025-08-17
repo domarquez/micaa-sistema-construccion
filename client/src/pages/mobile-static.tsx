@@ -252,22 +252,80 @@ export default function MobileStatic() {
           ))}
         </div>
 
-        {/* CTA Section */}
-        <Card className="bg-gradient-to-r from-gray-100 to-gray-200">
-          <CardContent className="p-4 text-center">
-            <Building2 className="w-8 h-8 mx-auto mb-2 text-gray-600" />
-            <h3 className="font-semibold text-sm mb-2">
-              ¿Listo para tu proyecto?
-            </h3>
-            <p className="text-xs text-gray-600 mb-3">
-              Regístrate para acceder a todas las funcionalidades
-            </p>
-            <Button 
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs h-8"
-              onClick={() => window.location.href = "/register"}
-            >
-              Crear Cuenta Gratis
-            </Button>
+        {/* Premium Features Notice */}
+        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <div className="bg-blue-600 text-white rounded-full p-2">
+                  <Package className="w-4 h-4" />
+                </div>
+              </div>
+              <h3 className="font-semibold text-sm text-blue-900 mb-2">
+                Funcionalidades Premium
+              </h3>
+              <div className="text-xs text-blue-700 text-left space-y-1 mb-3">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span>Crear actividades personalizadas</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span>Generar presupuestos detallados</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span>Exportar APU en PDF</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span>Gestión completa de proyectos</span>
+                </div>
+              </div>
+              <p className="text-xs text-blue-600 mb-3">
+                Regístrate gratis para acceder a todas las herramientas profesionales
+              </p>
+              <Button 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
+                onClick={() => window.location.href = "/register"}
+              >
+                Crear Cuenta Gratis
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Registration Benefits */}
+        <Card className="bg-gradient-to-r from-emerald-50 to-emerald-100 border-emerald-200">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <h3 className="font-semibold text-sm text-emerald-900 mb-2">
+                ¿Por qué registrarse en MICAA?
+              </h3>
+              <div className="grid grid-cols-2 gap-3 text-xs text-emerald-700">
+                <div className="text-center">
+                  <Building2 className="w-5 h-5 mx-auto mb-1 text-emerald-600" />
+                  <span className="block">Proyectos Ilimitados</span>
+                </div>
+                <div className="text-center">
+                  <Package className="w-5 h-5 mx-auto mb-1 text-emerald-600" />
+                  <span className="block">Actividades Custom</span>
+                </div>
+                <div className="text-center">
+                  <TrendingUp className="w-5 h-5 mx-auto mb-1 text-emerald-600" />
+                  <span className="block">Análisis APU</span>
+                </div>
+                <div className="text-center">
+                  <Store className="w-5 h-5 mx-auto mb-1 text-emerald-600" />
+                  <span className="block">Red Proveedores</span>
+                </div>
+              </div>
+              <div className="mt-3 pt-2 border-t border-emerald-200">
+                <p className="text-xs text-emerald-600">
+                  ✓ 100% Gratis • ✓ Sin límites • ✓ Soporte técnico
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
