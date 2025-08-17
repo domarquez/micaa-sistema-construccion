@@ -849,6 +849,98 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Get specific budget with items endpoint  
+  router.get('/budgets/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const budgetId = parseInt(req.params.id);
+      console.log(`Fetching budget ${budgetId} for user ${req.user.id}`);
+      
+      // Obtener el presupuesto con proyecto
+      const budgetQuery = await db.select()
+        .from(budgets)
+        .innerJoin(projects, eq(budgets.projectId, projects.id))
+        .where(and(eq(budgets.id, budgetId), eq(projects.userId, req.user.id)))
+        .limit(1);
+      
+      if (budgetQuery.length === 0) {
+        return res.status(404).json({ error: 'Budget not found' });
+      }
+      
+      const budgetRow = budgetQuery[0];
+      
+      // Obtener los elementos del presupuesto con actividades
+      const budgetItemsQuery = await db.select({
+        id: budgetItems.id,
+        budgetId: budgetItems.budgetId,
+        activityId: budgetItems.activityId,
+        phaseId: budgetItems.phaseId,
+        quantity: budgetItems.quantity,
+        unitPrice: budgetItems.unitPrice,
+        subtotal: budgetItems.subtotal,
+        activityName: activities.name,
+        activityUnit: activities.unit,
+        phaseName: constructionPhases.name
+      })
+        .from(budgetItems)
+        .innerJoin(activities, eq(budgetItems.activityId, activities.id))
+        .leftJoin(constructionPhases, eq(budgetItems.phaseId, constructionPhases.id))
+        .where(eq(budgetItems.budgetId, budgetId))
+        .orderBy(budgetItems.id);
+      
+      // Formatear respuesta
+      const budgetWithItems = {
+        id: budgetRow.budgets.id,
+        projectId: budgetRow.budgets.projectId,
+        phaseId: budgetRow.budgets.phaseId,
+        total: budgetRow.budgets.total,
+        status: budgetRow.budgets.status,
+        createdAt: budgetRow.budgets.createdAt,
+        updatedAt: budgetRow.budgets.updatedAt,
+        project: {
+          id: budgetRow.projects.id,
+          name: budgetRow.projects.name,
+          client: budgetRow.projects.client,
+          location: budgetRow.projects.location,
+          city: budgetRow.projects.city,
+          country: budgetRow.projects.country,
+          startDate: budgetRow.projects.startDate,
+          userId: budgetRow.projects.userId,
+          status: budgetRow.projects.status,
+          equipmentPercentage: budgetRow.projects.equipmentPercentage,
+          administrativePercentage: budgetRow.projects.administrativePercentage,
+          utilityPercentage: budgetRow.projects.utilityPercentage,
+          taxPercentage: budgetRow.projects.taxPercentage,
+          socialChargesPercentage: budgetRow.projects.socialChargesPercentage,
+          createdAt: budgetRow.projects.createdAt,
+          updatedAt: budgetRow.projects.updatedAt
+        },
+        phase: null,
+        items: budgetItemsQuery.map(item => ({
+          id: item.id,
+          budgetId: item.budgetId,
+          activityId: item.activityId,
+          phaseId: item.phaseId,
+          quantity: parseFloat(item.quantity),
+          unitPrice: parseFloat(item.unitPrice),
+          subtotal: parseFloat(item.subtotal),
+          activity: {
+            id: item.activityId,
+            name: item.activityName,
+            unit: item.activityUnit,
+            phase: item.phaseName ? { name: item.phaseName } : null
+          }
+        }))
+      };
+      
+      console.log(`Found budget ${budgetId} with ${budgetWithItems.items.length} items`);
+      res.json(budgetWithItems);
+      
+    } catch (error) {
+      console.error('Error fetching budget:', error);
+      res.status(500).json({ error: 'Failed to fetch budget' });
+    }
+  });
+
   // Budget creation endpoint
   router.post('/budgets', requireAuth, async (req: AuthRequest, res: Response) => {
     try {

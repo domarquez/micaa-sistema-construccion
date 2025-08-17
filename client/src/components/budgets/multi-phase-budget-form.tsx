@@ -133,12 +133,12 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   const allActivities = activitiesResponse?.activities || [];
 
   // Cargar elementos del presupuesto si estamos editando
-  const { data: budgetItems } = useQuery({
-    queryKey: ["/api/budget-items", budget?.id],
+  const { data: budgetData } = useQuery({
+    queryKey: ["/api/budgets", budget?.id],
     queryFn: async () => {
-      if (!budget?.id) return [];
-      const response = await fetch(`/api/budget-items?budgetId=${budget.id}`);
-      if (!response.ok) throw new Error('Failed to fetch budget items');
+      if (!budget?.id) return null;
+      const response = await fetch(`/api/budgets/${budget.id}`);
+      if (!response.ok) throw new Error('Failed to fetch budget data');
       return response.json();
     },
     enabled: !!budget?.id,
@@ -146,13 +146,13 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
   // Cargar datos existentes al editar
   useEffect(() => {
-    if (budget && budgetItems && allActivities && constructionPhases) {
-      setCurrentProject(budget.project);
+    if (budget && budgetData && allActivities && constructionPhases) {
+      setCurrentProject(budgetData.project);
       
       // Organizar elementos por fases
       const phaseGroups: Record<number, BudgetItemData[]> = {};
       
-      budgetItems.forEach((item: any) => {
+      budgetData.items.forEach((item: any) => {
         if (!item.phaseId) return;
         
         if (!phaseGroups[item.phaseId]) {
@@ -187,7 +187,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       setPhases(loadedPhases);
       setSelectedPhases(loadedPhases.map(p => p.phaseId));
     }
-  }, [budget, budgetItems, allActivities, constructionPhases]);
+  }, [budget, budgetData, allActivities, constructionPhases]);
 
   // Crear proyecto
   const createProjectMutation = useMutation({
