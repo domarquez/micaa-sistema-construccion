@@ -164,11 +164,13 @@ export default function MobileHeader() {
               <h3 className="text-lg font-semibold text-gray-900">Soporte</h3>
               
               <div className="space-y-3">
-                <ContactForm 
-                  triggerText="Contacto"
-                  triggerVariant="ghost"
-                  className="w-full flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors justify-start"
-                />
+                <button className="w-full flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors justify-start">
+                  <Mail className="w-5 h-5 mr-3 text-orange-600" />
+                  <div className="text-left">
+                    <div className="font-medium">Contacto</div>
+                    <div className="text-sm text-gray-500">Enviar mensaje</div>
+                  </div>
+                </button>
 
                 <div className="flex items-center p-3 bg-gray-50 rounded-lg">
                   <Phone className="w-5 h-5 mr-3 text-orange-600" />

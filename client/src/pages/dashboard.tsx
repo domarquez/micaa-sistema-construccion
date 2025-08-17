@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import PublicView from "./public-view";
-import MobilePublicView from "./mobile-public-view";
+import MobileSimple from "./mobile-simple";
 import { 
   Package, 
   Calculator, 
@@ -56,7 +56,7 @@ export default function Dashboard() {
     return (
       <>
         <div className="md:hidden">
-          <MobilePublicView />
+          <MobileSimple />
         </div>
         <div className="hidden md:block">
           <PublicView />

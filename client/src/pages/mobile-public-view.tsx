@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Package, Store, TrendingUp, Users, BarChart3, Search, Filter } from "lucide-react";
+import { Package, Store, Search } from "lucide-react";
 import MobileHeader from "@/components/layout/mobile-header";
 import { AdCarousel } from "@/components/advertising/ad-carousel";
 import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
@@ -83,13 +83,19 @@ export default function MobilePublicView() {
         </div>
 
         {/* Advertisement Carousel */}
-        <div className="px-4 mb-6">
-          <AdCarousel />
+        <div className="px-4 mb-4">
+          <div className="bg-gray-100 rounded-lg p-4 text-center text-sm text-gray-600">
+            Espacio publicitario disponible
+          </div>
         </div>
 
-        {/* Construction News Ticker */}
-        <div className="mb-6">
-          <ConstructionNewsTicker />
+        {/* Construction News */}
+        <div className="mb-4 px-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-sm text-blue-800">
+              📢 Últimas noticias del sector construcción en Bolivia
+            </p>
+          </div>
         </div>
 
         {/* Main Content Tabs */}
