@@ -132,15 +132,9 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   
   const allActivities = activitiesResponse?.activities || [];
 
-  // Cargar elementos del presupuesto si estamos editando
+  // Cargar elementos del presupuesto si estamos editando  
   const { data: budgetData } = useQuery({
-    queryKey: ["/api/budgets", budget?.id],
-    queryFn: async () => {
-      if (!budget?.id) return null;
-      const response = await fetch(`/api/budgets/${budget.id}`);
-      if (!response.ok) throw new Error('Failed to fetch budget data');
-      return response.json();
-    },
+    queryKey: [`/api/budgets/${budget?.id}`],
     enabled: !!budget?.id,
   });
 
