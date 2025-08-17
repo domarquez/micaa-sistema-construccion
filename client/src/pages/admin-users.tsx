@@ -42,10 +42,10 @@ export default function AdminUsers() {
 
   // Update user mutation
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...data }: any) => apiRequest(`/api/admin/users/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    }),
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await apiRequest("PUT", `/api/admin/users/${id}`, data);
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       setEditingUser(null);
@@ -65,9 +65,10 @@ export default function AdminUsers() {
 
   // Delete user mutation
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/admin/users/${id}`, {
-      method: "DELETE",
-    }),
+    mutationFn: async (id: number) => {
+      const response = await apiRequest("DELETE", `/api/admin/users/${id}`);
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       toast({

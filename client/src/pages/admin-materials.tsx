@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Search, DollarSign, Save, RefreshCw } from "lucide-react";
+import { Search, DollarSign, Save, RefreshCw, Edit } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Table,
@@ -299,8 +299,9 @@ export default function AdminMaterials() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditPrice(material)}
+                        className="hover:bg-blue-50 hover:border-blue-300"
                       >
-                        <DollarSign className="h-4 w-4 mr-2" />
+                        <Edit className="h-4 w-4 mr-2" />
                         Editar Precio
                       </Button>
                     </TableCell>
