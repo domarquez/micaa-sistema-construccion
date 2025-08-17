@@ -1176,21 +1176,24 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  router.get('/catalog/labor', async (req: Request, res: Response) => {
+  // Direct endpoints for tools and labor categories
+  router.get('/tools', async (req: Request, res: Response) => {
     try {
-      // For now return empty array - labor categories need to be implemented
-      res.json([]);
+      const toolsData = await db.select().from(tools).orderBy(tools.name);
+      res.json(toolsData);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch labor catalog' });
+      console.error('Tools fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch tools' });
     }
   });
 
-  router.get('/catalog/tools', async (req: Request, res: Response) => {
+  router.get('/labor-categories', async (req: Request, res: Response) => {
     try {
-      // For now return empty array - tools need to be implemented
-      res.json([]);
+      const laborData = await db.select().from(laborCategories).orderBy(laborCategories.name);
+      res.json(laborData);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch tools catalog' });
+      console.error('Labor categories fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch labor categories' });
     }
   });
 

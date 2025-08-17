@@ -140,7 +140,8 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
   // Cargar datos existentes al editar
   useEffect(() => {
-    if (budget && budgetData && allActivities && constructionPhases) {
+    if (budget && budgetData && allActivities && constructionPhases && 
+        typeof budgetData === 'object' && 'project' in budgetData && 'items' in budgetData) {
       setCurrentProject(budgetData.project);
       
       // Organizar elementos por fases
