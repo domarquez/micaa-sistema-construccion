@@ -68,7 +68,8 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
     materialId: "",
     laborId: "",
     toolId: "",
-    isNewMaterial: false
+    isNewMaterial: false,
+    selectedCategoryId: ""
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -82,13 +83,27 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
     }
   });
 
-  // Load materials catalog for selection
-  const { data: materials = [] } = useQuery({
-    queryKey: ['/api/catalog/materials'],
+  // Load material categories for selection
+  const { data: materialCategories = [] } = useQuery({
+    queryKey: ['/api/material-categories'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/catalog/materials');
+      const response = await apiRequest('GET', '/api/material-categories');
       return response.json();
     }
+  });
+
+  // Load materials filtered by category
+  const { data: materials = [] } = useQuery({
+    queryKey: ['/api/materials', newComposition.selectedCategoryId],
+    queryFn: async () => {
+      let url = '/api/materials';
+      if (newComposition.selectedCategoryId) {
+        url += `?categoryId=${newComposition.selectedCategoryId}`;
+      }
+      const response = await apiRequest('GET', url);
+      return response.json();
+    },
+    enabled: !newComposition.isNewMaterial // Only load when not creating new material
   });
 
   // Load labor categories for selection
@@ -151,7 +166,8 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
       materialId: "",
       laborId: "",
       toolId: "",
-      isNewMaterial: false
+      isNewMaterial: false,
+      selectedCategoryId: ""
     });
   };
 
@@ -194,7 +210,7 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
             name: newComposition.description,
             unit: newComposition.unit,
             price: unitCost,
-            categoryId: 1 // Default category
+            categoryId: parseInt(newComposition.selectedCategoryId) || 1 // Use selected category
           });
           const newMaterial = await materialResponse.json();
           compositionData.materialId = newMaterial.id;
@@ -375,41 +391,96 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
                     type="button" 
                     variant="outline" 
                     size="sm"
-                    onClick={() => setNewComposition(prev => ({...prev, isNewMaterial: !prev.isNewMaterial, materialId: "", description: "", unit: "", unitCost: ""}))}
+                    onClick={() => setNewComposition(prev => ({...prev, isNewMaterial: !prev.isNewMaterial, materialId: "", selectedCategoryId: "", description: "", unit: "", unitCost: ""}))}
                   >
                     {newComposition.isNewMaterial ? "Seleccionar Existente" : "Crear Nuevo"}
                   </Button>
                 </div>
                 
                 {!newComposition.isNewMaterial ? (
-                  <Select 
-                    value={newComposition.materialId}
-                    onValueChange={(value) => {
-                      const material = materials.find((m: any) => m.id.toString() === value);
-                      if (material) {
-                        setNewComposition(prev => ({
-                          ...prev, 
-                          materialId: value,
-                          description: material.name,
-                          unit: material.unit,
-                          unitCost: material.price.toString()
-                        }));
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar material..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {materials.map((material: any) => (
-                        <SelectItem key={material.id} value={material.id.toString()}>
-                          {material.name} - {material.unit} - Bs. {material.price}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-3">
+                    {/* Selector de Categoría */}
+                    <div>
+                      <Label className="text-sm">Categoría de Material *</Label>
+                      <Select 
+                        value={newComposition.selectedCategoryId}
+                        onValueChange={(value) => {
+                          setNewComposition(prev => ({
+                            ...prev, 
+                            selectedCategoryId: value,
+                            materialId: "", // Reset material selection
+                            description: "",
+                            unit: "",
+                            unitCost: ""
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar categoría..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {materialCategories.map((category: any) => (
+                            <SelectItem key={category.id} value={category.id.toString()}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Selector de Material - Solo mostrar si hay categoría seleccionada */}
+                    {newComposition.selectedCategoryId && (
+                      <div>
+                        <Label className="text-sm">Material *</Label>
+                        <Select 
+                          value={newComposition.materialId}
+                          onValueChange={(value) => {
+                            const material = materials.find((m: any) => m.id.toString() === value);
+                            if (material) {
+                              setNewComposition(prev => ({
+                                ...prev, 
+                                materialId: value,
+                                description: material.name,
+                                unit: material.unit,
+                                unitCost: material.price.toString()
+                              }));
+                            }
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar material..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {materials.map((material: any) => (
+                              <SelectItem key={material.id} value={material.id.toString()}>
+                                {material.name} - {material.unit} - Bs. {material.price}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <div className="space-y-3">
+                    <div>
+                      <Label className="text-sm">Categoría del Material *</Label>
+                      <Select 
+                        value={newComposition.selectedCategoryId}
+                        onValueChange={(value) => setNewComposition(prev => ({...prev, selectedCategoryId: value}))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar categoría..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {materialCategories.map((category: any) => (
+                            <SelectItem key={category.id} value={category.id.toString()}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div>
                       <Label className="text-sm">Nombre del Material *</Label>
                       <Input
