@@ -98,7 +98,7 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
     queryFn: async () => {
       let url = '/api/materials';
       if (newComposition.selectedCategoryId) {
-        url += `?categoryId=${newComposition.selectedCategoryId}`;
+        url += `?category=${newComposition.selectedCategoryId}`;
       }
       const response = await apiRequest('GET', url);
       return response.json();
