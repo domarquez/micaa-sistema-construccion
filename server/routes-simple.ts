@@ -1228,6 +1228,47 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  router.delete('/projects/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      
+      if (!projectId) {
+        return res.status(400).json({ message: "ID de proyecto inválido" });
+      }
+
+      // Verificar que el proyecto pertenece al usuario
+      const project = await db.select()
+        .from(projects)
+        .where(and(eq(projects.id, projectId), eq(projects.userId, req.user.id)))
+        .limit(1);
+      
+      if (project.length === 0) {
+        return res.status(404).json({ message: "Proyecto no encontrado" });
+      }
+
+      // Eliminar elementos de presupuestos asociados
+      const projectBudgets = await db
+        .select({ id: budgets.id })
+        .from(budgets)
+        .where(eq(budgets.projectId, projectId));
+
+      for (const budget of projectBudgets) {
+        await db.delete(budgetItems).where(eq(budgetItems.budgetId, budget.id));
+      }
+      
+      // Eliminar presupuestos del proyecto
+      await db.delete(budgets).where(eq(budgets.projectId, projectId));
+      
+      // Eliminar el proyecto
+      await db.delete(projects).where(eq(projects.id, projectId));
+
+      res.json({ message: "Proyecto eliminado exitosamente" });
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      res.status(500).json({ message: "Error al eliminar el proyecto" });
+    }
+  });
+
   // Catalogs for compositions
   router.get('/catalog/materials', async (req: Request, res: Response) => {
     try {
