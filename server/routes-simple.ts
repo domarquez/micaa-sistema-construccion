@@ -144,6 +144,19 @@ export async function registerRoutes(app: any) {
     try {
       const { search, phase, limit = '100', offset = '0' } = req.query;
       
+      // Get user ID from auth token if present
+      let userId = null;
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+          const token = authHeader.substring(7);
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          userId = decoded.userId;
+        } catch (error) {
+          // Token invalid, continue without user context
+        }
+      }
+      
       let activitiesData;
       if (search && typeof search === 'string') {
         activitiesData = await db.select().from(activities)
@@ -164,20 +177,57 @@ export async function registerRoutes(app: any) {
       // Get all phases
       const phases = await db.select().from(constructionPhases);
       
-      // Combine activities with phase information
-      const activitiesWithPhases = activitiesData.map(activity => {
+      // Get user duplicated activities if user is authenticated
+      let userDuplicatedActivities: any[] = [];
+      if (userId) {
+        userDuplicatedActivities = await db.select().from(userActivities)
+          .where(eq(userActivities.userId, userId));
+        console.log(`🔍 Found ${userDuplicatedActivities.length} user duplicated activities for user ${userId}`);
+      }
+      
+      // Combine activities with phase information and user data
+      const activitiesWithPhases = [];
+      
+      // First, add all original activities
+      for (const activity of activitiesData) {
         const phase = phases.find(p => p.id === activity.phaseId);
-        return {
+        const hasCustomActivity = userDuplicatedActivities.some(ua => ua.originalActivityId === activity.id);
+        
+        activitiesWithPhases.push({
           ...activity,
-          phase: phase || { id: 0, name: 'Sin Fase', description: '' }
-        };
-      });
+          phase: phase || { id: 0, name: 'Sin Fase', description: '' },
+          hasCustomActivity,
+          isOriginal: true
+        });
+        
+        // If user has duplicated this activity, add the custom version right after
+        const userActivity = userDuplicatedActivities.find(ua => ua.originalActivityId === activity.id);
+        if (userActivity) {
+          activitiesWithPhases.push({
+            id: userActivity.id + 10000, // Custom activity ID
+            phaseId: userActivity.phaseId,
+            name: userActivity.customActivityName,
+            unit: userActivity.unit,
+            description: userActivity.description,
+            unitPrice: activity.unitPrice, // Keep original unit price
+            createdBy: null,
+            originalActivityId: userActivity.originalActivityId,
+            isSystemDefault: false,
+            isPublic: false,
+            createdAt: userActivity.createdAt,
+            updatedAt: userActivity.updatedAt,
+            phase: phase || { id: 0, name: 'Sin Fase', description: '' },
+            hasCustomActivity: false,
+            isOriginal: false // This is a custom activity
+          });
+        }
+      }
       
       res.json({
         activities: activitiesWithPhases,
-        totalCount: activitiesData.length,
+        totalCount: activitiesWithPhases.length,
         currentPage: Math.floor(parseInt(offset as string) / parseInt(limit as string)) + 1,
-        totalPages: Math.ceil(activitiesData.length / parseInt(limit as string)),
+        totalPages: Math.ceil(activitiesWithPhases.length / parseInt(limit as string)),
         limit: parseInt(limit as string)
       });
     } catch (error) {
