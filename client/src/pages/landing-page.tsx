@@ -169,7 +169,7 @@ export default function LandingPage() {
       </div>
 
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+      <div className="bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 text-white">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-6 md:py-12">
           {/* Navigation */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
@@ -207,15 +207,15 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="space-y-6">
               <div className="space-y-4">
-                <Badge className="bg-blue-500/20 text-blue-100 border-blue-400">
+                <Badge className="bg-orange-500/20 text-orange-100 border-orange-400">
                   <Sparkles className="w-3 h-3 mr-1" />
                   Plataforma Líder en Bolivia
                 </Badge>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
                   Tu Centro de Construcción
-                  <span className="block text-blue-200">Digital en Bolivia</span>
+                  <span className="block text-orange-200">Digital en Bolivia</span>
                 </h1>
-                <p className="text-lg text-blue-100 leading-relaxed">
+                <p className="text-lg text-orange-100 leading-relaxed">
                   Conectamos arquitectos, constructores y proveedores. Crea presupuestos precisos, 
                   encuentra materiales y explora el marketplace más completo del sector construcción.
                 </p>
@@ -225,7 +225,7 @@ export default function LandingPage() {
                 <Button 
                   size="lg"
                   onClick={() => window.location.href = "/register"}
-                  className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8"
+                  className="bg-white text-orange-600 hover:bg-orange-50 font-semibold px-8"
                 >
                   Comenzar Gratis
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -240,7 +240,7 @@ export default function LandingPage() {
                       block: 'start' 
                     });
                   }}
-                  className="border-white text-white hover:bg-white hover:text-blue-600 px-8"
+                  className="border-2 border-white bg-white/10 text-white hover:bg-white hover:text-orange-600 px-8 font-semibold backdrop-blur-sm"
                 >
                   Ver Características
                 </Button>
@@ -249,16 +249,16 @@ export default function LandingPage() {
               {/* Features Preview */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-blue-200" />
-                  <span className="text-sm text-blue-100">Presupuestos APU</span>
+                  <CheckCircle className="w-5 h-5 text-orange-200" />
+                  <span className="text-sm text-orange-100">Presupuestos APU</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-blue-200" />
-                  <span className="text-sm text-blue-100">2,000+ Materiales</span>
+                  <CheckCircle className="w-5 h-5 text-orange-200" />
+                  <span className="text-sm text-orange-100">2,000+ Materiales</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-blue-200" />
-                  <span className="text-sm text-blue-100">Red de Proveedores</span>
+                  <CheckCircle className="w-5 h-5 text-orange-200" />
+                  <span className="text-sm text-orange-100">Red de Proveedores</span>
                 </div>
               </div>
             </div>
@@ -267,49 +267,49 @@ export default function LandingPage() {
             <div className="grid grid-cols-2 gap-4">
               <Card className="bg-white/10 border-white/20 text-white">
                 <CardContent className="p-4 text-center">
-                  <Users className="w-8 h-8 mx-auto mb-2 text-blue-200" />
+                  <Users className="w-8 h-8 mx-auto mb-2 text-orange-200" />
                   {statsLoading ? (
                     <Skeleton className="h-8 w-16 mx-auto mb-2 bg-white/20" />
                   ) : (
                     <p className="text-2xl font-bold">{formatNumber(stats?.totalUsers || 0)}</p>
                   )}
-                  <p className="text-sm text-blue-100">Usuarios Activos</p>
+                  <p className="text-sm text-orange-100">Usuarios Activos</p>
                 </CardContent>
               </Card>
               
               <Card className="bg-white/10 border-white/20 text-white">
                 <CardContent className="p-4 text-center">
-                  <Calculator className="w-8 h-8 mx-auto mb-2 text-blue-200" />
+                  <Calculator className="w-8 h-8 mx-auto mb-2 text-orange-200" />
                   {statsLoading ? (
                     <Skeleton className="h-8 w-16 mx-auto mb-2 bg-white/20" />
                   ) : (
                     <p className="text-2xl font-bold">{formatNumber(stats?.activeBudgets || 0)}</p>
                   )}
-                  <p className="text-sm text-blue-100">Presupuestos</p>
+                  <p className="text-sm text-orange-100">Presupuestos</p>
                 </CardContent>
               </Card>
 
               <Card className="bg-white/10 border-white/20 text-white">
                 <CardContent className="p-4 text-center">
-                  <Package className="w-8 h-8 mx-auto mb-2 text-blue-200" />
+                  <Package className="w-8 h-8 mx-auto mb-2 text-orange-200" />
                   {statsLoading ? (
                     <Skeleton className="h-8 w-16 mx-auto mb-2 bg-white/20" />
                   ) : (
                     <p className="text-2xl font-bold">{formatNumber(stats?.totalMaterials || 0)}</p>
                   )}
-                  <p className="text-sm text-blue-100">Materiales</p>
+                  <p className="text-sm text-orange-100">Materiales</p>
                 </CardContent>
               </Card>
 
               <Card className="bg-white/10 border-white/20 text-white">
                 <CardContent className="p-4 text-center">
-                  <Truck className="w-8 h-8 mx-auto mb-2 text-blue-200" />
+                  <Truck className="w-8 h-8 mx-auto mb-2 text-orange-200" />
                   {statsLoading ? (
                     <Skeleton className="h-8 w-16 mx-auto mb-2 bg-white/20" />
                   ) : (
                     <p className="text-2xl font-bold">{formatNumber(stats?.totalSuppliers || 0)}</p>
                   )}
-                  <p className="text-sm text-blue-100">Proveedores</p>
+                  <p className="text-sm text-orange-100">Proveedores</p>
                 </CardContent>
               </Card>
             </div>
@@ -453,7 +453,7 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader className="text-center">
-                  <Calculator className="w-12 h-12 mx-auto text-blue-600 mb-4" />
+                  <Calculator className="w-12 h-12 mx-auto text-orange-600 mb-4" />
                   <CardTitle className="text-lg">Presupuestos APU</CardTitle>
                   <CardDescription>
                     Crea presupuestos detallados con análisis de precios unitarios profesionales
@@ -642,7 +642,7 @@ export default function LandingPage() {
                         <h3 className="font-semibold text-sm mb-1 line-clamp-2">{material.name}</h3>
                         <p className="text-xs text-gray-500 mb-2">{material.unit}</p>
                         <div className="flex justify-between items-center">
-                          <span className="font-bold text-blue-600">{formatCurrency(material.price)}</span>
+                          <span className="font-bold text-orange-600">{formatCurrency(material.price)}</span>
                           <Badge variant="secondary" className="text-xs">Público</Badge>
                         </div>
                       </CardContent>
@@ -659,13 +659,13 @@ export default function LandingPage() {
             )}
 
             {/* Registro para ver más */}
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
               <CardContent className="p-6 text-center">
                 <h3 className="text-xl font-bold mb-2">¿Quieres ver más materiales?</h3>
                 <p className="text-gray-600 mb-4">
                   Regístrate gratis para acceder al catálogo completo de más de 2,000 materiales
                 </p>
-                <Button onClick={() => window.location.href = "/register"} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={() => window.location.href = "/register"} className="bg-orange-600 hover:bg-orange-700">
                   Registrarse Gratis
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -764,12 +764,12 @@ export default function LandingPage() {
         </div>
 
         {/* Call to Action Final */}
-        <Card className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <Card className="bg-gradient-to-r from-orange-600 to-red-600 text-white">
           <CardContent className="p-8 md:p-12 text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
               ¿Listo para Digitalizar tu Construcción?
             </h2>
-            <p className="text-blue-100 text-lg mb-6 max-w-2xl mx-auto">
+            <p className="text-orange-100 text-lg mb-6 max-w-2xl mx-auto">
               Únete a miles de profesionales que ya confían en MICAA para sus proyectos. 
               Registrarte es completamente gratis y toma menos de 2 minutos.
             </p>
@@ -777,7 +777,7 @@ export default function LandingPage() {
               <Button 
                 size="lg" 
                 onClick={() => window.location.href = "/register"}
-                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8"
+                className="bg-white text-orange-600 hover:bg-orange-50 font-semibold px-8"
               >
                 Registrarse Gratis
                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -786,7 +786,7 @@ export default function LandingPage() {
                 size="lg" 
                 variant="outline"
                 onClick={() => window.location.href = "/login"}
-                className="border-white text-white hover:bg-white hover:text-blue-600 px-8"
+                className="border-white text-white hover:bg-white hover:text-orange-600 px-8"
               >
                 Ya tengo cuenta
               </Button>
