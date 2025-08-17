@@ -111,7 +111,7 @@ export default function Budgets() {
       console.log('🔍 All localStorage content:', JSON.stringify(localStorage));
 
       // Intentar obtener datos completos del presupuesto con autenticación
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token'); // Corregido: usar 'auth_token' en lugar de 'token'
       let budgetDetails = null;
       
       console.log('🔍 Token disponible:', !!token);
