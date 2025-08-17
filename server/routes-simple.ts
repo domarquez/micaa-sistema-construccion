@@ -236,7 +236,7 @@ export async function registerRoutes(app: any) {
             name: customActivity.name,
             unit: customActivity.unit,
             description: customActivity.description,
-            unitPrice: "0.00", // Custom activities start with no price
+            unitPrice: await calculateCustomActivityPrice(customActivity.id) || "0.00", // Calculate price from compositions
             createdBy: userId,
             originalActivityId: null,
             isSystemDefault: false,
@@ -1041,7 +1041,7 @@ export async function registerRoutes(app: any) {
       
       const { budgetId, activityId, phaseId, quantity, unitPrice, subtotal } = req.body;
       
-      if (!budgetId || !activityId || !quantity || !unitPrice) {
+      if (!budgetId || !activityId || quantity === undefined || quantity === null || unitPrice === undefined || unitPrice === null) {
         return res.status(400).json({ message: "Todos los campos son requeridos" });
       }
       
@@ -1244,4 +1244,52 @@ export async function registerRoutes(app: any) {
   });
 
   app.use('/api', router);
+}
+
+// Helper function to calculate custom activity price from compositions
+async function calculateCustomActivityPrice(customActivityId: number): Promise<string> {
+  try {
+    // Get compositions for the custom activity
+    const compositions = await db.select()
+      .from(customActivityCompositions)
+      .where(eq(customActivityCompositions.customActivityId, customActivityId));
+
+    if (compositions.length === 0) {
+      return "0.00";
+    }
+
+    let totalCost = 0;
+    
+    // Get all materials for price lookup
+    const allMaterials = await db.select().from(materials);
+    const materialPriceMap = new Map(allMaterials.map(m => [m.id, parseFloat(m.price || "0")]));
+
+    // Get all tools for price lookup
+    const allTools = await db.select().from(tools);
+    const toolPriceMap = new Map(allTools.map(t => [t.id, parseFloat(t.unitPrice || "0")]));
+
+    // Get all labor categories for price lookup
+    const allLabor = await db.select().from(laborCategories);
+    const laborPriceMap = new Map(allLabor.map(l => [l.id, parseFloat(l.hourlyRate || "0")]));
+
+    for (const comp of compositions) {
+      const quantity = parseFloat(comp.quantity || "0");
+      let unitPrice = 0;
+
+      if (comp.type === 'material' && comp.materialId) {
+        unitPrice = materialPriceMap.get(comp.materialId) || 0;
+      } else if (comp.type === 'tool' && comp.toolId) {
+        unitPrice = toolPriceMap.get(comp.toolId) || 0;
+      } else if (comp.type === 'labor' && comp.laborId) {
+        unitPrice = laborPriceMap.get(comp.laborId) || 0;
+      }
+
+      totalCost += quantity * unitPrice;
+    }
+
+    return totalCost.toFixed(2);
+  } catch (error) {
+    console.error('Error calculating custom activity price:', error);
+    return "0.00";
+  }
 }
