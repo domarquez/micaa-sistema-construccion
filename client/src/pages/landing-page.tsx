@@ -233,7 +233,13 @@ export default function LandingPage() {
                 <Button 
                   size="lg"
                   variant="outline"
-                  onClick={() => setActiveTab("features")}
+                  onClick={() => {
+                    setActiveTab("features");
+                    document.getElementById("features-section")?.scrollIntoView({ 
+                      behavior: 'smooth', 
+                      block: 'start' 
+                    });
+                  }}
                   className="border-white text-white hover:bg-white hover:text-blue-600 px-8"
                 >
                   Ver Características
@@ -424,24 +430,25 @@ export default function LandingPage() {
         </div>
 
         {/* Tabs de Contenido */}
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Explora Nuestro Ecosistema
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Descubre materiales, proveedores y herramientas para tu próximo proyecto
-              </p>
+        <div id="features-section">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Explora Nuestro Ecosistema
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Descubre materiales, proveedores y herramientas para tu próximo proyecto
+                </p>
+              </div>
+              <TabsList className="grid w-full lg:w-auto grid-cols-3 lg:grid-cols-3 gap-1">
+                <TabsTrigger value="features" className="text-sm">Características</TabsTrigger>
+                <TabsTrigger value="materials" className="text-sm">Materiales</TabsTrigger>
+                <TabsTrigger value="suppliers" className="text-sm">Proveedores</TabsTrigger>
+              </TabsList>
             </div>
-            <TabsList className="grid w-full lg:w-auto grid-cols-3 lg:grid-cols-3 gap-1">
-              <TabsTrigger value="features" className="text-sm">Características</TabsTrigger>
-              <TabsTrigger value="materials" className="text-sm">Materiales</TabsTrigger>
-              <TabsTrigger value="suppliers" className="text-sm">Proveedores</TabsTrigger>
-            </TabsList>
-          </div>
 
-          <TabsContent value="features" className="space-y-8">
+            <TabsContent value="features" className="space-y-8">
             {/* Características Principales */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="hover:shadow-lg transition-shadow duration-300">
@@ -748,7 +755,8 @@ export default function LandingPage() {
               </div>
             )}
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </div>
 
         {/* Square Ad */}
         <div className="flex justify-center">
