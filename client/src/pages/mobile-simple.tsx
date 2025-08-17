@@ -7,23 +7,33 @@ import { Input } from "@/components/ui/input";
 import { Package, Store, Search, Menu, X, User, UserPlus } from "lucide-react";
 import { MobileAdCarousel } from "@/components/mobile/mobile-ad-carousel";
 import { MobileNewsTicker } from "@/components/mobile/mobile-news-ticker";
+import { MobileLoading } from "@/components/mobile/mobile-loading";
 
 export default function MobileSimple() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("materials");
 
-  // Simple queries
+  // Optimized queries with caching
   const { data: statistics } = useQuery({
     queryKey: ['/api/statistics'],
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: materials } = useQuery({
     queryKey: ['/api/public/materials'],
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: categories } = useQuery({
     queryKey: ['/api/public/material-categories'],
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   // Filter materials safely
@@ -32,6 +42,11 @@ export default function MobileSimple() {
         material.name.toLowerCase().includes(searchTerm.toLowerCase())
       ).slice(0, 10)
     : [];
+
+  // Show loading state if data is still loading
+  if (!statistics && !materials && !categories) {
+    return <MobileLoading />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

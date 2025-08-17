@@ -67,14 +67,23 @@ export default function Dashboard() {
 
   const { data: stats, isLoading: statsLoading } = useQuery<Statistics>({
     queryKey: ["/api/statistics"],
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: growthData, isLoading: growthLoading } = useQuery<GrowthData[]>({
     queryKey: ["/api/growth-data"],
+    staleTime: 10 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: recentBudgets, isLoading: budgetsLoading } = useQuery<BudgetWithProject[]>({
     queryKey: ["/api/budgets"],
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const recentBudgetsDisplay = recentBudgets?.slice(0, 3) || [];

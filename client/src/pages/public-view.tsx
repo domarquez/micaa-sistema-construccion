@@ -72,14 +72,19 @@ export default function PublicView() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showAd, setShowAd] = useState(true);
 
-  // Consultas públicas sin autenticación
+  // Optimized public queries without authentication
   const { data: statistics, isLoading } = useQuery<Statistics>({
     queryKey: ['/api/statistics'],
-    refetchInterval: 30000, // Actualizar cada 30 segundos
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
   
   const { data: materials, isLoading: materialsLoading } = useQuery<Material[]>({
     queryKey: ["/api/public/materials"],
+    staleTime: 10 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: categories, isLoading: categoriesLoading } = useQuery<MaterialCategory[]>({
