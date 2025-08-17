@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { 
   Plus, 
   Edit3, 
@@ -62,7 +64,11 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
     unit: "",
     quantity: "",
     unitCost: "",
-    type: "material"
+    type: "material",
+    materialId: "",
+    laborId: "",
+    toolId: "",
+    isNewMaterial: false
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -81,6 +87,24 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
     queryKey: ['/api/catalog/materials'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/catalog/materials');
+      return response.json();
+    }
+  });
+
+  // Load labor categories for selection
+  const { data: laborCategories = [] } = useQuery({
+    queryKey: ['/api/catalog/labor'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/catalog/labor');
+      return response.json();
+    }
+  });
+
+  // Load tool/equipment categories for selection
+  const { data: toolCategories = [] } = useQuery({
+    queryKey: ['/api/catalog/tools'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/catalog/tools');
       return response.json();
     }
   });
@@ -123,11 +147,15 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
       unit: "",
       quantity: "",
       unitCost: "",
-      type: "material"
+      type: "material",
+      materialId: "",
+      laborId: "",
+      toolId: "",
+      isNewMaterial: false
     });
   };
 
-  const handleAddComposition = () => {
+  const handleAddComposition = async () => {
     if (!newComposition.description || !newComposition.unit || !newComposition.quantity || !newComposition.unitCost) {
       toast({
         title: "Error",
@@ -149,13 +177,47 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
       return;
     }
 
-    addCompositionMutation.mutate({
-      description: newComposition.description,
-      unit: newComposition.unit,
-      quantity,
-      unitCost,
-      type: newComposition.type
-    });
+    try {
+      let compositionData: any = {
+        description: newComposition.description,
+        unit: newComposition.unit,
+        quantity,
+        unitCost,
+        type: newComposition.type
+      };
+
+      // Add specific IDs based on type and handle new materials
+      if (newComposition.type === "material") {
+        if (newComposition.isNewMaterial) {
+          // Create new material first
+          const materialResponse = await apiRequest('POST', '/api/materials', {
+            name: newComposition.description,
+            unit: newComposition.unit,
+            price: unitCost,
+            categoryId: 1 // Default category
+          });
+          const newMaterial = await materialResponse.json();
+          compositionData.materialId = newMaterial.id;
+          
+          // Invalidate materials cache to refresh list
+          queryClient.invalidateQueries({ queryKey: ['/api/catalog/materials'] });
+        } else if (newComposition.materialId) {
+          compositionData.materialId = parseInt(newComposition.materialId);
+        }
+      } else if (newComposition.type === "labor" && newComposition.laborId) {
+        compositionData.laborId = parseInt(newComposition.laborId);
+      } else if (newComposition.type === "equipment" && newComposition.toolId) {
+        compositionData.toolId = parseInt(newComposition.toolId);
+      }
+
+      addCompositionMutation.mutate(compositionData);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error al procesar la composición",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleDeleteComposition = (compositionId: number) => {
@@ -176,9 +238,9 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
     return q * c;
   };
 
-  const materialsTotal = materialsCompositions.reduce((sum, comp) => sum + calculateTotal(comp.quantity, comp.unitCost), 0);
-  const laborTotal = laborCompositions.reduce((sum, comp) => sum + calculateTotal(comp.quantity, comp.unitCost), 0);
-  const equipmentTotal = equipmentCompositions.reduce((sum, comp) => sum + calculateTotal(comp.quantity, comp.unitCost), 0);
+  const materialsTotal = materialsCompositions.reduce((sum: number, comp: Composition) => sum + calculateTotal(comp.quantity, comp.unitCost), 0);
+  const laborTotal = laborCompositions.reduce((sum: number, comp: Composition) => sum + calculateTotal(comp.quantity, comp.unitCost), 0);
+  const equipmentTotal = equipmentCompositions.reduce((sum: number, comp: Composition) => sum + calculateTotal(comp.quantity, comp.unitCost), 0);
   const grandTotal = materialsTotal + laborTotal + equipmentTotal;
 
   if (isLoading) {
@@ -281,41 +343,175 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
 
       {/* Add Composition Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Agregar Nueva Composición</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {/* Tipo de Composición */}
             <div>
-              <label className="text-sm font-medium">Tipo</label>
-              <select 
-                className="w-full mt-1 p-2 border rounded-md"
+              <Label className="text-sm font-medium">Tipo</Label>
+              <Select 
                 value={newComposition.type}
-                onChange={(e) => setNewComposition(prev => ({...prev, type: e.target.value}))}
+                onValueChange={(value) => setNewComposition(prev => ({...prev, type: value, materialId: "", laborId: "", toolId: "", description: "", unit: "", unitCost: ""}))}
               >
-                <option value="material">Material</option>
-                <option value="labor">Mano de Obra</option>
-                <option value="equipment">Equipo</option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar tipo..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="material">Material</SelectItem>
+                  <SelectItem value="labor">Mano de Obra</SelectItem>
+                  <SelectItem value="equipment">Equipo</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
+            {/* Selector de Material */}
+            {newComposition.type === "material" && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-sm font-medium">Material</Label>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setNewComposition(prev => ({...prev, isNewMaterial: !prev.isNewMaterial, materialId: "", description: "", unit: "", unitCost: ""}))}
+                  >
+                    {newComposition.isNewMaterial ? "Seleccionar Existente" : "Crear Nuevo"}
+                  </Button>
+                </div>
+                
+                {!newComposition.isNewMaterial ? (
+                  <Select 
+                    value={newComposition.materialId}
+                    onValueChange={(value) => {
+                      const material = materials.find((m: any) => m.id.toString() === value);
+                      if (material) {
+                        setNewComposition(prev => ({
+                          ...prev, 
+                          materialId: value,
+                          description: material.name,
+                          unit: material.unit,
+                          unitCost: material.price.toString()
+                        }));
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar material..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {materials.map((material: any) => (
+                        <SelectItem key={material.id} value={material.id.toString()}>
+                          {material.name} - {material.unit} - Bs. {material.price}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-sm">Nombre del Material *</Label>
+                      <Input
+                        value={newComposition.description}
+                        onChange={(e) => setNewComposition(prev => ({...prev, description: e.target.value}))}
+                        placeholder="Ej: Cemento Portland Especial"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-sm">Unidad *</Label>
+                        <Input
+                          value={newComposition.unit}
+                          onChange={(e) => setNewComposition(prev => ({...prev, unit: e.target.value}))}
+                          placeholder="Ej: Bolsa, kg"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm">Precio (Bs.) *</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={newComposition.unitCost}
+                          onChange={(e) => setNewComposition(prev => ({...prev, unitCost: e.target.value}))}
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Selector de Mano de Obra */}
+            {newComposition.type === "labor" && (
+              <div>
+                <Label className="text-sm font-medium">Mano de Obra</Label>
+                <Select 
+                  value={newComposition.laborId}
+                  onValueChange={(value) => {
+                    const labor = laborCategories.find((l: any) => l.id.toString() === value);
+                    if (labor) {
+                      setNewComposition(prev => ({
+                        ...prev, 
+                        laborId: value,
+                        description: labor.name,
+                        unit: labor.unit,
+                        unitCost: labor.cost.toString()
+                      }));
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar mano de obra..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {laborCategories.map((labor: any) => (
+                      <SelectItem key={labor.id} value={labor.id.toString()}>
+                        {labor.name} - {labor.unit} - Bs. {labor.cost}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Selector de Equipo */}
+            {newComposition.type === "equipment" && (
+              <div>
+                <Label className="text-sm font-medium">Equipo</Label>
+                <Select 
+                  value={newComposition.toolId}
+                  onValueChange={(value) => {
+                    const tool = toolCategories.find((t: any) => t.id.toString() === value);
+                    if (tool) {
+                      setNewComposition(prev => ({
+                        ...prev, 
+                        toolId: value,
+                        description: tool.name,
+                        unit: tool.unit,
+                        unitCost: tool.cost.toString()
+                      }));
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar equipo..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {toolCategories.map((tool: any) => (
+                      <SelectItem key={tool.id} value={tool.id.toString()}>
+                        {tool.name} - {tool.unit} - Bs. {tool.cost}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Cantidad */}
             <div>
-              <label className="text-sm font-medium">Descripción *</label>
-              <Input
-                value={newComposition.description}
-                onChange={(e) => setNewComposition(prev => ({...prev, description: e.target.value}))}
-                placeholder="Ej: Cemento Portland"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Unidad *</label>
-              <Input
-                value={newComposition.unit}
-                onChange={(e) => setNewComposition(prev => ({...prev, unit: e.target.value}))}
-                placeholder="Ej: Bolsa, m2, kg"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Cantidad *</label>
+              <Label className="text-sm font-medium">Cantidad *</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -324,23 +520,25 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
                 placeholder="0.00"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium">Precio Unitario (Bs.) *</label>
-              <Input
-                type="number"
-                step="0.01"
-                value={newComposition.unitCost}
-                onChange={(e) => setNewComposition(prev => ({...prev, unitCost: e.target.value}))}
-                placeholder="0.00"
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
+
+            {/* Resumen */}
+            {newComposition.description && (
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium">{newComposition.description}</p>
+                <p className="text-xs text-gray-600">
+                  {newComposition.quantity} {newComposition.unit} × Bs. {newComposition.unitCost} = 
+                  Bs. {(parseFloat(newComposition.quantity || "0") * parseFloat(newComposition.unitCost || "0")).toFixed(2)}
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-end space-x-2 pt-4">
               <Button variant="outline" onClick={() => setShowAddDialog(false)}>
                 Cancelar
               </Button>
               <Button 
                 onClick={handleAddComposition}
-                disabled={addCompositionMutation.isPending}
+                disabled={addCompositionMutation.isPending || !newComposition.description || !newComposition.quantity || !newComposition.unitCost}
               >
                 {addCompositionMutation.isPending ? "Agregando..." : "Agregar"}
               </Button>

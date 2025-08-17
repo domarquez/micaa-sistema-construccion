@@ -841,6 +841,40 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Get labor categories for catalog
+  router.get('/catalog/labor', async (req: Request, res: Response) => {
+    try {
+      const laborData = await db.select({
+        id: laborCategories.id,
+        name: laborCategories.name,
+        unit: laborCategories.unit,
+        cost: laborCategories.hourlyRate
+      }).from(laborCategories);
+      
+      res.json(laborData);
+    } catch (error) {
+      console.error('Labor catalog fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch labor catalog' });
+    }
+  });
+
+  // Get tools/equipment for catalog
+  router.get('/catalog/tools', async (req: Request, res: Response) => {
+    try {
+      const toolsData = await db.select({
+        id: tools.id,
+        name: tools.name,
+        unit: tools.unit,
+        cost: tools.unitPrice
+      }).from(tools);
+      
+      res.json(toolsData);
+    } catch (error) {
+      console.error('Tools catalog fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch tools catalog' });
+    }
+  });
+
   router.get('/catalog/labor', async (req: Request, res: Response) => {
     try {
       // For now return empty array - labor categories need to be implemented
