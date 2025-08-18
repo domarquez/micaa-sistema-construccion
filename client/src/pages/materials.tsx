@@ -254,49 +254,58 @@ export default function Materials() {
       {/* Materials Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-on-surface">Gestión de Materiales</h2>
-          <p className="text-sm md:text-base text-gray-600">Administrar materiales y precios</p>
+          <h2 className="text-xl md:text-2xl font-bold text-on-surface">
+            {user && (user as any)?.role === "admin" ? "Gestión de Materiales" : "Catálogo de Materiales"}
+          </h2>
+          <p className="text-sm md:text-base text-gray-600">
+            {user && (user as any)?.role === "admin" ? "Administrar materiales y precios" : "Explorar materiales y precios para tus proyectos"}
+          </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-          <Button
-            variant="outline"
-            className="bg-secondary text-white hover:bg-secondary-variant w-full sm:w-auto"
-            onClick={handleImport}
-            disabled={importMutation.isPending}
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            <span className="hidden md:inline">{importMutation.isPending ? 'Importando...' : 'Importar Archivo SQL'}</span>
-            <span className="md:hidden">{importMutation.isPending ? 'Importando...' : 'Importar'}</span>
-          </Button>
-          <Button
-            onClick={() => setShowForm(true)}
-            className="bg-primary text-white hover:bg-primary-variant w-full sm:w-auto"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Agregar Material</span>
-            <span className="sm:hidden">Agregar</span>
-          </Button>
-        </div>
+        {/* Solo mostrar botones administrativos a usuarios admin autenticados */}
+        {user && (user as any)?.role === "admin" && (
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              className="bg-secondary text-white hover:bg-secondary-variant w-full sm:w-auto"
+              onClick={handleImport}
+              disabled={importMutation.isPending}
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              <span className="hidden md:inline">{importMutation.isPending ? 'Importando...' : 'Importar Archivo SQL'}</span>
+              <span className="md:hidden">{importMutation.isPending ? 'Importando...' : 'Importar'}</span>
+            </Button>
+            <Button
+              onClick={() => setShowForm(true)}
+              className="bg-primary text-white hover:bg-primary-variant w-full sm:w-auto"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Agregar Material</span>
+              <span className="sm:hidden">Agregar</span>
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Custom Pricing Warning */}
-      <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-        <div className="flex items-start space-x-3">
-          <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-          <div>
-            <h3 className="text-sm font-medium text-amber-800 dark:text-amber-200">
-              Precios Personalizados
-            </h3>
-            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-              Los precios que modifiques aquí son privados y solo los verás en tus proyectos. 
-              Otros usuarios seguirán viendo los precios originales del sistema. 
-              Los materiales con precios personalizados aparecen duplicados con 
-              <span className="bg-green-50 px-2 py-1 rounded-md border border-green-200 mx-1">fondo verde</span> 
-              para que siempre puedas comparar con el precio original del sistema.
-            </p>
+      {/* Custom Pricing Warning - Solo para usuarios autenticados */}
+      {user && (
+        <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+          <div className="flex items-start space-x-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <h3 className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                Precios Personalizados
+              </h3>
+              <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                Los precios que modifiques aquí son privados y solo los verás en tus proyectos. 
+                Otros usuarios seguirán viendo los precios originales del sistema. 
+                Los materiales con precios personalizados aparecen duplicados con 
+                <span className="bg-green-50 px-2 py-1 rounded-md border border-green-200 mx-1">fondo verde</span> 
+                para que siempre puedas comparar con el precio original del sistema.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* AdSense In-Feed - Entre header y contenido */}
       <AdInFeed className="max-w-4xl mx-auto" />
@@ -458,27 +467,32 @@ export default function Materials() {
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-end space-x-1 sm:space-x-2">
-                            {material.hasCustomPrice ? (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleRestorePrice(material.id)}
-                                className="text-orange-600 hover:text-orange-900"
-                                disabled={removeCustomPriceMutation.isPending}
-                                title="Restaurar precio original"
-                              >
-                                <RotateCcw className="w-4 h-4" />
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleCustomizePrice(material)}
-                                className="text-blue-600 hover:text-blue-900"
-                                title="Personalizar precio"
-                              >
-                                <User className="w-4 h-4" />
-                              </Button>
+                            {/* Solo mostrar opciones de personalización de precio si el usuario está autenticado */}
+                            {user && (
+                              <>
+                                {material.hasCustomPrice ? (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleRestorePrice(material.id)}
+                                    className="text-orange-600 hover:text-orange-900"
+                                    disabled={removeCustomPriceMutation.isPending}
+                                    title="Restaurar precio original"
+                                  >
+                                    <RotateCcw className="w-4 h-4" />
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleCustomizePrice(material)}
+                                    className="text-blue-600 hover:text-blue-900"
+                                    title="Personalizar precio"
+                                  >
+                                    <User className="w-4 h-4" />
+                                  </Button>
+                                )}
+                              </>
                             )}
                             {/* Solo mostrar edición admin si el usuario es admin */}
                             {user?.role === 'admin' && (
@@ -505,6 +519,12 @@ export default function Materials() {
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             )}
+                            {/* Mensaje para usuarios anónimos */}
+                            {!user && (
+                              <div className="text-xs text-gray-500 italic">
+                                Inicia sesión para personalizar precios
+                              </div>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -525,8 +545,8 @@ export default function Materials() {
         </CardContent>
       </Card>
 
-      {/* Material Form Modal */}
-      {showForm && (
+      {/* Material Form Modal - Solo para admin */}
+      {showForm && user?.role === 'admin' && (
         <MaterialForm
           material={editingMaterial}
           categories={categories || []}
@@ -534,60 +554,62 @@ export default function Materials() {
         />
       )}
 
-      {/* Custom Price Modal */}
-      <Dialog open={!!customizingMaterial} onOpenChange={() => setCustomizingMaterial(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Personalizar Precio</DialogTitle>
-            <DialogDescription>
-              Modifica el precio de "{customizingMaterial?.name}". Este cambio será privado y solo lo verás en tus proyectos.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Precio actual del sistema:</Label>
-              <p className="text-lg font-semibold text-gray-600">
-                {customizingMaterial && formatCurrency(customizingMaterial.price)}
-              </p>
-            </div>
-            <div>
-              <Label htmlFor="custom-price">Tu precio personalizado (Bs):</Label>
-              <Input
-                id="custom-price"
-                type="number"
-                step="0.01"
-                min="0"
-                value={newCustomPrice}
-                onChange={(e) => setNewCustomPrice(e.target.value)}
-                placeholder="0.00"
-              />
-            </div>
-            <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-              <div className="flex items-start space-x-2">
-                <User className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-blue-700 dark:text-blue-300">
-                  Este precio personalizado solo será visible para ti y se aplicará únicamente en tus proyectos. 
-                  Otros usuarios seguirán viendo el precio original del sistema.
+      {/* Custom Price Modal - Solo para usuarios autenticados */}
+      {user && (
+        <Dialog open={!!customizingMaterial} onOpenChange={() => setCustomizingMaterial(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Personalizar Precio</DialogTitle>
+              <DialogDescription>
+                Modifica el precio de "{customizingMaterial?.name}". Este cambio será privado y solo lo verás en tus proyectos.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Precio actual del sistema:</Label>
+                <p className="text-lg font-semibold text-gray-600">
+                  {customizingMaterial && formatCurrency(customizingMaterial.price)}
                 </p>
               </div>
+              <div>
+                <Label htmlFor="custom-price">Tu precio personalizado (Bs):</Label>
+                <Input
+                  id="custom-price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newCustomPrice}
+                  onChange={(e) => setNewCustomPrice(e.target.value)}
+                  placeholder="0.00"
+                />
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <div className="flex items-start space-x-2">
+                  <User className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Este precio personalizado solo será visible para ti y se aplicará únicamente en tus proyectos. 
+                    Otros usuarios seguirán viendo el precio original del sistema.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setCustomizingMaterial(null)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSaveCustomPrice}
-              disabled={!newCustomPrice || parseFloat(newCustomPrice) <= 0 || customPriceMutation.isPending}
-            >
-              {customPriceMutation.isPending ? "Guardando..." : "Guardar Precio"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setCustomizingMaterial(null)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleSaveCustomPrice}
+                disabled={!newCustomPrice || parseFloat(newCustomPrice) <= 0 || customPriceMutation.isPending}
+              >
+                {customPriceMutation.isPending ? "Guardando..." : "Guardar Precio"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
