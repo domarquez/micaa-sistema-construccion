@@ -86,7 +86,7 @@ export default function Budgets() {
         createdAt: project.createdAt,
         phase: { id: 1, name: 'Temporal' }
       }));
-    } : undefined,
+    } : undefined, // El queryClient por defecto manejará la autenticación
     retry: false
   });
 
