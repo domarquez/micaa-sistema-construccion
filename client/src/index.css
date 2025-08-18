@@ -242,6 +242,16 @@
   .mobile-max-width {
     max-width: calc(100vw - 1rem) !important;
   }
+  
+  /* AdSense mobile optimization */
+  .ad-container {
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  .ad-container .adsbygoogle {
+    max-width: 100% !important;
+  }
 }
 
 /* Fluid responsive utilities */
