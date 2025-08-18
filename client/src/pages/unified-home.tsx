@@ -145,8 +145,7 @@ export default function UnifiedHome() {
               <Link href="/register" className="flex-1 sm:flex-none">
                 <Button 
                   size="sm" 
-                  variant="outline" 
-                  className="w-full border-white text-white hover:bg-white hover:text-blue-600 text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 mobile-ultra-compact"
+                  className="w-full bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 mobile-ultra-compact"
                 >
                   Registrarse Gratis
                 </Button>
