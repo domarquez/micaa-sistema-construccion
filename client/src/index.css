@@ -256,8 +256,8 @@
 
 /* Mobile padding - responsive and safe for all screen sizes */
 .mobile-padding {
-  padding-left: clamp(0.75rem, 4vw, 1.5rem);
-  padding-right: clamp(0.75rem, 4vw, 1.5rem);
+  padding-left: clamp(0.5rem, 3vw, 1.5rem);
+  padding-right: clamp(0.5rem, 3vw, 1.5rem);
 }
 
 .section-padding {

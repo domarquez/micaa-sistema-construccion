@@ -125,28 +125,28 @@ export default function UnifiedHome() {
         </div>
 
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-6 sm:py-8 md:py-12 lg:py-16 mobile-padding">
+        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-4 sm:py-6 md:py-8 lg:py-12 xl:py-16 mobile-padding">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 sm:mb-4 break-words">
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold mb-2 sm:mb-3 md:mb-4 break-words leading-tight">
               MICAA - Sistema de Construcción
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-4 sm:mb-6 opacity-90 break-words">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-3 sm:mb-4 md:mb-6 opacity-90 break-words leading-tight">
               Presupuestos inteligentes para la construcción boliviana
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
-              <Link href="/login">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center items-stretch sm:items-center max-w-md sm:max-w-none mx-auto">
+              <Link href="/login" className="flex-1 sm:flex-none">
                 <Button 
                   size="lg" 
-                  className="w-full sm:w-auto bg-white text-blue-600 hover:bg-gray-100 text-sm sm:text-base px-6 sm:px-8 py-2 sm:py-3"
+                  className="w-full bg-white text-blue-600 hover:bg-gray-100 text-sm sm:text-base px-4 sm:px-6 md:px-8 py-2 sm:py-3"
                 >
                   Iniciar Sesión
                 </Button>
               </Link>
-              <Link href="/register">
+              <Link href="/register" className="flex-1 sm:flex-none">
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-blue-600 text-sm sm:text-base px-6 sm:px-8 py-2 sm:py-3"
+                  className="w-full border-white text-white hover:bg-white hover:text-blue-600 text-sm sm:text-base px-4 sm:px-6 md:px-8 py-2 sm:py-3"
                 >
                   Registrarse Gratis
                 </Button>
@@ -156,12 +156,12 @@ export default function UnifiedHome() {
         </div>
 
         {/* Anonymous Usage Warning */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 sm:p-4 mobile-padding mb-4 sm:mb-6">
-          <div className="flex items-center">
-            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mr-2 sm:mr-3 flex-shrink-0" />
-            <div className="text-xs sm:text-sm">
-              <p className="text-yellow-800 font-medium">Modo de Vista Pública</p>
-              <p className="text-yellow-700 mt-1">
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-2 sm:p-3 md:p-4 mobile-padding mb-3 sm:mb-4 md:mb-6">
+          <div className="flex items-start">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-sm min-w-0 flex-1">
+              <p className="text-yellow-800 font-medium break-words">Modo de Vista Pública</p>
+              <p className="text-yellow-700 mt-1 break-words leading-tight">
                 Puedes explorar materiales y precios. Para crear presupuestos, 
                 <Link href="/login" className="underline font-medium ml-1">inicia sesión</Link> o 
                 <Link href="/register" className="underline font-medium ml-1">regístrate gratis</Link>.
@@ -181,7 +181,7 @@ export default function UnifiedHome() {
         </div>
 
         {/* Statistics Grid - Mobile Optimized */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3 md:gap-4 mobile-padding mb-4 sm:mb-6 md:mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1.5 sm:gap-2 md:gap-3 lg:gap-4 mobile-padding mb-3 sm:mb-4 md:mb-6 lg:mb-8">
           <Card className="shadow-md hover:shadow-lg transition-shadow">
             <CardContent className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col items-center text-center">
@@ -199,97 +199,97 @@ export default function UnifiedHome() {
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.location.href = "/login?redirect=budgets"}>
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Calculator className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600 mb-2 flex-shrink-0" />
+                <Calculator className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-600 mb-1 sm:mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
+                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm sm:text-lg md:text-xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
                     {formatNumber(statistics?.activeBudgets || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Presupuestos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Presupuestos</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Package className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600 mb-2 flex-shrink-0" />
+                <Package className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-blue-600 mb-1 sm:mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
+                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm sm:text-lg md:text-xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
                     {formatNumber(statistics?.totalMaterials || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Materiales</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Materiales</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Combine className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600 mb-2 flex-shrink-0" />
+                <Combine className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-purple-600 mb-1 sm:mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
+                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm sm:text-lg md:text-xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
                     {formatNumber(statistics?.totalActivities || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Actividades</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Actividades</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Building2 className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600 mb-2 flex-shrink-0" />
+                <Building2 className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-orange-600 mb-1 sm:mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
+                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm sm:text-lg md:text-xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
                     {formatNumber(statistics?.totalProjects || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Proyectos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Proyectos</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Truck className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-600 mb-2 flex-shrink-0" />
+                <Truck className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-red-600 mb-1 sm:mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
+                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm sm:text-lg md:text-xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
                     {formatNumber(statistics?.totalSuppliers || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Proveedores</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Proveedores</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-500 mb-2 flex-shrink-0" />
+                <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-500 mb-1 sm:mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
+                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm sm:text-lg md:text-xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
                     {formatCurrency(statistics?.totalProjectValue || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Valor Total</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Valor Total</p>
               </div>
             </CardContent>
           </Card>
