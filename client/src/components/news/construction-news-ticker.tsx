@@ -109,64 +109,63 @@ export function ConstructionNewsTicker() {
   const currentNews = sampleNews[currentIndex];
 
   return (
-    <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden">
+    <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden max-w-xs mx-auto">
       <div 
-        className="p-2 sm:p-3 md:p-4"
+        className="aspect-square flex flex-col p-3"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Header - Mobile optimized */}
-        <div className="flex items-center justify-between mb-2 sm:mb-3">
-          <div className="flex items-center space-x-1 sm:space-x-2">
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="text-xs sm:text-sm font-semibold text-gray-700">
-              Noticias de Construcción
+        {/* Header - Compact */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="text-xs font-semibold text-gray-700">
+              Noticias
             </span>
           </div>
           <div className="flex items-center space-x-1 text-xs text-gray-500">
-            <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-            <span className="hidden sm:inline">{formatTimeAgo(currentNews.publishedAt)}</span>
-            <span className="sm:hidden text-xs">Actualizado</span>
+            <Clock className="w-3 h-3" />
           </div>
         </div>
 
-        {/* News Content - Mobile first */}
-        <div className="space-y-2 sm:space-y-3">
-          <div className="flex items-start justify-between gap-2 sm:gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-1 sm:space-x-2 mb-1 flex-wrap">
-                <Badge 
-                  variant="outline" 
-                  className={`text-xs ${categoryColors[currentNews.category]}`}
-                >
-                  {categoryLabels[currentNews.category]}
-                </Badge>
-                <span className="text-xs text-gray-500">
-                  {currentNews.source}
-                </span>
-              </div>
-              
-              <h4 className="font-medium text-gray-900 text-xs sm:text-sm leading-tight mb-1 line-clamp-2">
-                {currentNews.title}
-              </h4>
-              
-              <p className="text-xs text-gray-600 line-clamp-2 hidden sm:block">
-                {currentNews.summary}
-              </p>
+        {/* News Content - Square layout */}
+        <div className="flex-1 flex flex-col justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center justify-center mb-2">
+              <Badge 
+                variant="outline" 
+                className={`text-xs ${categoryColors[currentNews.category]}`}
+              >
+                {categoryLabels[currentNews.category]}
+              </Badge>
             </div>
-
-            <button
-              onClick={() => window.open(currentNews.link, '_blank')}
-              className="flex-shrink-0 p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded transition-colors"
-              title="Leer noticia completa"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </button>
+            
+            <h4 className="font-medium text-gray-900 text-sm leading-tight text-center line-clamp-3">
+              {currentNews.title}
+            </h4>
+            
+            <p className="text-xs text-gray-600 line-clamp-3 text-center">
+              {currentNews.summary}
+            </p>
           </div>
 
-          {/* Progress indicators */}
-          <div className="flex justify-between items-center">
-            <div className="flex space-x-1">
+          <div className="mt-3 space-y-2">
+            <div className="text-center">
+              <span className="text-xs text-gray-500">{currentNews.source}</span>
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                onClick={() => window.open(currentNews.link, '_blank')}
+                className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-full transition-colors"
+                title="Leer noticia completa"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Progress indicators */}
+            <div className="flex justify-center space-x-1">
               {sampleNews.map((_, index) => (
                 <div
                   key={index}
@@ -179,21 +178,9 @@ export function ConstructionNewsTicker() {
               ))}
             </div>
             
-            <div className="text-xs text-gray-500">
-              {currentIndex + 1}/{sampleNews.length}
+            <div className="text-xs text-gray-500 text-center">
+              {currentIndex + 1} de {sampleNews.length}
             </div>
-          </div>
-        </div>
-
-        {/* Moving text animation for mobile */}
-        <div className="mt-3 md:hidden overflow-hidden">
-          <div 
-            className="whitespace-nowrap text-xs text-blue-600 font-medium animate-marquee"
-            style={{
-              animation: isPaused ? 'none' : 'marquee 15s linear infinite'
-            }}
-          >
-            🏗️ {currentNews.title} • {currentNews.summary}
           </div>
         </div>
       </div>
