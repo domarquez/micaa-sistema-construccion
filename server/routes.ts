@@ -1588,6 +1588,46 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Actualizar proyecto existente
+  app.put("/api/projects/:id", requireAuth, async (req: any, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const userId = req.user.id;
+      
+      console.log("Datos recibidos para actualizar proyecto:", projectId, req.body);
+      
+      // Verificar que el proyecto pertenece al usuario
+      const existingProject = await db.select()
+        .from(projects)
+        .where(and(eq(projects.id, projectId), eq(projects.userId, userId)))
+        .limit(1);
+      
+      if (existingProject.length === 0) {
+        return res.status(404).json({ message: "Proyecto no encontrado o sin permisos" });
+      }
+      
+      const { startDate, ...otherData } = req.body;
+      const updateData = {
+        ...otherData,
+        startDate: startDate ? new Date(startDate) : null,
+        updatedAt: new Date()
+      };
+      
+      console.log("Datos para actualizar:", updateData);
+      
+      const [updatedProject] = await db.update(projects)
+        .set(updateData)
+        .where(eq(projects.id, projectId))
+        .returning();
+      
+      console.log("Proyecto actualizado exitosamente:", updatedProject);
+      res.json(updatedProject);
+    } catch (error) {
+      console.error("Error updating project:", error);
+      res.status(500).json({ message: "Failed to update project" });
+    }
+  });
+
   // =====================================
   // ADMIN ROUTES - CRUD COMPLETO
   // =====================================
@@ -2453,6 +2493,53 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error("Error getting budgets:", error);
       res.status(500).json({ message: "Error al obtener presupuestos" });
+    }
+  });
+
+  // Get specific budget with items and project details
+  app.get("/api/budgets/:id", requireAuth, async (req, res) => {
+    try {
+      const budgetId = parseInt(req.params.id);
+      const userId = (req as any).user.id;
+      
+      // Get budget with project details
+      const budget = await db
+        .select()
+        .from(budgets)
+        .leftJoin(projects, eq(budgets.projectId, projects.id))
+        .leftJoin(constructionPhases, eq(budgets.phaseId, constructionPhases.id))
+        .where(and(eq(budgets.id, budgetId), eq(projects.userId, userId)))
+        .limit(1);
+      
+      if (budget.length === 0) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
+      }
+      
+      // Get budget items with activity details
+      const items = await db
+        .select()
+        .from(budgetItems)
+        .leftJoin(activities, eq(budgetItems.activityId, activities.id))
+        .leftJoin(constructionPhases, eq(activities.phaseId, constructionPhases.id))
+        .where(eq(budgetItems.budgetId, budgetId));
+      
+      const budgetData = {
+        ...budget[0].budgets,
+        project: budget[0].projects!,
+        phase: budget[0].construction_phases,
+        items: items.map(item => ({
+          ...item.budget_items,
+          activity: item.activities ? {
+            ...item.activities,
+            phase: item.construction_phases
+          } : null
+        }))
+      };
+      
+      res.json(budgetData);
+    } catch (error) {
+      console.error("Error getting budget details:", error);
+      res.status(500).json({ message: "Error al obtener detalles del presupuesto" });
     }
   });
 
