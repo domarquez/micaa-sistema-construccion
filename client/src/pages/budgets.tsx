@@ -86,7 +86,19 @@ export default function Budgets() {
         createdAt: project.createdAt,
         phase: { id: 1, name: 'Temporal' }
       }));
-    } : undefined, // El queryClient por defecto manejará la autenticación
+    } : async () => {
+      const response = await fetch('/api/budgets', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al cargar presupuestos');
+      }
+      
+      return response.json();
+    },
     retry: false
   });
 

@@ -140,8 +140,17 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
   // Cargar datos existentes al editar
   useEffect(() => {
+    console.log('🔍 Cargando datos para edición:', { 
+      budget: !!budget, 
+      budgetData: !!budgetData,
+      allActivities: allActivities?.length,
+      constructionPhases: constructionPhases?.length
+    });
+
     if (budget && budgetData && allActivities && constructionPhases && 
         typeof budgetData === 'object' && 'project' in budgetData && 'items' in budgetData) {
+      
+      console.log('📊 Datos del presupuesto:', budgetData);
       setCurrentProject(budgetData.project as any);
       
       // Organizar elementos por fases
@@ -191,10 +200,32 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         };
       });
       
+      console.log('📋 Fases cargadas:', loadedPhases);
       setPhases(loadedPhases);
       setSelectedPhases(loadedPhases.map(p => p.phaseId));
+      
+      // Actualizar el formulario con los datos del proyecto
+      if (budgetData.project) {
+        const project = budgetData.project as any;
+        form.reset({
+          name: project.name || "",
+          client: project.client || "",
+          location: project.location || "",
+          city: project.city || "",
+          country: project.country || "Bolivia",
+          startDate: project.startDate 
+            ? new Date(project.startDate).toISOString().split('T')[0]
+            : "",
+          equipmentPercentage: project.equipmentPercentage?.toString() || "5.00",
+          administrativePercentage: project.administrativePercentage?.toString() || "8.00",
+          utilityPercentage: project.utilityPercentage?.toString() || "15.00",
+          taxPercentage: project.taxPercentage?.toString() || "3.09",
+          socialChargesPercentage: project.socialChargesPercentage?.toString() || "71.18",
+        });
+        console.log('📝 Formulario actualizado con datos del proyecto');
+      }
     }
-  }, [budget, budgetData, allActivities, constructionPhases]);
+  }, [budget, budgetData, allActivities, constructionPhases, form]);
 
   // Crear proyecto nuevo
   const createProjectMutation = useMutation({
