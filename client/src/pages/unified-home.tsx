@@ -485,18 +485,18 @@ export default function UnifiedHome() {
         </div>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Mis Presupuestos</CardTitle>
-            <Calculator className="h-4 w-4 text-muted-foreground" />
+      {/* Statistics Cards - Mobile Optimized */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-2 md:gap-3 lg:gap-4 mobile-padding overflow-hidden">
+        <Card className="min-w-0 max-w-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
+            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate">Mis Presupuestos</CardTitle>
+            <Calculator className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {budgetsLoading ? <Skeleton className="h-8 w-16" /> : budgets?.length || 0}
+          <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0">
+            <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none">
+              {budgetsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : budgets?.length || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight">
               Presupuestos activos
             </p>
           </CardContent>
@@ -548,28 +548,47 @@ export default function UnifiedHome() {
         </Card>
       </div>
 
-      {/* Growth Chart */}
+      {/* Growth Chart - Mobile Optimized */}
       {!growthLoading && growthData && growthData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
-              Crecimiento de la Plataforma
+        <Card className="mobile-padding max-w-full overflow-hidden">
+          <CardHeader className="p-2 sm:p-4 md:p-6">
+            <CardTitle className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base md:text-lg">
+              <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+              <span className="truncate">Crecimiento de la Plataforma</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-80">
+          <CardContent className="p-2 sm:p-4 md:p-6 overflow-hidden">
+            <div className="h-48 sm:h-64 md:h-80 w-full max-w-full overflow-hidden">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={growthData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="users" stroke="#8884d8" name="Usuarios" />
-                  <Line type="monotone" dataKey="projects" stroke="#82ca9d" name="Proyectos" />
-                  <Line type="monotone" dataKey="budgets" stroke="#ffc658" name="Presupuestos" />
-                  <Line type="monotone" dataKey="suppliers" stroke="#ff7300" name="Proveedores" />
+                <LineChart 
+                  data={growthData}
+                  margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="month" 
+                    tick={{ fontSize: 10 }}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 10 }}
+                    width={30}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      fontSize: '12px',
+                      padding: '8px',
+                      maxWidth: '200px'
+                    }}
+                  />
+                  <Legend 
+                    wrapperStyle={{ fontSize: '10px' }}
+                    iconSize={8}
+                  />
+                  <Line type="monotone" dataKey="users" stroke="#8884d8" strokeWidth={1.5} name="Usuarios" />
+                  <Line type="monotone" dataKey="projects" stroke="#82ca9d" strokeWidth={1.5} name="Proyectos" />
+                  <Line type="monotone" dataKey="budgets" stroke="#ffc658" strokeWidth={1.5} name="Presupuestos" />
+                  <Line type="monotone" dataKey="suppliers" stroke="#ff7300" strokeWidth={1.5} name="Proveedores" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -577,23 +596,24 @@ export default function UnifiedHome() {
         </Card>
       )}
 
-      {/* Recent Budgets */}
+      {/* Recent Budgets - Mobile Optimized */}
       {!isAnonymous && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Calculator className="w-5 h-5" />
-                Presupuestos Recientes
+        <Card className="mobile-padding max-w-full overflow-hidden">
+          <CardHeader className="p-2 sm:p-4 md:p-6">
+            <CardTitle className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1 sm:gap-2 min-w-0">
+                <Calculator className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0" />
+                <span className="text-sm sm:text-base md:text-lg truncate">Presupuestos Recientes</span>
               </span>
               <Link href="/budgets">
-                <Button variant="outline" size="sm">
-                  Ver Todos
+                <Button variant="outline" size="sm" className="text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8">
+                  <span className="hidden sm:inline">Ver Todos</span>
+                  <span className="sm:hidden">Ver</span>
                 </Button>
               </Link>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-2 sm:p-4 md:p-6 overflow-hidden">
             {budgetsLoading ? (
               <div className="space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (
