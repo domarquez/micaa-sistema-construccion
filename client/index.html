@@ -14,7 +14,15 @@
     
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8854811165812956"
-         crossorigin="anonymous"></script>
+         crossorigin="anonymous" data-adbreak-test="on"></script>
+    
+    <!-- Firefox Compatibility -->
+    <script>
+      // Firefox compatibility fixes
+      if (typeof globalThis === 'undefined') {
+        window.globalThis = window;
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

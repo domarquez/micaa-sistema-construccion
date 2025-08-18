@@ -252,6 +252,28 @@
   .ad-container .adsbygoogle {
     max-width: 100% !important;
   }
+  
+  /* Firefox specific fixes */
+  @-moz-document url-prefix() {
+    .mobile-ultra-compact {
+      min-width: 50px !important;
+    }
+    
+    .mobile-padding {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+  }
+  
+  /* Additional Firefox compatibility */
+  .firefox-browser .mobile-ultra-compact {
+    width: auto !important;
+    min-width: 60px !important;
+  }
+  
+  .firefox-browser .ad-container {
+    overflow-x: hidden !important;
+  }
 }
 
 /* Fluid responsive utilities */
