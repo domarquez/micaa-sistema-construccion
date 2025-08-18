@@ -3,6 +3,7 @@ import { db } from './db';
 import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { storage } from './storage';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -49,7 +50,7 @@ const requireAuth = async (req: AuthRequest, res: Response, next: NextFunction) 
 
 export async function registerRoutes(app: any) {
   const router = Router();
-  // Usar la instancia de storage ya inicializada
+  // Usar la instancia de storage global
 
   // Test route to verify DB connection
   router.get('/test-db', async (req, res) => {
