@@ -87,9 +87,12 @@ export default function Budgets() {
         phase: { id: 1, name: 'Temporal' }
       }));
     } : async () => {
-      const response = await fetch('/api/budgets', {
+      // Agregar timestamp para evitar cache del navegador
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/budgets?t=${timestamp}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Cache-Control': 'no-cache'
         }
       });
       
@@ -99,7 +102,9 @@ export default function Budgets() {
       
       return response.json();
     },
-    retry: false
+    retry: false,
+    staleTime: 0, // Los datos se consideran obsoletos inmediatamente
+    gcTime: 0 // No mantener cache en memoria
   });
 
   const deleteProjectMutation = useMutation({
@@ -114,13 +119,14 @@ export default function Budgets() {
       }
     },
     onSuccess: () => {
-      // Invalidar ambas queries para asegurar la actualización
-      queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/anonymous/budgets"] });
       toast({
         title: "Proyecto eliminado",
         description: "El proyecto y todos sus presupuestos han sido eliminados correctamente.",
       });
+      // Forzar recarga completa de la página para asegurar que se actualice la lista
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     },
     onError: (error) => {
       console.error('Error deleting project:', error);
@@ -140,9 +146,11 @@ export default function Budgets() {
   const handleFormClose = () => {
     setShowForm(false);
     setEditingBudget(null);
-    // Invalidar cache para refrescar la lista - tanto para usuarios autenticados como anónimos
-    queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/anonymous/budgets"] });
+    // Forzar recarga completa de datos
+    queryClient.removeQueries({ queryKey: ["/api/budgets"] });
+    queryClient.removeQueries({ queryKey: ["/api/anonymous/budgets"] });
+    queryClient.refetchQueries({ queryKey: ["/api/budgets"] });
+    queryClient.refetchQueries({ queryKey: ["/api/anonymous/budgets"] });
     // Navigate back to budgets list if on new budget route
     if (location === '/budgets/new') {
       window.history.pushState(null, '', '/budgets');
