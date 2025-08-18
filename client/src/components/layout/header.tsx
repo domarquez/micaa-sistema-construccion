@@ -52,7 +52,7 @@ export default function AppHeader() {
 
   return (
     <header className="bg-white shadow-material sticky top-0 z-50 border-b">
-      <div className="flex h-11 sm:h-12 md:h-14 lg:h-16 items-center justify-between px-2 sm:px-3 md:px-6">
+      <div className="flex h-10 sm:h-11 md:h-12 lg:h-14 xl:h-16 items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6">
         <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
           <Button 
             variant="ghost" 
@@ -78,7 +78,7 @@ export default function AppHeader() {
           </div>
         </div>
         
-        <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
+        <div className="flex items-center space-x-0.5 sm:space-x-1 md:space-x-2">
           <ContactForm 
             triggerText="Contacto"
             triggerVariant="outline"
@@ -100,32 +100,29 @@ export default function AppHeader() {
           {isAnonymous ? (
             /* Anonymous User Header - Mobile Optimized */
             <div className="flex items-center space-x-1">
-              <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs py-0 px-1 sm:px-2">
-                <AlertTriangle className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                <span className="hidden sm:inline text-xs">Modo Anónimo</span>
-                <span className="sm:hidden text-xs">Anónimo</span>
+              <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs py-0 px-1 hidden sm:block">
+                <AlertTriangle className="w-3 h-3 mr-1" />
+                <span className="text-xs">Anónimo</span>
               </Badge>
               
               {/* Mobile optimized buttons */}
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="flex items-center space-x-0.5 sm:space-x-1">
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={() => window.location.href = "/login"}
-                  className="text-xs px-2 py-1 h-7 sm:h-8"
+                  className="text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8"
                 >
-                  <User className="w-3 h-3 mr-1" />
-                  <span className="hidden sm:inline">Iniciar</span>
-                  <span className="sm:hidden">Login</span>
+                  <User className="w-2.5 h-2.5 sm:w-3 sm:h-3 sm:mr-1" />
+                  <span className="hidden sm:inline">Login</span>
                 </Button>
                 <Button 
                   size="sm"
                   onClick={() => window.location.href = "/register"}
-                  className="text-xs px-2 py-1 h-7 sm:h-8 bg-orange-600 hover:bg-orange-700"
+                  className="text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8 bg-orange-600 hover:bg-orange-700"
                 >
-                  <UserPlus className="w-3 h-3 mr-1" />
-                  <span className="hidden sm:inline">Registro</span>
-                  <span className="sm:hidden">Sign Up</span>
+                  <UserPlus className="w-2.5 h-2.5 sm:w-3 sm:h-3 sm:mr-1" />
+                  <span className="hidden sm:inline">Sign Up</span>
                 </Button>
               </div>
             </div>
