@@ -104,10 +104,19 @@ export default function Budgets() {
 
   const deleteProjectMutation = useMutation({
     mutationFn: async (projectId: number) => {
-      await apiRequest("DELETE", `/api/projects/${projectId}`);
+      if (isAnonymous) {
+        // Para usuarios anónimos, eliminar del sessionStorage
+        const anonymousProjects = JSON.parse(sessionStorage.getItem('anonymousProjects') || '[]');
+        const filteredProjects = anonymousProjects.filter((project: any) => project.id !== projectId);
+        sessionStorage.setItem('anonymousProjects', JSON.stringify(filteredProjects));
+      } else {
+        await apiRequest("DELETE", `/api/projects/${projectId}`);
+      }
     },
     onSuccess: () => {
+      // Invalidar ambas queries para asegurar la actualización
       queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/anonymous/budgets"] });
       toast({
         title: "Proyecto eliminado",
         description: "El proyecto y todos sus presupuestos han sido eliminados correctamente.",
@@ -131,8 +140,9 @@ export default function Budgets() {
   const handleFormClose = () => {
     setShowForm(false);
     setEditingBudget(null);
-    // Invalidar cache para refrescar la lista
+    // Invalidar cache para refrescar la lista - tanto para usuarios autenticados como anónimos
     queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/anonymous/budgets"] });
     // Navigate back to budgets list if on new budget route
     if (location === '/budgets/new') {
       window.history.pushState(null, '', '/budgets');
