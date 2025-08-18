@@ -102,7 +102,7 @@ export function AdCarousel() {
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
           {/* Square Card Design */}
-          <div className="max-w-[260px] sm:max-w-[280px] md:max-w-xs mx-auto">
+          <div className="max-w-[240px] sm:max-w-[260px] md:max-w-[280px] lg:max-w-xs mx-auto">
             {/* Image - Square aspect ratio */}
             <div className="w-full aspect-square bg-gray-100 relative overflow-hidden rounded-t-lg">
               <img
@@ -131,7 +131,7 @@ export function AdCarousel() {
             </div>
 
             {/* Content - Compact below image */}
-            <div className="p-2 sm:p-3 bg-white rounded-b-lg">
+            <div className="p-1.5 sm:p-2 md:p-3 bg-white rounded-b-lg">
               <div className="text-center">
                 <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 break-words leading-tight mb-1">
                   {currentAd.title}

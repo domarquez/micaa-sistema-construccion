@@ -205,6 +205,23 @@
   }
 }
 
+/* Extra small mobile devices (Samsung A05, etc.) */
+@media (max-width: 380px) {
+  .mobile-padding {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+  
+  .mobile-ultra-compact {
+    padding: 0.125rem !important;
+  }
+  
+  .mobile-text-xs {
+    font-size: 0.6rem !important;
+    line-height: 0.8rem !important;
+  }
+}
+
 /* Fluid responsive utilities */
 .mobile-grid {
   display: grid;
