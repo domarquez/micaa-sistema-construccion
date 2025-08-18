@@ -97,28 +97,28 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
-            <Construction className="w-8 h-8 text-primary" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 mobile-padding safe-area-inset-top safe-area-inset-bottom">
+      <Card className="w-full max-w-[280px] sm:max-w-xs md:max-w-md mx-auto shadow-lg mobile-ultra-compact">
+        <CardHeader className="text-center p-2 sm:p-4 md:p-6">
+          <div className="mx-auto mb-2 sm:mb-3 md:mb-4 p-2 sm:p-3 bg-primary/10 rounded-full w-fit">
+            <Construction className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold">Crear Cuenta</CardTitle>
-          <p className="text-gray-600">Sistema de Presupuestos de Construcción</p>
+          <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold">Crear Cuenta</CardTitle>
+          <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">Sistema de Presupuestos</p>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+        <CardContent className="p-2 sm:p-4 md:p-6">
+          <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 md:space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
               <div>
-                <Label htmlFor="firstName">Nombre</Label>
+                <Label htmlFor="firstName" className="text-[10px] sm:text-xs md:text-sm">Nombre</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4" />
                   <Input
                     id="firstName"
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
-                    className="pl-10"
+                    className="pl-6 sm:pl-8 md:pl-10 text-[10px] sm:text-xs md:text-sm h-7 sm:h-8 md:h-10"
                     placeholder="Nombre"
                   />
                 </div>
