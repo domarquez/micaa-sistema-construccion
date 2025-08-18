@@ -208,8 +208,8 @@
 /* Extra small mobile devices (Samsung A05, etc.) */
 @media (max-width: 380px) {
   .mobile-padding {
-    padding-left: 0.25rem !important;
-    padding-right: 0.25rem !important;
+    padding-left: 0.125rem !important;
+    padding-right: 0.125rem !important;
   }
   
   .mobile-ultra-compact {
@@ -219,6 +219,23 @@
   .mobile-text-xs {
     font-size: 0.6rem !important;
     line-height: 0.8rem !important;
+  }
+}
+
+/* Ultra-small devices optimization */
+@media (max-width: 360px) {
+  .mobile-padding {
+    padding-left: 0.0625rem !important;
+    padding-right: 0.0625rem !important;
+  }
+  
+  .mobile-ultra-compact {
+    padding: 0.0625rem !important;
+  }
+  
+  .mobile-text-xs {
+    font-size: 0.5rem !important;
+    line-height: 0.7rem !important;
   }
 }
 
