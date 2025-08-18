@@ -183,7 +183,7 @@ export default function UnifiedHome() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-0.5 sm:gap-1 md:gap-1.5 lg:gap-2 xl:gap-3 mobile-padding mb-2 sm:mb-3 md:mb-4 lg:mb-6 overflow-hidden">
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
-              <div className="flex flex-col items-center text-center min-w-0">
+              <div className="flex flex-col items-start text-left min-w-0 w-full">
                 <Users className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
@@ -199,7 +199,7 @@ export default function UnifiedHome() {
 
           <Card className="shadow-sm hover:shadow-md transition-shadow cursor-pointer min-w-0 max-w-full" onClick={() => window.location.href = "/login?redirect=budgets"}>
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
-              <div className="flex flex-col items-center text-center min-w-0">
+              <div className="flex flex-col items-start text-left min-w-0 w-full">
                 <Calculator className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-green-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
@@ -215,7 +215,7 @@ export default function UnifiedHome() {
 
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
-              <div className="flex flex-col items-center text-center min-w-0">
+              <div className="flex flex-col items-start text-left min-w-0 w-full">
                 <Package className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-blue-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
@@ -231,7 +231,7 @@ export default function UnifiedHome() {
 
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
-              <div className="flex flex-col items-center text-center min-w-0">
+              <div className="flex flex-col items-start text-left min-w-0 w-full">
                 <Combine className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-purple-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
@@ -247,7 +247,7 @@ export default function UnifiedHome() {
 
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
-              <div className="flex flex-col items-center text-center min-w-0">
+              <div className="flex flex-col items-start text-left min-w-0 w-full">
                 <Building2 className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-orange-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
@@ -263,7 +263,7 @@ export default function UnifiedHome() {
 
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
-              <div className="flex flex-col items-center text-center min-w-0">
+              <div className="flex flex-col items-start text-left min-w-0 w-full">
                 <Truck className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-red-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
@@ -279,7 +279,7 @@ export default function UnifiedHome() {
 
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
-              <div className="flex flex-col items-center text-center min-w-0">
+              <div className="flex flex-col items-start text-left min-w-0 w-full">
                 <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-green-500 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
@@ -492,56 +492,56 @@ export default function UnifiedHome() {
             <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate">Mis Presupuestos</CardTitle>
             <Calculator className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
-          <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0">
-            <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none">
+          <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0 text-left">
+            <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none text-left">
               {budgetsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : budgets?.length || 0}
             </div>
-            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight">
+            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
               Presupuestos activos
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Materiales</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+        <Card className="min-w-0 max-w-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
+            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate text-left">Materiales</CardTitle>
+            <Package className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {statsLoading ? <Skeleton className="h-8 w-16" /> : formatNumber(statistics?.totalMaterials || 0)}
+          <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0 text-left">
+            <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none text-left">
+              {statsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : formatNumber(statistics?.totalMaterials || 0)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
               En catálogo
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Actividades</CardTitle>
-            <Combine className="h-4 w-4 text-muted-foreground" />
+        <Card className="min-w-0 max-w-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
+            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate text-left">Actividades</CardTitle>
+            <Combine className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {statsLoading ? <Skeleton className="h-8 w-16" /> : formatNumber(statistics?.totalActivities || 0)}
+          <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0 text-left">
+            <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none text-left">
+              {statsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : formatNumber(statistics?.totalActivities || 0)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
               Disponibles
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Proveedores</CardTitle>
-            <Truck className="h-4 w-4 text-muted-foreground" />
+        <Card className="min-w-0 max-w-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
+            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate text-left">Proveedores</CardTitle>
+            <Truck className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {statsLoading ? <Skeleton className="h-8 w-16" /> : formatNumber(statistics?.totalSuppliers || 0)}
+          <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0 text-left">
+            <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none text-left">
+              {statsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : formatNumber(statistics?.totalSuppliers || 0)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
               Registrados
             </p>
           </CardContent>
@@ -629,24 +629,24 @@ export default function UnifiedHome() {
             ) : budgets && budgets.length > 0 ? (
               <div className="space-y-3">
                 {budgets.slice(0, 5).map((budget) => (
-                  <div key={budget.id} className="flex items-center justify-between p-3 border rounded hover:bg-muted/50 transition-colors">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium truncate">{budget.project?.name || `Presupuesto ${budget.id}`}</h3>
-                      <p className="text-sm text-muted-foreground">
+                  <div key={budget.id} className="flex items-start justify-between p-2 sm:p-3 border rounded hover:bg-muted/50 transition-colors gap-2">
+                    <div className="flex-1 min-w-0 text-left">
+                      <h3 className="font-medium truncate text-left text-xs sm:text-sm">{budget.project?.name || `Presupuesto ${budget.id}`}</h3>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground text-left">
                         {formatRelativeTime(budget.updatedAt || budget.createdAt || new Date())}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{formatCurrency((budget as any).totalCost || 0)}</span>
-                      <div className="flex gap-1">
+                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                      <span className="font-semibold text-[10px] sm:text-xs text-right">{formatCurrency((budget as any).totalCost || 0)}</span>
+                      <div className="flex gap-0.5 sm:gap-1">
                         <Link href={`/budgets/${budget.id}`}>
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
+                          <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-1">
+                            <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                           </Button>
                         </Link>
                         <Link href={`/budgets/${budget.id}?edit=true`}>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="w-4 h-4" />
+                          <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-1">
+                            <Edit className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                           </Button>
                         </Link>
                       </div>
