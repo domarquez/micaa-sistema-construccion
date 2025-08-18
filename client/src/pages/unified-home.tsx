@@ -125,12 +125,12 @@ export default function UnifiedHome() {
         </div>
 
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-8 sm:py-12 lg:py-16 mobile-padding">
+        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-6 sm:py-8 md:py-12 lg:py-16 mobile-padding">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 sm:mb-4 break-words">
               MICAA - Sistema de Construcción
             </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 opacity-90">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-4 sm:mb-6 opacity-90 break-words">
               Presupuestos inteligentes para la construcción boliviana
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
@@ -181,19 +181,19 @@ export default function UnifiedHome() {
         </div>
 
         {/* Statistics Grid - Mobile Optimized */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 mobile-padding mb-6 sm:mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3 md:gap-4 mobile-padding mb-4 sm:mb-6 md:mb-8">
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col items-center text-center">
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-primary mb-2 flex-shrink-0" />
+                <Users className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-primary mb-1 sm:mb-2 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
+                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
                 ) : (
-                  <p className="text-sm sm:text-lg md:text-xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
                     {formatNumber(statistics?.totalUsers || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Usuarios</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Usuarios</p>
               </div>
             </CardContent>
           </Card>
@@ -301,31 +301,31 @@ export default function UnifiedHome() {
         </div>
 
         {/* Materials and Suppliers Tabs */}
-        <div className="mobile-padding mb-6 sm:mb-8">
-          <Card className="shadow-lg">
-            <CardHeader className="pb-3">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="text-lg sm:text-xl font-bold text-foreground">
+        <div className="mobile-padding mb-4 sm:mb-6 md:mb-8">
+          <Card className="shadow-lg max-w-full overflow-hidden">
+            <CardHeader className="pb-2 sm:pb-3">
+              <div className="flex flex-col gap-2 sm:gap-3">
+                <CardTitle className="text-base sm:text-lg md:text-xl font-bold text-foreground break-words">
                   Explorar Materiales y Proveedores
                 </CardTitle>
-                <div className="flex bg-muted p-1 rounded-lg">
+                <div className="flex bg-muted p-1 rounded-lg w-full">
                   <Button
                     variant={activeTab === "materials" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("materials")}
-                    className="text-xs sm:text-sm flex-1 sm:flex-none"
+                    className="text-xs sm:text-sm flex-1 min-w-0"
                   >
-                    <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    Materiales
+                    <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                    <span className="truncate">Materiales</span>
                   </Button>
                   <Button
                     variant={activeTab === "suppliers" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("suppliers")}
-                    className="text-xs sm:text-sm flex-1 sm:flex-none"
+                    className="text-xs sm:text-sm flex-1 min-w-0"
                   >
-                    <Store className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    Proveedores
+                    <Store className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                    <span className="truncate">Proveedores</span>
                   </Button>
                 </div>
               </div>

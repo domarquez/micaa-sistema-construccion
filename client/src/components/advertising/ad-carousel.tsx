@@ -94,7 +94,7 @@ export function AdCarousel() {
   const currentAd = sampleAds[currentIndex];
 
   return (
-    <Card className="relative overflow-hidden bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
+    <Card className="relative overflow-hidden bg-gradient-to-r from-orange-50 to-red-50 border-orange-200 max-w-full">
       <CardContent className="p-0">
         <div 
           className="relative"
@@ -108,7 +108,7 @@ export function AdCarousel() {
               <img
                 src={currentAd.imageUrl}
                 alt={currentAd.title}
-                className="w-full h-32 sm:h-28 md:h-32 object-cover"
+                className="w-full h-24 sm:h-28 md:h-32 object-cover"
                 onError={(e) => {
                   e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMjUgNzVIMTc1VjEyNUgxMjVWNzVaIiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8Y2lyY2xlIGN4PSIxNDAiIGN5PSI5MCIgcj0iNSIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
                 }}
@@ -123,11 +123,11 @@ export function AdCarousel() {
             {/* Content */}
             <div className="flex-1 p-2 sm:p-3 md:p-4">
               <div className="flex justify-between items-start mb-1 sm:mb-2">
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm md:text-base line-clamp-1">
+                <div className="flex-1 min-w-0 pr-2">
+                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm md:text-base line-clamp-1 break-words">
                     {currentAd.title}
                   </h3>
-                  <p className="text-orange-600 font-medium text-xs">
+                  <p className="text-orange-600 font-medium text-xs break-words">
                     {currentAd.company}
                   </p>
                 </div>
