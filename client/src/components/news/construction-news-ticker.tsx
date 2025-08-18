@@ -109,9 +109,9 @@ export function ConstructionNewsTicker() {
   const currentNews = sampleNews[currentIndex];
 
   return (
-    <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden max-w-xs mx-auto">
+    <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden max-w-[260px] sm:max-w-[280px] md:max-w-xs mx-auto">
       <div 
-        className="aspect-square flex flex-col p-3"
+        className="aspect-square flex flex-col p-2 sm:p-3"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
