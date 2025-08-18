@@ -102,7 +102,7 @@ export function AdCarousel() {
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
           {/* Square Card Design */}
-          <div className="max-w-[200px] sm:max-w-[220px] md:max-w-[240px] lg:max-w-[260px] xl:max-w-[280px] 2xl:max-w-xs mx-auto">
+          <div className="max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-xs mx-auto">
             {/* Image - Square aspect ratio */}
             <div className="w-full aspect-square bg-gray-100 relative overflow-hidden rounded-t-lg">
               <img
@@ -131,15 +131,15 @@ export function AdCarousel() {
             </div>
 
             {/* Content - Compact below image */}
-            <div className="p-1 sm:p-1.5 md:p-2 lg:p-3 bg-white rounded-b-lg">
+            <div className="p-0.5 sm:p-1 md:p-1.5 lg:p-2 xl:p-3 bg-white rounded-b-lg">
               <div className="text-center">
-                <h3 className="font-semibold text-gray-900 text-xs sm:text-sm line-clamp-2 break-words leading-tight mb-0.5 sm:mb-1">
+                <h3 className="font-semibold text-gray-900 text-[10px] sm:text-xs md:text-sm line-clamp-2 break-words leading-tight mb-0.5 sm:mb-1">
                   {currentAd.title}
                 </h3>
-                <p className="text-orange-600 font-medium text-xs break-words leading-tight mb-1 sm:mb-2">
+                <p className="text-orange-600 font-medium text-[10px] sm:text-xs break-words leading-tight mb-1 sm:mb-2">
                   {currentAd.company}
                 </p>
-                <p className="text-gray-600 text-xs line-clamp-2 mb-2 sm:mb-3">
+                <p className="text-gray-600 text-[10px] sm:text-xs line-clamp-2 mb-2 sm:mb-3">
                   {currentAd.description}
                 </p>
 

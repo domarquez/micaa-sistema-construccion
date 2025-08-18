@@ -225,17 +225,22 @@
 /* Ultra-small devices optimization */
 @media (max-width: 360px) {
   .mobile-padding {
-    padding-left: 0.0625rem !important;
-    padding-right: 0.0625rem !important;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
   }
   
   .mobile-ultra-compact {
-    padding: 0.0625rem !important;
+    padding: 0rem !important;
   }
   
   .mobile-text-xs {
     font-size: 0.5rem !important;
     line-height: 0.7rem !important;
+  }
+  
+  /* Force maximum width constraint for very small screens */
+  .mobile-max-width {
+    max-width: calc(100vw - 1rem) !important;
   }
 }
 
