@@ -2552,6 +2552,29 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Delete all items from a budget (for editing)
+  app.delete("/api/budgets/:id/items", requireAuth, async (req, res) => {
+    try {
+      const budgetId = parseInt(req.params.id);
+      
+      // Get all budget items first
+      const items = await dbStorage.getBudgetItemsByBudgetId(budgetId);
+      
+      // Delete each item
+      for (const item of items) {
+        await dbStorage.deleteBudgetItem(item.id);
+      }
+      
+      res.json({ 
+        message: "Todos los elementos del presupuesto eliminados exitosamente",
+        deletedCount: items.length 
+      });
+    } catch (error) {
+      console.error("Error deleting budget items:", error);
+      res.status(500).json({ message: "Error al eliminar elementos del presupuesto" });
+    }
+  });
+
   // Register all routes under /api
   app.use('/api', router);
   

@@ -119,6 +119,8 @@ export default function Budgets() {
   const handleFormClose = () => {
     setShowForm(false);
     setEditingBudget(null);
+    // Invalidar cache para refrescar la lista
+    queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
     // Navigate back to budgets list if on new budget route
     if (location === '/budgets/new') {
       window.history.pushState(null, '', '/budgets');

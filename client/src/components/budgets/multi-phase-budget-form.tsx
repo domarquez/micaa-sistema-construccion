@@ -442,9 +442,13 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         console.log("Presupuesto actualizado:", budgetToUse);
 
         // Eliminar elementos existentes del presupuesto
+        console.log("Eliminando elementos existentes del presupuesto");
         const deleteResponse = await apiRequest("DELETE", `/api/budgets/${budget.id}/items`);
         if (!deleteResponse.ok) {
           console.warn("Error eliminando items existentes, continuando...");
+        } else {
+          const deleteResult = await deleteResponse.json();
+          console.log("Elementos eliminados:", deleteResult.deletedCount);
         }
         
       } else {
