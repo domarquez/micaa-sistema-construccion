@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import Dashboard from "@/pages/dashboard";
+import UnifiedHome from "@/pages/unified-home";
 import Materials from "@/pages/materials";
 import Activities from "@/pages/activities";
 import Budgets from "@/pages/budgets";
@@ -34,13 +34,10 @@ import AdminDatabase from "@/pages/admin-database";
 import Marketplace from "@/pages/marketplace";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
-import PublicView from "@/pages/public-view";
-import LandingPage from "@/pages/landing-page";
-import MobileStatic from "@/pages/mobile-static";
 import CustomActivities from "@/pages/custom-activities";
 import AccountSettings from "@/pages/account-settings";
 import NotFound from "@/pages/not-found";
-import AppSidebar from "@/components/layout/sidebar";
+import AppSidebar from "@/components/layout/sidebar-simple";
 import AppHeader from "@/components/layout/header";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -72,8 +69,8 @@ function AuthenticatedLayout() {
           <AppHeader />
           <main className="flex-1 p-4 md:p-6 overflow-auto">
             <Switch>
-              <Route path="/" component={MobileStatic} />
-              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/" component={UnifiedHome} />
+              <Route path="/dashboard" component={UnifiedHome} />
               <Route path="/materials" component={Materials} />
               <Route path="/activities" component={Activities} />
               <Route path="/custom-activities" component={CustomActivities} />
@@ -107,8 +104,6 @@ function AuthenticatedLayout() {
               <Route path="/marketplace" component={Marketplace} />
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
-              <Route path="/public" component={PublicView} />
-              <Route path="/landing" component={LandingPage} />
               <Route path="/account-settings" component={AccountSettings} />
               <Route component={NotFound} />
             </Switch>

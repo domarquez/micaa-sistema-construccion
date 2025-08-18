@@ -17,20 +17,17 @@ import {
   Package,
   Combine,
   Calculator,
-  BarChart3,
   Settings,
-  Shield,
   Construction,
   DollarSign,
   MapPin,
-  Building2,
   Store,
   Wrench,
   Users,
   Camera,
   Upload,
-  Globe,
   Mail,
+  Shield,
 } from "lucide-react";
 
 const menuItems = [
@@ -121,7 +118,7 @@ const adminItems = [
   {
     title: "Administrar Empresas",
     url: "/admin/suppliers",
-    icon: Building2,
+    icon: Store,
   },
   {
     title: "Organizar Actividades",
@@ -148,8 +145,6 @@ const adminItems = [
 export default function AppSidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
-  
-
 
   const isActive = (url: string) => {
     if (url === "/" && (location === "/" || location === "/dashboard")) {
@@ -260,7 +255,7 @@ export default function AppSidebar() {
           </SidebarGroup>
         )}
 
-        {(user?.role === "admin") && (
+        {(user as any)?.role === "admin" && (
           <SidebarGroup>
             <SidebarGroupLabel>Configuración</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -284,7 +279,7 @@ export default function AppSidebar() {
           </SidebarGroup>
         )}
 
-        {user?.role === "admin" && (
+        {(user as any)?.role === "admin" && (
           <SidebarGroup>
             <SidebarGroupLabel>Administración</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -322,7 +317,7 @@ export default function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
         <div className="text-xs text-muted-foreground text-center mt-2">
-          MICAA v1.0.0
+          MICAA v2.0 - Bolivia
         </div>
       </SidebarFooter>
     </Sidebar>
