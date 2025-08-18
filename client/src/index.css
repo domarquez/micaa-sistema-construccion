@@ -274,6 +274,25 @@
   .firefox-browser .ad-container {
     overflow-x: hidden !important;
   }
+  
+  /* Ultra mobile card optimization for very small screens */
+  @media (max-width: 350px) {
+    .mobile-ultra-compact {
+      padding: 0.125rem !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-ultra-compact .text-\[9px\] {
+      font-size: 7px !important;
+      line-height: 0.75 !important;
+    }
+    
+    .mobile-ultra-compact .text-\[8px\] {
+      font-size: 6px !important;
+      line-height: 0.7 !important;
+    }
+  }
 }
 
 /* Fluid responsive utilities */

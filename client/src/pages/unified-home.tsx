@@ -179,116 +179,116 @@ export default function UnifiedHome() {
           <ConstructionNewsTicker />
         </div>
 
-        {/* Statistics Grid - Mobile Optimized */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1 sm:gap-1.5 md:gap-2 lg:gap-3 mobile-padding mb-2 sm:mb-3 md:mb-4 lg:mb-6">
-          <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
-              <div className="flex flex-col items-center text-center">
-                <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-primary mb-0.5 sm:mb-1 flex-shrink-0" />
+        {/* Statistics Grid - Ultra Mobile Optimized */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-0.5 sm:gap-1 md:gap-1.5 lg:gap-2 xl:gap-3 mobile-padding mb-2 sm:mb-3 md:mb-4 lg:mb-6 overflow-hidden">
+          <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
+            <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
+              <div className="flex flex-col items-center text-center min-w-0">
+                <Users className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
+                  <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
                     {formatNumber(statistics?.totalUsers || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Usuarios</p>
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Usuarios</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.location.href = "/login?redirect=budgets"}>
-            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
-              <div className="flex flex-col items-center text-center">
-                <Calculator className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-green-600 mb-0.5 sm:mb-1 flex-shrink-0" />
+          <Card className="shadow-sm hover:shadow-md transition-shadow cursor-pointer min-w-0 max-w-full" onClick={() => window.location.href = "/login?redirect=budgets"}>
+            <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
+              <div className="flex flex-col items-center text-center min-w-0">
+                <Calculator className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-green-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
+                  <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
                     {formatNumber(statistics?.activeBudgets || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Presupuestos</p>
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Presupuestos</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
-              <div className="flex flex-col items-center text-center">
-                <Package className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-blue-600 mb-0.5 sm:mb-1 flex-shrink-0" />
+          <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
+            <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
+              <div className="flex flex-col items-center text-center min-w-0">
+                <Package className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-blue-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
+                  <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
                     {formatNumber(statistics?.totalMaterials || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Materiales</p>
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Materiales</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
-              <div className="flex flex-col items-center text-center">
-                <Combine className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-purple-600 mb-0.5 sm:mb-1 flex-shrink-0" />
+          <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
+            <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
+              <div className="flex flex-col items-center text-center min-w-0">
+                <Combine className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-purple-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
+                  <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
                     {formatNumber(statistics?.totalActivities || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Actividades</p>
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Actividades</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
-              <div className="flex flex-col items-center text-center">
-                <Building2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-orange-600 mb-0.5 sm:mb-1 flex-shrink-0" />
+          <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
+            <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
+              <div className="flex flex-col items-center text-center min-w-0">
+                <Building2 className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-orange-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
+                  <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
                     {formatNumber(statistics?.totalProjects || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Proyectos</p>
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Proyectos</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
-              <div className="flex flex-col items-center text-center">
-                <Truck className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-red-600 mb-0.5 sm:mb-1 flex-shrink-0" />
+          <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
+            <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
+              <div className="flex flex-col items-center text-center min-w-0">
+                <Truck className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-red-600 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
+                  <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
                     {formatNumber(statistics?.totalSuppliers || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Proveedores</p>
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Proveedores</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
-              <div className="flex flex-col items-center text-center">
-                <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-green-500 mb-0.5 sm:mb-1 flex-shrink-0" />
+          <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
+            <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
+              <div className="flex flex-col items-center text-center min-w-0">
+                <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-green-500 mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
+                  <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
                     {formatCurrency(statistics?.totalProjectValue || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Valor Total</p>
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Valor Total</p>
               </div>
             </CardContent>
           </Card>
