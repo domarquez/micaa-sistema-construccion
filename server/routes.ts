@@ -3,7 +3,7 @@ import { db } from './db';
 import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { storage } from './storage';
+import { storage as dbStorage } from './storage';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -2210,7 +2210,7 @@ export async function registerRoutes(app: any) {
   }
 
   // Configure multer for image uploads
-  const storage = multer.default.diskStorage({
+  const multerStorage = multer.default.diskStorage({
     destination: (req, file, cb) => {
       cb(null, uploadsDir);
     },
@@ -2223,7 +2223,7 @@ export async function registerRoutes(app: any) {
   });
 
   const upload = multer.default({
-    storage: storage,
+    storage: multerStorage,
     limits: {
       fileSize: 5 * 1024 * 1024, // 5MB limit
     },
@@ -2430,7 +2430,7 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ message: "Datos incompletos para crear presupuesto" });
       }
 
-      const budget = await storage.createBudget({
+      const budget = await dbStorage.createBudget({
         projectId: parseInt(projectId),
         phaseId: phaseId ? parseInt(phaseId) : null,
         total: parseFloat(total),
@@ -2448,7 +2448,7 @@ export async function registerRoutes(app: any) {
   app.get("/api/budgets", requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const budgets = await storage.getBudgetsByUserId(userId);
+      const budgets = await dbStorage.getBudgetsByUserId(userId);
       res.json(budgets);
     } catch (error) {
       console.error("Error getting budgets:", error);
@@ -2462,7 +2462,7 @@ export async function registerRoutes(app: any) {
       const budgetId = parseInt(req.params.id);
       const updateData = req.body;
 
-      const updatedBudget = await storage.updateBudget(budgetId, updateData);
+      const updatedBudget = await dbStorage.updateBudget(budgetId, updateData);
       res.json(updatedBudget);
     } catch (error) {
       console.error("Error updating budget:", error);
@@ -2474,7 +2474,7 @@ export async function registerRoutes(app: any) {
   app.delete("/api/budgets/:id", requireAuth, async (req, res) => {
     try {
       const budgetId = parseInt(req.params.id);
-      await storage.deleteBudget(budgetId);
+      await dbStorage.deleteBudget(budgetId);
       res.json({ message: "Presupuesto eliminado exitosamente" });
     } catch (error) {
       console.error("Error deleting budget:", error);
@@ -2493,7 +2493,7 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ message: "Datos incompletos para crear elemento de presupuesto" });
       }
 
-      const budgetItem = await storage.createBudgetItem({
+      const budgetItem = await dbStorage.createBudgetItem({
         budgetId: parseInt(budgetId),
         activityId: parseInt(activityId),
         phaseId: phaseId ? parseInt(phaseId) : null,
@@ -2518,7 +2518,7 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ message: "ID de presupuesto requerido" });
       }
 
-      const items = await storage.getBudgetItemsByBudgetId(parseInt(budgetId as string));
+      const items = await dbStorage.getBudgetItemsByBudgetId(parseInt(budgetId as string));
       res.json(items);
     } catch (error) {
       console.error("Error getting budget items:", error);
@@ -2532,7 +2532,7 @@ export async function registerRoutes(app: any) {
       const itemId = parseInt(req.params.id);
       const updateData = req.body;
 
-      const updatedItem = await storage.updateBudgetItem(itemId, updateData);
+      const updatedItem = await dbStorage.updateBudgetItem(itemId, updateData);
       res.json(updatedItem);
     } catch (error) {
       console.error("Error updating budget item:", error);
@@ -2544,7 +2544,7 @@ export async function registerRoutes(app: any) {
   app.delete("/api/budget-items/:id", requireAuth, async (req, res) => {
     try {
       const itemId = parseInt(req.params.id);
-      await storage.deleteBudgetItem(itemId);
+      await dbStorage.deleteBudgetItem(itemId);
       res.json({ message: "Elemento eliminado exitosamente" });
     } catch (error) {
       console.error("Error deleting budget item:", error);
