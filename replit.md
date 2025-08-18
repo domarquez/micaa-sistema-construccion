@@ -13,6 +13,7 @@ Preferred communication style: Simple, everyday language.
 - **UI Library**: Shadcn/ui components leveraging Radix UI primitives.
 - **Styling**: Tailwind CSS with CSS variables for dynamic theming.
 - **Responsiveness**: Fluid responsive design utilizing `rem` units, `clamp()` for typography and spacing, and `min()` for container constraints. Mobile-first approach with optimized touch targets and compact layouts.
+- **Mobile Optimization**: Ultra-compact design with square component layouts, minimal padding (0.25rem on mobile), and aggressive space optimization for small screens ≤480px.
 - **User Experience**: Anonymous project creation via `sessionStorage` for temporary access, clear color-coded action buttons with tooltips, and professional PDF export for APU documents.
 
 ### Technical Implementation
@@ -29,6 +30,7 @@ Preferred communication style: Simple, everyday language.
 ### Feature Specifications
 - **Core Modules**: User management (authentication, authorization, roles), materials catalog, construction activities (with APU and compositions), multi-phase budget management, supplier network with marketplace integration, and regional price intelligence.
 - **Specialized Features**: APU Calculator based on Bolivian standards, city-specific price factors, supplier marketplace with advertising, tools & labor cost tracking, and user-defined custom activities.
+- **Mobile Components**: Square-format advertising carousel and construction news ticker with aspect-ratio 1:1, optimized for mobile viewing with minimal vertical space usage.
 - **Data Flow**: Secure JWT-based authentication. Budget creation involves system-calculated compositions, material price fetching, regional factor application, and comprehensive cost computation (materials, labor, equipment, admin, utility, tax).
 - **PDF Export**: Generation of professional APU PDF documents with detailed breakdowns, project information, and custom activity identification.
 
