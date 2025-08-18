@@ -8,47 +8,34 @@ Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **UI Library**: Shadcn/ui components with Radix UI primitives
-- **Styling**: Tailwind CSS with CSS variables
-- **State Management**: TanStack Query for server state, React hooks for local state
-- **Routing**: Wouter
-- **Forms**: React Hook Form with Zod validation
+### UI/UX Decisions
+- **Framework**: React 18 with TypeScript, Vite build tool.
+- **UI Library**: Shadcn/ui components leveraging Radix UI primitives.
+- **Styling**: Tailwind CSS with CSS variables for dynamic theming.
+- **Responsiveness**: Fluid responsive design utilizing `rem` units, `clamp()` for typography and spacing, and `min()` for container constraints. Mobile-first approach with optimized touch targets and compact layouts.
+- **User Experience**: Anonymous project creation via `sessionStorage` for temporary access, clear color-coded action buttons with tooltips, and professional PDF export for APU documents.
 
-### Backend Architecture
-- **Runtime**: Node.js 20 with Express.js
-- **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: JWT-based authentication with bcryptjs
-- **File Uploads**: Multer with Sharp for image processing
-- **API Design**: RESTful endpoints
+### Technical Implementation
+- **Frontend State Management**: TanStack Query for server state, React hooks for local state.
+- **Routing**: Wouter for client-side navigation.
+- **Forms**: React Hook Form with Zod for validation.
+- **Backend Runtime**: Node.js 20 with Express.js.
+- **Language**: TypeScript with ES modules.
+- **Database**: PostgreSQL with Drizzle ORM.
+- **Authentication**: JWT-based with bcryptjs for secure password hashing.
+- **File Uploads**: Multer for handling file uploads, Sharp for image processing.
+- **API Design**: RESTful endpoints.
 
-### Core Modules
-- **User Management**: Authentication, authorization, role-based access.
-- **Materials Management**: Catalog with categories, pricing, and supplier relationships.
-- **Activities Management**: Construction activities with APU calculations and compositions.
-- **Budget Management**: Multi-phase project budgets with detailed item breakdowns.
-- **Supplier Network**: Company profiles, pricing, and marketplace integration.
-- **Price Intelligence**: Regional price factors and dynamic pricing adjustments.
+### Feature Specifications
+- **Core Modules**: User management (authentication, authorization, roles), materials catalog, construction activities (with APU and compositions), multi-phase budget management, supplier network with marketplace integration, and regional price intelligence.
+- **Specialized Features**: APU Calculator based on Bolivian standards, city-specific price factors, supplier marketplace with advertising, tools & labor cost tracking, and user-defined custom activities.
+- **Data Flow**: Secure JWT-based authentication. Budget creation involves system-calculated compositions, material price fetching, regional factor application, and comprehensive cost computation (materials, labor, equipment, admin, utility, tax).
+- **PDF Export**: Generation of professional APU PDF documents with detailed breakdowns, project information, and custom activity identification.
 
-### Specialized Features
-- **APU Calculator**: Detailed unit price analysis following Bolivian construction standards.
-- **City Price Factors**: Geographic pricing adjustments for different Bolivian cities.
-- **Supplier Marketplace**: Platform for material suppliers with advertising capabilities.
-- **Tools & Labor Management**: Equipment and workforce cost tracking.
-- **Custom Activities**: User-defined activities with custom compositions.
-
-### Data Flow Principles
-- **Authentication**: JWT-based token management for secure user access.
-- **Budget Creation**: System-calculated compositions, material price fetching, regional factor application, and final cost computation.
-- **Price Calculation**: Integration of base material prices, activity compositions, labor/equipment costs, regional adjustments, administrative costs, utility margins, and tax calculations.
-
-### Deployment Strategy
-- **Environments**: Configured for Replit development and Render production deployment.
-- **Build Process**: Client (Vite) and Server (esbuild) optimization, static asset serving, Drizzle migrations.
-- **Scaling**: Optimized for connection pooling, error handling, asset optimization, and environment-specific plugin loading.
+### System Design Choices
+- **Deployment**: Configured for Replit development and Render production.
+- **Build Process**: Optimized client and server builds with Drizzle migrations.
+- **Scalability**: Designed for connection pooling, robust error handling, asset optimization, and environment-specific configurations.
 
 ## External Dependencies
 
@@ -59,129 +46,5 @@ Preferred communication style: Simple, everyday language.
 - **Validation**: `zod`, `@hookform/resolvers`
 - **Charts**: `recharts`
 - **Deployment Platform**: Render
-- **Monetization**: Google AdSense (ca-pub-8854811165812956) - Implementado con espacios publicitarios estratégicos
+- **Monetization**: Google AdSense (publisher ID `ca-pub-8854811165812956`)
 - **Email Service**: SMTP (mail.micaa.store) for notifications and password recovery.
-
-## Recent Changes
-
-### August 16, 2025: Critical Application Recovery & Database Connection Fixed ✓
-- **Application Startup Issue Resolved**: Fixed PostgreSQL connection errors that were preventing app from starting
-- **TypeScript Errors Fixed**: Resolved 118+ TypeScript compilation errors in routes.ts file
-- **Database Schema Applied**: Successfully pushed database schema using drizzle-kit
-- **Simplified Routes Implementation**: Created working routes-simple.ts with core functionality
-- **API Endpoints Working**: All primary endpoints functioning correctly:
-  - `/api/health` - Health check endpoint
-  - `/api/test-db` - Database connection verification
-  - `/api/materials` - Materials catalog with categories
-  - `/api/material-categories` - Material categories listing
-  - `/api/activities` - Construction activities with phases
-  - `/api/construction-phases` - Construction phases
-- **Server Running Successfully**: Application now starts and serves on port 5000
-- **Database Connection Verified**: PostgreSQL connection established and working properly
-
-### August 17, 2025: Enhanced Mobile Responsiveness & Anonymous System Optimization ✓
-- **Mobile Typography Optimization**: Reduced font sizes system-wide for better mobile experience
-  - Header reduced from h-14 to h-12 on mobile, smaller spacing (px-2)
-  - Button text sizes: text-xs on mobile, text-sm on larger screens
-  - Icon sizes: w-3 h-3 on mobile, w-4 h-4 on larger screens
-  - Touch targets reduced to 38px minimum for better mobile density
-- **Anonymous User Experience Enhanced**: 
-  - Button text changes to "Iniciar Proyecto Temporal" for anonymous users
-  - Anonymous projects stored in sessionStorage during browser session
-  - Optimized mobile dropdown menus with smaller components
-  - Improved anonymous warning banner with mobile-optimized typography
-- **Table Interface Mobile Optimization**:
-  - Smaller action buttons with reduced padding (p-1 vs p-1.5)
-  - Tighter spacing between table elements
-  - Responsive header heights and icon scaling
-  - Mobile-first table headers with text-xs base sizing
-- **CSS Mobile Improvements**: Added mobile-specific breakpoints with smaller fonts, compact spacing, and optimized touch targets
-
-### August 17, 2025: Complete Budget Integration for Custom Activities Fixed ✓
-- **Bridge Activities System**: Custom activities correctly saved in budgets using bridge activities that create temporary entries in activities table  
-- **Personalized Names Display**: Custom activities appear with correct names followed by "(Personalizada)" in saved budgets
-- **Database Optimization**: System reuses existing bridge activities to prevent unnecessary duplication
-- **Complete Data Persistence**: Quantities, prices, and custom activity names save and display correctly in budget details
-- **Verified Integration**: Confirmed through API testing that budget items include proper activity names and isCustomActivity flags
-- **Enhanced Budget Details**: Budget detail view correctly shows custom activities with personalized naming
-- **Full Custom Activity Workflow**: From creation to budget inclusion, all functionality working seamlessly
-
-### August 17, 2025: Complete Mobile Responsiveness & Anonymous System with Enhanced UX ✓
-- **Mobile Interface Optimization**: Complete mobile-first responsive design implemented
-  - Hamburger menu icon (3 horizontal lines) for clear mobile navigation
-  - Reduced font sizes system-wide: text-xs on mobile, text-sm on larger screens  
-  - Icon sizes: w-3 h-3 on mobile, w-4 h-4 on desktop for better density
-  - Touch targets optimized to 38px minimum for mobile usability
-  - Compact header heights: h-12 on mobile vs h-14 on desktop
-  - Mobile-specific padding and spacing reductions (px-2, py-2)
-- **Public Page Mobile Optimization**: Landing page fully responsive with:
-  - Adaptive logo sizing across breakpoints (sm/md/lg variants)
-  - Responsive typography with mobile-specific line heights
-  - Compact statistics cards with proper mobile scaling
-  - Mobile-optimized search and filter components
-  - Responsive navigation tabs with smaller icons and text
-  - Category filter buttons with abbreviated text for mobile
-- **Enhanced Advertising System**: 
-  - Supplier advertisement carousel with auto-rotation (4 second intervals)
-  - Construction news ticker with scrolling animation for mobile
-  - Strategic placement between statistics and content sections
-  - Mobile-optimized ad components with proper responsive behavior
-- **Anonymous User Experience**: Temporary sessionStorage-based projects for anonymous users
-- **Complete CSS Mobile Framework**: Added mobile-specific breakpoints and utilities
-  - Line-clamp utilities for text truncation
-  - Marquee animation for news ticker
-  - Touch-optimized hover states and interactions
-- **Route Structure Update**: Public page set as homepage (/) with dashboard accessible via /dashboard
-
-### August 17, 2025: Complete Budget Management & Full APU PDF Export System ✓
-- **Budget Edit vs Duplicate Issue Fixed**: Sistema now correctly updates existing budgets instead of creating duplicates
-- **Project Duplication Complete**: Full project+budget duplication working with proper protection against multiple clicks
-- **Complete APU PDF Export System**: Full Análisis de Precios Unitarios (APU) generation with detailed breakdown:
-  - Professional MICAA company header and business information
-  - Complete project details (client, location, phase, dates)
-  - Individual APU analysis for each budget activity item
-  - Detailed composition breakdown: Materials, Mano de Obra, Herramientas y Equipos
-  - Quantities, unit prices, and subtotals for each component
-  - APU summary totals by category (materials, labor, equipment)
-  - Custom activity identification with "(Personalizada)" labels
-  - Multi-page support with automatic page breaks and space management
-  - Total general calculation from all activity subtotals
-  - Professional construction industry format following Bolivian standards
-- **UI Icon System**: Clear color-coded action buttons with tooltips:
-  - Blue (Eye): View budget details
-  - Green (FileText): Edit budget  
-  - Purple (Download): Download complete APU PDF with full breakdown
-  - Orange (Printer): Open for printing/detailed view
-  - Red (Trash): Delete project
-- **Complete APU Integration**: PDF generation retrieves full activity compositions via API calls
-- **Professional Construction Documentation**: Generated APU PDFs suitable for client presentation with industry-standard format
-
-### August 12, 2025: Critical Price Update System Fixed - WORKING ✓
-- **MAJOR FIX**: Material price update system completely repaired and working correctly
-- **New API Route**: Created `/api/admin/update-material-price` POST route bypassing problematic PUT requests
-- **Frontend Rewrite**: Replaced problematic Dialog components with native HTML modal, eliminated all shadcn Dialog dependencies
-- **Direct Fetch Implementation**: Bypassed TanStack Query mutations with direct fetch calls to eliminate interference
-- **Route Mapping Fixed**: Corrected App.tsx routing to use clean implementation (admin-materials-clean.tsx)
-- **SelectItem Errors Fixed**: Corrected empty value props in SelectItem components across admin pages
-- **Confirmed Working**: Multiple successful price updates logged: Material 111 updated to 20.00, Material 1 updated to 47.80
-
-### August 11, 2025: System Fixes and Google AdSense Integration Complete
-- **Critical System Repairs**: Eliminadas todas las referencias incorrectas a "insucons" del sistema
-- **Activity Compositions Fixed**: Agregadas rutas API faltantes /api/activities/:id/compositions y /api/activities/:id/apu-calculation 
-- **Admin Material Management**: Corregidos errores de autenticación y endpoints en gestión de materiales
-- **API Request Fixes**: Corregido orden de parámetros en función apiRequest (método, URL, datos)
-- **Dialog Management**: Sistema de diálogos completamente reescrito para evitar conflictos
-
-### Google AdSense Integration Complete
-- **Google AdSense Script**: Agregado script oficial en index.html con Publisher ID ca-pub-8854811165812956
-- **Advertising Components**: Creados 4 componentes especializados de anuncios:
-  - AdHeader: Banner 728x90 para desktop (slot: 2345678901)
-  - AdInFeed: Anuncios fluidos 300x250 entre contenido (slot: 1234567890) 
-  - AdMobile: Banner móvil 320x50 (slot: 4567890123)
-  - AdFooter: Anuncios responsivos de footer (slot: 3456789012)
-- **Strategic Placement**: Espacios publicitarios integrados en páginas principales cumpliendo políticas de Google:
-  - Página pública: Header + Mobile + InFeed + Footer
-  - Dashboard: InFeed entre gráficos + Footer
-  - Materiales: InFeed entre header y contenido
-  - Marketplace: InFeed entre estadísticas + Footer
-- **Policy Compliance**: Implementación que respeta las políticas de Google AdSense sin saturar la experiencia del usuario

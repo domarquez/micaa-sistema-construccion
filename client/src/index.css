@@ -124,12 +124,10 @@
     background-color: hsl(var(--secondary-variant));
   }
 
-  /* Mobile responsive optimizations */
-  @media (max-width: 640px) {
-    .mobile-compact {
-      font-size: 0.875rem;
-      padding: 0.5rem;
-    }
+  /* Mobile responsive optimizations - Fluid */
+  .mobile-compact {
+    font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+    padding: clamp(0.375rem, 1.5vw, 0.5rem);
   }
   
   /* Mobile menu optimizations */
@@ -148,8 +146,7 @@
     top: 0;
     right: 0;
     height: 100vh;
-    width: 280px;
-    max-width: 85vw;
+    width: clamp(280px, 85vw, 400px);
     background: white;
     z-index: 50;
     transform: translateX(100%);
@@ -176,10 +173,10 @@
     color: hsl(var(--primary-variant));
   }
   
-  /* Mobile-specific utilities */
+  /* Mobile-specific utilities - Fluid */
   .touch-target {
-    min-height: 38px;
-    min-width: 38px;
+    min-height: clamp(38px, 10vw, 44px);
+    min-width: clamp(38px, 10vw, 44px);
   }
   
   .scroll-touch {
@@ -208,49 +205,93 @@
   }
 }
 
-/* Mobile-first responsive breakpoints */
-@media (max-width: 640px) {
-  .mobile-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .mobile-full-width {
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-  }
-  
-  /* Smaller fonts and spacing for mobile */
-  body {
-    font-size: 14px;
-  }
-  
-  h1 { font-size: 1.5rem; }
-  h2 { font-size: 1.25rem; }
-  
-  .table-mobile { font-size: 12px; }
-  
-  .mobile-compact {
-    padding: 0.25rem 0.5rem;
-    font-size: 11px;
-  }
-  
-  .mobile-padding {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .mobile-text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-  
-  .mobile-button {
-    min-height: 48px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
+/* Fluid responsive utilities */
+.mobile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: clamp(0.5rem, 2vw, 1rem);
+}
+
+.mobile-full-width {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+/* Fluid typography */
+.fluid-text-xs { font-size: clamp(0.625rem, 2vw, 0.75rem); }
+.fluid-text-sm { font-size: clamp(0.75rem, 2.5vw, 0.875rem); }
+.fluid-text-base { font-size: clamp(0.875rem, 3vw, 1rem); }
+.fluid-text-lg { font-size: clamp(1rem, 3.5vw, 1.125rem); }
+.fluid-text-xl { font-size: clamp(1.125rem, 4vw, 1.25rem); }
+.fluid-text-2xl { font-size: clamp(1.25rem, 4.5vw, 1.5rem); }
+
+/* Fluid spacing */
+.fluid-p-2 { padding: clamp(0.375rem, 1.5vw, 0.5rem); }
+.fluid-p-3 { padding: clamp(0.5rem, 2vw, 0.75rem); }
+.fluid-p-4 { padding: clamp(0.75rem, 2.5vw, 1rem); }
+.fluid-p-6 { padding: clamp(1rem, 3vw, 1.5rem); }
+
+/* Fluid margins */
+.fluid-m-2 { margin: clamp(0.375rem, 1.5vw, 0.5rem); }
+.fluid-m-4 { margin: clamp(0.75rem, 2.5vw, 1rem); }
+.fluid-m-6 { margin: clamp(1rem, 3vw, 1.5rem); }
+
+/* Fluid gaps */
+.fluid-gap-2 { gap: clamp(0.375rem, 1.5vw, 0.5rem); }
+.fluid-gap-4 { gap: clamp(0.75rem, 2.5vw, 1rem); }
+.fluid-gap-6 { gap: clamp(1rem, 3vw, 1.5rem); }
+
+/* Fluid responsive containers */
+.container-responsive {
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+  margin: 0 auto;
+  max-width: min(90vw, 1200px);
+}
+
+.container-fluid {
+  width: 100%;
+  padding-left: clamp(0.5rem, 2vw, 1rem);
+  padding-right: clamp(0.5rem, 2vw, 1rem);
+}
+
+.section-padding {
+  padding-top: clamp(1rem, 5vw, 3rem);
+  padding-bottom: clamp(1rem, 5vw, 3rem);
+}
+
+/* Fluid responsive body and headings */
+body {
+  font-size: clamp(0.875rem, 3vw, 1rem);
+}
+
+h1 { font-size: clamp(1.5rem, 5vw, 2.25rem); }
+h2 { font-size: clamp(1.25rem, 4.5vw, 1.875rem); }
+h3 { font-size: clamp(1.125rem, 4vw, 1.5rem); }
+h4 { font-size: clamp(1rem, 3.5vw, 1.25rem); }
+h5 { font-size: clamp(0.875rem, 3vw, 1.125rem); }
+h6 { font-size: clamp(0.75rem, 2.5vw, 1rem); }
+
+.table-mobile { font-size: clamp(0.625rem, 2vw, 0.75rem); }
+
+.mobile-compact {
+  padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.5rem, 2vw, 0.75rem);
+  font-size: clamp(0.625rem, 2vw, 0.75rem);
+}
+
+.mobile-padding {
+  padding-left: clamp(0.75rem, 3vw, 1rem);
+  padding-right: clamp(0.75rem, 3vw, 1rem);
+}
+
+.mobile-text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.mobile-button {
+  min-height: clamp(44px, 12vw, 48px);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Marquee animation for news ticker */
