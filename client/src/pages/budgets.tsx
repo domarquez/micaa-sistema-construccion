@@ -119,14 +119,13 @@ export default function Budgets() {
       }
     },
     onSuccess: () => {
+      // Invalidar queries de manera normal ahora que el endpoint funciona
+      queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/anonymous/budgets"] });
       toast({
         title: "Proyecto eliminado",
         description: "El proyecto y todos sus presupuestos han sido eliminados correctamente.",
       });
-      // Forzar recarga completa de la página para asegurar que se actualice la lista
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     },
     onError: (error) => {
       console.error('Error deleting project:', error);

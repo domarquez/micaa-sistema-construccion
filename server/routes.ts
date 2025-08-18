@@ -1628,6 +1628,55 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Eliminar proyecto
+  app.delete("/api/projects/:id", requireAuth, async (req: any, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const userId = req.user.id;
+      
+      console.log("Intentando eliminar proyecto:", projectId, "para usuario:", userId);
+      
+      // Verificar que el proyecto pertenece al usuario
+      const existingProject = await db.select()
+        .from(projects)
+        .where(and(eq(projects.id, projectId), eq(projects.userId, userId)))
+        .limit(1);
+      
+      if (existingProject.length === 0) {
+        console.log("Proyecto no encontrado o sin permisos:", projectId);
+        return res.status(404).json({ message: "Proyecto no encontrado o sin permisos" });
+      }
+      
+      console.log("Proyecto encontrado, procediendo a eliminar:", existingProject[0]);
+      
+      // Eliminar elementos de presupuesto primero (cascada)
+      const projectBudgets = await db
+        .select({ id: budgets.id })
+        .from(budgets)
+        .where(eq(budgets.projectId, projectId));
+      
+      console.log("Presupuestos del proyecto a eliminar:", projectBudgets);
+
+      for (const budget of projectBudgets) {
+        await db.delete(budgetItems).where(eq(budgetItems.budgetId, budget.id));
+        console.log("Elementos del presupuesto eliminados:", budget.id);
+      }
+      
+      // Eliminar presupuestos
+      await db.delete(budgets).where(eq(budgets.projectId, projectId));
+      console.log("Presupuestos eliminados para proyecto:", projectId);
+      
+      // Eliminar proyecto
+      await db.delete(projects).where(eq(projects.id, projectId));
+      console.log("Proyecto eliminado exitosamente:", projectId);
+      
+      res.json({ message: "Proyecto eliminado exitosamente" });
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      res.status(500).json({ message: "Failed to delete project" });
+    }
+  });
+
   // =====================================
   // ADMIN ROUTES - CRUD COMPLETO
   // =====================================
