@@ -127,26 +127,26 @@ export default function UnifiedHome() {
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-4 sm:py-6 md:py-8 lg:py-12 xl:py-16 mobile-padding">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold mb-2 sm:mb-3 md:mb-4 break-words leading-tight">
+            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-2 sm:mb-3 md:mb-4 break-words leading-tight mobile-text-sm">
               MICAA - Sistema de Construcción
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-3 sm:mb-4 md:mb-6 opacity-90 break-words leading-tight">
+            <p className="text-xs sm:text-sm md:text-base lg:text-lg mb-2 sm:mb-3 md:mb-4 opacity-90 break-words leading-tight mobile-text-xs">
               Presupuestos inteligentes para la construcción boliviana
             </p>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center items-stretch sm:items-center max-w-md sm:max-w-none mx-auto">
+            <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2 md:gap-3 justify-center items-stretch sm:items-center max-w-xs sm:max-w-md md:max-w-none mx-auto">
               <Link href="/login" className="flex-1 sm:flex-none">
                 <Button 
-                  size="lg" 
-                  className="w-full bg-white text-blue-600 hover:bg-gray-100 text-sm sm:text-base px-4 sm:px-6 md:px-8 py-2 sm:py-3"
+                  size="sm" 
+                  className="w-full bg-white text-blue-600 hover:bg-gray-100 text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 mobile-ultra-compact"
                 >
                   Iniciar Sesión
                 </Button>
               </Link>
               <Link href="/register" className="flex-1 sm:flex-none">
                 <Button 
-                  size="lg" 
+                  size="sm" 
                   variant="outline" 
-                  className="w-full border-white text-white hover:bg-white hover:text-blue-600 text-sm sm:text-base px-4 sm:px-6 md:px-8 py-2 sm:py-3"
+                  className="w-full border-white text-white hover:bg-white hover:text-blue-600 text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 mobile-ultra-compact"
                 >
                   Registrarse Gratis
                 </Button>
@@ -156,12 +156,12 @@ export default function UnifiedHome() {
         </div>
 
         {/* Anonymous Usage Warning */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-2 sm:p-3 md:p-4 mobile-padding mb-3 sm:mb-4 md:mb-6">
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-1.5 sm:p-2 md:p-3 mobile-padding mb-2 sm:mb-3 md:mb-4">
           <div className="flex items-start">
-            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-yellow-600 mr-1.5 sm:mr-2 md:mr-3 flex-shrink-0 mt-0.5" />
             <div className="text-xs sm:text-sm min-w-0 flex-1">
-              <p className="text-yellow-800 font-medium break-words">Modo de Vista Pública</p>
-              <p className="text-yellow-700 mt-1 break-words leading-tight">
+              <p className="text-yellow-800 font-medium break-words mobile-text-xs">Modo de Vista Pública</p>
+              <p className="text-yellow-700 mt-0.5 sm:mt-1 break-words leading-tight mobile-text-xs">
                 Puedes explorar materiales y precios. Para crear presupuestos, 
                 <Link href="/login" className="underline font-medium ml-1">inicia sesión</Link> o 
                 <Link href="/register" className="underline font-medium ml-1">regístrate gratis</Link>.
@@ -171,125 +171,125 @@ export default function UnifiedHome() {
         </div>
 
         {/* Advertisement Carousel */}
-        <div className="mobile-padding mb-4 sm:mb-6">
+        <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
           <AdCarousel />
         </div>
 
         {/* Construction News Ticker */}
-        <div className="mobile-padding mb-4 sm:mb-6">
+        <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
           <ConstructionNewsTicker />
         </div>
 
         {/* Statistics Grid - Mobile Optimized */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1.5 sm:gap-2 md:gap-3 lg:gap-4 mobile-padding mb-3 sm:mb-4 md:mb-6 lg:mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1 sm:gap-1.5 md:gap-2 lg:gap-3 mobile-padding mb-2 sm:mb-3 md:mb-4 lg:mb-6">
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-2 sm:p-3 md:p-4">
+            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
               <div className="flex flex-col items-center text-center">
-                <Users className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-primary mb-1 sm:mb-2 flex-shrink-0" />
+                <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-primary mb-0.5 sm:mb-1 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
+                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
                     {formatNumber(statistics?.totalUsers || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Usuarios</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Usuarios</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.location.href = "/login?redirect=budgets"}>
-            <CardContent className="p-2 sm:p-3 md:p-4">
+            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
               <div className="flex flex-col items-center text-center">
-                <Calculator className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-600 mb-1 sm:mb-2 flex-shrink-0" />
+                <Calculator className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-green-600 mb-0.5 sm:mb-1 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
+                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
                     {formatNumber(statistics?.activeBudgets || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Presupuestos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Presupuestos</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-2 sm:p-3 md:p-4">
+            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
               <div className="flex flex-col items-center text-center">
-                <Package className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-blue-600 mb-1 sm:mb-2 flex-shrink-0" />
+                <Package className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-blue-600 mb-0.5 sm:mb-1 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
+                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
                     {formatNumber(statistics?.totalMaterials || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Materiales</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Materiales</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-2 sm:p-3 md:p-4">
+            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
               <div className="flex flex-col items-center text-center">
-                <Combine className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-purple-600 mb-1 sm:mb-2 flex-shrink-0" />
+                <Combine className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-purple-600 mb-0.5 sm:mb-1 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
+                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
                     {formatNumber(statistics?.totalActivities || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Actividades</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Actividades</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-2 sm:p-3 md:p-4">
+            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
               <div className="flex flex-col items-center text-center">
-                <Building2 className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-orange-600 mb-1 sm:mb-2 flex-shrink-0" />
+                <Building2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-orange-600 mb-0.5 sm:mb-1 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
+                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
                     {formatNumber(statistics?.totalProjects || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Proyectos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Proyectos</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-2 sm:p-3 md:p-4">
+            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
               <div className="flex flex-col items-center text-center">
-                <Truck className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-red-600 mb-1 sm:mb-2 flex-shrink-0" />
+                <Truck className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-red-600 mb-0.5 sm:mb-1 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
+                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
                     {formatNumber(statistics?.totalSuppliers || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Proveedores</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Proveedores</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
-            <CardContent className="p-2 sm:p-3 md:p-4">
+            <CardContent className="p-1 sm:p-2 md:p-3 mobile-ultra-compact">
               <div className="flex flex-col items-center text-center">
-                <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-500 mb-1 sm:mb-2 flex-shrink-0" />
+                <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-green-500 mb-0.5 sm:mb-1 flex-shrink-0" />
                 {statsLoading ? (
-                  <Skeleton className="h-4 sm:h-5 md:h-6 w-6 sm:w-8 md:w-12 mb-1" />
+                  <Skeleton className="h-3 sm:h-4 md:h-5 w-4 sm:w-6 md:w-8 mb-0.5" />
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-foreground break-words">
+                  <p className="text-xs sm:text-sm md:text-base font-bold text-foreground break-words mobile-text-xs">
                     {formatCurrency(statistics?.totalProjectValue || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words">Valor Total</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium break-words mobile-text-xs">Valor Total</p>
               </div>
             </CardContent>
           </Card>
