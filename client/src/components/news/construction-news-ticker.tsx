@@ -109,7 +109,7 @@ export function ConstructionNewsTicker() {
   const currentNews = sampleNews[currentIndex];
 
   return (
-    <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden max-w-[220px] sm:max-w-[240px] md:max-w-[260px] lg:max-w-[280px] xl:max-w-xs mx-auto">
+    <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden max-w-[200px] sm:max-w-[220px] md:max-w-[240px] lg:max-w-[260px] xl:max-w-[280px] 2xl:max-w-xs mx-auto">
       <div 
         className="aspect-square flex flex-col p-1 sm:p-1.5 md:p-2 lg:p-3"
         onMouseEnter={() => setIsPaused(true)}
@@ -140,11 +140,11 @@ export function ConstructionNewsTicker() {
               </Badge>
             </div>
             
-            <h4 className="font-medium text-gray-900 text-sm leading-tight text-center line-clamp-3">
+            <h4 className="font-medium text-gray-900 text-xs sm:text-sm leading-tight text-center line-clamp-3">
               {currentNews.title}
             </h4>
             
-            <p className="text-xs text-gray-600 line-clamp-3 text-center">
+            <p className="text-xs text-gray-600 line-clamp-2 sm:line-clamp-3 text-center">
               {currentNews.summary}
             </p>
           </div>
@@ -165,14 +165,14 @@ export function ConstructionNewsTicker() {
             </div>
 
             {/* Progress indicators */}
-            <div className="flex justify-center space-x-1">
+            <div className="flex justify-center space-x-0.5 sm:space-x-1">
               {sampleNews.map((_, index) => (
                 <div
                   key={index}
-                  className={`h-1 transition-all duration-300 ${
+                  className={`h-0.5 sm:h-1 transition-all duration-300 ${
                     index === currentIndex 
-                      ? 'bg-blue-600 w-6' 
-                      : 'bg-gray-300 w-2'
+                      ? 'bg-blue-600 w-4 sm:w-6' 
+                      : 'bg-gray-300 w-1.5 sm:w-2'
                   } rounded-full`}
                 />
               ))}
