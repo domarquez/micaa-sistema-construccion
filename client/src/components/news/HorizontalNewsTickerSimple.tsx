@@ -77,6 +77,7 @@ const fallbackNews: NewsItem[] = [
 
 export function HorizontalNewsTickerSimple() {
   const [isPaused, setIsPaused] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const tickerRef = useRef<HTMLDivElement>(null);
 
   // Try to fetch from API, fallback to local data
@@ -100,17 +101,32 @@ export function HorizontalNewsTickerSimple() {
     return `Hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
   };
 
-  // Auto-scroll effect
+  // Auto-rotation effect for mobile (single news rotation)
+  useEffect(() => {
+    if (isPaused || news.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % news.length);
+    }, 4000); // Change news every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [isPaused, news.length]);
+
+  // Desktop scroll effect
   useEffect(() => {
     if (!tickerRef.current || isPaused || news.length === 0) return;
+    
+    // Only apply scroll effect on desktop
+    const isDesktop = window.innerWidth >= 768;
+    if (!isDesktop) return;
 
     const ticker = tickerRef.current;
     let scrollAmount = 0;
-    const scrollSpeed = 1; // pixels per frame
+    const scrollSpeed = 0.5; // Slower scroll for better readability
     const maxScroll = ticker.scrollWidth - ticker.clientWidth;
 
     const scroll = () => {
-      if (!isPaused) {
+      if (!isPaused && maxScroll > 0) {
         scrollAmount += scrollSpeed;
         if (scrollAmount >= maxScroll) {
           scrollAmount = 0;
@@ -128,6 +144,46 @@ export function HorizontalNewsTickerSimple() {
     if (newsItem.sourceUrl) {
       window.open(newsItem.sourceUrl, '_blank', 'noopener,noreferrer');
     }
+  };
+
+  const NewsCard = ({ newsItem }: { newsItem: NewsItem }) => {
+    const category = newsItem.category as keyof typeof categoryColors;
+    return (
+      <div className="flex flex-col gap-2">
+        {/* Category and Time */}
+        <div className="flex items-center justify-between">
+          <Badge 
+            variant="outline" 
+            className={`text-[8px] sm:text-[9px] px-1 py-0 ${categoryColors[category] || categoryColors.general}`}
+          >
+            {categoryLabels[category] || categoryLabels.general}
+          </Badge>
+          <span className="text-[8px] sm:text-[9px] text-gray-500">
+            {newsItem.publishedAt ? formatTimeAgo(newsItem.publishedAt) : ''}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h4 className="font-semibold text-xs sm:text-sm text-gray-900 line-clamp-2 leading-tight text-left">
+          {newsItem.title}
+        </h4>
+
+        {/* Summary */}
+        <p className="text-[9px] sm:text-xs text-gray-600 line-clamp-2 text-left">
+          {newsItem.summary}
+        </p>
+
+        {/* Source and Link */}
+        <div className="flex items-center justify-between">
+          <span className="text-[8px] sm:text-[9px] text-blue-600 font-medium">
+            {newsItem.sourceName}
+          </span>
+          {newsItem.sourceUrl && (
+            <ExternalLink className="w-3 h-3 text-blue-600 hover:text-blue-700" />
+          )}
+        </div>
+      </div>
+    );
   };
 
   if (news.length === 0) {
@@ -151,68 +207,62 @@ export function HorizontalNewsTickerSimple() {
           </Badge>
         </div>
 
-        {/* Scrolling News Container */}
-        <div 
-          ref={tickerRef}
-          className="flex gap-4 p-2 sm:p-3 overflow-x-hidden"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          style={{ 
-            scrollBehavior: 'smooth',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {/* Duplicate news for seamless loop */}
-          {[...news, ...news].map((newsItem, index) => {
-            const category = newsItem.category as keyof typeof categoryColors;
-            return (
+        {/* News Container - Mobile: Single rotating news, Desktop: Scrolling */}
+        <div className="relative">
+          {/* Mobile View - Single News Rotation */}
+          <div className="md:hidden">
+            <div className="p-2 sm:p-3">
+              {news.length > 0 && (
+                <div
+                  className="cursor-pointer hover:shadow-md transition-all duration-500 bg-white rounded-lg border border-gray-200 p-3 w-full"
+                  onClick={() => handleNewsClick(news[currentIndex])}
+                >
+                  <NewsCard newsItem={news[currentIndex]} />
+                </div>
+              )}
+            </div>
+            
+            {/* Mobile Indicators */}
+            <div className="flex justify-center gap-1 pb-2">
+              {news.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                    index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}
+                  onClick={() => setCurrentIndex(index)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop View - Horizontal Scroll */}
+          <div 
+            ref={tickerRef}
+            className="hidden md:flex gap-4 p-3 overflow-x-hidden"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            style={{ 
+              scrollBehavior: 'smooth',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {/* Duplicate news for seamless loop */}
+            {[...news, ...news].map((newsItem, index) => (
               <div
                 key={`${newsItem.id}-${index}`}
-                className="flex-shrink-0 cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-2 sm:p-3 min-w-[280px] sm:min-w-[320px] max-w-[320px] sm:max-w-[360px]"
+                className="flex-shrink-0 cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-3 min-w-[320px] max-w-[360px]"
                 onClick={() => handleNewsClick(newsItem)}
               >
-                <div className="flex flex-col gap-2">
-                  {/* Category and Time */}
-                  <div className="flex items-center justify-between">
-                    <Badge 
-                      variant="outline" 
-                      className={`text-[8px] sm:text-[9px] px-1 py-0 ${categoryColors[category] || categoryColors.general}`}
-                    >
-                      {categoryLabels[category] || categoryLabels.general}
-                    </Badge>
-                    <span className="text-[8px] sm:text-[9px] text-gray-500">
-                      {newsItem.publishedAt ? formatTimeAgo(newsItem.publishedAt) : ''}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <h4 className="font-semibold text-xs sm:text-sm text-gray-900 line-clamp-2 leading-tight text-left">
-                    {newsItem.title}
-                  </h4>
-
-                  {/* Summary */}
-                  <p className="text-[9px] sm:text-xs text-gray-600 line-clamp-2 text-left">
-                    {newsItem.summary}
-                  </p>
-
-                  {/* Source and Link */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-[8px] sm:text-[9px] text-blue-600 font-medium">
-                      {newsItem.sourceName}
-                    </span>
-                    {newsItem.sourceUrl && (
-                      <ExternalLink className="w-3 h-3 text-blue-600 hover:text-blue-700" />
-                    )}
-                  </div>
-                </div>
+                <NewsCard newsItem={newsItem} />
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
-        {/* Pause indicator */}
+        {/* Pause indicator for desktop */}
         {isPaused && (
-          <div className="absolute top-1 right-1 text-[8px] text-blue-600 bg-white px-1 rounded">
+          <div className="hidden md:block absolute top-1 right-1 text-[8px] text-blue-600 bg-white px-1 rounded">
             Pausado
           </div>
         )}
