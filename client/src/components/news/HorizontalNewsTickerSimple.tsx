@@ -170,37 +170,37 @@ export function HorizontalNewsTickerSimple() {
   const NewsCard = ({ newsItem }: { newsItem: NewsItem }) => {
     const category = newsItem.category as keyof typeof categoryColors;
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 min-w-0 w-full">
         {/* Category and Time */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-1">
           <Badge 
             variant="outline" 
-            className={`text-[8px] sm:text-[9px] px-1 py-0 ${categoryColors[category] || categoryColors.general}`}
+            className={`text-[8px] sm:text-[9px] px-1 py-0 flex-shrink-0 ${categoryColors[category] || categoryColors.general}`}
           >
             {categoryLabels[category] || categoryLabels.general}
           </Badge>
-          <span className="text-[8px] sm:text-[9px] text-gray-500">
+          <span className="text-[8px] sm:text-[9px] text-gray-500 flex-shrink-0">
             {newsItem.publishedAt ? formatTimeAgo(newsItem.publishedAt) : ''}
           </span>
         </div>
 
         {/* Title */}
-        <h4 className="font-semibold text-xs sm:text-sm text-gray-900 line-clamp-2 leading-tight text-left">
+        <h4 className="font-semibold text-xs sm:text-sm text-gray-900 line-clamp-2 leading-tight text-left break-words">
           {newsItem.title}
         </h4>
 
         {/* Summary */}
-        <p className="text-[9px] sm:text-xs text-gray-600 line-clamp-2 text-left">
+        <p className="text-[9px] sm:text-xs text-gray-600 line-clamp-2 text-left break-words">
           {newsItem.summary}
         </p>
 
         {/* Source and Link */}
-        <div className="flex items-center justify-between">
-          <span className="text-[8px] sm:text-[9px] text-blue-600 font-medium">
+        <div className="flex items-center justify-between gap-1">
+          <span className="text-[8px] sm:text-[9px] text-blue-600 font-medium truncate flex-1">
             {newsItem.sourceName}
           </span>
           {newsItem.sourceUrl && (
-            <ExternalLink className="w-3 h-3 text-blue-600 hover:text-blue-700" />
+            <ExternalLink className="w-3 h-3 text-blue-600 hover:text-blue-700 flex-shrink-0" />
           )}
         </div>
       </div>
@@ -228,8 +228,8 @@ export function HorizontalNewsTickerSimple() {
           </Badge>
         </div>
 
-        {/* News Container - Mobile: Single rotating news, Desktop: Scrolling */}
-        <div className="relative">
+        {/* News Container - Mobile: Single rotating news, Desktop: Responsive */}
+        <div className="relative w-full max-w-full overflow-hidden">
           {/* Mobile View - Single News Rotation */}
           <div className="md:hidden">
             <div className="p-2 sm:p-3">
@@ -258,7 +258,7 @@ export function HorizontalNewsTickerSimple() {
           </div>
 
           {/* Desktop View - Responsive Layout */}
-          <div className="hidden md:block">
+          <div className="hidden md:block w-full max-w-full">
             {/* XL Screens (1200px+): Horizontal scroll with 3+ news */}
             {visibleNewsCount === 3 && (
               <div 
@@ -286,16 +286,18 @@ export function HorizontalNewsTickerSimple() {
 
             {/* LG Screens (1024px-1199px): 2 news side by side with rotation */}
             {visibleNewsCount === 2 && (
-              <div className="p-3">
-                <div className="grid grid-cols-2 gap-4 transition-all duration-500">
+              <div className="p-3 w-full max-w-full overflow-hidden">
+                <div className="grid grid-cols-2 gap-3 lg:gap-4 w-full transition-all duration-500">
                   {(() => {
                     const firstNews = news[currentIndex];
                     const secondNews = news[(currentIndex + 1) % news.length];
                     return [firstNews, secondNews].map((newsItem, index) => (
                       <div
                         key={`${newsItem.id}-${currentIndex}-${index}`}
-                        className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-3"
+                        className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-2 lg:p-3 min-w-0 max-w-full"
                         onClick={() => handleNewsClick(newsItem)}
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
                       >
                         <NewsCard newsItem={newsItem} />
                       </div>
