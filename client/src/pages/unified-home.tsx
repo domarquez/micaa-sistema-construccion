@@ -12,6 +12,8 @@ import { ConstructionNewsTicker } from "@/components/news/construction-news-tick
 import AdInFeed from "@/components/ads/AdInFeed";
 import AdFooter from "@/components/ads/AdFooter";
 import AdMobile from "@/components/ads/AdMobile";
+import CompanyAdMobile from "@/components/ads/CompanyAdMobile";
+import CompanyAdInFeed from "@/components/ads/CompanyAdInFeed";
 import {
   Table,
   TableBody,
@@ -119,10 +121,8 @@ export default function UnifiedHome() {
     // PUBLIC VIEW - Optimized for anonymous users
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        {/* Mobile Ad Banner */}
-        <div className="block sm:hidden mb-4">
-          <AdMobile />
-        </div>
+        {/* Mobile Company Advertisement */}
+        <CompanyAdMobile />
 
         {/* Hero Section - Mobile Optimized */}
         <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding overflow-hidden">
@@ -294,10 +294,8 @@ export default function UnifiedHome() {
           </Card>
         </div>
 
-        {/* AdInFeed */}
-        <div className="mobile-padding mb-6 sm:mb-8">
-          <AdInFeed />
-        </div>
+        {/* Company Advertisement In Feed */}
+        <CompanyAdInFeed />
 
         {/* Materials and Suppliers Tabs - Mobile Optimized */}
         <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
