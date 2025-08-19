@@ -42,6 +42,14 @@ app.use((req, res, next) => {
 (async () => {
   const { registerRoutes } = await import("./routes");
   await registerRoutes(app);
+  
+  // Initialize news data
+  try {
+    const { newsScraperService } = await import("./news-scraper");
+    await newsScraperService.seedNews();
+  } catch (error) {
+    console.error('Error initializing news:', error);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

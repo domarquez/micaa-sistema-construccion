@@ -1099,6 +1099,22 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  app.get("/api/public/construction-news", async (req: Request, res: Response) => {
+    try {
+      const news = await db
+        .select()
+        .from(constructionNews)
+        .where(eq(constructionNews.isActive, true))
+        .orderBy(desc(constructionNews.publishedAt))
+        .limit(20);
+
+      res.json(news);
+    } catch (error) {
+      console.error("Error fetching construction news:", error);
+      res.status(500).json({ message: "Failed to fetch construction news" });
+    }
+  });
+
   app.get("/api/public/dual-advertisements", async (req: Request, res: Response) => {
     try {
       const activeAds = await db

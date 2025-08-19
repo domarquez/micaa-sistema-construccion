@@ -315,6 +315,20 @@ export const consultationMessages = pgTable("consultation_messages", {
   respondedAt: timestamp("responded_at"),
 });
 
+export const constructionNews = pgTable("construction_news", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  summary: text("summary").notNull(),
+  content: text("content"),
+  sourceUrl: text("source_url"),
+  sourceName: text("source_name").notNull(),
+  category: text("category").notNull().default("general"), // 'economia', 'gobierno', 'obras', 'tecnologia', 'normativa', 'general'
+  isActive: boolean("is_active").notNull().default(true),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 
 
 // Relations
@@ -609,6 +623,18 @@ export const insertConsultationMessageSchema = createInsertSchema(consultationMe
   messageType: z.enum(["consulta", "sugerencia"]).default("consulta"),
 });
 
+export const insertConstructionNewsSchema = createInsertSchema(constructionNews).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  title: z.string().min(1, "El título es requerido"),
+  summary: z.string().min(1, "El resumen es requerido"),
+  sourceName: z.string().min(1, "El nombre de la fuente es requerido"),
+  category: z.enum(["economia", "gobierno", "obras", "tecnologia", "normativa", "general"]).default("general"),
+  publishedAt: z.union([z.string(), z.date()]).optional(),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -709,6 +735,9 @@ export type ActivityCompositionWithDetails = ActivityComposition & {
 
 export type ConsultationMessage = typeof consultationMessages.$inferSelect;
 export type InsertConsultationMessage = z.infer<typeof insertConsultationMessageSchema>;
+
+export type ConstructionNews = typeof constructionNews.$inferSelect;
+export type InsertConstructionNews = z.infer<typeof insertConstructionNewsSchema>;
 
 export type UserActivity = typeof userActivities.$inferSelect;
 export type InsertUserActivity = z.infer<typeof insertUserActivitySchema>;
