@@ -118,13 +118,9 @@ export function HorizontalNewsTickerSimple() {
     const updateVisibleCount = () => {
       const width = window.innerWidth;
       if (width >= 1200) {
-        setVisibleNewsCount(3); // XL screens: 3 news
-      } else if (width >= 1024) {
-        setVisibleNewsCount(2); // LG screens: 2 news
-      } else if (width >= 768) {
-        setVisibleNewsCount(1); // MD screens: 1 news with arrows
+        setVisibleNewsCount(3); // XL screens: 3 news with scroll
       } else {
-        setVisibleNewsCount(1); // Mobile handled separately
+        setVisibleNewsCount(2); // All other screens: 2 news rotating
       }
     };
 
@@ -213,7 +209,7 @@ export function HorizontalNewsTickerSimple() {
 
   return (
     <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 overflow-hidden max-w-full">
         {/* Header */}
         <div className="flex items-center justify-between px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-100 border-b border-blue-200">
           <div className="flex items-center gap-2">
@@ -258,12 +254,12 @@ export function HorizontalNewsTickerSimple() {
           </div>
 
           {/* Desktop View - Responsive Layout */}
-          <div className="hidden md:block w-full max-w-full">
+          <div className="hidden md:block w-full">
             {/* XL Screens (1200px+): Horizontal scroll with 3+ news */}
             {visibleNewsCount === 3 && (
               <div 
                 ref={tickerRef}
-                className="flex gap-4 p-3 overflow-x-hidden"
+                className="flex gap-3 p-3 overflow-x-hidden"
                 onMouseEnter={() => setIsPaused(true)}
                 onMouseLeave={() => setIsPaused(false)}
                 style={{ 
@@ -275,7 +271,7 @@ export function HorizontalNewsTickerSimple() {
                 {[...news, ...news].map((newsItem, index) => (
                   <div
                     key={`${newsItem.id}-${index}`}
-                    className="flex-shrink-0 cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-3 w-80"
+                    className="flex-shrink-0 cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-3 w-72"
                     onClick={() => handleNewsClick(newsItem)}
                   >
                     <NewsCard newsItem={newsItem} />
@@ -284,17 +280,17 @@ export function HorizontalNewsTickerSimple() {
               </div>
             )}
 
-            {/* LG Screens (1024px-1199px): 2 news side by side with rotation */}
+            {/* All other desktop screens: 2 news side by side with rotation */}
             {visibleNewsCount === 2 && (
-              <div className="p-3 w-full max-w-full overflow-hidden">
-                <div className="grid grid-cols-2 gap-3 lg:gap-4 w-full transition-all duration-500">
+              <div className="container mx-auto px-3 py-3">
+                <div className="grid grid-cols-2 gap-4 transition-all duration-500">
                   {(() => {
                     const firstNews = news[currentIndex];
                     const secondNews = news[(currentIndex + 1) % news.length];
                     return [firstNews, secondNews].map((newsItem, index) => (
                       <div
                         key={`${newsItem.id}-${currentIndex}-${index}`}
-                        className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-2 lg:p-3 min-w-0 max-w-full"
+                        className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-3"
                         onClick={() => handleNewsClick(newsItem)}
                         onMouseEnter={() => setIsPaused(true)}
                         onMouseLeave={() => setIsPaused(false)}
@@ -305,58 +301,7 @@ export function HorizontalNewsTickerSimple() {
                   })()}
                 </div>
                 
-                {/* Indicators for LG screens */}
-                <div className="flex justify-center gap-2 mt-3">
-                  {news.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
-                      }`}
-                      onClick={() => setCurrentIndex(index)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* MD Screens (768px-1023px): 1 news with navigation and auto-rotation */}
-            {visibleNewsCount === 1 && (
-              <div className="relative p-3">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setCurrentIndex((prev) => (prev - 1 + news.length) % news.length)}
-                    className="flex-shrink-0 p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                  >
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  
-                  <div
-                    className="flex-1 cursor-pointer hover:shadow-md transition-all duration-500 bg-white rounded-lg border border-gray-200 p-3"
-                    onClick={() => handleNewsClick(news[currentIndex])}
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                  >
-                    <NewsCard newsItem={news[currentIndex]} />
-                  </div>
-                  
-                  <button
-                    onClick={() => setCurrentIndex((prev) => (prev + 1) % news.length)}
-                    className="flex-shrink-0 p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                  >
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-                
-                {/* Desktop Indicators for MD screens */}
+                {/* Indicators */}
                 <div className="flex justify-center gap-2 mt-3">
                   {news.map((_, index) => (
                     <button
