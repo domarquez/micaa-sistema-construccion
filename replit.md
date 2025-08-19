@@ -3,6 +3,12 @@
 ## Overview
 MICAA is a comprehensive construction management platform designed for Bolivia. Its main purpose is to streamline construction project management by offering budget estimation, material pricing, activity management, and supplier integration. Key capabilities include APU (Análisis de Precios Unitarios) calculations, regional price adjustments, and a marketplace for construction materials and suppliers. The business vision is to provide an essential tool for the Bolivian construction sector, enhancing efficiency and connectivity.
 
+## Recent Changes (January 2025)
+- **News System Enhancement**: Implemented responsive news rotator with real construction industry data from Bolivia
+- **SimpleNewsRotator Component**: Mobile shows 1 news with auto-rotation, desktop shows 2 news side-by-side with controlled height
+- **Database Integration**: Added construction_news table with real sector news (material prices, regulations, BIM adoption)
+- **Advertising System**: Maintained dual system - Google AdSense for revenue + company advertisements for registered suppliers
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
@@ -30,7 +36,7 @@ Preferred communication style: Simple, everyday language.
 ### Feature Specifications
 - **Core Modules**: User management (authentication, authorization, roles), materials catalog, construction activities (with APU and compositions), multi-phase budget management, supplier network with marketplace integration, and regional price intelligence.
 - **Specialized Features**: APU Calculator based on Bolivian standards, city-specific price factors, supplier marketplace with advertising, tools & labor cost tracking, and user-defined custom activities.
-- **Mobile Components**: Square-format advertising carousel and construction news ticker with aspect-ratio 1:1, optimized for mobile viewing with minimal vertical space usage.
+- **Mobile Components**: Square-format advertising carousel and responsive news rotator with controlled layouts, optimized for mobile viewing with minimal vertical space usage.
 - **Data Flow**: Secure JWT-based authentication. Budget creation involves system-calculated compositions, material price fetching, regional factor application, and comprehensive cost computation (materials, labor, equipment, admin, utility, tax).
 - **PDF Export**: Generation of professional APU PDF documents with detailed breakdowns, project information, and custom activity identification.
 
