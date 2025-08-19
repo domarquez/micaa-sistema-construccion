@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { AdCarousel } from "@/components/advertising/ad-carousel";
 import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
+import { CompanyAdvertisementCarousel } from "@/components/advertising/CompanyAdvertisementCarousel";
 import AdInFeed from "@/components/ads/AdInFeed";
 import AdFooter from "@/components/ads/AdFooter";
 import AdMobile from "@/components/ads/AdMobile";
@@ -121,8 +122,10 @@ export default function UnifiedHome() {
     // PUBLIC VIEW - Optimized for anonymous users
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        {/* Mobile Company Advertisement */}
-        <CompanyAdMobile />
+        {/* Mobile Ad Banner */}
+        <div className="block sm:hidden mb-4">
+          <AdMobile />
+        </div>
 
         {/* Hero Section - Mobile Optimized */}
         <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding overflow-hidden">
@@ -294,8 +297,13 @@ export default function UnifiedHome() {
           </Card>
         </div>
 
-        {/* Company Advertisement In Feed */}
-        <CompanyAdInFeed />
+        {/* Company Advertisements Carousel */}
+        <CompanyAdvertisementCarousel />
+
+        {/* AdInFeed */}
+        <div className="mobile-padding mb-6 sm:mb-8">
+          <AdInFeed />
+        </div>
 
         {/* Materials and Suppliers Tabs - Mobile Optimized */}
         <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
