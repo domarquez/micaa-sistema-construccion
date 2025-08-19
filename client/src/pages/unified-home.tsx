@@ -127,17 +127,17 @@ export default function UnifiedHome() {
         {/* Hero Section - Mobile Optimized */}
         <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding overflow-hidden">
           <div className="max-w-7xl mx-auto text-left sm:text-center">
-            <h1 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 break-words leading-tight mobile-text-xs text-left sm:text-center">
+            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1 sm:mb-2 md:mb-3 break-words leading-tight text-left sm:text-center">
               MICAA - Sistema de Construcción
             </h1>
-            <p className="text-[10px] sm:text-xs md:text-sm lg:text-base mb-1.5 sm:mb-2 md:mb-3 opacity-90 break-words leading-tight mobile-text-xs text-left sm:text-center">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-1.5 sm:mb-2 md:mb-3 opacity-90 break-words leading-tight text-left sm:text-center">
               Presupuestos inteligentes para la construcción boliviana
             </p>
             <div className="flex flex-col gap-1 sm:gap-1.5 md:gap-2 justify-start sm:justify-center items-stretch max-w-full">
               <Link href="/login" className="w-full sm:w-auto">
                 <Button 
                   size="sm" 
-                  className="w-full sm:w-auto bg-white text-blue-600 hover:bg-gray-100 text-[10px] sm:text-xs md:text-sm px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 h-6 sm:h-7 md:h-8"
+                  className="w-full sm:w-auto bg-white text-blue-600 hover:bg-gray-100 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-3"
                 >
                   Iniciar Sesión
                 </Button>
@@ -145,7 +145,7 @@ export default function UnifiedHome() {
               <Link href="/register" className="w-full sm:w-auto">
                 <Button 
                   size="sm" 
-                  className="w-full sm:w-auto bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 text-[10px] sm:text-xs md:text-sm px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 h-6 sm:h-7 md:h-8"
+                  className="w-full sm:w-auto bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-3"
                 >
                   Registrarse Gratis
                 </Button>
@@ -158,12 +158,12 @@ export default function UnifiedHome() {
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-1 sm:p-1.5 md:p-2 mobile-padding mb-1 sm:mb-2 md:mb-3 max-w-full overflow-hidden">
           <div className="flex items-start gap-1 sm:gap-1.5 md:gap-2">
             <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div className="text-[10px] sm:text-xs md:text-sm min-w-0 flex-1">
+            <div className="text-sm sm:text-base md:text-lg min-w-0 flex-1">
               <p className="text-yellow-800 font-medium break-words leading-tight text-left">Modo de Vista Pública</p>
               <p className="text-yellow-700 mt-0.5 break-words leading-tight text-left">
                 Puedes explorar materiales y precios. Para crear presupuestos,
-                <Link href="/login" className="underline font-medium ml-0.5">inicia sesión</Link> o 
-                <Link href="/register" className="underline font-medium ml-0.5">regístrate gratis</Link>.
+                <Link href="/login" className="underline font-medium ml-1">inicia sesión</Link> o 
+                <Link href="/register" className="underline font-medium ml-1">regístrate gratis</Link>.
               </p>
             </div>
           </div>
@@ -188,11 +188,11 @@ export default function UnifiedHome() {
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground break-words leading-none">
                     {formatNumber(statistics?.totalUsers || 0)}
                   </p>
                 )}
-                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Usuarios</p>
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground font-medium break-words leading-tight">Usuarios</p>
               </div>
             </CardContent>
           </Card>
@@ -204,11 +204,11 @@ export default function UnifiedHome() {
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground break-words leading-none">
                     {formatNumber(statistics?.activeBudgets || 0)}
                   </p>
                 )}
-                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Presupuestos</p>
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground font-medium break-words leading-tight">Presupuestos</p>
               </div>
             </CardContent>
           </Card>
@@ -220,11 +220,11 @@ export default function UnifiedHome() {
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground break-words leading-none">
                     {formatNumber(statistics?.totalMaterials || 0)}
                   </p>
                 )}
-                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Materiales</p>
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground font-medium break-words leading-tight">Materiales</p>
               </div>
             </CardContent>
           </Card>
@@ -236,11 +236,11 @@ export default function UnifiedHome() {
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground break-words leading-none">
                     {formatNumber(statistics?.totalActivities || 0)}
                   </p>
                 )}
-                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Actividades</p>
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground font-medium break-words leading-tight">Actividades</p>
               </div>
             </CardContent>
           </Card>
@@ -252,11 +252,11 @@ export default function UnifiedHome() {
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground break-words leading-none">
                     {formatNumber(statistics?.totalProjects || 0)}
                   </p>
                 )}
-                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Proyectos</p>
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground font-medium break-words leading-tight">Proyectos</p>
               </div>
             </CardContent>
           </Card>
@@ -268,11 +268,11 @@ export default function UnifiedHome() {
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground break-words leading-none">
                     {formatNumber(statistics?.totalSuppliers || 0)}
                   </p>
                 )}
-                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Proveedores</p>
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground font-medium break-words leading-tight">Proveedores</p>
               </div>
             </CardContent>
           </Card>
@@ -284,11 +284,11 @@ export default function UnifiedHome() {
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
-                  <p className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-foreground break-words mobile-text-xs leading-none">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground break-words leading-none">
                     {formatCurrency(statistics?.totalProjectValue || 0)}
                   </p>
                 )}
-                <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs text-muted-foreground font-medium break-words mobile-text-xs leading-tight">Valor Total</p>
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground font-medium break-words leading-tight">Valor Total</p>
               </div>
             </CardContent>
           </Card>
@@ -304,7 +304,7 @@ export default function UnifiedHome() {
           <Card className="shadow-lg max-w-full overflow-hidden">
             <CardHeader className="p-1 sm:p-2 md:p-3">
               <div className="flex flex-col gap-1 sm:gap-2">
-                <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-foreground break-words text-left">
+                <CardTitle className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground break-words text-left">
                   Explorar Materiales y Proveedores
                 </CardTitle>
                 <div className="flex bg-muted p-0.5 sm:p-1 rounded-lg w-full gap-0.5">
@@ -312,18 +312,18 @@ export default function UnifiedHome() {
                     variant={activeTab === "materials" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("materials")}
-                    className="text-[10px] sm:text-xs md:text-sm flex-1 min-w-0 h-6 sm:h-7 md:h-8 px-1 sm:px-2"
+                    className="text-sm sm:text-base md:text-lg flex-1 min-w-0 px-2 sm:px-3 py-2 sm:py-3"
                   >
-                    <Package className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 mr-0.5 sm:mr-1 flex-shrink-0" />
+                    <Package className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 mr-1 sm:mr-2 flex-shrink-0" />
                     <span className="truncate">Materiales</span>
                   </Button>
                   <Button
                     variant={activeTab === "suppliers" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("suppliers")}
-                    className="text-[10px] sm:text-xs md:text-sm flex-1 min-w-0 h-6 sm:h-7 md:h-8 px-1 sm:px-2"
+                    className="text-sm sm:text-base md:text-lg flex-1 min-w-0 px-2 sm:px-3 py-2 sm:py-3"
                   >
-                    <Store className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 mr-0.5 sm:mr-1 flex-shrink-0" />
+                    <Store className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 mr-1 sm:mr-2 flex-shrink-0" />
                     <span className="truncate">Proveedores</span>
                   </Button>
                 </div>
@@ -340,13 +340,13 @@ export default function UnifiedHome() {
                         placeholder="Buscar materiales..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-6 sm:pl-7 md:pl-9 text-[10px] sm:text-xs md:text-sm h-6 sm:h-7 md:h-8"
+                        className="pl-8 sm:pl-9 md:pl-10 text-sm sm:text-base md:text-lg"
                       />
                     </div>
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 md:py-2 border border-border rounded-md bg-background text-[10px] sm:text-xs md:text-sm h-6 sm:h-7 md:h-8"
+                      className="px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-3 border border-border rounded-md bg-background text-sm sm:text-base md:text-lg"
                     >
                       <option value="all">Todas las categorías</option>
                       {categories.map((category) => (
