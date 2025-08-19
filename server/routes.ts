@@ -28,8 +28,10 @@ const requireAuth = async (req: AuthRequest, res: Response, next: NextFunction) 
     // Verificar token JWT
     let decoded: CustomJwtPayload;
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as CustomJwtPayload;
+      const secret = process.env.JWT_SECRET || 'micaa-secret-key';
+      decoded = jwt.verify(token, secret) as CustomJwtPayload;
     } catch (error) {
+      console.error("JWT verification error:", error);
       return res.status(401).json({ message: "Token inválido" });
     }
 
