@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { AdCarousel } from "@/components/advertising/ad-carousel";
+
 import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
 import { CompanyAdvertisementCarousel } from "@/components/advertising/CompanyAdvertisementCarousel";
 import AdInFeed from "@/components/ads/AdInFeed";
@@ -172,10 +172,7 @@ export default function UnifiedHome() {
           </div>
         </div>
 
-        {/* Advertisement Carousel */}
-        <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
-          <AdCarousel />
-        </div>
+
 
         {/* Construction News Ticker */}
         <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
