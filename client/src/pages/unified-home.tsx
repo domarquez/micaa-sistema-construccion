@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 
 import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
-import { HorizontalNewsTicker } from "@/components/news/HorizontalNewsTicker";
+import { HorizontalNewsTickerSimple } from "@/components/news/HorizontalNewsTickerSimple";
 import { CompanyAdvertisementCarousel } from "@/components/advertising/CompanyAdvertisementCarousel";
 import AdInFeed from "@/components/ads/AdInFeed";
 import AdFooter from "@/components/ads/AdFooter";
@@ -176,7 +176,7 @@ export default function UnifiedHome() {
 
 
         {/* Horizontal News Ticker */}
-        <HorizontalNewsTicker />
+        <HorizontalNewsTickerSimple />
 
         {/* Statistics Grid - Ultra Mobile Optimized */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-0.5 sm:gap-1 md:gap-1.5 lg:gap-2 xl:gap-3 mobile-padding mb-2 sm:mb-3 md:mb-4 lg:mb-6 overflow-hidden">
