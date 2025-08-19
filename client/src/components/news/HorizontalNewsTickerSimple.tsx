@@ -112,17 +112,40 @@ export function HorizontalNewsTickerSimple() {
     return () => clearInterval(interval);
   }, [isPaused, news.length]);
 
-  // Desktop scroll effect
+  // Responsive desktop view with different layouts
+  const [visibleNewsCount, setVisibleNewsCount] = useState(1);
+
+  // Update visible news count based on screen size
+  useEffect(() => {
+    const updateVisibleCount = () => {
+      const width = window.innerWidth;
+      if (width >= 1200) {
+        setVisibleNewsCount(3); // XL screens: 3 news
+      } else if (width >= 1024) {
+        setVisibleNewsCount(2); // LG screens: 2 news
+      } else if (width >= 768) {
+        setVisibleNewsCount(1); // MD screens: 1 news with arrows
+      } else {
+        setVisibleNewsCount(1); // Mobile handled separately
+      }
+    };
+
+    updateVisibleCount();
+    window.addEventListener('resize', updateVisibleCount);
+    return () => window.removeEventListener('resize', updateVisibleCount);
+  }, []);
+
+  // Desktop scroll effect for XL screens only
   useEffect(() => {
     if (!tickerRef.current || isPaused || news.length === 0) return;
     
-    // Only apply scroll effect on desktop
-    const isDesktop = window.innerWidth >= 768;
-    if (!isDesktop) return;
+    // Only apply scroll effect on XL screens (3+ news)
+    const isXLScreen = window.innerWidth >= 1200;
+    if (!isXLScreen) return;
 
     const ticker = tickerRef.current;
     let scrollAmount = 0;
-    const scrollSpeed = 0.5; // Slower scroll for better readability
+    const scrollSpeed = 0.3; // Slower scroll for better readability
     const maxScroll = ticker.scrollWidth - ticker.clientWidth;
 
     const scroll = () => {
@@ -138,7 +161,7 @@ export function HorizontalNewsTickerSimple() {
 
     const animationId = requestAnimationFrame(scroll);
     return () => cancelAnimationFrame(animationId);
-  }, [isPaused, news.length]);
+  }, [isPaused, news.length, visibleNewsCount]);
 
   const handleNewsClick = (newsItem: NewsItem) => {
     if (newsItem.sourceUrl) {
@@ -236,33 +259,100 @@ export function HorizontalNewsTickerSimple() {
             </div>
           </div>
 
-          {/* Desktop View - Horizontal Scroll */}
-          <div 
-            ref={tickerRef}
-            className="hidden md:flex gap-4 p-3 overflow-x-hidden"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            style={{ 
-              scrollBehavior: 'smooth',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            {/* Duplicate news for seamless loop */}
-            {[...news, ...news].map((newsItem, index) => (
-              <div
-                key={`${newsItem.id}-${index}`}
-                className="flex-shrink-0 cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-3 min-w-[320px] max-w-[360px]"
-                onClick={() => handleNewsClick(newsItem)}
+          {/* Desktop View - Responsive Layout */}
+          <div className="hidden md:block">
+            {/* XL Screens (1200px+): Horizontal scroll with 3+ news */}
+            {visibleNewsCount === 3 && (
+              <div 
+                ref={tickerRef}
+                className="flex gap-4 p-3 overflow-x-hidden"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                style={{ 
+                  scrollBehavior: 'smooth',
+                  whiteSpace: 'nowrap'
+                }}
               >
-                <NewsCard newsItem={newsItem} />
+                {/* Duplicate news for seamless loop */}
+                {[...news, ...news].map((newsItem, index) => (
+                  <div
+                    key={`${newsItem.id}-${index}`}
+                    className="flex-shrink-0 cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-3 w-80"
+                    onClick={() => handleNewsClick(newsItem)}
+                  >
+                    <NewsCard newsItem={newsItem} />
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+
+            {/* LG Screens (1024px-1199px): 2 news side by side */}
+            {visibleNewsCount === 2 && (
+              <div className="grid grid-cols-2 gap-4 p-3">
+                {news.slice(currentIndex, currentIndex + 2).concat(
+                  currentIndex + 2 > news.length ? news.slice(0, (currentIndex + 2) % news.length) : []
+                ).slice(0, 2).map((newsItem, index) => (
+                  <div
+                    key={`${newsItem.id}-${index}`}
+                    className="cursor-pointer hover:shadow-md transition-all duration-200 bg-white rounded-lg border border-gray-200 p-3"
+                    onClick={() => handleNewsClick(newsItem)}
+                  >
+                    <NewsCard newsItem={newsItem} />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* MD Screens (768px-1023px): 1 news with navigation */}
+            {visibleNewsCount === 1 && (
+              <div className="relative p-3">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentIndex((prev) => (prev - 1 + news.length) % news.length)}
+                    className="flex-shrink-0 p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
+                  >
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  
+                  <div
+                    className="flex-1 cursor-pointer hover:shadow-md transition-all duration-500 bg-white rounded-lg border border-gray-200 p-3"
+                    onClick={() => handleNewsClick(news[currentIndex])}
+                  >
+                    <NewsCard newsItem={news[currentIndex]} />
+                  </div>
+                  
+                  <button
+                    onClick={() => setCurrentIndex((prev) => (prev + 1) % news.length)}
+                    className="flex-shrink-0 p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
+                  >
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Desktop Indicators for MD screens */}
+                <div className="flex justify-center gap-2 mt-3">
+                  {news.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+                      }`}
+                      onClick={() => setCurrentIndex(index)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Pause indicator for desktop */}
-        {isPaused && (
-          <div className="hidden md:block absolute top-1 right-1 text-[8px] text-blue-600 bg-white px-1 rounded">
+        {/* Pause indicator for XL desktop only */}
+        {isPaused && visibleNewsCount === 3 && (
+          <div className="absolute top-1 right-1 text-[8px] text-blue-600 bg-white px-1 rounded z-10">
             Pausado
           </div>
         )}
