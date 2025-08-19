@@ -124,28 +124,28 @@ export default function UnifiedHome() {
           <AdMobile />
         </div>
 
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-4 sm:py-6 md:py-8 lg:py-12 xl:py-16 mobile-padding">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-2 sm:mb-3 md:mb-4 break-words leading-tight mobile-text-sm">
+        {/* Hero Section - Mobile Optimized */}
+        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding overflow-hidden">
+          <div className="max-w-7xl mx-auto text-left sm:text-center">
+            <h1 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 break-words leading-tight mobile-text-xs text-left sm:text-center">
               MICAA - Sistema de Construcción
             </h1>
-            <p className="text-xs sm:text-sm md:text-base lg:text-lg mb-2 sm:mb-3 md:mb-4 opacity-90 break-words leading-tight mobile-text-xs">
+            <p className="text-[10px] sm:text-xs md:text-sm lg:text-base mb-1.5 sm:mb-2 md:mb-3 opacity-90 break-words leading-tight mobile-text-xs text-left sm:text-center">
               Presupuestos inteligentes para la construcción boliviana
             </p>
-            <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2 md:gap-3 justify-center items-stretch sm:items-center max-w-xs sm:max-w-md md:max-w-none mx-auto">
-              <Link href="/login" className="flex-1 sm:flex-none">
+            <div className="flex flex-col gap-1 sm:gap-1.5 md:gap-2 justify-start sm:justify-center items-stretch max-w-full">
+              <Link href="/login" className="w-full sm:w-auto">
                 <Button 
                   size="sm" 
-                  className="w-full bg-white text-blue-600 hover:bg-gray-100 text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 mobile-ultra-compact"
+                  className="w-full sm:w-auto bg-white text-blue-600 hover:bg-gray-100 text-[10px] sm:text-xs md:text-sm px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 h-6 sm:h-7 md:h-8"
                 >
                   Iniciar Sesión
                 </Button>
               </Link>
-              <Link href="/register" className="flex-1 sm:flex-none">
+              <Link href="/register" className="w-full sm:w-auto">
                 <Button 
                   size="sm" 
-                  className="w-full bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 mobile-ultra-compact"
+                  className="w-full sm:w-auto bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 text-[10px] sm:text-xs md:text-sm px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 h-6 sm:h-7 md:h-8"
                 >
                   Registrarse Gratis
                 </Button>
@@ -154,16 +154,16 @@ export default function UnifiedHome() {
           </div>
         </div>
 
-        {/* Anonymous Usage Warning */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-1.5 sm:p-2 md:p-3 mobile-padding mb-2 sm:mb-3 md:mb-4">
-          <div className="flex items-start">
-            <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-yellow-600 mr-1.5 sm:mr-2 md:mr-3 flex-shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm min-w-0 flex-1">
-              <p className="text-yellow-800 font-medium break-words mobile-text-xs">Modo de Vista Pública</p>
-              <p className="text-yellow-700 mt-0.5 sm:mt-1 break-words leading-tight mobile-text-xs">
-                Puedes explorar materiales y precios. Para crear presupuestos, 
-                <Link href="/login" className="underline font-medium ml-1">inicia sesión</Link> o 
-                <Link href="/register" className="underline font-medium ml-1">regístrate gratis</Link>.
+        {/* Anonymous Usage Warning - Mobile Optimized */}
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-1 sm:p-1.5 md:p-2 mobile-padding mb-1 sm:mb-2 md:mb-3 max-w-full overflow-hidden">
+          <div className="flex items-start gap-1 sm:gap-1.5 md:gap-2">
+            <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div className="text-[10px] sm:text-xs md:text-sm min-w-0 flex-1">
+              <p className="text-yellow-800 font-medium break-words leading-tight text-left">Modo de Vista Pública</p>
+              <p className="text-yellow-700 mt-0.5 break-words leading-tight text-left">
+                Puedes explorar materiales y precios. Para crear presupuestos,
+                <Link href="/login" className="underline font-medium ml-0.5">inicia sesión</Link> o 
+                <Link href="/register" className="underline font-medium ml-0.5">regístrate gratis</Link>.
               </p>
             </div>
           </div>
@@ -299,54 +299,54 @@ export default function UnifiedHome() {
           <AdInFeed />
         </div>
 
-        {/* Materials and Suppliers Tabs */}
-        <div className="mobile-padding mb-4 sm:mb-6 md:mb-8">
+        {/* Materials and Suppliers Tabs - Mobile Optimized */}
+        <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
           <Card className="shadow-lg max-w-full overflow-hidden">
-            <CardHeader className="pb-2 sm:pb-3">
-              <div className="flex flex-col gap-2 sm:gap-3">
-                <CardTitle className="text-base sm:text-lg md:text-xl font-bold text-foreground break-words">
+            <CardHeader className="p-1 sm:p-2 md:p-3">
+              <div className="flex flex-col gap-1 sm:gap-2">
+                <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-foreground break-words text-left">
                   Explorar Materiales y Proveedores
                 </CardTitle>
-                <div className="flex bg-muted p-1 rounded-lg w-full">
+                <div className="flex bg-muted p-0.5 sm:p-1 rounded-lg w-full gap-0.5">
                   <Button
                     variant={activeTab === "materials" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("materials")}
-                    className="text-xs sm:text-sm flex-1 min-w-0"
+                    className="text-[10px] sm:text-xs md:text-sm flex-1 min-w-0 h-6 sm:h-7 md:h-8 px-1 sm:px-2"
                   >
-                    <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                    <Package className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 mr-0.5 sm:mr-1 flex-shrink-0" />
                     <span className="truncate">Materiales</span>
                   </Button>
                   <Button
                     variant={activeTab === "suppliers" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("suppliers")}
-                    className="text-xs sm:text-sm flex-1 min-w-0"
+                    className="text-[10px] sm:text-xs md:text-sm flex-1 min-w-0 h-6 sm:h-7 md:h-8 px-1 sm:px-2"
                   >
-                    <Store className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                    <Store className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 mr-0.5 sm:mr-1 flex-shrink-0" />
                     <span className="truncate">Proveedores</span>
                   </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-1 sm:p-2 md:p-3 overflow-hidden">
               {activeTab === "materials" && (
-                <div className="space-y-4">
-                  {/* Search and filters */}
-                  <div className="flex flex-col sm:flex-row gap-3">
+                <div className="space-y-2 sm:space-y-3">
+                  {/* Search and filters - Mobile Optimized */}
+                  <div className="flex flex-col gap-1 sm:gap-2">
                     <div className="relative flex-1">
-                      <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                      <Search className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 absolute left-1.5 sm:left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                       <Input
                         placeholder="Buscar materiales..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9 text-sm"
+                        className="pl-6 sm:pl-7 md:pl-9 text-[10px] sm:text-xs md:text-sm h-6 sm:h-7 md:h-8"
                       />
                     </div>
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="px-3 py-2 border border-border rounded-md bg-background text-sm"
+                      className="px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 md:py-2 border border-border rounded-md bg-background text-[10px] sm:text-xs md:text-sm h-6 sm:h-7 md:h-8"
                     >
                       <option value="all">Todas las categorías</option>
                       {categories.map((category) => (
@@ -357,35 +357,35 @@ export default function UnifiedHome() {
                     </select>
                   </div>
 
-                  {/* Materials table */}
-                  <div className="overflow-x-auto">
-                    <Table>
+                  {/* Materials table - Mobile Optimized */}
+                  <div className="overflow-x-auto max-w-full">
+                    <Table className="min-w-full">
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="text-xs sm:text-sm">Material</TableHead>
-                          <TableHead className="text-xs sm:text-sm">Unidad</TableHead>
-                          <TableHead className="text-xs sm:text-sm text-right">Precio</TableHead>
+                          <TableHead className="text-[9px] sm:text-[10px] md:text-xs text-left p-1 sm:p-2">Material</TableHead>
+                          <TableHead className="text-[9px] sm:text-[10px] md:text-xs text-left p-1 sm:p-2">Unidad</TableHead>
+                          <TableHead className="text-[9px] sm:text-[10px] md:text-xs text-right p-1 sm:p-2">Precio</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {materialsLoading ? (
                           Array.from({ length: 5 }).map((_, i) => (
                             <TableRow key={i}>
-                              <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                              <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                              <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                              <TableCell className="p-1 sm:p-2"><Skeleton className="h-3 sm:h-4 w-16 sm:w-24 md:w-32" /></TableCell>
+                              <TableCell className="p-1 sm:p-2"><Skeleton className="h-3 sm:h-4 w-8 sm:w-12 md:w-16" /></TableCell>
+                              <TableCell className="p-1 sm:p-2"><Skeleton className="h-3 sm:h-4 w-10 sm:w-16 md:w-20" /></TableCell>
                             </TableRow>
                           ))
                         ) : (
                           filteredMaterials.map((material) => (
                             <TableRow key={material.id} className="hover:bg-muted/50">
-                              <TableCell className="text-xs sm:text-sm font-medium">
+                              <TableCell className="text-[9px] sm:text-[10px] md:text-xs font-medium text-left p-1 sm:p-2 break-words">
                                 {material.name}
                               </TableCell>
-                              <TableCell className="text-xs sm:text-sm text-muted-foreground">
+                              <TableCell className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground text-left p-1 sm:p-2">
                                 {material.unit}
                               </TableCell>
-                              <TableCell className="text-xs sm:text-sm text-right font-semibold">
+                              <TableCell className="text-[9px] sm:text-[10px] md:text-xs text-right font-semibold p-1 sm:p-2">
                                 {formatCurrency(parseFloat(material.price))}
                               </TableCell>
                             </TableRow>
@@ -398,50 +398,52 @@ export default function UnifiedHome() {
               )}
 
               {activeTab === "suppliers" && (
-                <div className="space-y-4">
-                  <div className="grid gap-4">
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="grid gap-1 sm:gap-2">
                     {suppliers.slice(0, 6).map((supplier) => (
-                      <Card key={supplier.id} className="border hover:shadow-md transition-shadow">
-                        <CardContent className="p-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-sm sm:text-base font-semibold text-foreground truncate">
-                                {supplier.companyName}
-                              </h3>
-                              <div className="flex flex-wrap items-center gap-2 mt-2 text-xs sm:text-sm text-muted-foreground">
-                                {supplier.city && (
-                                  <div className="flex items-center gap-1">
-                                    <MapPin className="w-3 h-3" />
-                                    <span>{supplier.city}</span>
-                                  </div>
+                      <Card key={supplier.id} className="border hover:shadow-md transition-shadow max-w-full overflow-hidden">
+                        <CardContent className="p-1.5 sm:p-2 md:p-3">
+                          <div className="flex flex-col gap-1 sm:gap-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0 text-left">
+                                <h3 className="text-[10px] sm:text-xs md:text-sm font-semibold text-foreground truncate text-left">
+                                  {supplier.companyName}
+                                </h3>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-0.5 sm:gap-1 flex-shrink-0">
+                                {(supplier as any).isPremium && (
+                                  <Badge variant="secondary" className="text-[8px] sm:text-[9px] px-1 py-0 h-4 sm:h-5">
+                                    <Crown className="w-2 h-2 sm:w-2.5 sm:h-2.5 mr-0.5" />
+                                    Premium
+                                  </Badge>
                                 )}
-                                {supplier.phone && (
-                                  <div className="flex items-center gap-1">
-                                    <Phone className="w-3 h-3" />
-                                    <span>{supplier.phone}</span>
-                                  </div>
-                                )}
-                                {supplier.website && (
-                                  <div className="flex items-center gap-1">
-                                    <Globe className="w-3 h-3" />
-                                    <span className="truncate max-w-32">{supplier.website}</span>
-                                  </div>
-                                )}
+                                <Badge 
+                                  variant={supplier.isActive ? "default" : "secondary"}
+                                  className="text-[8px] sm:text-[9px] px-1 py-0 h-4 sm:h-5"
+                                >
+                                  {supplier.isActive ? "Activo" : "Inactivo"}
+                                </Badge>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              {(supplier as any).isPremium && (
-                                <Badge variant="secondary" className="text-xs">
-                                  <Crown className="w-3 h-3 mr-1" />
-                                  Premium
-                                </Badge>
+                            <div className="flex flex-wrap items-start gap-1 sm:gap-1.5 text-[8px] sm:text-[9px] md:text-[10px] text-muted-foreground">
+                              {supplier.city && (
+                                <div className="flex items-center gap-0.5 text-left">
+                                  <MapPin className="w-2 h-2 sm:w-2.5 sm:h-2.5 flex-shrink-0" />
+                                  <span className="break-words">{supplier.city}</span>
+                                </div>
                               )}
-                              <Badge 
-                                variant={supplier.isActive ? "default" : "secondary"}
-                                className="text-xs"
-                              >
-                                {supplier.isActive ? "Activo" : "Inactivo"}
-                              </Badge>
+                              {supplier.phone && (
+                                <div className="flex items-center gap-0.5 text-left">
+                                  <Phone className="w-2 h-2 sm:w-2.5 sm:h-2.5 flex-shrink-0" />
+                                  <span className="break-words">{supplier.phone}</span>
+                                </div>
+                              )}
+                              {supplier.website && (
+                                <div className="flex items-center gap-0.5 text-left">
+                                  <Globe className="w-2 h-2 sm:w-2.5 sm:h-2.5 flex-shrink-0" />
+                                  <span className="truncate max-w-20 sm:max-w-24">{supplier.website}</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </CardContent>
