@@ -78,41 +78,77 @@ const fallbackNews: NewsItem[] = [
 export function SimpleNewsRotator() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
-  // Fetch from API with fallback
-  const { data: fetchedNews } = useQuery<NewsItem[]>({
+  // Fetch from API with fallback and error handling
+  const { data: fetchedNews, error, isError } = useQuery<NewsItem[]>({
     queryKey: ["/api/public/construction-news"],
     staleTime: 5 * 60 * 1000,
+    retry: 3,
+    retryDelay: 1000,
+    onError: (err) => {
+      console.error('News fetch error:', err);
+      setHasError(true);
+    }
   });
 
   const news = fetchedNews && fetchedNews.length > 0 ? fetchedNews : fallbackNews;
 
   const formatTimeAgo = (dateString: string | Date) => {
-    const now = new Date();
-    const published = new Date(dateString);
-    const diffInHours = Math.floor((now.getTime() - published.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Hace menos de 1 hora';
-    if (diffInHours < 24) return `Hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `Hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
+    try {
+      const now = new Date();
+      const published = new Date(dateString);
+      
+      // Check for invalid dates
+      if (isNaN(published.getTime()) || isNaN(now.getTime())) {
+        return 'Hace poco';
+      }
+      
+      const diffInHours = Math.floor((now.getTime() - published.getTime()) / (1000 * 60 * 60));
+      
+      if (diffInHours < 1) return 'Hace menos de 1 hora';
+      if (diffInHours < 24) return `Hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
+      
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `Hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return 'Hace poco';
+    }
   };
 
-  // Auto-rotation
+  // Auto-rotation with Chrome compatibility
   useEffect(() => {
     if (isPaused || news.length === 0) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % news.length);
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % news.length;
+        return next;
+      });
     }, 4000);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [isPaused, news.length]);
 
+  // Reset index if it's out of bounds
+  useEffect(() => {
+    if (currentIndex >= news.length && news.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [currentIndex, news.length]);
+
   const handleNewsClick = (newsItem: NewsItem) => {
-    if (newsItem.sourceUrl) {
-      window.open(newsItem.sourceUrl, '_blank', 'noopener,noreferrer');
+    try {
+      if (newsItem.sourceUrl) {
+        window.open(newsItem.sourceUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch (error) {
+      console.error('Error opening news link:', error);
     }
   };
 
@@ -156,7 +192,28 @@ export function SimpleNewsRotator() {
     );
   };
 
-  if (news.length === 0) return null;
+  // Early return with error message if needed
+  if (hasError && !fetchedNews) {
+    return (
+      <div className="w-full mb-2 sm:mb-3 md:mb-4 px-2 sm:px-4">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+          <p className="text-yellow-800 text-sm">
+            Error cargando noticias. Usando datos locales...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (news.length === 0) {
+    return (
+      <div className="w-full mb-2 sm:mb-3 md:mb-4 px-2 sm:px-4">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+          <p className="text-gray-600 text-sm">No hay noticias disponibles</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mb-2 sm:mb-3 md:mb-4 px-2 sm:px-4">
@@ -177,14 +234,17 @@ export function SimpleNewsRotator() {
 
         {/* Mobile: Single news */}
         <div className="md:hidden p-3">
-          <div
-            className="cursor-pointer hover:shadow-md transition-all duration-500 bg-white rounded-lg border border-gray-200 p-3"
-            onClick={() => handleNewsClick(news[currentIndex])}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            <NewsCard newsItem={news[currentIndex]} />
-          </div>
+          {news[currentIndex] && (
+            <div
+              className="cursor-pointer hover:shadow-md transition-all duration-300 bg-white rounded-lg border border-gray-200 p-3"
+              onClick={() => handleNewsClick(news[currentIndex])}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              style={{ willChange: 'transform' }}
+            >
+              <NewsCard newsItem={news[currentIndex]} />
+            </div>
+          )}
           
           {/* Mobile indicators */}
           <div className="flex justify-center gap-1 mt-3">
@@ -207,13 +267,17 @@ export function SimpleNewsRotator() {
               {[0, 1].map((offset) => {
                 const newsIndex = (currentIndex + offset) % news.length;
                 const newsItem = news[newsIndex];
+                
+                if (!newsItem) return null;
+                
                 return (
                   <div
-                    key={`${newsItem.id}-${currentIndex}-${offset}`}
-                    className="cursor-pointer hover:shadow-md transition-all duration-500 bg-white rounded-lg border border-gray-200 p-3 h-32"
+                    key={`desktop-${newsItem.id}-${currentIndex}-${offset}`}
+                    className="cursor-pointer hover:shadow-md transition-all duration-300 bg-white rounded-lg border border-gray-200 p-3 h-32"
                     onClick={() => handleNewsClick(newsItem)}
                     onMouseEnter={() => setIsPaused(true)}
                     onMouseLeave={() => setIsPaused(false)}
+                    style={{ willChange: 'transform' }}
                   >
                     <NewsCard newsItem={newsItem} />
                   </div>
@@ -238,8 +302,15 @@ export function SimpleNewsRotator() {
 
         {/* Pause indicator */}
         {isPaused && (
-          <div className="absolute top-2 right-2 text-[8px] text-blue-600 bg-white px-2 py-1 rounded shadow-sm">
+          <div className="absolute top-2 right-2 text-[8px] text-blue-600 bg-white px-2 py-1 rounded shadow-sm z-10">
             Pausado
+          </div>
+        )}
+        
+        {/* Debug info for Chrome */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="absolute bottom-2 left-2 text-[8px] text-gray-400 bg-white px-1 py-0.5 rounded text-xs z-10">
+            {currentIndex + 1}/{news.length}
           </div>
         )}
       </div>
