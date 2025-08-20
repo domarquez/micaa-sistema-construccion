@@ -78,21 +78,19 @@ const fallbackNews: NewsItem[] = [
 export function SimpleNewsRotator() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [hasError, setHasError] = useState(false);
 
   // Fetch from API with fallback and error handling
-  const { data: fetchedNews, error, isError } = useQuery<NewsItem[]>({
+  const { data: fetchedNews, isError } = useQuery<NewsItem[]>({
     queryKey: ["/api/public/construction-news"],
     staleTime: 5 * 60 * 1000,
-    retry: 3,
-    retryDelay: 1000,
-    onError: (err) => {
-      console.error('News fetch error:', err);
-      setHasError(true);
-    }
+    retry: 2,
+    retryDelay: 2000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false
   });
 
-  const news = fetchedNews && fetchedNews.length > 0 ? fetchedNews : fallbackNews;
+  const news: NewsItem[] = fetchedNews && Array.isArray(fetchedNews) && fetchedNews.length > 0 ? fetchedNews : fallbackNews;
 
   const formatTimeAgo = (dateString: string | Date) => {
     try {
@@ -193,7 +191,7 @@ export function SimpleNewsRotator() {
   };
 
   // Early return with error message if needed
-  if (hasError && !fetchedNews) {
+  if (isError && !fetchedNews) {
     return (
       <div className="w-full mb-2 sm:mb-3 md:mb-4 px-2 sm:px-4">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
@@ -248,7 +246,7 @@ export function SimpleNewsRotator() {
           
           {/* Mobile indicators */}
           <div className="flex justify-center gap-1 mt-3">
-            {news.map((_, index) => (
+            {news.map((_, index: number) => (
               <button
                 key={index}
                 className={`w-1.5 h-1.5 rounded-full transition-colors ${
@@ -287,7 +285,7 @@ export function SimpleNewsRotator() {
             
             {/* Desktop indicators */}
             <div className="flex justify-center gap-2 mt-4">
-              {news.map((_, index) => (
+              {news.map((_, index: number) => (
                 <button
                   key={index}
                   className={`w-2 h-2 rounded-full transition-colors ${
@@ -308,8 +306,8 @@ export function SimpleNewsRotator() {
         )}
         
         {/* Debug info for Chrome */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="absolute bottom-2 left-2 text-[8px] text-gray-400 bg-white px-1 py-0.5 rounded text-xs z-10">
+        {import.meta.env.DEV && (
+          <div className="absolute bottom-2 left-2 text-[8px] text-gray-400 bg-white px-1 py-0.5 rounded z-10">
             {currentIndex + 1}/{news.length}
           </div>
         )}
