@@ -489,6 +489,12 @@ export default function UnifiedHome() {
         </div>
       </div>
 
+      {/* News Rotator */}
+      <SimpleNewsRotator />
+
+      {/* Company Advertisements Carousel */}
+      <CompanyAdvertisementCarousel />
+
       {/* Statistics Cards - Mobile Optimized */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-2 md:gap-3 lg:gap-4 mobile-padding overflow-hidden">
         <Card className="min-w-0 max-w-full">
@@ -600,6 +606,11 @@ export default function UnifiedHome() {
         </Card>
       )}
 
+      {/* AdInFeed */}
+      <div className="mobile-padding mb-6 sm:mb-8">
+        <AdInFeed />
+      </div>
+
       {/* Recent Budgets - Mobile Optimized */}
       {!isAnonymous && (
         <Card className="mobile-padding max-w-full overflow-hidden">
@@ -676,9 +687,6 @@ export default function UnifiedHome() {
           </CardContent>
         </Card>
       )}
-
-      {/* AdInFeed for authenticated users */}
-      <AdInFeed />
 
       {/* AdFooter */}
       <AdFooter />
