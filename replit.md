@@ -8,6 +8,7 @@ MICAA is a comprehensive construction management platform designed for Bolivia. 
 - **SimpleNewsRotator Component**: Mobile shows 1 news with auto-rotation, desktop shows 2 news side-by-side with controlled height
 - **Database Integration**: Added construction_news table with real sector news (material prices, regulations, BIM adoption)
 - **Advertising System**: Maintained dual system - Google AdSense for revenue + company advertisements for registered suppliers
+- **Unified User Experience**: Added news rotator and advertisements to authenticated user dashboard, maintaining consistent experience across anonymous and logged-in users
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
