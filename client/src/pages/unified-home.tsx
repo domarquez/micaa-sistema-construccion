@@ -87,8 +87,11 @@ export default function UnifiedHome() {
   // User budgets (only for authenticated users)
   const { data: budgets, isLoading: budgetsLoading } = useQuery<BudgetWithProject[]>({
     queryKey: ["/api/budgets"],
-    enabled: !isAnonymous,
-    staleTime: 30 * 1000,
+    enabled: !isAnonymous && !!user,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false
   });
 
   // Public materials and suppliers

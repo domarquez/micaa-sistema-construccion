@@ -26,6 +26,15 @@ export function useAuth() {
     enabled: !!token,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onError: (error: Error) => {
+      // If auth fails, clear token and redirect
+      if (error.message.includes('401')) {
+        localStorage.removeItem('auth_token');
+        queryClient.clear();
+      }
+    }
   });
   
   const isAnonymous = !token;

@@ -68,8 +68,19 @@ export const getQueryFn: <T>(options: {
       credentials: "include",
     });
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
+    if (res.status === 401) {
+      // Clear invalid token from localStorage
+      localStorage.removeItem('auth_token');
+      
+      if (unauthorizedBehavior === "returnNull") {
+        return null;
+      }
+      
+      // Redirect to login or throw error
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+      throw new Error('401: No autorizado');
     }
 
     await throwIfResNotOk(res);
@@ -79,14 +90,26 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
+      queryFn: getQueryFn({ on401: "returnNull" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: (failureCount, error: Error) => {
+        // Don't retry on auth errors
+        if (error.message.includes('401')) {
+          return false;
+        }
+        return failureCount < 2;
+      },
     },
     mutations: {
-      retry: false,
+      retry: (failureCount, error: Error) => {
+        // Don't retry on auth errors
+        if (error.message.includes('401')) {
+          return false;
+        }
+        return failureCount < 1;
+      },
     },
   },
 });
