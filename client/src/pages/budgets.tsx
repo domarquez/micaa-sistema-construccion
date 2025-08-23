@@ -597,19 +597,48 @@ export default function Budgets() {
       )}
       
       {/* Budgets Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-4 mobile-padding">
         <div>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-on-surface">Gestión de Presupuestos</h2>
-          <p className="text-xs sm:text-sm md:text-base text-gray-600">Crear y administrar presupuestos de construcción</p>
+          <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-on-surface">
+            {isAnonymous ? "Presupuestos (Modo Prueba)" : "Gestión de Presupuestos"}
+          </h2>
+          <p className="text-xs sm:text-sm md:text-base text-gray-600">
+            {isAnonymous 
+              ? "Crear presupuestos temporales - regístrate para guardarlos permanentemente"
+              : "Crear y administrar presupuestos de construcción"
+            }
+          </p>
         </div>
-        <Button
-          onClick={() => setShowForm(true)}
-          className="bg-primary text-white hover:bg-primary-variant shadow-material w-full sm:w-auto text-xs sm:text-sm px-3 py-2 h-8 sm:h-9"
-        >
-          <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-          <span className="hidden sm:inline">Nuevo Presupuesto</span>
-          <span className="sm:hidden">Nuevo</span>
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button
+            onClick={() => {
+              console.log('🔵 Crear presupuesto button clicked - Mobile/Desktop');
+              setShowForm(true);
+            }}
+            className="bg-primary text-white hover:bg-primary-variant shadow-material w-full sm:w-auto text-sm px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-9 touch-target"
+            style={{ minHeight: '48px', minWidth: '48px' }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">
+              {isAnonymous ? "Crear Presupuesto de Prueba" : "Nuevo Presupuesto"}
+            </span>
+            <span className="sm:hidden">
+              {isAnonymous ? "Crear Presupuesto" : "Nuevo"}
+            </span>
+          </Button>
+          {isAnonymous && (
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.href = '/register'}
+              className="w-full sm:w-auto text-sm px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-9 touch-target"
+              style={{ minHeight: '48px', minWidth: '48px' }}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Registrarse para Guardar</span>
+              <span className="sm:hidden">Registrarse</span>
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Budgets List */}
@@ -942,90 +971,39 @@ export default function Budgets() {
       </Card>
 
       {/* Budget Form Modal */}
-      {showForm && isAnonymous && (
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-          <CardContent className="p-8 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="bg-blue-600 text-white rounded-full p-4">
-                <Lock className="w-8 h-8" />
-              </div>
-            </div>
-            
-            <h2 className="text-xl font-bold text-blue-900 mb-3">
-              Creación de Presupuestos - Funcionalidad Premium
-            </h2>
-            
-            <p className="text-blue-700 mb-6">
-              La creación de presupuestos detallados está disponible solo para usuarios registrados. 
-              Esta herramienta te permite generar presupuestos profesionales con análisis completo de costos.
-            </p>
-
-            <div className="bg-white rounded-lg p-4 mb-6 border border-blue-200">
-              <h3 className="font-semibold text-blue-900 mb-3">¿Qué incluye el sistema de presupuestos?</h3>
-              <div className="text-left space-y-2 text-sm text-blue-700">
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  <span>Presupuestos multifase con actividades detalladas</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  <span>Cálculo automático de APU (Análisis de Precios Unitarios)</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  <span>Exportación a PDF con formato profesional</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  <span>Factores de ciudad y ajustes regionales</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  <span>Seguimiento de costos y variaciones</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b px-4 py-3 sm:px-6 sm:py-4 flex justify-between items-center z-10">
+              <h3 className="text-lg font-semibold">
+                {editingBudget ? "Editar Presupuesto" : "Crear Nuevo Presupuesto"}
+                {isAnonymous && " (Modo Prueba)"}
+              </h3>
               <Button 
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => window.location.href = "/register"}
+                variant="ghost" 
+                size="sm" 
+                onClick={() => {
+                  console.log('🔴 Cerrando formulario desde header');
+                  setShowForm(false);
+                  setEditingBudget(null);
+                }}
+                className="touch-target"
               >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Crear Cuenta Gratis
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={() => window.location.href = "/login"}
-              >
-                Ya tengo cuenta
+                ✕
               </Button>
             </div>
-
-            <p className="text-xs text-blue-600 mt-4">
-              ✓ Registro 100% gratuito • ✓ Presupuestos ilimitados • ✓ Soporte técnico
-            </p>
-            
-            <div className="mt-4">
-              <Button
-                onClick={() => setShowForm(false)}
-                variant="outline"
-                size="sm"
-              >
-                Volver a la lista
-              </Button>
+            <div className="p-4 sm:p-6">
+              <MultiphaseBudgetForm 
+                onClose={() => {
+                  console.log('🔴 Cerrando formulario desde componente');
+                  setShowForm(false);
+                  setEditingBudget(null);
+                }}
+                editingBudget={editingBudget}
+              />
             </div>
-          </CardContent>
-        </Card>
-      )}
-      
-      {showForm && !isAnonymous && (
-        <MultiphaseBudgetForm
-          budget={editingBudget}
-          onClose={handleFormClose}
-        />
+          </div>
+        </div>
       )}
     </div>
   );
