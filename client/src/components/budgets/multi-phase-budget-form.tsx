@@ -696,11 +696,14 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Building className="w-5 h-5" />
-            {isEditing ? "Editar Presupuesto" : "Crear Nuevo Presupuesto"}
+      <DialogContent className="max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6">
+        <DialogHeader className="pb-3 sm:pb-4">
+          <DialogTitle className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base md:text-lg break-words leading-tight">
+            <Building className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+            <span className="min-w-0 flex-1">
+              {isEditing ? "Editar Presupuesto" : "Crear Nuevo Presupuesto"}
+              {isAnonymous && <span className="text-orange-600 ml-1">(Modo Prueba)</span>}
+            </span>
           </DialogTitle>
         </DialogHeader>
 
@@ -713,11 +716,11 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           {/* Formulario del Proyecto */}
           {(!currentProject || isEditing) && (
             <Card>
-              <CardHeader>
-                <CardTitle>
+              <CardHeader className="pb-3 sm:pb-4">
+                <CardTitle className="text-base sm:text-lg">
                   {isEditing ? "Editar Información del Proyecto" : "Información del Proyecto"}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   {isEditing 
                     ? "Modifica los datos del proyecto. Los cambios se aplicarán al proyecto actual."
                     : "Complete los datos básicos del proyecto"
@@ -727,15 +730,15 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
               <CardContent>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleProjectSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Nombre del Proyecto</FormLabel>
+                            <FormLabel className="text-sm font-medium">Nombre del Proyecto</FormLabel>
                             <FormControl>
-                              <Input placeholder="Ej: Casa de 2 pisos" {...field} />
+                              <Input placeholder="Ej: Casa de 2 pisos" {...field} className="text-sm" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -746,9 +749,9 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                         name="client"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Cliente</FormLabel>
+                            <FormLabel className="text-sm font-medium">Cliente</FormLabel>
                             <FormControl>
-                              <Input placeholder="Nombre del cliente" {...field} />
+                              <Input placeholder="Nombre del cliente" {...field} className="text-sm" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -756,7 +759,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                       <FormField
                         control={form.control}
                         name="location"
@@ -846,21 +849,23 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           {currentProject && (
             <div className="space-y-4">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span>Proyecto: {currentProject.name}</span>
+                <CardHeader className="pb-3 sm:pb-4">
+                  <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+                      <span className="text-sm sm:text-base font-semibold truncate">
+                        Proyecto: {currentProject.name}
+                      </span>
                     </div>
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="text-xs sm:text-sm whitespace-nowrap self-start sm:self-center">
                       Total: Bs {grandTotal.toLocaleString('es-BO', { minimumFractionDigits: 2 })}
                     </Badge>
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
                     Selecciona las fases que incluirá este presupuesto.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
                     {constructionPhases?.map((phase) => (
                       <Button
                         key={phase.id}
@@ -883,17 +888,17 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                   {phases.map((phaseData) => (
                     <AccordionItem key={phaseData.phaseId} value={phaseData.phaseId.toString()}>
                       <Card>
-                        <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center gap-2">
-                              <FileText className="w-4 h-4" />
-                              <span className="font-medium">{phaseData.phase?.name}</span>
-                              <Badge variant="secondary">
+                        <AccordionTrigger className="px-3 sm:px-6 py-3 sm:py-4 hover:no-underline">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-2">
+                            <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+                              <FileText className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                              <span className="font-medium text-sm sm:text-base truncate">{phaseData.phase?.name}</span>
+                              <Badge variant="secondary" className="text-xs whitespace-nowrap">
                                 {phaseData.items.length} elementos
                               </Badge>
                             </div>
-                            <div className="flex items-center gap-3">
-                              <Badge variant="outline">
+                            <div className="flex items-center gap-2 sm:gap-3 self-start sm:self-center">
+                              <Badge variant="outline" className="text-xs sm:text-sm whitespace-nowrap">
                                 Bs {phaseData.total.toLocaleString('es-BO', { minimumFractionDigits: 2 })}
                               </Badge>
                               <Button
@@ -903,9 +908,9 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                                   e.stopPropagation();
                                   removePhase(phaseData.phaseId);
                                 }}
-                                className="text-red-500 hover:text-red-700"
+                                className="text-red-500 hover:text-red-700 h-6 w-6 sm:h-8 sm:w-8"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                             </div>
                           </div>
