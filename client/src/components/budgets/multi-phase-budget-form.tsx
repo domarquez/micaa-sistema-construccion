@@ -697,39 +697,46 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6">
-        <DialogHeader className="pb-3 sm:pb-4">
-          <DialogTitle className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base md:text-lg break-words leading-tight">
-            <Building className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-            <span className="min-w-0 flex-1">
+        <DialogHeader className="pb-4 sm:pb-6 space-y-2">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl font-semibold">
+            <Building className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 text-primary" />
+            <span className="min-w-0 flex-1 break-words leading-tight">
               {isEditing ? "Editar Presupuesto" : "Crear Nuevo Presupuesto"}
-              {isAnonymous && <span className="text-orange-600 ml-1">(Modo Prueba)</span>}
             </span>
           </DialogTitle>
+          {isAnonymous && (
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-sm">
+              <div className="flex items-center gap-2 text-orange-800">
+                <span className="font-medium">⚠️ Modo de Prueba - Presupuesto Temporal</span>
+              </div>
+              <p className="text-orange-700 mt-1 text-xs leading-relaxed">
+                Puedes crear, editar, calcular, descargar e imprimir presupuestos. 
+                Este presupuesto NO se guardará automáticamente en la base de datos - 
+                regístrate gratis para guardar tus proyectos permanentemente.
+              </p>
+            </div>
+          )}
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Advertencia para usuarios anónimos */}
-          {isAnonymous && (
-            <AnonymousBudgetWarning showActions={false} className="mb-4" />
-          )}
+        <div className="space-y-4 sm:space-y-6">
           
           {/* Formulario del Proyecto */}
           {(!currentProject || isEditing) && (
             <Card>
-              <CardHeader className="pb-3 sm:pb-4">
-                <CardTitle className="text-base sm:text-lg">
+              <CardHeader className="pb-4 sm:pb-6">
+                <CardTitle className="text-lg sm:text-xl font-semibold text-foreground">
                   {isEditing ? "Editar Información del Proyecto" : "Información del Proyecto"}
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
+                <CardDescription className="text-sm sm:text-base text-muted-foreground mt-2">
                   {isEditing 
                     ? "Modifica los datos del proyecto. Los cambios se aplicarán al proyecto actual."
-                    : "Complete los datos básicos del proyecto"
+                    : "Complete los datos básicos del proyecto para comenzar con el presupuesto"
                   }
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleProjectSubmit)} className="space-y-4">
+                  <form onSubmit={form.handleSubmit(handleProjectSubmit)} className="space-y-4 sm:space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <FormField
                         control={form.control}
