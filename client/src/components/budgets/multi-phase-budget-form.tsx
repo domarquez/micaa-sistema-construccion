@@ -737,15 +737,15 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
               <CardContent>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleProjectSubmit)} className="space-y-4 sm:space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="w-full">
                             <FormLabel className="text-sm font-medium">Nombre del Proyecto</FormLabel>
                             <FormControl>
-                              <Input placeholder="Ej: Casa de 2 pisos" {...field} className="text-sm" />
+                              <Input placeholder="Ej: Casa de 2 pisos" {...field} className="text-sm w-full" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -755,10 +755,10 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                         control={form.control}
                         name="client"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="w-full">
                             <FormLabel className="text-sm font-medium">Cliente</FormLabel>
                             <FormControl>
-                              <Input placeholder="Nombre del cliente" {...field} className="text-sm" />
+                              <Input placeholder="Nombre del cliente" {...field} className="text-sm w-full" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -766,15 +766,15 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       <FormField
                         control={form.control}
                         name="location"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Ubicación</FormLabel>
+                          <FormItem className="w-full">
+                            <FormLabel className="text-sm font-medium">Ubicación</FormLabel>
                             <FormControl>
-                              <Input placeholder="Dirección o zona" {...field} />
+                              <Input placeholder="Dirección o zona" {...field} className="text-sm w-full" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -784,12 +784,12 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                         control={form.control}
                         name="city"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Ciudad</FormLabel>
+                          <FormItem className="w-full">
+                            <FormLabel className="text-sm font-medium">Ciudad</FormLabel>
                             <FormControl>
                               <select
                                 {...field}
-                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
                               >
                                 <option value="">Seleccionar ciudad...</option>
                                 <option value="La Paz">La Paz (+17.5%)</option>
@@ -811,10 +811,10 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                         control={form.control}
                         name="startDate"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Fecha de Inicio</FormLabel>
+                          <FormItem className="w-full">
+                            <FormLabel className="text-sm font-medium">Fecha de Inicio</FormLabel>
                             <FormControl>
-                              <Input type="date" {...field} />
+                              <Input type="date" {...field} className="text-sm w-full" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -822,10 +822,11 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                       />
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full">
                       <Button 
                         type="submit" 
                         disabled={createProjectMutation.isPending || updateProjectMutation.isPending}
+                        className="w-full sm:w-auto"
                       >
                         {createProjectMutation.isPending || updateProjectMutation.isPending 
                           ? (isEditing ? "Actualizando..." : "Creando...") 
