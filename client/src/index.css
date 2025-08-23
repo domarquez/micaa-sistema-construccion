@@ -403,6 +403,85 @@
   }
 }
 
+/* Critical Mobile Responsiveness Fixes */
+@media screen and (max-width: 768px) {
+  /* Fix viewport issues */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  /* Ensure all containers are mobile-friendly */
+  .container, .max-w-7xl, .mx-auto, [class*="max-w-"] {
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  /* Grid responsiveness */
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    gap: 0.25rem !important;
+  }
+  
+  /* Card responsiveness */
+  .card, [class*="card"] {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  /* Text responsiveness */
+  h1 { font-size: 1.25rem !important; line-height: 1.4 !important; }
+  h2 { font-size: 1.125rem !important; line-height: 1.4 !important; }
+  h3 { font-size: 1rem !important; line-height: 1.4 !important; }
+  .text-sm { font-size: 0.75rem !important; }
+  .text-xs { font-size: 0.65rem !important; }
+  
+  /* Button responsiveness */
+  button, .btn {
+    min-height: 44px !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+  
+  /* Form responsiveness */
+  input, select, textarea {
+    width: 100% !important;
+    font-size: 16px !important; /* Prevent iOS zoom */
+    box-sizing: border-box !important;
+  }
+  
+  /* Image responsiveness */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* Ultra-small mobile devices */
+@media screen and (max-width: 380px) {
+  .mobile-ultra-compact {
+    padding: 0.125rem !important;
+    font-size: 0.6rem !important;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.125rem !important;
+  }
+  
+  .text-xs { font-size: 0.5rem !important; }
+  .text-sm { font-size: 0.65rem !important; }
+  
+  button, .btn {
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+  }
+}
+
 .section-padding {
   padding-top: clamp(1rem, 5vw, 3rem);
   padding-bottom: clamp(1rem, 5vw, 3rem);

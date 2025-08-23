@@ -145,13 +145,13 @@ export function StaticNewsRotator() {
   if (staticNews.length === 0) return null;
 
   return (
-    <div className="w-full mb-2 sm:mb-3 md:mb-4 px-2 sm:px-4">
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 overflow-hidden relative">
+    <div className="w-full mb-2 sm:mb-3 md:mb-4 px-1 sm:px-2 md:px-4 mobile-padding">
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 overflow-hidden relative max-w-full">
         {/* Header */}
-        <div className="bg-white border-b border-blue-200 px-3 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Newspaper className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-gray-900">Noticias del Sector</span>
+        <div className="bg-white border-b border-blue-200 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+            <span className="text-xs sm:text-sm font-medium text-gray-900">Noticias del Sector</span>
           </div>
           <Badge variant="outline" className="text-[10px]">
             {staticNews.length} noticias
