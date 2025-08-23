@@ -39,6 +39,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { Plus, Trash2, Building, FileText } from "lucide-react";
 
 import type { Project, ConstructionPhase, ActivityWithPhase, BudgetWithProject } from "@shared/schema";
+import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
+import { useAuth } from "@/hooks/useAuth";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, "El nombre del proyecto es requerido"),
@@ -97,6 +99,7 @@ interface MultiphaseBudgetFormProps {
 export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudgetFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isAnonymous } = useAuth();
   const [currentProject, setCurrentProject] = useState<Project | null>(budget?.project || null);
   const [phases, setPhases] = useState<PhaseData[]>([]);
   const [selectedPhases, setSelectedPhases] = useState<number[]>([]);
@@ -246,11 +249,37 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       
       console.log("Creando nuevo proyecto:", projectData);
       
-      const response = await apiRequest("POST", "/api/projects", projectData);
-      if (!response.ok) {
-        throw new Error('Error al crear el proyecto');
+      if (isAnonymous) {
+        // Para usuarios anónimos, crear proyecto temporal en sessionStorage
+        const anonymousProject = {
+          id: Date.now(), // Use timestamp as ID
+          projectId: Date.now(),
+          projectName: projectData.name,
+          description: '',
+          location: projectData.location || '',
+          clientName: projectData.client || '',
+          city: projectData.city || '',
+          country: projectData.country || 'Bolivia',
+          total: 0,
+          status: 'draft',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          ...projectData
+        };
+        
+        // Save to sessionStorage
+        const existingProjects = JSON.parse(sessionStorage.getItem('anonymousProjects') || '[]');
+        existingProjects.push(anonymousProject);
+        sessionStorage.setItem('anonymousProjects', JSON.stringify(existingProjects));
+        
+        return anonymousProject;
+      } else {
+        const response = await apiRequest("POST", "/api/projects", projectData);
+        if (!response.ok) {
+          throw new Error('Error al crear el proyecto');
+        }
+        return response.json();
       }
-      return response.json();
     },
     onSuccess: (project) => {
       console.log("Proyecto creado exitosamente:", project);

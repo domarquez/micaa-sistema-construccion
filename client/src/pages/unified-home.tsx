@@ -141,36 +141,46 @@ export default function UnifiedHome() {
               Presupuestos inteligentes para la construcción boliviana
             </p>
             <div className="flex flex-col gap-1 sm:gap-1.5 md:gap-2 justify-start sm:justify-center items-stretch max-w-full">
-              <Link href="/login" className="w-full sm:w-auto">
+              <Link href="/budgets" className="w-full sm:w-auto">
                 <Button 
                   size="sm" 
-                  className="w-full sm:w-auto bg-white text-blue-600 hover:bg-gray-100 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-3"
+                  className="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-3"
                 >
-                  Iniciar Sesión
+                  🚀 Crear Presupuesto Ahora
                 </Button>
               </Link>
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button 
-                  size="sm" 
-                  className="w-full sm:w-auto bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-3"
-                >
-                  Registrarse Gratis
-                </Button>
-              </Link>
+              <div className="flex gap-1 w-full">
+                <Link href="/login" className="flex-1">
+                  <Button 
+                    size="sm" 
+                    className="w-full bg-white text-blue-600 hover:bg-gray-100 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 py-2"
+                  >
+                    Iniciar Sesión
+                  </Button>
+                </Link>
+                <Link href="/register" className="flex-1">
+                  <Button 
+                    size="sm" 
+                    className="w-full bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 py-2"
+                  >
+                    Registrarse Gratis
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Anonymous Usage Warning - Mobile Optimized */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-1 sm:p-1.5 md:p-2 mobile-padding mb-1 sm:mb-2 md:mb-3 max-w-full overflow-hidden">
+        {/* Anonymous Usage Notice - Mobile Optimized */}
+        <div className="bg-blue-50 border-l-4 border-blue-400 p-1 sm:p-1.5 md:p-2 mobile-padding mb-1 sm:mb-2 md:mb-3 max-w-full overflow-hidden">
           <div className="flex items-start gap-1 sm:gap-1.5 md:gap-2">
-            <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm sm:text-base md:text-lg min-w-0 flex-1">
-              <p className="text-yellow-800 font-medium break-words leading-tight text-left">Modo de Vista Pública</p>
-              <p className="text-yellow-700 mt-0.5 break-words leading-tight text-left">
-                Puedes explorar materiales y precios. Para crear presupuestos,
-                <Link href="/login" className="underline font-medium ml-1">inicia sesión</Link> o 
-                <Link href="/register" className="underline font-medium ml-1">regístrate gratis</Link>.
+              <p className="text-blue-800 font-medium break-words leading-tight text-left">Modo de Prueba Gratuita</p>
+              <p className="text-blue-700 mt-0.5 break-words leading-tight text-left">
+                ✅ Puedes crear, descargar e imprimir presupuestos. 
+                ⚠️ No se guardarán automáticamente - 
+                <Link href="/register" className="underline font-medium ml-1">regístrate gratis</Link> para guardar tus proyectos.
               </p>
             </div>
           </div>

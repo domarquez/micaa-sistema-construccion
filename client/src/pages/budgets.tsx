@@ -43,7 +43,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
 import MultiphaseBudgetForm from "@/components/budgets/multi-phase-budget-form";
 import type { BudgetWithProject } from "@shared/schema";
-import { AnonymousWarning } from "@/components/anonymous-warning";
+import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Budgets() {
@@ -57,14 +57,9 @@ export default function Budgets() {
   // Auto-open form when accessing /budgets/new
   useEffect(() => {
     if (location === '/budgets/new') {
-      if (isAnonymous) {
-        // Redirect anonymous users to registration
-        window.location.href = "/register";
-      } else {
-        setShowForm(true);
-      }
+      setShowForm(true);
     }
-  }, [location, isAnonymous]);
+  }, [location]);
 
   const { data: budgets, isLoading: budgetsLoading } = useQuery<BudgetWithProject[]>({
     queryKey: isAnonymous ? ["/api/anonymous/budgets"] : ["/api/budgets"],
@@ -73,38 +68,29 @@ export default function Budgets() {
       const anonymousProjects = JSON.parse(sessionStorage.getItem('anonymousProjects') || '[]');
       return anonymousProjects.map((project: any) => ({
         id: project.id,
+        projectId: project.projectId,
+        phaseId: project.phaseId,
+        total: project.total || 0,
+        status: project.status || 'draft',
+        createdAt: project.createdAt || new Date().toISOString(),
+        updatedAt: project.updatedAt || new Date().toISOString(),
         project: {
-          id: project.id,
-          name: project.name,
-          client: project.client,
-          location: project.location,
-          city: project.city,
-          country: project.country
-        },
-        total: project.total.toString(),
-        status: 'active',
-        createdAt: project.createdAt,
-        phase: { id: 1, name: 'Temporal' }
-      }));
-    } : async () => {
-      // Agregar timestamp para evitar cache del navegador
-      const timestamp = new Date().getTime();
-      const response = await fetch(`/api/budgets?t=${timestamp}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
-          'Cache-Control': 'no-cache'
+          id: project.projectId,
+          name: project.projectName || 'Proyecto Sin Título',
+          description: project.description || '',
+          location: project.location || '',
+          clientName: project.clientName || '',
+          createdAt: project.createdAt || new Date().toISOString(),
+          updatedAt: project.updatedAt || new Date().toISOString(),
+          userId: 0
         }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Error al cargar presupuestos');
-      }
-      
-      return response.json();
-    },
-    retry: false,
-    staleTime: 0, // Los datos se consideran obsoletos inmediatamente
-    gcTime: 0 // No mantener cache en memoria
+      }));
+    } : undefined,
+    enabled: true, // Always enabled for both cases
+    staleTime: isAnonymous ? 0 : 2 * 60 * 1000, // No cache for anonymous
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false
   });
 
   const deleteProjectMutation = useMutation({
@@ -607,7 +593,7 @@ export default function Budgets() {
     <div className="space-y-4 md:space-y-6">
       {/* Advertencia para usuarios anónimos */}
       {isAnonymous && (
-        <AnonymousWarning action="crear y gestionar presupuestos" />
+        <AnonymousBudgetWarning />
       )}
       
       {/* Budgets Header */}
