@@ -256,10 +256,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           projectId: Date.now(),
           projectName: projectData.name,
           description: '',
-          location: projectData.location || '',
           clientName: projectData.client || '',
-          city: projectData.city || '',
-          country: projectData.country || 'Bolivia',
           total: 0,
           status: 'draft',
           createdAt: new Date().toISOString(),
@@ -708,6 +705,11 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Advertencia para usuarios anónimos */}
+          {isAnonymous && (
+            <AnonymousBudgetWarning showActions={false} className="mb-4" />
+          )}
+          
           {/* Formulario del Proyecto */}
           {(!currentProject || isEditing) && (
             <Card>
@@ -1012,7 +1014,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
               disabled={!currentProject || phases.length === 0 || saveBudgetMutation.isPending}
               className="bg-primary hover:bg-primary-variant"
             >
-              {saveBudgetMutation.isPending ? "Guardando..." : "Guardar Presupuesto"}
+              {saveBudgetMutation.isPending ? "Guardando..." : isAnonymous ? "Crear Presupuesto (Temporal)" : "Guardar Presupuesto"}
             </Button>
           </div>
         </div>
