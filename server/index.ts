@@ -1,5 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
+import cron from "node-cron";
 // Routes will be imported dynamically
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -47,6 +48,19 @@ app.use((req, res, next) => {
   try {
     const { newsScraperService } = await import("./news-scraper");
     await newsScraperService.seedNews();
+    
+    // Setup automatic news updates every 6 hours
+    cron.schedule('0 */6 * * *', async () => {
+      log('🔄 Running scheduled news update...');
+      try {
+        await newsScraperService.updateNews();
+        log('✅ News update completed successfully');
+      } catch (error) {
+        console.error('❌ Error during scheduled news update:', error);
+      }
+    });
+    
+    log('📰 News auto-update scheduled: Every 6 hours');
   } catch (error) {
     console.error('Error initializing news:', error);
   }

@@ -160,9 +160,21 @@ export class NewsScraperService {
    * In production, this would use web scraping or news APIs
    */
   async fetchLatestNews(): Promise<NewsItem[]> {
-    // For now, return recent sample news
-    // In production, implement web scraping here
-    return SAMPLE_NEWS.slice(0, 3);
+    // Simulate new news by rotating sample news with fresh dates
+    const today = new Date();
+    const freshNews: NewsItem[] = SAMPLE_NEWS.slice(0, 3).map((news, index) => ({
+      ...news,
+      title: `${news.title} [Actualizado]`,
+      publishedAt: new Date(today.getTime() - index * 60 * 60 * 1000) // Stagger by hours
+    }));
+    
+    // TODO: In production, implement real web scraping here:
+    // - Use cheerio or puppeteer to scrape news sites
+    // - Parse HTML from construction news sources
+    // - Extract title, summary, date, source
+    // - Filter by relevance and date
+    
+    return freshNews;
   }
 
   /**
