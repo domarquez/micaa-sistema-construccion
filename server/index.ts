@@ -49,6 +49,11 @@ app.use((req, res, next) => {
     const { newsScraperService } = await import("./news-scraper");
     await newsScraperService.seedNews();
     
+    // Run an immediate update on server start to show fresh content
+    log('🔄 Running initial news update...');
+    await newsScraperService.updateNews();
+    log('✅ Initial news update completed');
+    
     // Setup automatic news updates every 6 hours
     cron.schedule('0 */6 * * *', async () => {
       log('🔄 Running scheduled news update...');

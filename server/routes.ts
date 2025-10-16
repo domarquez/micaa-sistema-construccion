@@ -1115,6 +1115,30 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Forzar actualización manual de noticias (para testing/admin)
+  app.post("/api/admin/update-news", async (req: Request, res: Response) => {
+    try {
+      const { newsScraperService } = await import("./news-scraper");
+      await newsScraperService.updateNews();
+      
+      const updatedNews = await db
+        .select()
+        .from(constructionNews)
+        .where(eq(constructionNews.isActive, true))
+        .orderBy(desc(constructionNews.publishedAt))
+        .limit(20);
+
+      res.json({ 
+        message: "Noticias actualizadas exitosamente",
+        count: updatedNews.length,
+        news: updatedNews 
+      });
+    } catch (error) {
+      console.error("Error updating news:", error);
+      res.status(500).json({ message: "Failed to update news" });
+    }
+  });
+
   app.get("/api/public/dual-advertisements", async (req: Request, res: Response) => {
     try {
       const activeAds = await db
