@@ -1,6 +1,8 @@
 import { db } from "./db";
 import { constructionNews } from "@shared/schema";
 import { eq, desc } from "drizzle-orm";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 interface NewsItem {
   title: string;
@@ -156,25 +158,127 @@ export class NewsScraperService {
   }
 
   /**
-   * Simulates fetching latest news from web sources
-   * In production, this would use web scraping or news APIs
+   * Scrapes news from Los Tiempos (Bolivia)
+   */
+  private async scrapeLosTiempos(): Promise<NewsItem[]> {
+    try {
+      const response = await axios.get('https://www.lostiempos.com/', {
+        timeout: 5000,
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      
+      const $ = cheerio.load(response.data);
+      const news: NewsItem[] = [];
+      
+      // Buscar artículos relacionados con construcción
+      $('article, .article, .news-item').slice(0, 5).each((_, element) => {
+        const titleEl = $(element).find('h2, h3, .title, .headline').first();
+        const title = titleEl.text().trim();
+        const link = titleEl.find('a').attr('href') || $(element).find('a').attr('href');
+        
+        // Filtrar solo noticias de construcción/economía
+        if (title && (title.toLowerCase().includes('construcción') || 
+                     title.toLowerCase().includes('obra') ||
+                     title.toLowerCase().includes('infraestructura') ||
+                     title.toLowerCase().includes('vivienda'))) {
+          news.push({
+            title,
+            summary: title,
+            sourceName: 'Los Tiempos',
+            sourceUrl: link ? `https://www.lostiempos.com${link}` : 'https://www.lostiempos.com',
+            category: 'economia',
+            publishedAt: new Date()
+          });
+        }
+      });
+      
+      return news;
+    } catch (error) {
+      console.error('Error scraping Los Tiempos:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Scrapes news from Economy.com.bo
+   */
+  private async scrapeEconomy(): Promise<NewsItem[]> {
+    try {
+      const response = await axios.get('https://www.economy.com.bo/articulo/economia/', {
+        timeout: 5000,
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      
+      const $ = cheerio.load(response.data);
+      const news: NewsItem[] = [];
+      
+      $('article, .article-item, .news').slice(0, 5).each((_, element) => {
+        const titleEl = $(element).find('h2, h3, .title').first();
+        const title = titleEl.text().trim();
+        const summary = $(element).find('p, .summary, .description').first().text().trim();
+        const link = titleEl.find('a').attr('href') || $(element).find('a').attr('href');
+        
+        if (title && (title.toLowerCase().includes('construcción') || 
+                     title.toLowerCase().includes('material') ||
+                     title.toLowerCase().includes('obra'))) {
+          news.push({
+            title,
+            summary: summary || title,
+            sourceName: 'Economy.com.bo',
+            sourceUrl: link || 'https://www.economy.com.bo',
+            category: 'economia',
+            publishedAt: new Date()
+          });
+        }
+      });
+      
+      return news;
+    } catch (error) {
+      console.error('Error scraping Economy.com.bo:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetches latest news from multiple web sources using web scraping
    */
   async fetchLatestNews(): Promise<NewsItem[]> {
-    // Simulate new news by rotating sample news with fresh dates
-    const today = new Date();
-    const freshNews: NewsItem[] = SAMPLE_NEWS.slice(0, 3).map((news, index) => ({
-      ...news,
-      title: `${news.title} [Actualizado]`,
-      publishedAt: new Date(today.getTime() - index * 60 * 60 * 1000) // Stagger by hours
-    }));
+    const allNews: NewsItem[] = [];
     
-    // TODO: In production, implement real web scraping here:
-    // - Use cheerio or puppeteer to scrape news sites
-    // - Parse HTML from construction news sources
-    // - Extract title, summary, date, source
-    // - Filter by relevance and date
-    
-    return freshNews;
+    try {
+      // Scrape from multiple sources
+      const [losTiemposNews, economyNews] = await Promise.all([
+        this.scrapeLosTiempos(),
+        this.scrapeEconomy()
+      ]);
+      
+      allNews.push(...losTiemposNews, ...economyNews);
+      
+      // Si no se obtuvieron noticias del scraping, usar noticias de ejemplo
+      if (allNews.length === 0) {
+        console.log('No se obtuvieron noticias del scraping, usando datos de ejemplo');
+        const today = new Date();
+        const freshNews: NewsItem[] = SAMPLE_NEWS.slice(0, 3).map((news, index) => ({
+          ...news,
+          title: `${news.title} [Actualizado ${today.toLocaleDateString()}]`,
+          publishedAt: new Date(today.getTime() - index * 60 * 60 * 1000)
+        }));
+        return freshNews;
+      }
+      
+      console.log(`Se obtuvieron ${allNews.length} noticias del scraping`);
+      return allNews.slice(0, 5); // Limitar a 5 noticias más recientes
+      
+    } catch (error) {
+      console.error('Error general en fetchLatestNews:', error);
+      // Fallback a noticias de ejemplo
+      const today = new Date();
+      return SAMPLE_NEWS.slice(0, 3).map((news, index) => ({
+        ...news,
+        title: `${news.title} [Actualizado ${today.toLocaleDateString()}]`,
+        publishedAt: new Date(today.getTime() - index * 60 * 60 * 1000)
+      }));
+    }
   }
 
   /**
