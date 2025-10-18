@@ -3,6 +3,11 @@ import { constructionNews } from "@shared/schema";
 import { eq, desc } from "drizzle-orm";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { neon } from '@neondatabase/serverless';
+
+// External news database connection
+const EXTERNAL_NEWS_DB_URL = 'postgresql://neondb_owner:npg_Vj2ROt6JrXHv@ep-tight-glitter-a8wysmyx-pooler.eastus2.azure.neon.tech/noticiascons?sslmode=require&channel_binding=require';
+const externalNewsDb = neon(EXTERNAL_NEWS_DB_URL);
 
 interface NewsItem {
   title: string;
@@ -158,6 +163,42 @@ export class NewsScraperService {
   }
 
   /**
+   * Fetches news from external Neon database (noticiascons)
+   */
+  private async fetchFromExternalDatabase(): Promise<NewsItem[]> {
+    try {
+      console.log('📡 Consultando base de datos externa de noticias...');
+      
+      const results = await externalNewsDb`
+        SELECT id, titular, resumen, url_imagen, enlace, fuente, fecha_publicacion
+        FROM noticias_construccion_bolivia
+        WHERE titular IS NOT NULL 
+        AND titular != ''
+        ORDER BY fecha_publicacion DESC
+        LIMIT 10;
+      `;
+      
+      console.log(`✅ Obtenidas ${results.length} noticias de la BD externa`);
+      
+      const news: NewsItem[] = results.map((row: any) => ({
+        title: row.titular,
+        summary: row.resumen || row.titular,
+        sourceName: row.fuente || 'Construcción Bolivia',
+        sourceUrl: row.enlace || 'https://contactoconstruccion.com',
+        category: 'construccion',
+        publishedAt: row.fecha_publicacion ? new Date(row.fecha_publicacion) : new Date(),
+        imageUrl: row.url_imagen || undefined
+      }));
+      
+      return news;
+      
+    } catch (error) {
+      console.error('❌ Error consultando BD externa de noticias:', error);
+      return [];
+    }
+  }
+
+  /**
    * Scrapes news from Los Tiempos (Bolivia)
    */
   private async scrapeLosTiempos(): Promise<NewsItem[]> {
@@ -240,13 +281,23 @@ export class NewsScraperService {
   }
 
   /**
-   * Fetches latest news from multiple web sources using web scraping
+   * Fetches latest news from external database or web sources
    */
   async fetchLatestNews(): Promise<NewsItem[]> {
     const allNews: NewsItem[] = [];
     
     try {
-      // Scrape from multiple sources
+      // PRIORITY 1: Try to get news from external Neon database
+      console.log('🔄 Intentando obtener noticias de la base de datos externa...');
+      const externalDbNews = await this.fetchFromExternalDatabase();
+      
+      if (externalDbNews.length > 0) {
+        console.log(`✅ Se obtuvieron ${externalDbNews.length} noticias de la BD externa`);
+        return externalDbNews.slice(0, 10); // Limitar a 10 noticias más recientes
+      }
+      
+      // PRIORITY 2: If external DB fails, try web scraping
+      console.log('⚠️ BD externa sin resultados, intentando scraping web...');
       const [losTiemposNews, economyNews] = await Promise.all([
         this.scrapeLosTiempos(),
         this.scrapeEconomy()
@@ -254,24 +305,24 @@ export class NewsScraperService {
       
       allNews.push(...losTiemposNews, ...economyNews);
       
-      // Si no se obtuvieron noticias del scraping, usar noticias de ejemplo
-      if (allNews.length === 0) {
-        console.log('No se obtuvieron noticias del scraping, usando datos de ejemplo');
-        const today = new Date();
-        const freshNews: NewsItem[] = SAMPLE_NEWS.slice(0, 3).map((news, index) => ({
-          ...news,
-          title: `${news.title} [Actualizado ${today.toLocaleDateString()}]`,
-          publishedAt: new Date(today.getTime() - index * 60 * 60 * 1000)
-        }));
-        return freshNews;
+      if (allNews.length > 0) {
+        console.log(`✅ Se obtuvieron ${allNews.length} noticias del scraping web`);
+        return allNews.slice(0, 5);
       }
       
-      console.log(`Se obtuvieron ${allNews.length} noticias del scraping`);
-      return allNews.slice(0, 5); // Limitar a 5 noticias más recientes
+      // PRIORITY 3: If everything fails, use sample news with fresh dates
+      console.log('⚠️ No se obtuvieron noticias, usando datos de ejemplo actualizados');
+      const today = new Date();
+      const freshNews: NewsItem[] = SAMPLE_NEWS.slice(0, 3).map((news, index) => ({
+        ...news,
+        title: `${news.title} [Actualizado ${today.toLocaleDateString()}]`,
+        publishedAt: new Date(today.getTime() - index * 60 * 60 * 1000)
+      }));
+      return freshNews;
       
     } catch (error) {
-      console.error('Error general en fetchLatestNews:', error);
-      // Fallback a noticias de ejemplo
+      console.error('❌ Error general en fetchLatestNews:', error);
+      // Final fallback to sample news
       const today = new Date();
       return SAMPLE_NEWS.slice(0, 3).map((news, index) => ({
         ...news,
