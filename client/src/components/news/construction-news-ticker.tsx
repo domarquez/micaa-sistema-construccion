@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, ExternalLink } from 'lucide-react';
@@ -7,58 +8,49 @@ interface NewsItem {
   id: number;
   title: string;
   summary: string;
-  link: string;
-  source: string;
+  sourceUrl?: string;
+  sourceName: string;
   publishedAt: string;
-  category: 'economia' | 'gobierno' | 'obras' | 'tecnologia' | 'normativa';
+  category: 'economia' | 'gobierno' | 'obras' | 'tecnologia' | 'normativa' | 'construccion';
 }
 
-// Noticias de ejemplo del sector construcción en Bolivia
+// Noticias de fallback (coinciden con BD externa)
 const sampleNews: NewsItem[] = [
   {
-    id: 1,
-    title: "Gobierno anuncia nueva ley de vivienda social con créditos preferenciales",
-    summary: "El programa beneficiará a familias de ingresos medios con tasas del 3% anual",
-    link: "#",
-    source: "Página Siete",
-    publishedAt: "2025-01-17T10:30:00Z",
-    category: "gobierno"
+    id: 27,
+    title: "LA SEGURIDAD EN LA CONSTRUCCIÓN EN BOLIVIA, UN ALTO COSTO QUE PUEDE COSTAR VIDAS",
+    summary: "LA SEGURIDAD EN LA CONSTRUCCIÓN EN BOLIVIA, UN ALTO COSTO QUE PUEDE COSTAR VIDAS",
+    sourceUrl: "https://contactoconstruccion.com/category/construccion/",
+    sourceName: "Contacto Construcción",
+    publishedAt: "2025-10-18T04:54:40.512Z",
+    category: "construccion"
   },
   {
-    id: 2, 
-    title: "Precio del cemento se estabiliza tras acuerdo con productores nacionales",
-    summary: "Las empresas cementeras garantizan stock suficiente para obras públicas y privadas",
-    link: "#",
-    source: "El Deber",
-    publishedAt: "2025-01-17T08:15:00Z", 
-    category: "economia"
+    id: 28,
+    title: "Samsung promueve la innovación en proyectos inmobiliarios: hogares interconectados con el ecosistema SmartThings",
+    summary: "Samsung promueve la innovación en proyectos inmobiliarios: hogares interconectados con el ecosistema SmartThings",
+    sourceUrl: "https://contactoconstruccion.com/category/empresas/",
+    sourceName: "Contacto Construcción",
+    publishedAt: "2025-10-18T04:54:40.511Z",
+    category: "construccion"
   },
   {
-    id: 3,
-    title: "Inicia construcción del nuevo aeropuerto de Cochabamba con inversión de $500M",
-    summary: "La obra generará 3.000 empleos directos durante sus 4 años de construcción",
-    link: "#",
-    source: "Los Tiempos",
-    publishedAt: "2025-01-16T16:45:00Z",
-    category: "obras"
+    id: 29,
+    title: "Síntesis reafirma su liderazgo con la recertificación ISO 9001 e ISO 27001:2022",
+    summary: "Síntesis reafirma su liderazgo con la recertificación ISO 9001 e ISO 27001:2022, consolidándose como referente tecnológico y de seguridad en Bolivia",
+    sourceUrl: "https://contactoconstruccion.com/category/ecomomia/",
+    sourceName: "Contacto Construcción",
+    publishedAt: "2025-10-18T04:54:40.510Z",
+    category: "construccion"
   },
   {
-    id: 4,
-    title: "BIM y tecnología 4.0: Constructoras bolivianas adoptan nuevos sistemas",
-    summary: "Empresas locales implementan modelado 3D para reducir costos en un 15%",
-    link: "#",
-    source: "Constructivo",
-    publishedAt: "2025-01-16T14:20:00Z",
-    category: "tecnologia"
-  },
-  {
-    id: 5,
-    title: "Nuevas normas de construcción sismo-resistente entran en vigor",
-    summary: "Arquitectos e ingenieros deben aplicar estándares actualizados en todas las obras",
-    link: "#",
-    source: "ANF",
-    publishedAt: "2025-01-15T11:00:00Z",
-    category: "normativa"
+    id: 30,
+    title: "Santa Cruz",
+    summary: "Santa Cruz",
+    sourceUrl: "https://www.eldia.com.bo/santa-cruz",
+    sourceName: "El Día",
+    publishedAt: "2025-10-18T04:54:39.520Z",
+    category: "construccion"
   }
 ];
 
@@ -67,7 +59,8 @@ const categoryColors = {
   gobierno: 'bg-green-100 text-green-700 border-green-300', 
   obras: 'bg-orange-100 text-orange-700 border-orange-300',
   tecnologia: 'bg-purple-100 text-purple-700 border-purple-300',
-  normativa: 'bg-red-100 text-red-700 border-red-300'
+  normativa: 'bg-red-100 text-red-700 border-red-300',
+  construccion: 'bg-yellow-100 text-yellow-700 border-yellow-300'
 };
 
 const categoryLabels = {
@@ -75,22 +68,33 @@ const categoryLabels = {
   gobierno: 'Gobierno',
   obras: 'Obras Públicas', 
   tecnologia: 'Tecnología',
-  normativa: 'Normativa'
+  normativa: 'Normativa',
+  construccion: 'Construcción'
 };
 
 export function ConstructionNewsTicker() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Obtener noticias del API
+  const { data: fetchedNews } = useQuery<NewsItem[]>({
+    queryKey: ["/api/public/construction-news"],
+    staleTime: 5 * 60 * 1000,
+    retry: 2
+  });
+
+  // Usar noticias del API o fallback
+  const newsData = fetchedNews && fetchedNews.length > 0 ? fetchedNews : sampleNews;
+
   useEffect(() => {
     if (isPaused) return;
     
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % sampleNews.length);
+      setCurrentIndex((prev) => (prev + 1) % newsData.length);
     }, 5000); // Cambiar cada 5 segundos
 
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, newsData.length]);
 
   const formatTimeAgo = (dateString: string) => {
     const now = new Date();
@@ -104,9 +108,9 @@ export function ConstructionNewsTicker() {
     return `Hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
   };
 
-  if (!sampleNews.length) return null;
+  if (!newsData.length) return null;
 
-  const currentNews = sampleNews[currentIndex];
+  const currentNews = newsData[currentIndex];
 
   return (
     <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-xs mx-auto">
@@ -120,7 +124,7 @@ export function ConstructionNewsTicker() {
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
             <span className="text-xs font-semibold text-gray-700">
-              Noticias
+              Noticias del Sector
             </span>
           </div>
           <div className="flex items-center space-x-1 text-xs text-gray-500">
@@ -151,22 +155,24 @@ export function ConstructionNewsTicker() {
 
           <div className="mt-3 space-y-2">
             <div className="text-center">
-              <span className="text-xs text-gray-500">{currentNews.source}</span>
+              <span className="text-xs text-gray-500">{currentNews.sourceName}</span>
             </div>
 
-            <div className="flex justify-center">
-              <button
-                onClick={() => window.open(currentNews.link, '_blank')}
-                className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-full transition-colors"
-                title="Leer noticia completa"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </button>
-            </div>
+            {currentNews.sourceUrl && (
+              <div className="flex justify-center">
+                <button
+                  onClick={() => window.open(currentNews.sourceUrl, '_blank')}
+                  className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-full transition-colors"
+                  title="Leer noticia completa"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </button>
+              </div>
+            )}
 
             {/* Progress indicators */}
             <div className="flex justify-center space-x-0.5 sm:space-x-1">
-              {sampleNews.map((_, index) => (
+              {newsData.map((_, index) => (
                 <div
                   key={index}
                   className={`h-0.5 sm:h-1 transition-all duration-300 ${
@@ -179,7 +185,7 @@ export function ConstructionNewsTicker() {
             </div>
             
             <div className="text-xs text-gray-500 text-center">
-              {currentIndex + 1} de {sampleNews.length}
+              {currentIndex + 1} de {newsData.length}
             </div>
           </div>
         </div>
