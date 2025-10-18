@@ -333,13 +333,23 @@ export class NewsScraperService {
   }
 
   /**
-   * Updates news database with fresh content
+   * Updates news database with fresh content from external database ONLY
    */
   async updateNews(): Promise<void> {
     try {
-      const latestNews = await this.fetchLatestNews();
+      console.log('📰 Actualizando noticias desde base de datos externa...');
       
-      for (const newsItem of latestNews) {
+      // Fetch ONLY from external database (no fallbacks to sample news)
+      const externalNews = await this.fetchFromExternalDatabase();
+      
+      if (externalNews.length === 0) {
+        console.log('⚠️ No se obtuvieron noticias de la BD externa');
+        return;
+      }
+      
+      console.log(`✅ Obtenidas ${externalNews.length} noticias de la BD externa`);
+      
+      for (const newsItem of externalNews) {
         // Check if news already exists
         const existing = await db
           .select()
@@ -349,10 +359,13 @@ export class NewsScraperService {
 
         if (existing.length === 0) {
           await this.addNews(newsItem);
+          console.log(`✅ Noticia agregada: ${newsItem.title.substring(0, 60)}...`);
+        } else {
+          console.log(`⏭️ Noticia ya existe: ${newsItem.title.substring(0, 60)}...`);
         }
       }
 
-      console.log('News update completed');
+      console.log('✅ Actualización de noticias completada');
     } catch (error) {
       console.error('Error updating news:', error);
       throw error;
