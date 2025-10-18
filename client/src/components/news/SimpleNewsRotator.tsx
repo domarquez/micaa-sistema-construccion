@@ -19,6 +19,7 @@ const categoryColors = {
   obras: 'bg-orange-100 text-orange-700 border-orange-300',
   tecnologia: 'bg-purple-100 text-purple-700 border-purple-300',
   normativa: 'bg-red-100 text-red-700 border-red-300',
+  construccion: 'bg-yellow-100 text-yellow-700 border-yellow-300',
   general: 'bg-gray-100 text-gray-700 border-gray-300'
 };
 
@@ -28,50 +29,47 @@ const categoryLabels = {
   obras: 'Obras Públicas', 
   tecnologia: 'Tecnología',
   normativa: 'Normativa',
+  construccion: 'Construcción',
   general: 'General'
 };
 
-// Fallback news data
+// Fallback news data (matches external database)
 const fallbackNews: NewsItem[] = [
   {
-    id: 1,
-    title: "Sector construcción en emergencia por crisis de insumos",
-    summary: "CABOCO alerta sobre falta de materiales críticos y escasez de dólares",
+    id: 27,
+    title: "LA SEGURIDAD EN LA CONSTRUCCIÓN EN BOLIVIA, UN ALTO COSTO QUE PUEDE COSTAR VIDAS",
+    summary: "LA SEGURIDAD EN LA CONSTRUCCIÓN EN BOLIVIA, UN ALTO COSTO QUE PUEDE COSTAR VIDAS",
     sourceName: "Contacto Construcción",
-    category: "economia",
-    publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    sourceUrl: "https://contactoconstruccion.com/category/construccion/",
+    category: "construccion",
+    publishedAt: new Date("2025-10-18T04:54:40.512Z").toISOString()
   },
   {
-    id: 2,
-    title: "Precio del fierro se duplica en 6 meses por crisis de divisas",
-    summary: "Material pasó de 60 a 120 bolivianos, afectando costos de construcción",
-    sourceName: "Los Tiempos",
-    category: "economia",
-    publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+    id: 28,
+    title: "Samsung promueve la innovación en proyectos inmobiliarios: hogares interconectados con el ecosistema SmartThings",
+    summary: "Samsung promueve la innovación en proyectos inmobiliarios: hogares interconectados con el ecosistema SmartThings",
+    sourceName: "Contacto Construcción",
+    sourceUrl: "https://contactoconstruccion.com/category/empresas/",
+    category: "construccion",
+    publishedAt: new Date("2025-10-18T04:54:40.511Z").toISOString()
   },
   {
-    id: 3,
-    title: "Decreto Supremo 5321 para ajustar precios en obras públicas",
-    summary: "Permite modificar precios unitarios de materiales importados",
-    sourceName: "MOPSV",
-    category: "gobierno",
-    publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+    id: 29,
+    title: "Síntesis reafirma su liderazgo con la recertificación ISO 9001 e ISO 27001:2022, consolidándose como referente tecnológico y de seguridad en Bolivia",
+    summary: "Síntesis reafirma su liderazgo con la recertificación ISO 9001 e ISO 27001:2022, consolidándose como referente tecnológico y de seguridad en Bolivia",
+    sourceName: "Contacto Construcción",
+    sourceUrl: "https://contactoconstruccion.com/category/ecomomia/",
+    category: "construccion",
+    publishedAt: new Date("2025-10-18T04:54:40.510Z").toISOString()
   },
   {
-    id: 4,
-    title: "30,000 construcciones irregulares reportadas en La Paz",
-    summary: "Propietarios se amparan en autorizaciones de municipios aledaños",
-    sourceName: "Opinión Bolivia",
-    category: "normativa",
-    publishedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: 5,
-    title: "Tecnología BIM reduce costos 15% en empresas bolivianas",
-    summary: "Constructoras adoptan modelado 3D y herramientas digitales",
-    sourceName: "Constructivo",
-    category: "tecnologia",
-    publishedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+    id: 30,
+    title: "Santa Cruz",
+    summary: "Santa Cruz",
+    sourceName: "El Día",
+    sourceUrl: "https://www.eldia.com.bo/santa-cruz",
+    category: "construccion",
+    publishedAt: new Date("2025-10-18T04:54:39.520Z").toISOString()
   }
 ];
 
