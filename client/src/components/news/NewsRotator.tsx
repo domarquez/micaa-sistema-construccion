@@ -68,10 +68,10 @@ export function NewsRotator() {
 
   if (isLoading) {
     return (
-      <div className="w-full bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 p-4">
-        <div className="flex items-center gap-2 text-blue-700">
-          <Newspaper className="w-5 h-5 animate-pulse" />
-          <span className="text-sm font-semibold">Cargando noticias...</span>
+      <div className="w-full bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 p-2 sm:p-4 mx-2 sm:mx-0 mb-3">
+        <div className="flex items-center gap-1 sm:gap-2 text-blue-700">
+          <Newspaper className="w-3 h-3 sm:w-5 sm:h-5 animate-pulse" />
+          <span className="text-xs sm:text-sm font-semibold">Cargando noticias...</span>
         </div>
       </div>
     );
@@ -79,10 +79,10 @@ export function NewsRotator() {
 
   if (isError || !newsData || newsData.length === 0) {
     return (
-      <div className="w-full bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200 p-4">
-        <div className="flex items-center gap-2 text-yellow-700">
-          <Newspaper className="w-5 h-5" />
-          <span className="text-sm font-semibold">No hay noticias disponibles</span>
+      <div className="w-full bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200 p-2 sm:p-4 mx-2 sm:mx-0 mb-3">
+        <div className="flex items-center gap-1 sm:gap-2 text-yellow-700">
+          <Newspaper className="w-3 h-3 sm:w-5 sm:h-5" />
+          <span className="text-xs sm:text-sm font-semibold">No hay noticias disponibles</span>
         </div>
       </div>
     );
@@ -91,46 +91,46 @@ export function NewsRotator() {
   const currentNews = newsData[currentIndex];
 
   return (
-    <div className="w-full mb-3 px-2 sm:px-4">
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border-2 border-blue-300 overflow-hidden shadow-md">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <Newspaper className="w-5 h-5 text-white" />
-            <span className="text-sm font-bold text-white">
-              NOTICIAS DEL SECTOR CONSTRUCCIÓN
+    <div className="w-full mb-2 sm:mb-3 px-1 sm:px-2 md:px-4">
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-md sm:rounded-lg border sm:border-2 border-blue-300 overflow-hidden shadow-sm sm:shadow-md">
+        {/* Header - Compacto en móvil */}
+        <div className="flex items-center justify-between px-2 py-1 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <Newspaper className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
+            <span className="text-[10px] sm:text-sm md:text-base font-bold text-white truncate">
+              NOTICIAS DEL SECTOR
             </span>
           </div>
-          <Badge variant="secondary" className="text-xs bg-white text-blue-700 font-semibold">
-            {newsData.length} noticias
+          <Badge variant="secondary" className="text-[8px] sm:text-xs bg-white text-blue-700 font-semibold px-1 py-0 sm:px-2 sm:py-1">
+            {newsData.length}
           </Badge>
         </div>
 
-        {/* News Content */}
-        <div className="p-4 bg-white">
-          <div className="flex flex-col md:flex-row gap-4">
+        {/* News Content - Optimizado para móvil */}
+        <div className="p-2 sm:p-3 md:p-4 bg-white">
+          <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
             {/* Main News */}
             <div className="flex-1">
-              <div className="flex items-start justify-between mb-2">
-                <Badge className={`text-xs ${categoryColors[currentNews.category] || categoryColors.general}`}>
+              <div className="flex items-start justify-between mb-1 sm:mb-2 gap-1">
+                <Badge className={`text-[8px] sm:text-xs px-1 py-0 ${categoryColors[currentNews.category] || categoryColors.general}`}>
                   {categoryLabels[currentNews.category] || currentNews.category}
                 </Badge>
-                <span className="text-xs text-gray-500">
+                <span className="text-[8px] sm:text-xs text-gray-500 flex-shrink-0">
                   {formatTimeAgo(currentNews.publishedAt)}
                 </span>
               </div>
 
-              <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">
+              <h3 className="font-bold text-xs sm:text-sm md:text-base lg:text-lg text-gray-900 mb-1 sm:mb-2 line-clamp-2 leading-tight">
                 {currentNews.title}
               </h3>
 
-              <p className="text-sm text-gray-600 mb-3 line-clamp-3">
+              <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2 sm:line-clamp-3 leading-snug">
                 {currentNews.summary}
               </p>
 
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-blue-600 font-medium">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[8px] sm:text-xs text-blue-600 font-medium truncate">
                   📰 {currentNews.sourceName}
                 </span>
                 
@@ -139,31 +139,31 @@ export function NewsRotator() {
                     href={currentNews.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 hover:underline"
+                    className="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-xs text-blue-600 hover:text-blue-700 hover:underline flex-shrink-0"
                   >
-                    Ver más <ExternalLink className="w-3 h-3" />
+                    Ver <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                   </a>
                 )}
               </div>
             </div>
 
-            {/* Indicators */}
-            <div className="md:w-32 flex md:flex-col items-center justify-center gap-2 md:border-l md:pl-4">
-              <div className="text-center mb-2">
-                <div className="text-2xl font-bold text-blue-600">
+            {/* Indicators - Horizontal en móvil */}
+            <div className="flex items-center justify-center gap-3 sm:gap-4 border-t pt-2 sm:pt-3">
+              <div className="text-center">
+                <div className="text-sm sm:text-lg md:text-xl font-bold text-blue-600">
                   {currentIndex + 1}
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="text-[8px] sm:text-xs text-gray-500">
                   de {newsData.length}
                 </div>
               </div>
               
-              <div className="flex md:flex-col gap-2">
+              <div className="flex gap-1.5 sm:gap-2">
                 {newsData.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
+                    className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all touch-target ${
                       index === currentIndex 
                         ? 'bg-blue-600 scale-125' 
                         : 'bg-gray-300 hover:bg-gray-400'
@@ -176,10 +176,10 @@ export function NewsRotator() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="px-4 py-2 bg-gray-50 border-t">
-          <div className="text-xs text-gray-500 text-center">
-            Actualizado automáticamente cada 6 horas • Click en los puntos para navegar
+        {/* Footer - Oculto en móvil pequeño */}
+        <div className="hidden sm:block px-2 sm:px-4 py-1 sm:py-2 bg-gray-50 border-t">
+          <div className="text-[8px] sm:text-xs text-gray-500 text-center">
+            Actualizado cada 6 horas • Click en los puntos para navegar
           </div>
         </div>
       </div>
