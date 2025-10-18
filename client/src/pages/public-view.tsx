@@ -13,7 +13,7 @@ import AdInFeed from "@/components/ads/AdInFeed";
 import AdFooter from "@/components/ads/AdFooter";
 import AdMobile from "@/components/ads/AdMobile";
 import { AdCarousel } from "@/components/advertising/ad-carousel";
-import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
+import { NewsRotator } from "@/components/news/NewsRotator";
 import {
   Table,
   TableBody,
@@ -261,17 +261,8 @@ export default function PublicView() {
           </div>
         </div>
 
-        {/* Advertising Carousel & News Ticker - Mobile Responsive */}
-        <div className="w-full px-3 sm:px-4 md:px-6 mb-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-            <div className="w-full">
-              <AdCarousel />
-            </div>
-            <div className="w-full">
-              <ConstructionNewsTicker />
-            </div>
-          </div>
-        </div>
+        {/* News Rotator - Full Width */}
+        <NewsRotator />
 
         {/* Main Content Container */}
         <div className="w-full px-3 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 space-y-2 sm:space-y-4 md:space-y-6">
@@ -349,9 +340,6 @@ export default function PublicView() {
 
         {/* Carrusel de Publicidades de Proveedores */}
         <AdCarousel />
-
-        {/* Ticker de Noticias de Construcción */}
-        <ConstructionNewsTicker />
 
         {/* Métricas Compactas del Sistema - Optimizado para móviles */}
         <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 mobile-padding">

@@ -28,7 +28,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import AdInFeed from "@/components/ads/AdInFeed";
 import AdFooter from "@/components/ads/AdFooter";
 import { AdCarousel } from "@/components/advertising/ad-carousel";
-import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
+import { NewsRotator } from "@/components/news/NewsRotator";
 
 interface Statistics {
   totalMaterials: number;
@@ -222,7 +222,7 @@ export default function Dashboard() {
       </div>
 
       {/* Construction News Ticker */}
-      <ConstructionNewsTicker />
+      <NewsRotator />
 
       {/* Supplier Advertisements Carousel */}
       <AdCarousel />

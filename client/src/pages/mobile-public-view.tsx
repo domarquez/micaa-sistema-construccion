@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Package, Store, Search } from "lucide-react";
 import MobileHeader from "@/components/layout/mobile-header";
 import { AdCarousel } from "@/components/advertising/ad-carousel";
-import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
+import { NewsRotator } from "@/components/news/NewsRotator";
 
 export default function MobilePublicView() {
   const [searchTerm, setSearchTerm] = useState("");

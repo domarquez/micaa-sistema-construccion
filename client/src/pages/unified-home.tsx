@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 
-import { ConstructionNewsTicker } from "@/components/news/construction-news-ticker";
+import { NewsRotator } from "@/components/news/NewsRotator";
 import { StaticNewsRotator } from "@/components/news/StaticNewsRotator";
 import { CompanyAdvertisementCarousel } from "@/components/advertising/CompanyAdvertisementCarousel";
 import AdInFeed from "@/components/ads/AdInFeed";
