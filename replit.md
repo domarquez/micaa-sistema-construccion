@@ -3,12 +3,14 @@
 ## Overview
 MICAA is a comprehensive construction management platform designed for Bolivia. Its main purpose is to streamline construction project management by offering budget estimation, material pricing, activity management, and supplier integration. Key capabilities include APU (Análisis de Precios Unitarios) calculations, regional price adjustments, and a marketplace for construction materials and suppliers. The business vision is to provide an essential tool for the Bolivian construction sector, enhancing efficiency and connectivity.
 
-## Recent Changes (January 2025)
-- **News System Enhancement**: Implemented responsive news rotator with real construction industry data from Bolivia
-- **SimpleNewsRotator Component**: Mobile shows 1 news with auto-rotation, desktop shows 2 news side-by-side with controlled height
-- **Database Integration**: Added construction_news table with real sector news (material prices, regulations, BIM adoption)
+## Recent Changes (October 2025)
+- **NewsRotator Component**: Created new mobile-optimized news rotator displaying real-time construction industry news from external Neon database
+- **External News Database Integration**: Connected to external PostgreSQL database (noticiascons) with table `noticias_construccion_bolivia` containing real sector news
+- **3-Tier News Fetching System**: (1) External database as primary source, (2) Web scraping as fallback, (3) Sample news as last resort
+- **Automatic News Updates**: System fetches and updates construction news every 6 hours (00:00, 06:00, 12:00, 18:00) and on server startup
+- **Mobile-First Design**: Ultra-compact news display optimized for Samsung A05 with responsive text sizes, minimal padding, and touch-friendly navigation
 - **Advertising System**: Maintained dual system - Google AdSense for revenue + company advertisements for registered suppliers
-- **Unified User Experience**: Added news rotator and advertisements to authenticated user dashboard, maintaining consistent experience across anonymous and logged-in users
+- **Unified User Experience**: News rotator integrated across all views (anonymous, authenticated, mobile, desktop)
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
