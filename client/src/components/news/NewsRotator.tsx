@@ -147,27 +147,27 @@ export function NewsRotator() {
               </div>
             </div>
 
-            {/* Indicators - Horizontal en móvil */}
-            <div className="flex items-center justify-center gap-3 sm:gap-4 border-t pt-2 sm:pt-3">
-              <div className="text-center">
-                <div className="text-sm sm:text-lg md:text-xl font-bold text-blue-600">
-                  {currentIndex + 1}
-                </div>
-                <div className="text-[8px] sm:text-xs text-gray-500">
-                  de {newsData.length}
-                </div>
-              </div>
+            {/* Indicators - Compacto y minimalista */}
+            <div className="flex items-center justify-between border-t pt-1.5 sm:pt-2">
+              <span className="text-[10px] sm:text-xs text-gray-500 font-medium">
+                {currentIndex + 1}/{newsData.length}
+              </span>
               
-              <div className="flex gap-1.5 sm:gap-2">
+              <div className="flex gap-1 sm:gap-1.5">
                 {newsData.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentIndex(index)}
-                    className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all touch-target ${
+                    className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full transition-colors ${
                       index === currentIndex 
-                        ? 'bg-blue-600 scale-125' 
+                        ? 'bg-blue-600' 
                         : 'bg-gray-300 hover:bg-gray-400'
                     }`}
+                    style={{ 
+                      minWidth: '0.25rem',
+                      minHeight: '0.25rem',
+                      padding: '0.25rem'
+                    }}
                     aria-label={`Ver noticia ${index + 1}`}
                   />
                 ))}
