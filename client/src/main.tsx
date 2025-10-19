@@ -40,15 +40,15 @@ try {
   }
 }
 
-// Register Service Worker for PWA
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then((registration) => {
-        console.log('Service Worker registrado:', registration.scope);
-      })
-      .catch((error) => {
-        console.log('Error al registrar Service Worker:', error);
-      });
-  });
-}
+// Register Service Worker for PWA - Temporalmente deshabilitado
+// if ('serviceWorker' in navigator && import.meta.env.PROD) {
+//   window.addEventListener('load', () => {
+//     navigator.serviceWorker.register('/service-worker.js')
+//       .then((registration) => {
+//         console.log('Service Worker registrado:', registration.scope);
+//       })
+//       .catch((error) => {
+//         console.log('Error al registrar Service Worker:', error);
+//       });
+//   });
+// }
