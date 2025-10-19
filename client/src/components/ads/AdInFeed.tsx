@@ -19,7 +19,7 @@ export default function AdInFeed({ slot = "1234567890", className = "" }: AdInFe
   }, []);
 
   return (
-    <div className={`ad-container text-center my-4 max-w-full overflow-hidden mobile-padding ${className}`}>
+    <div className={`ad-shell ad-container text-center my-4 mobile-padding ${className}`}>
       <div className="text-xs text-gray-500 mb-1">Publicidad</div>
       <ins
         ref={adRef}

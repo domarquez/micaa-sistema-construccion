@@ -19,14 +19,14 @@ export default function AdMobile({ slot = "4567890123", className = "" }: AdMobi
   }, []);
 
   return (
-    <div className={`ad-container text-center py-2 md:hidden max-w-full overflow-hidden ${className}`}>
+    <div className={`ad-shell ad-container text-center py-2 md:hidden ${className}`}>
       <div className="text-xs text-gray-400 mb-1">Publicidad</div>
       <ins
         ref={adRef}
         className="adsbygoogle"
         style={{ 
           display: 'inline-block', 
-          width: 'min(320px, 100vw - 2rem)', 
+          width: 'min(320px, 100vw - 1rem)', 
           height: '50px',
           maxWidth: '100%'
         }}

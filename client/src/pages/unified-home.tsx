@@ -373,7 +373,7 @@ export default function UnifiedHome() {
                   </div>
 
                   {/* Materials table - Mobile Optimized */}
-                  <div className="overflow-x-auto max-w-full">
+                  <div className="table-responsive">
                     <Table className="min-w-full">
                       <TableHeader>
                         <TableRow>

@@ -256,93 +256,68 @@
   }
 }
 
-/* Extra small mobile devices (Samsung A05, etc.) */
-@media (max-width: 380px) {
+/* ==================================
+   RESPONSIVE DESIGN SYSTEM - Consolidated
+   Tiers: ultra (≤360px), small (361-480px), compact (481-767px), base (≥768px)
+   ================================== */
+
+/* Component-specific wrappers for overflow protection */
+.ad-shell, .news-panel, .table-responsive, .auth-card {
+  max-width: 100%;
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ultra-small tier (≤360px) - Samsung A05 and similar */
+@media (max-width: 360px) {
+  :root {
+    --rs-spacing: 0.25rem;
+    --rs-padding-x: 0.5rem;
+    --rs-text-xs: 0.625rem;
+    --rs-text-sm: 0.75rem;
+  }
+  
   .mobile-padding {
-    padding-left: 0.125rem !important;
-    padding-right: 0.125rem !important;
+    padding-left: var(--rs-padding-x);
+    padding-right: var(--rs-padding-x);
   }
   
   .mobile-ultra-compact {
-    padding: 0.125rem !important;
+    padding: var(--rs-spacing);
   }
   
   .mobile-text-xs {
-    font-size: 0.6rem !important;
-    line-height: 0.8rem !important;
+    font-size: var(--rs-text-xs);
+    line-height: 1.2;
+  }
+  
+  .ad-shell, .news-panel {
+    padding-left: var(--rs-spacing);
+    padding-right: var(--rs-spacing);
   }
 }
 
-/* Ultra-small devices optimization */
-@media (max-width: 360px) {
+/* Small tier (361-480px) */
+@media (min-width: 361px) and (max-width: 480px) {
+  :root {
+    --rs-spacing: 0.5rem;
+    --rs-padding-x: 0.75rem;
+    --rs-text-xs: 0.7rem;
+    --rs-text-sm: 0.8rem;
+  }
+  
   .mobile-padding {
-    padding-left: 0rem !important;
-    padding-right: 0rem !important;
+    padding-left: var(--rs-padding-x);
+    padding-right: var(--rs-padding-x);
   }
   
   .mobile-ultra-compact {
-    padding: 0rem !important;
-  }
-  
-  .mobile-text-xs {
-    font-size: 0.5rem !important;
-    line-height: 0.7rem !important;
-  }
-  
-  /* Force maximum width constraint for very small screens */
-  .mobile-max-width {
-    max-width: calc(100vw - 1rem) !important;
-  }
-  
-  /* AdSense mobile optimization */
-  .ad-container {
-    max-width: 100% !important;
-    overflow: hidden !important;
-  }
-  
-  .ad-container .adsbygoogle {
-    max-width: 100% !important;
-  }
-  
-  /* Firefox specific fixes */
-  @-moz-document url-prefix() {
-    .mobile-ultra-compact {
-      min-width: 50px !important;
-    }
-    
-    .mobile-padding {
-      padding-left: 0.5rem !important;
-      padding-right: 0.5rem !important;
-    }
-  }
-  
-  /* Additional Firefox compatibility */
-  .firefox-browser .mobile-ultra-compact {
-    width: auto !important;
-    min-width: 60px !important;
-  }
-  
-  .firefox-browser .ad-container {
-    overflow-x: hidden !important;
-  }
-  
-  /* Ultra mobile card optimization for very small screens */
-  @media (max-width: 350px) {
-    .mobile-ultra-compact {
-      padding: 0.125rem !important;
-      min-width: 0 !important;
-      max-width: 100% !important;
-    }
-    
-    .mobile-ultra-compact .text-\[9px\] {
-      font-size: 7px !important;
-      line-height: 0.75 !important;
-    }
-    
-    .mobile-ultra-compact .text-\[8px\] {
-      font-size: 6px !important;
-      line-height: 0.7 !important;
-    }
+    padding: var(--rs-spacing);
   }
 }
 
@@ -395,28 +370,41 @@
   padding-right: clamp(0.5rem, 2vw, 1rem);
 }
 
-/* Mobile padding - responsive and safe for all screen sizes */
-.mobile-padding {
-  padding-left: clamp(0.25rem, 2vw, 1.5rem);
-  padding-right: clamp(0.25rem, 2vw, 1.5rem);
+/* Compact tier (481-767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+  :root {
+    --rs-spacing: 0.75rem;
+    --rs-padding-x: 1rem;
+    --rs-text-xs: 0.75rem;
+    --rs-text-sm: 0.875rem;
+  }
+  
+  .mobile-padding {
+    padding-left: var(--rs-padding-x);
+    padding-right: var(--rs-padding-x);
+  }
+  
+  .mobile-ultra-compact {
+    padding: var(--rs-spacing);
+  }
 }
 
-/* Extra mobile optimizations */
-@media (max-width: 480px) {
+/* Base tier (≥768px) */
+@media (min-width: 768px) {
+  :root {
+    --rs-spacing: 1rem;
+    --rs-padding-x: 1.5rem;
+    --rs-text-xs: 0.875rem;
+    --rs-text-sm: 1rem;
+  }
+  
+  .mobile-padding {
+    padding-left: var(--rs-padding-x);
+    padding-right: var(--rs-padding-x);
+  }
+  
   .mobile-ultra-compact {
-    font-size: 0.625rem !important;
-    padding: 0.25rem !important;
-    gap: 0.25rem !important;
-  }
-  
-  .mobile-text-xs {
-    font-size: 0.625rem !important;
-    line-height: 1.2 !important;
-  }
-  
-  .mobile-text-sm {
-    font-size: 0.75rem !important;
-    line-height: 1.3 !important;
+    padding: var(--rs-spacing);
   }
 }
 
@@ -478,24 +466,11 @@
   }
 }
 
-/* Ultra-small mobile devices */
-@media screen and (max-width: 380px) {
-  .mobile-ultra-compact {
-    padding: 0.125rem !important;
-    font-size: 0.6rem !important;
-  }
-  
+/* Mobile grid responsiveness */
+@media (max-width: 480px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.125rem !important;
-  }
-  
-  .text-xs { font-size: 0.5rem !important; }
-  .text-sm { font-size: 0.65rem !important; }
-  
-  button, .btn {
-    padding: 6px 8px !important;
-    font-size: 12px !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
+    gap: 0.5rem;
   }
 }
 
@@ -598,10 +573,7 @@ h6 { font-size: clamp(0.75rem, 2.5vw, 1rem); }
   font-size: clamp(0.625rem, 2vw, 0.75rem);
 }
 
-.mobile-padding {
-  padding-left: clamp(0.75rem, 3vw, 1rem);
-  padding-right: clamp(0.75rem, 3vw, 1rem);
-}
+/* Removed duplicate - consolidated above */
 
 .mobile-text-sm {
   font-size: 0.875rem;

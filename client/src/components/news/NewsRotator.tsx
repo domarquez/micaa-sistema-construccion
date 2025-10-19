@@ -91,8 +91,8 @@ export function NewsRotator() {
   const currentNews = newsData[currentIndex];
 
   return (
-    <div className="w-full mb-2 sm:mb-3 px-1 sm:px-2 md:px-4">
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-md sm:rounded-lg border sm:border-2 border-blue-300 overflow-hidden shadow-sm sm:shadow-md">
+    <div className="news-panel w-full mb-2 sm:mb-3 px-1 sm:px-2 md:px-4">
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-md sm:rounded-lg border sm:border-2 border-blue-300 shadow-sm sm:shadow-md">
         {/* Header - Compacto en móvil */}
         <div className="flex items-center justify-between px-2 py-1 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500">
           <div className="flex items-center gap-1 sm:gap-2">
