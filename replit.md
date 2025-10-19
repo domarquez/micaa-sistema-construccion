@@ -17,6 +17,9 @@ MICAA is a comprehensive construction management platform designed for Bolivia. 
 - **Responsive CSS Consolidation**: Replaced 5+ conflicting `.mobile-padding`/`.mobile-ultra-compact` definitions with tiered responsive system using CSS custom properties (--rs-spacing, --rs-padding-x) toggled by media queries at ultra (≤360px), small (361-480px), compact (481-767px), and base (≥768px) breakpoints
 - **Component Wrappers**: Created `.ad-shell`, `.news-panel`, `.table-responsive`, `.auth-card` wrapper classes with `max-width: 100%`, `overflow-x: hidden`, `min-width: 0` to prevent horizontal overflow on all components
 - **Overflow Prevention**: Systematic refactoring of Google AdSense ads, NewsRotator, CompanyAdvertisementCarousel, material tables, and auth screens to use component wrappers and eliminate `!important` cascade conflicts
+- **Header Optimization (520-560px)**: Fixed header overflow at 520-560px breakpoint with optimized button sizes (text-[9px]), reduced spacing (gap-0.5), hidden "Anónimo" badge on mobile, and flex-shrink controls
+- **Google AdSense Aggressive Protection**: Added !important CSS rules to force all AdSense ads, iframes, and children to respect 100% container width, preventing overflow from dynamically injected ad content
+- **Advertisement Components Update**: All ad components (AdMobile, AdInFeed, AdFooter, CompanyAdMobile, CompanyAdvertisementCarousel) now have explicit max-w-full and overflow-hidden protection at multiple levels
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.

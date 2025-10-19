@@ -19,7 +19,7 @@ export default function AdFooter({ slot = "3456789012", className = "" }: AdFoot
   }, []);
 
   return (
-    <div className={`ad-shell ad-container text-center py-4 border-t border-gray-200 mt-8 mobile-padding ${className}`}>
+    <div className={`ad-shell ad-container text-center py-4 border-t border-gray-200 mt-8 mobile-padding max-w-full overflow-hidden ${className}`}>
       <div className="text-xs text-gray-500 mb-2">Publicidad</div>
       <ins
         ref={adRef}
@@ -27,7 +27,8 @@ export default function AdFooter({ slot = "3456789012", className = "" }: AdFoot
         style={{ 
           display: 'block',
           maxWidth: '100%',
-          width: '100%'
+          width: '100%',
+          minWidth: 0
         }}
         data-ad-client="ca-pub-8854811165812956"
         data-ad-slot={slot}

@@ -45,7 +45,7 @@ export default function CompanyAdMobile() {
   };
 
   return (
-    <div className="block sm:hidden mb-2 mobile-padding">
+    <div className="block sm:hidden mb-2 mobile-padding max-w-full overflow-hidden">
       <div className="text-[8px] text-gray-400 mb-1 text-center">Publicidad</div>
       <Card 
         className="cursor-pointer hover:shadow-md transition-shadow border border-blue-200 bg-gradient-to-r from-blue-50 to-orange-50 max-w-full overflow-hidden"

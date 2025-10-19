@@ -19,7 +19,7 @@ export default function AdInFeed({ slot = "1234567890", className = "" }: AdInFe
   }, []);
 
   return (
-    <div className={`ad-shell ad-container text-center my-4 mobile-padding ${className}`}>
+    <div className={`ad-shell ad-container text-center my-4 mobile-padding max-w-full overflow-hidden ${className}`}>
       <div className="text-xs text-gray-500 mb-1">Publicidad</div>
       <ins
         ref={adRef}
@@ -27,7 +27,8 @@ export default function AdInFeed({ slot = "1234567890", className = "" }: AdInFe
         style={{ 
           display: 'block',
           maxWidth: '100%',
-          width: '100%'
+          width: '100%',
+          minWidth: 0
         }}
         data-ad-client="ca-pub-8854811165812956"
         data-ad-slot={slot}

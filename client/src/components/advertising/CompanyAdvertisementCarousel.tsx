@@ -71,12 +71,12 @@ export function CompanyAdvertisementCarousel() {
   const currentAd = advertisements[currentIndex];
 
   return (
-    <div className="news-panel mobile-padding mb-4 sm:mb-6">
+    <div className="news-panel mobile-padding mb-4 sm:mb-6 max-w-full overflow-hidden">
       <div className="text-xs sm:text-sm text-gray-500 mb-2 text-left">
         Empresas Proveedoras - Publicidades
       </div>
       
-      <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-200">
+      <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-200 max-w-full overflow-hidden">
         <CardContent className="p-0 relative">
           {/* Navigation Buttons */}
           {advertisements.length > 1 && (
