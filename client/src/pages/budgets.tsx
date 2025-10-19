@@ -650,7 +650,7 @@ export default function Budgets() {
         </CardHeader>
         <CardContent className="p-0">
           {/* Desktop Table View */}
-          <div className="hidden md:block overflow-x-auto">
+          <div className="table-responsive hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
