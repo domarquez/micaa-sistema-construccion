@@ -273,6 +273,16 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Header overflow protection */
+header {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+header > div {
+  max-width: 100%;
+}
+
 /* Ultra-small tier (≤360px) - Samsung A05 and similar */
 @media (max-width: 360px) {
   :root {

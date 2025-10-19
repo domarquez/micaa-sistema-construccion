@@ -51,9 +51,9 @@ export default function AppHeader() {
   };
 
   return (
-    <header className="bg-white shadow-material sticky top-0 z-50 border-b">
-      <div className="flex h-10 sm:h-11 md:h-12 lg:h-14 xl:h-16 items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6">
-        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+    <header className="bg-white shadow-material sticky top-0 z-50 border-b overflow-hidden">
+      <div className="flex h-10 sm:h-11 md:h-12 lg:h-14 xl:h-16 items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6 max-w-full">
+        <div className="flex items-center gap-1 sm:gap-2 md:gap-3 min-w-0 flex-shrink">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -69,16 +69,16 @@ export default function AppHeader() {
             {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             <span className="sr-only">Abrir menú</span>
           </Button>
-          <div className="flex items-center space-x-2 min-w-0">
-            <MicaaLogo size="sm" showText={false} className="md:hidden scale-75 sm:scale-90" />
-            <MicaaLogo size="md" showText={true} className="hidden md:block" />
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink">
+            <MicaaLogo size="sm" showText={false} className="md:hidden scale-75 sm:scale-90 flex-shrink-0" />
+            <MicaaLogo size="md" showText={true} className="hidden md:block flex-shrink-0" />
             <div className="hidden lg:block">
               <p className="text-xs text-gray-600">Sistema de Cómputos y Presupuestos</p>
             </div>
           </div>
         </div>
         
-        <div className="flex items-center space-x-0.5 sm:space-x-1 md:space-x-2">
+        <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 flex-shrink-0">
           <ContactForm 
             triggerText="Contacto"
             triggerVariant="outline"
@@ -99,30 +99,30 @@ export default function AppHeader() {
           
           {isAnonymous ? (
             /* Anonymous User Header - Mobile Optimized */
-            <div className="flex items-center space-x-1">
-              <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs py-0 px-1 hidden sm:block">
-                <AlertTriangle className="w-3 h-3 mr-1" />
-                <span className="text-xs">Anónimo</span>
+            <div className="flex items-center gap-1 min-w-0">
+              <Badge variant="outline" className="text-orange-600 border-orange-600 text-[10px] py-0 px-1 hidden md:flex items-center flex-shrink-0">
+                <AlertTriangle className="w-2.5 h-2.5 mr-0.5" />
+                <span>Anónimo</span>
               </Badge>
               
               {/* Mobile optimized buttons */}
-              <div className="flex items-center space-x-0.5 sm:space-x-1">
+              <div className="flex items-center gap-0.5 min-w-0">
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={() => window.location.href = "/login"}
-                  className="text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8"
+                  className="text-[9px] sm:text-[10px] md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 flex-shrink-0"
                 >
-                  <User className="w-2.5 h-2.5 sm:w-3 sm:h-3 sm:mr-1" />
-                  <span className="hidden sm:inline">Login</span>
+                  <User className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:mr-0.5" />
+                  <span className="hidden md:inline">Login</span>
                 </Button>
                 <Button 
                   size="sm"
                   onClick={() => window.location.href = "/register"}
-                  className="text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8 bg-orange-600 hover:bg-orange-700"
+                  className="text-[9px] sm:text-[10px] md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 bg-orange-600 hover:bg-orange-700 flex-shrink-0"
                 >
-                  <UserPlus className="w-2.5 h-2.5 sm:w-3 sm:h-3 sm:mr-1" />
-                  <span className="hidden sm:inline">Sign Up</span>
+                  <UserPlus className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:mr-0.5" />
+                  <span className="hidden md:inline">Sign Up</span>
                 </Button>
               </div>
             </div>
