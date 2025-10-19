@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://micaa.store/sitemap.xml

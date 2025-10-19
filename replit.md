@@ -4,6 +4,9 @@
 MICAA is a comprehensive construction management platform designed for Bolivia. Its main purpose is to streamline construction project management by offering budget estimation, material pricing, activity management, and supplier integration. Key capabilities include APU (Análisis de Precios Unitarios) calculations, regional price adjustments, and a marketplace for construction materials and suppliers. The business vision is to provide an essential tool for the Bolivian construction sector, enhancing efficiency and connectivity.
 
 ## Recent Changes (October 2025)
+- **PWA Implementation**: Full Progressive Web App configuration with manifest.json, service worker, and multi-size icons
+- **App Icons**: Custom construction-themed icons in sizes 96x96, 144x144, 192x192, 256x256, 384x384, 512x512 plus Apple Touch icons and favicons
+- **Offline Support**: Service worker enabled for basic offline functionality and faster load times
 - **NewsRotator Component**: Created new mobile-optimized news rotator displaying real-time construction industry news from external Neon database
 - **External News Database Integration**: Connected to external PostgreSQL database (noticiascons) with table `noticias_construccion_bolivia` containing real sector news
 - **3-Tier News Fetching System**: (1) External database as primary source, (2) Web scraping as fallback, (3) Sample news as last resort
@@ -23,6 +26,7 @@ Preferred communication style: Simple, everyday language.
 - **Styling**: Tailwind CSS with CSS variables for dynamic theming.
 - **Responsiveness**: Fluid responsive design utilizing `rem` units, `clamp()` for typography and spacing, and `min()` for container constraints. Mobile-first approach with optimized touch targets and compact layouts.
 - **Mobile Optimization**: Ultra-compact design with square component layouts, minimal padding (0.25rem on mobile), and aggressive space optimization for small screens ≤480px.
+- **PWA Support**: Progressive Web App with installable manifest, service worker for offline caching, and custom construction-themed icons.
 - **User Experience**: Anonymous project creation via `sessionStorage` for temporary access, clear color-coded action buttons with tooltips, and professional PDF export for APU documents.
 
 ### Technical Implementation

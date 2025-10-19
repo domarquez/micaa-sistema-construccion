@@ -39,3 +39,16 @@ try {
     root.innerHTML = '<div style="padding: 20px; text-align: center;"><h2>MICAA - Sistema de Construcción</h2><p>Cargando aplicación...</p><p>Si no carga, intente actualizar la página.</p></div>';
   }
 }
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then((registration) => {
+        console.log('Service Worker registrado:', registration.scope);
+      })
+      .catch((error) => {
+        console.log('Error al registrar Service Worker:', error);
+      });
+  });
+}
