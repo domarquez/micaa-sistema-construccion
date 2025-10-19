@@ -125,28 +125,28 @@ export default function UnifiedHome() {
   if (isAnonymous) {
     // PUBLIC VIEW - Optimized for anonymous users
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 max-w-full overflow-x-hidden">
         {/* Mobile Ad Banner */}
-        <div className="block sm:hidden mb-4">
+        <div className="block sm:hidden mb-4 max-w-full overflow-hidden">
           <AdMobile />
         </div>
 
         {/* Hero Section - Mobile Optimized */}
-        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding overflow-hidden">
-          <div className="max-w-7xl mx-auto text-left sm:text-center">
-            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1 sm:mb-2 md:mb-3 break-words leading-tight text-left sm:text-center">
+        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding max-w-full overflow-hidden">
+          <div className="max-w-7xl mx-auto text-left sm:text-center max-w-full">
+            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1 sm:mb-2 md:mb-3 break-words leading-tight text-left sm:text-center max-w-full">
               MICAA - Sistema de Construcción
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-1.5 sm:mb-2 md:mb-3 opacity-90 break-words leading-tight text-left sm:text-center">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-1.5 sm:mb-2 md:mb-3 opacity-90 break-words leading-tight text-left sm:text-center max-w-full">
               Presupuestos inteligentes para la construcción boliviana
             </p>
             <div className="flex flex-col gap-1 sm:gap-1.5 md:gap-2 justify-start sm:justify-center items-stretch max-w-full">
-              <Link href="/budgets" className="w-full sm:w-auto">
+              <Link href="/budgets" className="w-full sm:w-auto max-w-full">
                 <Button 
                   size="sm" 
-                  className="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-3"
+                  className="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 text-[11px] sm:text-sm md:text-base lg:text-lg px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 md:py-3 max-w-full"
                 >
-                  🚀 Crear Presupuesto Ahora
+                  <span className="truncate">🚀 Crear Presupuesto</span>
                 </Button>
               </Link>
               <div className="flex gap-1 w-full">
@@ -173,14 +173,14 @@ export default function UnifiedHome() {
 
         {/* Anonymous Usage Notice - Mobile Optimized */}
         <div className="bg-blue-50 border-l-4 border-blue-400 p-1 sm:p-1.5 md:p-2 mobile-padding mb-1 sm:mb-2 md:mb-3 max-w-full overflow-hidden">
-          <div className="flex items-start gap-1 sm:gap-1.5 md:gap-2">
+          <div className="flex items-start gap-1 sm:gap-1.5 md:gap-2 max-w-full">
             <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm sm:text-base md:text-lg min-w-0 flex-1">
+            <div className="text-[10px] sm:text-xs md:text-sm min-w-0 flex-1 max-w-full overflow-hidden">
               <p className="text-blue-800 font-medium break-words leading-tight text-left">Modo de Prueba Gratuita</p>
-              <p className="text-blue-700 mt-0.5 break-words leading-tight text-left">
-                ✅ Puedes crear, descargar e imprimir presupuestos. 
-                ⚠️ No se guardarán automáticamente - 
-                <Link href="/register" className="underline font-medium ml-1">regístrate gratis</Link> para guardar tus proyectos.
+              <p className="text-blue-700 mt-0.5 break-words leading-tight text-left max-w-full">
+                ✅ Crear, descargar presupuestos. 
+                ⚠️ No se guardan - 
+                <Link href="/register" className="underline font-medium">regístrate</Link> gratis.
               </p>
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function UnifiedHome() {
         <NewsRotator />
 
         {/* Statistics Grid - Ultra Mobile Optimized */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-0.5 sm:gap-1 md:gap-1.5 lg:gap-2 xl:gap-3 mobile-padding mb-2 sm:mb-3 md:mb-4 lg:mb-6 overflow-hidden">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-0.5 sm:gap-1 md:gap-1.5 lg:gap-2 xl:gap-3 mobile-padding mb-2 sm:mb-3 md:mb-4 lg:mb-6 max-w-full overflow-hidden">
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
               <div className="flex flex-col items-start text-left min-w-0 w-full">
@@ -315,55 +315,55 @@ export default function UnifiedHome() {
         </div>
 
         {/* Materials and Suppliers Tabs - Mobile Optimized */}
-        <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
+        <div className="mobile-padding mb-2 sm:mb-3 md:mb-4 max-w-full overflow-hidden">
           <Card className="shadow-lg max-w-full overflow-hidden">
-            <CardHeader className="p-1 sm:p-2 md:p-3">
-              <div className="flex flex-col gap-1 sm:gap-2">
-                <CardTitle className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground break-words text-left">
-                  Explorar Materiales y Proveedores
+            <CardHeader className="p-1 sm:p-2 md:p-3 max-w-full">
+              <div className="flex flex-col gap-1 sm:gap-2 max-w-full">
+                <CardTitle className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground break-words text-left max-w-full">
+                  Materiales y Proveedores
                 </CardTitle>
-                <div className="flex bg-muted p-0.5 sm:p-1 rounded-lg w-full gap-0.5">
+                <div className="flex bg-muted p-0.5 sm:p-1 rounded-lg w-full gap-0.5 max-w-full overflow-hidden">
                   <Button
                     variant={activeTab === "materials" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("materials")}
-                    className="text-sm sm:text-base md:text-lg flex-1 min-w-0 px-2 sm:px-3 py-2 sm:py-3"
+                    className="text-[10px] sm:text-xs md:text-sm lg:text-base flex-1 min-w-0 px-1 sm:px-2 md:px-3 py-2 max-w-[50%]"
                   >
-                    <Package className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 mr-1 sm:mr-2 flex-shrink-0" />
+                    <Package className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 mr-0.5 sm:mr-1 flex-shrink-0" />
                     <span className="truncate">Materiales</span>
                   </Button>
                   <Button
                     variant={activeTab === "suppliers" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("suppliers")}
-                    className="text-sm sm:text-base md:text-lg flex-1 min-w-0 px-2 sm:px-3 py-2 sm:py-3"
+                    className="text-[10px] sm:text-xs md:text-sm lg:text-base flex-1 min-w-0 px-1 sm:px-2 md:px-3 py-2 max-w-[50%]"
                   >
-                    <Store className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 mr-1 sm:mr-2 flex-shrink-0" />
+                    <Store className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 mr-0.5 sm:mr-1 flex-shrink-0" />
                     <span className="truncate">Proveedores</span>
                   </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-1 sm:p-2 md:p-3 overflow-hidden">
+            <CardContent className="p-1 sm:p-2 md:p-3 max-w-full overflow-hidden">
               {activeTab === "materials" && (
-                <div className="space-y-2 sm:space-y-3">
+                <div className="space-y-2 sm:space-y-3 max-w-full">
                   {/* Search and filters - Mobile Optimized */}
-                  <div className="flex flex-col gap-1 sm:gap-2">
-                    <div className="relative flex-1">
+                  <div className="flex flex-col gap-1 sm:gap-2 max-w-full">
+                    <div className="relative flex-1 max-w-full">
                       <Search className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 absolute left-1.5 sm:left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                       <Input
-                        placeholder="Buscar materiales..."
+                        placeholder="Buscar..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-8 sm:pl-9 md:pl-10 text-sm sm:text-base md:text-lg"
+                        className="pl-8 sm:pl-9 md:pl-10 text-xs sm:text-sm md:text-base max-w-full"
                       />
                     </div>
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-3 border border-border rounded-md bg-background text-sm sm:text-base md:text-lg"
+                      className="px-2 sm:px-3 md:px-4 py-2 border border-border rounded-md bg-background text-xs sm:text-sm md:text-base max-w-full"
                     >
-                      <option value="all">Todas las categorías</option>
+                      <option value="all">Todas</option>
                       {categories.map((category) => (
                         <option key={category.id} value={category.id.toString()}>
                           {category.name}
@@ -413,8 +413,8 @@ export default function UnifiedHome() {
               )}
 
               {activeTab === "suppliers" && (
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="grid gap-1 sm:gap-2">
+                <div className="space-y-2 sm:space-y-3 max-w-full overflow-hidden">
+                  <div className="grid gap-1 sm:gap-2 max-w-full">
                     {suppliers.slice(0, 6).map((supplier) => (
                       <Card key={supplier.id} className="border hover:shadow-md transition-shadow max-w-full overflow-hidden">
                         <CardContent className="p-1.5 sm:p-2 md:p-3">
