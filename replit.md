@@ -14,6 +14,9 @@ MICAA is a comprehensive construction management platform designed for Bolivia. 
 - **Mobile-First Design**: Ultra-compact news display optimized for Samsung A05 with responsive text sizes, minimal padding, and touch-friendly navigation
 - **Advertising System**: Maintained dual system - Google AdSense for revenue + company advertisements for registered suppliers
 - **Unified User Experience**: News rotator integrated across all views (anonymous, authenticated, mobile, desktop)
+- **Responsive CSS Consolidation**: Replaced 5+ conflicting `.mobile-padding`/`.mobile-ultra-compact` definitions with tiered responsive system using CSS custom properties (--rs-spacing, --rs-padding-x) toggled by media queries at ultra (≤360px), small (361-480px), compact (481-767px), and base (≥768px) breakpoints
+- **Component Wrappers**: Created `.ad-shell`, `.news-panel`, `.table-responsive`, `.auth-card` wrapper classes with `max-width: 100%`, `overflow-x: hidden`, `min-width: 0` to prevent horizontal overflow on all components
+- **Overflow Prevention**: Systematic refactoring of Google AdSense ads, NewsRotator, CompanyAdvertisementCarousel, material tables, and auth screens to use component wrappers and eliminate `!important` cascade conflicts
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
