@@ -1,4 +1,4 @@
-const CACHE_NAME = 'micaa-v1';
+const CACHE_NAME = 'micaa-v2';
 const urlsToCache = [
   '/',
   '/manifest.json',
