@@ -13,8 +13,21 @@ interface EmailConfig {
 class EmailService {
   private transporter: nodemailer.Transporter;
   private notificationEmail: string;
+  private isConfigured: boolean;
 
   constructor() {
+    // Validate required environment variables
+    const requiredEnvVars = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'];
+    const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+    
+    if (missingVars.length > 0) {
+      console.warn(`⚠️ Email service not fully configured. Missing: ${missingVars.join(', ')}`);
+      console.warn('Email functionality will be limited. Please configure SMTP credentials.');
+      this.isConfigured = false;
+    } else {
+      this.isConfigured = true;
+    }
+
     this.notificationEmail = process.env.NOTIFICATION_EMAIL || 'contacto@micaa.store';
     
     const config: EmailConfig = {
@@ -22,8 +35,8 @@ class EmailService {
       port: parseInt(process.env.SMTP_PORT || '465'),
       secure: true, // SSL/TLS
       auth: {
-        user: process.env.SMTP_USER || 'contacto@micaa.store',
-        pass: process.env.SMTP_PASS || 'locuaz23...'
+        user: process.env.SMTP_USER || '',
+        pass: process.env.SMTP_PASS || ''
       }
     };
 
@@ -42,9 +55,14 @@ class EmailService {
   }
 
   async sendEmail(to: string, subject: string, html: string, text?: string): Promise<boolean> {
+    if (!this.isConfigured) {
+      console.error('Cannot send email: SMTP service is not properly configured');
+      return false;
+    }
+
     try {
       const mailOptions = {
-        from: `"MICAA Sistema" <${process.env.SMTP_USER || 'contacto@micaa.store'}>`,
+        from: `"MICAA Sistema" <${process.env.SMTP_USER}>`,
         to,
         subject,
         html,
@@ -52,10 +70,10 @@ class EmailService {
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      console.log('Email sent successfully:', result.messageId);
+      console.log('✅ Email sent successfully:', result.messageId);
       return true;
     } catch (error) {
-      console.error('Failed to send email:', error);
+      console.error('❌ Failed to send email:', error);
       return false;
     }
   }
