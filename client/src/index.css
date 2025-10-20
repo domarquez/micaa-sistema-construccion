@@ -334,32 +334,9 @@ header > div {
     overflow-x: hidden;
   }
   
-  /* Specific overflow protection for common culprits */
-  main,
-  main > *,
-  .min-h-screen,
-  .bg-gradient-to-r,
-  .bg-gradient-to-br {
+  /* Main page containers */
+  main {
     max-width: 100vw;
-    overflow-x: hidden;
-  }
-  
-  /* Buttons with long text */
-  button,
-  .btn,
-  [role="button"] {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  /* Cards and containers */
-  [class*="Card"],
-  [class*="card"],
-  .shadow,
-  .shadow-lg,
-  .shadow-md {
-    max-width: 100%;
     overflow-x: hidden;
   }
 }

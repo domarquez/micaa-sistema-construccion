@@ -80,7 +80,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 mobile-padding safe-area-inset-top safe-area-inset-bottom">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 mobile-padding safe-area-inset-top safe-area-inset-bottom overflow-x-hidden">
       {/* Enlace para volver a vista pública */}
       <div className="absolute top-1 sm:top-2 md:top-4 left-1 sm:left-2 md:left-4 z-10">
         <Link href="/">
@@ -91,7 +91,7 @@ export default function Login() {
         </Link>
       </div>
 
-      <Card className="auth-card w-full max-w-[280px] sm:max-w-xs md:max-w-md mx-auto shadow-lg mobile-ultra-compact">
+      <Card className="auth-card w-full max-w-[280px] sm:max-w-xs md:max-w-md mx-2 sm:mx-auto shadow-lg mobile-ultra-compact">
         <CardHeader className="text-center p-2 sm:p-4 md:p-6">
           <div className="mx-auto w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-primary rounded-lg flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
             <Construction className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />

@@ -97,8 +97,8 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 mobile-padding safe-area-inset-top safe-area-inset-bottom">
-      <Card className="auth-card w-full max-w-[280px] sm:max-w-xs md:max-w-md mx-auto shadow-lg mobile-ultra-compact">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 mobile-padding safe-area-inset-top safe-area-inset-bottom overflow-x-hidden">
+      <Card className="auth-card w-full max-w-[280px] sm:max-w-xs md:max-w-md mx-2 sm:mx-auto shadow-lg mobile-ultra-compact">
         <CardHeader className="text-center p-2 sm:p-4 md:p-6">
           <div className="mx-auto mb-2 sm:mb-3 md:mb-4 p-2 sm:p-3 bg-primary/10 rounded-full w-fit">
             <Construction className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-primary" />
