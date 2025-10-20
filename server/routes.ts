@@ -77,6 +77,76 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Test route to send email
+  router.post('/test-email', async (req, res) => {
+    console.log('📧 Test email endpoint called');
+    try {
+      const { to } = req.body;
+      console.log('📧 Recipient:', to);
+      
+      if (!to) {
+        return res.status(400).json({ message: "Email destino es requerido" });
+      }
+
+      console.log('📧 Importing email service...');
+      const emailServiceModule = await import('./email-service.js');
+      const emailService = emailServiceModule.emailService;
+      console.log('📧 Email service imported successfully');
+      console.log('📧 Sending email...');
+      
+      const emailSent = await emailService.sendEmail(
+        to,
+        '✅ Prueba de SMTP - MICAA Sistema',
+        `
+          <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">🎉 ¡Correo de Prueba Exitoso!</h2>
+            <p>Hola,</p>
+            <p>Este es un correo de prueba del sistema MICAA para verificar que la configuración SMTP está funcionando correctamente.</p>
+            <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0;"><strong>✓ Servidor SMTP:</strong> Configurado</p>
+              <p style="margin: 5px 0;"><strong>✓ Autenticación:</strong> Exitosa</p>
+              <p style="margin: 5px 0;"><strong>✓ Envío de correo:</strong> Funcionando</p>
+            </div>
+            <p>El sistema ahora puede enviar:</p>
+            <ul>
+              <li>Correos de recuperación de contraseña</li>
+              <li>Notificaciones de registro</li>
+              <li>Mensajes de bienvenida</li>
+              <li>Solicitudes de contacto</li>
+            </ul>
+            <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">
+              Saludos,<br>
+              <strong>MICAA Sistema</strong><br>
+              Sistema Integral de Construcción y Arquitectura
+            </p>
+          </div>
+        `
+      );
+      
+      console.log('📧 Email send result:', emailSent);
+      
+      if (emailSent) {
+        console.log('✅ Email sent successfully');
+        res.json({ 
+          success: true, 
+          message: `✅ Correo de prueba enviado exitosamente a ${to}`
+        });
+      } else {
+        console.log('❌ Email send failed');
+        res.status(500).json({
+          success: false,
+          message: "Error al enviar el correo. Revisa la configuración SMTP."
+        });
+      }
+    } catch (error) {
+      console.error("Test email error:", error);
+      res.status(500).json({ 
+        message: "Error al enviar correo de prueba",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Users routes
   router.get('/users', async (req, res) => {
     try {

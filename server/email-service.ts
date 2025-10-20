@@ -30,17 +30,33 @@ class EmailService {
 
     this.notificationEmail = process.env.NOTIFICATION_EMAIL || 'contacto@micaa.store';
     
-    const config: EmailConfig = {
+    const smtpPort = parseInt(process.env.SMTP_PORT || '587');
+    const config: any = {
       host: process.env.SMTP_HOST || 'mail.micaa.store',
-      port: parseInt(process.env.SMTP_PORT || '465'),
-      secure: true, // SSL/TLS
+      port: smtpPort,
+      secure: smtpPort === 465, // SSL for port 465, false for 587 (uses STARTTLS)
+      requireTLS: smtpPort === 587, // Force TLS upgrade for port 587
+      connectionTimeout: 10000, // 10 seconds connection timeout
+      greetingTimeout: 10000, // 10 seconds greeting timeout
+      socketTimeout: 15000, // 15 seconds socket timeout
       auth: {
         user: process.env.SMTP_USER || '',
         pass: process.env.SMTP_PASS || ''
+      },
+      tls: {
+        rejectUnauthorized: false // Allow self-signed certificates
       }
     };
 
     this.transporter = nodemailer.createTransport(config);
+    
+    // Log configuration status
+    if (this.isConfigured) {
+      console.log('📧 Email service configured with:');
+      console.log(`   Host: ${config.host}:${config.port}`);
+      console.log(`   User: ${config.auth.user}`);
+      console.log(`   Notification email: ${this.notificationEmail}`);
+    }
   }
 
   async verifyConnection(): Promise<boolean> {
