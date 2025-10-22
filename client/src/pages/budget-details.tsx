@@ -8,10 +8,54 @@ import { ArrowLeft, Calendar, MapPin, User, FileText, Calculator, Download, Prin
 import { formatCurrency, formatDate } from "@/lib/utils";
 import ActivityBreakdown from "@/components/activity-breakdown";
 import type { BudgetWithProject, BudgetItemWithActivity } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
+
+// Helper para normalizar presupuestos temporales al formato BudgetWithProject
+function normalizeAnonymousBudget(foundBudget: any): BudgetWithProject {
+  // Seleccionar la primera fase como fase principal, o null si no hay fases
+  const primaryPhase = foundBudget.phases && foundBudget.phases.length > 0 
+    ? foundBudget.phases[0].phase 
+    : null;
+  
+  return {
+    id: foundBudget.id,
+    projectId: foundBudget.projectId,
+    phaseId: primaryPhase?.id || null,
+    total: foundBudget.total || 0,
+    status: foundBudget.status || 'active',
+    createdAt: foundBudget.createdAt || new Date().toISOString(),
+    updatedAt: foundBudget.updatedAt || new Date().toISOString(),
+    project: foundBudget.project || {
+      id: foundBudget.projectId,
+      name: 'Proyecto Sin Título',
+      description: '',
+      location: '',
+      client: '',
+      city: '',
+      country: 'Bolivia',
+      startDate: null,
+      equipmentPercentage: '5.00',
+      administrativePercentage: '8.00',
+      utilityPercentage: '15.00',
+      taxPercentage: '3.09',
+      socialChargesPercentage: '71.18',
+      createdAt: foundBudget.createdAt || new Date().toISOString(),
+      updatedAt: foundBudget.updatedAt || new Date().toISOString(),
+      userId: 0,
+      status: 'active'
+    },
+    phase: primaryPhase || {
+      id: 0,
+      name: 'Sin Fase',
+      description: ''
+    }
+  };
+}
 
 export default function BudgetDetails() {
   const { id } = useParams();
   const budgetId = Number(id);
+  const { isAnonymous } = useAuth();
 
   const handleGeneratePDF = async () => {
     if (!budget || !budgetItems) {
@@ -282,12 +326,59 @@ export default function BudgetDetails() {
   };
 
   const { data: budget, isLoading: budgetLoading } = useQuery<BudgetWithProject>({
-    queryKey: [`/api/budgets/${budgetId}`],
+    queryKey: isAnonymous ? [`/api/anonymous/budgets/${budgetId}`] : [`/api/budgets/${budgetId}`],
+    queryFn: isAnonymous ? () => {
+      // Para usuarios anónimos, cargar desde sessionStorage
+      const anonymousBudgets = JSON.parse(sessionStorage.getItem('anonymousBudgets') || '[]');
+      const foundBudget = anonymousBudgets.find((b: any) => b.id === budgetId);
+      
+      if (!foundBudget) {
+        throw new Error('Presupuesto temporal no encontrado');
+      }
+      
+      console.log('📋 Presupuesto temporal encontrado:', foundBudget);
+      
+      // Normalizar al formato BudgetWithProject
+      return normalizeAnonymousBudget(foundBudget);
+    } : undefined,
     enabled: !!budgetId,
   });
 
   const { data: budgetItems, isLoading: itemsLoading } = useQuery<BudgetItemWithActivity[]>({
-    queryKey: [`/api/budgets/${budgetId}/items`],
+    queryKey: isAnonymous ? [`/api/anonymous/budgets/${budgetId}/items`] : [`/api/budgets/${budgetId}/items`],
+    queryFn: isAnonymous ? () => {
+      // Para usuarios anónimos, cargar items desde sessionStorage
+      const anonymousBudgets = JSON.parse(sessionStorage.getItem('anonymousBudgets') || '[]');
+      const foundBudget = anonymousBudgets.find((b: any) => b.id === budgetId);
+      
+      if (!foundBudget || !foundBudget.phases) {
+        console.log('❌ No se encontraron items para el presupuesto temporal');
+        return [];
+      }
+      
+      console.log('📊 Items del presupuesto temporal:', foundBudget.phases);
+      
+      // Extraer todos los items de todas las fases, incluyendo phaseId
+      const allItems: BudgetItemWithActivity[] = [];
+      foundBudget.phases.forEach((phase: any) => {
+        if (phase.items && Array.isArray(phase.items)) {
+          phase.items.forEach((item: any) => {
+            allItems.push({
+              id: Number(item.id) || 0,
+              budgetId: foundBudget.id,
+              phaseId: phase.phaseId || phase.phase?.id || null,
+              activityId: item.activityId,
+              quantity: String(item.quantity || 0),
+              unitPrice: String(item.unitPrice || 0),
+              subtotal: String(item.subtotal || 0),
+              activity: item.activity
+            });
+          });
+        }
+      });
+      
+      return allItems;
+    } : undefined,
     enabled: !!budgetId,
   });
 
