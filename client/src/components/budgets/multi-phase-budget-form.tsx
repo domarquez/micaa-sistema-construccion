@@ -737,91 +737,86 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleProjectSubmit)} className="space-y-4 sm:space-y-6">
-                    <div className="grid grid-cols-1 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel className="text-sm font-medium">Nombre del Proyecto</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Ej: Casa de 2 pisos" {...field} className="text-sm w-full" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="client"
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel className="text-sm font-medium">Cliente</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Nombre del cliente" {...field} className="text-sm w-full" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="location"
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel className="text-sm font-medium">Ubicación</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Dirección o zona" {...field} className="text-sm w-full" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="city"
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel className="text-sm font-medium">Ciudad</FormLabel>
-                            <FormControl>
-                              <select
-                                {...field}
-                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                              >
-                                <option value="">Seleccionar ciudad...</option>
-                                <option value="La Paz">La Paz (+17.5%)</option>
-                                <option value="Santa Cruz">Santa Cruz (Base)</option>
-                                <option value="Cochabamba">Cochabamba (-4.5%)</option>
-                                <option value="Potosí">Potosí (+24.25%)</option>
-                                <option value="Oruro">Oruro (+10%)</option>
-                                <option value="Sucre">Sucre (+5%)</option>
-                                <option value="Tarija">Tarija (-2%)</option>
-                                <option value="Trinidad">Trinidad (+8%)</option>
-                                <option value="Cobija">Cobija (+15%)</option>
-                              </select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="startDate"
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel className="text-sm font-medium">Fecha de Inicio</FormLabel>
-                            <FormControl>
-                              <Input type="date" {...field} className="text-sm w-full" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                  <form onSubmit={form.handleSubmit(handleProjectSubmit)} className="space-y-3 sm:space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="text-sm font-medium">Nombre del Proyecto</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ej: Casa de 2 pisos" {...field} className="text-sm w-full" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="client"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="text-sm font-medium">Cliente</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Nombre del cliente" {...field} className="text-sm w-full" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="location"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="text-sm font-medium">Ubicación</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Dirección o zona" {...field} className="text-sm w-full" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="text-sm font-medium">Ciudad</FormLabel>
+                          <FormControl>
+                            <select
+                              {...field}
+                              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                            >
+                              <option value="">Seleccionar ciudad...</option>
+                              <option value="La Paz">La Paz (+17.5%)</option>
+                              <option value="Santa Cruz">Santa Cruz (Base)</option>
+                              <option value="Cochabamba">Cochabamba (-4.5%)</option>
+                              <option value="Potosí">Potosí (+24.25%)</option>
+                              <option value="Oruro">Oruro (+10%)</option>
+                              <option value="Sucre">Sucre (+5%)</option>
+                              <option value="Tarija">Tarija (-2%)</option>
+                              <option value="Trinidad">Trinidad (+8%)</option>
+                              <option value="Cobija">Cobija (+15%)</option>
+                            </select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="text-sm font-medium">Fecha de Inicio</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} className="text-sm w-full" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <div className="flex flex-col sm:flex-row gap-2 w-full">
                       <Button 
