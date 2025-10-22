@@ -569,10 +569,6 @@ header > div {
   
   /* Fix modal dialog issues on mobile */
   [role="dialog"] {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    margin: 0 !important;
-    padding: 0.5rem !important;
     box-sizing: border-box !important;
   }
   
@@ -585,21 +581,18 @@ header > div {
   /* Fix dialog title overflow */
   [role="dialog"] h2, [role="dialog"] h3 {
     word-break: break-word !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
     line-height: 1.3 !important;
   }
   
   /* Better dialog header spacing */
   [role="dialog"] header {
-    margin-bottom: 1rem !important;
-    padding-bottom: 1rem !important;
-    border-bottom: 1px solid #e5e7eb !important;
+    margin-bottom: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
   }
   
   /* Ensure proper spacing between title and description */
   [role="dialog"] h2 + div {
-    margin-top: 0.75rem !important;
+    margin-top: 0.5rem !important;
   }
   
   /* Card title improvements in mobile */
