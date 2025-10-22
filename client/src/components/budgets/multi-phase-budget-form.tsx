@@ -697,27 +697,29 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-[95vw] sm:max-w-4xl md:max-w-5xl max-h-[95vh] overflow-y-auto p-2 sm:p-4 md:p-6">
-        <DialogHeader className="pb-2 sm:pb-4 space-y-2">
+        <DialogHeader className="pb-2 sm:pb-4">
           <DialogTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl font-semibold">
             <Building className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0 text-primary" />
             <span className="min-w-0 flex-1 break-words leading-tight text-sm sm:text-base md:text-lg">
               {isEditing ? "Editar Presupuesto" : "Crear Nuevo Presupuesto"}
             </span>
           </DialogTitle>
-          {isAnonymous && (
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 sm:p-3 text-xs sm:text-sm max-w-full overflow-hidden">
-              <div className="flex items-center gap-1 sm:gap-2 text-orange-800">
-                <span className="font-medium text-xs sm:text-sm">⚠️ Modo de Prueba</span>
-              </div>
-              <p className="text-orange-700 mt-1 text-[10px] sm:text-xs leading-relaxed break-words">
-                Puedes crear, editar y descargar presupuestos. Este presupuesto NO se guardará - 
-                regístrate gratis para guardar tus proyectos.
-              </p>
-            </div>
-          )}
         </DialogHeader>
 
         <div className="space-y-4 sm:space-y-6">
+          {/* Aviso de Modo de Prueba */}
+          {isAnonymous && (
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 sm:p-3 max-w-full overflow-hidden">
+              <div className="flex items-center gap-1 sm:gap-2 text-orange-800">
+                <span className="font-medium text-xs sm:text-sm">⚠️ Modo de Prueba - Presupuesto Temporal</span>
+              </div>
+              <p className="text-orange-700 mt-1 text-[10px] sm:text-xs leading-relaxed break-words">
+                Puedes crear, editar y descargar presupuestos. Este presupuesto NO se guardará - 
+                regístrate gratis para guardar tus proyectos permanentemente.
+              </p>
+            </div>
+          )}
+          
           
           {/* Formulario del Proyecto */}
           {(!currentProject || isEditing) && (
