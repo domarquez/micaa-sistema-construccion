@@ -972,38 +972,14 @@ export default function Budgets() {
 
       {/* Budget Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-4 py-3 sm:px-6 sm:py-4 flex justify-between items-center z-10">
-              <h3 className="text-lg font-semibold">
-                {editingBudget ? "Editar Presupuesto" : "Crear Nuevo Presupuesto"}
-                {isAnonymous && " (Modo Prueba)"}
-              </h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => {
-                  console.log('🔴 Cerrando formulario desde header');
-                  setShowForm(false);
-                  setEditingBudget(null);
-                }}
-                className="touch-target"
-              >
-                ✕
-              </Button>
-            </div>
-            <div className="p-4 sm:p-6">
-              <MultiphaseBudgetForm 
-                onClose={() => {
-                  console.log('🔴 Cerrando formulario desde componente');
-                  setShowForm(false);
-                  setEditingBudget(null);
-                }}
-                editingBudget={editingBudget}
-              />
-            </div>
-          </div>
-        </div>
+        <MultiphaseBudgetForm 
+          onClose={() => {
+            console.log('🔴 Cerrando formulario desde componente');
+            setShowForm(false);
+            setEditingBudget(null);
+          }}
+          editingBudget={editingBudget}
+        />
       )}
     </div>
   );

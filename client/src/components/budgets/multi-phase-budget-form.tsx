@@ -696,23 +696,22 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6">
-        <DialogHeader className="pb-4 sm:pb-6 space-y-2">
+      <DialogContent className="w-full max-w-[95vw] sm:max-w-4xl md:max-w-5xl max-h-[95vh] overflow-y-auto p-2 sm:p-4 md:p-6">
+        <DialogHeader className="pb-2 sm:pb-4 space-y-2">
           <DialogTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl font-semibold">
-            <Building className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 text-primary" />
-            <span className="min-w-0 flex-1 break-words leading-tight">
+            <Building className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0 text-primary" />
+            <span className="min-w-0 flex-1 break-words leading-tight text-sm sm:text-base md:text-lg">
               {isEditing ? "Editar Presupuesto" : "Crear Nuevo Presupuesto"}
             </span>
           </DialogTitle>
           {isAnonymous && (
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-sm">
-              <div className="flex items-center gap-2 text-orange-800">
-                <span className="font-medium">⚠️ Modo de Prueba - Presupuesto Temporal</span>
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 sm:p-3 text-xs sm:text-sm max-w-full overflow-hidden">
+              <div className="flex items-center gap-1 sm:gap-2 text-orange-800">
+                <span className="font-medium text-xs sm:text-sm">⚠️ Modo de Prueba</span>
               </div>
-              <p className="text-orange-700 mt-1 text-xs leading-relaxed">
-                Puedes crear, editar, calcular, descargar e imprimir presupuestos. 
-                Este presupuesto NO se guardará automáticamente en la base de datos - 
-                regístrate gratis para guardar tus proyectos permanentemente.
+              <p className="text-orange-700 mt-1 text-[10px] sm:text-xs leading-relaxed break-words">
+                Puedes crear, editar y descargar presupuestos. Este presupuesto NO se guardará - 
+                regístrate gratis para guardar tus proyectos.
               </p>
             </div>
           )}
