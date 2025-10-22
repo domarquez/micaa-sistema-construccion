@@ -479,6 +479,36 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
       const totalGeneral = phases.reduce((sum, phase) => sum + phase.total, 0);
       
+      // USUARIOS ANÓNIMOS: Guardar en sessionStorage
+      if (isAnonymous) {
+        console.log("Guardando presupuesto temporal para usuario anónimo");
+        
+        const anonymousBudget = {
+          id: Date.now(),
+          projectId: currentProject.id,
+          project: currentProject,
+          total: totalGeneral,
+          status: "active",
+          phases: phases.map(phaseData => ({
+            phaseId: phaseData.phaseId,
+            phase: phaseData.phase,
+            items: phaseData.items.filter(item => item.activityId > 0 && item.quantity > 0),
+            total: phaseData.total
+          })),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        // Guardar en sessionStorage
+        const existingBudgets = JSON.parse(sessionStorage.getItem('anonymousBudgets') || '[]');
+        existingBudgets.push(anonymousBudget);
+        sessionStorage.setItem('anonymousBudgets', JSON.stringify(existingBudgets));
+        
+        console.log("Presupuesto temporal guardado:", anonymousBudget);
+        return anonymousBudget;
+      }
+      
+      // USUARIOS AUTENTICADOS: Guardar en servidor
       let budgetToUse;
 
       if (isEditing && budget) {
