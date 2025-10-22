@@ -64,24 +64,27 @@ export default function Budgets() {
   const { data: budgets, isLoading: budgetsLoading } = useQuery<BudgetWithProject[]>({
     queryKey: isAnonymous ? ["/api/anonymous/budgets"] : ["/api/budgets"],
     queryFn: isAnonymous ? () => {
-      // Para usuarios anónimos, cargar desde sessionStorage
-      const anonymousProjects = JSON.parse(sessionStorage.getItem('anonymousProjects') || '[]');
-      return anonymousProjects.map((project: any) => ({
-        id: project.id,
-        projectId: project.projectId,
-        phaseId: project.phaseId,
-        total: project.total || 0,
-        status: project.status || 'draft',
-        createdAt: project.createdAt || new Date().toISOString(),
-        updatedAt: project.updatedAt || new Date().toISOString(),
-        project: {
-          id: project.projectId,
-          name: project.projectName || 'Proyecto Sin Título',
-          description: project.description || '',
-          location: project.location || '',
-          clientName: project.clientName || '',
-          createdAt: project.createdAt || new Date().toISOString(),
-          updatedAt: project.updatedAt || new Date().toISOString(),
+      // Para usuarios anónimos, cargar presupuestos desde sessionStorage
+      const anonymousBudgets = JSON.parse(sessionStorage.getItem('anonymousBudgets') || '[]');
+      console.log('📋 Cargando presupuestos temporales:', anonymousBudgets);
+      return anonymousBudgets.map((budget: any) => ({
+        id: budget.id,
+        projectId: budget.projectId,
+        phaseId: null,
+        total: budget.total || 0,
+        status: budget.status || 'active',
+        createdAt: budget.createdAt || new Date().toISOString(),
+        updatedAt: budget.updatedAt || new Date().toISOString(),
+        project: budget.project || {
+          id: budget.projectId,
+          name: budget.project?.name || 'Proyecto Sin Título',
+          description: budget.project?.description || '',
+          location: budget.project?.location || '',
+          client: budget.project?.client || '',
+          city: budget.project?.city || '',
+          country: budget.project?.country || 'Bolivia',
+          createdAt: budget.createdAt || new Date().toISOString(),
+          updatedAt: budget.updatedAt || new Date().toISOString(),
           userId: 0
         }
       }));
@@ -94,14 +97,19 @@ export default function Budgets() {
   });
 
   const deleteProjectMutation = useMutation({
-    mutationFn: async (projectId: number) => {
+    mutationFn: async (budgetId: number) => {
       if (isAnonymous) {
-        // Para usuarios anónimos, eliminar del sessionStorage
-        const anonymousProjects = JSON.parse(sessionStorage.getItem('anonymousProjects') || '[]');
-        const filteredProjects = anonymousProjects.filter((project: any) => project.id !== projectId);
-        sessionStorage.setItem('anonymousProjects', JSON.stringify(filteredProjects));
+        // Para usuarios anónimos, eliminar presupuesto temporal de sessionStorage
+        const anonymousBudgets = JSON.parse(sessionStorage.getItem('anonymousBudgets') || '[]');
+        const filteredBudgets = anonymousBudgets.filter((budget: any) => budget.id !== budgetId);
+        sessionStorage.setItem('anonymousBudgets', JSON.stringify(filteredBudgets));
+        console.log('🗑️ Presupuesto temporal eliminado:', budgetId);
       } else {
-        await apiRequest("DELETE", `/api/projects/${projectId}`);
+        // Para usuarios autenticados, eliminar del servidor
+        const budget = budgets?.find(b => b.id === budgetId);
+        if (budget?.projectId) {
+          await apiRequest("DELETE", `/api/projects/${budget.projectId}`);
+        }
       }
     },
     onSuccess: () => {
@@ -109,15 +117,19 @@ export default function Budgets() {
       queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
       queryClient.invalidateQueries({ queryKey: ["/api/anonymous/budgets"] });
       toast({
-        title: "Proyecto eliminado",
-        description: "El proyecto y todos sus presupuestos han sido eliminados correctamente.",
+        title: isAnonymous ? "Presupuesto eliminado" : "Proyecto eliminado",
+        description: isAnonymous 
+          ? "El presupuesto temporal ha sido eliminado correctamente."
+          : "El proyecto y todos sus presupuestos han sido eliminados correctamente.",
       });
     },
     onError: (error) => {
-      console.error('Error deleting project:', error);
+      console.error('Error deleting:', error);
       toast({
         title: "Error al eliminar",
-        description: "No se pudo eliminar el proyecto. Inténtelo nuevamente.",
+        description: isAnonymous 
+          ? "No se pudo eliminar el presupuesto. Inténtelo nuevamente."
+          : "No se pudo eliminar el proyecto. Inténtelo nuevamente.",
         variant: "destructive",
       });
     },
@@ -142,8 +154,8 @@ export default function Budgets() {
     }
   };
 
-  const handleDeleteProject = (projectId: number) => {
-    deleteProjectMutation.mutate(projectId);
+  const handleDeleteBudget = (budgetId: number) => {
+    deleteProjectMutation.mutate(budgetId);
   };
 
   const handleDownloadPDF = async (budget: BudgetWithProject) => {
@@ -793,7 +805,7 @@ export default function Budgets() {
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                   <AlertDialogAction
-                                    onClick={() => handleDeleteProject(budget.project.id)}
+                                    onClick={() => handleDeleteBudget(budget.id)}
                                     className="bg-red-600 hover:bg-red-700"
                                   >
                                     Eliminar
@@ -940,7 +952,7 @@ export default function Budgets() {
                           <AlertDialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
                             <AlertDialogCancel className="w-full sm:w-auto">Cancelar</AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => handleDeleteProject(budget.project.id)}
+                              onClick={() => handleDeleteBudget(budget.id)}
                               className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
                             >
                               Eliminar
