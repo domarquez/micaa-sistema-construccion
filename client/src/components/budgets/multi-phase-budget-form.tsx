@@ -696,7 +696,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-[95vw] sm:max-w-4xl md:max-w-5xl max-h-[95vh] overflow-y-auto p-2 sm:p-4 md:p-6">
+      <DialogContent className="w-full max-w-[95vw] sm:max-w-4xl md:max-w-5xl max-h-[95vh] overflow-y-auto p-2 sm:p-4 md:p-6 flex flex-col gap-0">
         <DialogHeader className="pb-2 sm:pb-4">
           <DialogTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl font-semibold">
             <Building className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0 text-primary" />
@@ -706,10 +706,10 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col space-y-4 sm:space-y-6 w-full">
           {/* Aviso de Modo de Prueba */}
           {isAnonymous && (
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 sm:p-3 max-w-full overflow-hidden">
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 sm:p-3 w-full max-w-full overflow-hidden">
               <div className="flex items-center gap-1 sm:gap-2 text-orange-800">
                 <span className="font-medium text-xs sm:text-sm">⚠️ Modo de Prueba - Presupuesto Temporal</span>
               </div>
