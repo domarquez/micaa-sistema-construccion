@@ -59,11 +59,8 @@ export default function AppHeader() {
             size="icon" 
             className="md:hidden flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9"
             onClick={() => {
-              if (isAnonymous) {
-                setMobileMenuOpen(!mobileMenuOpen);
-              } else {
-                toggleSidebar();
-              }
+              console.log('🍔 Menu click - isAnonymous:', isAnonymous, 'mobileMenuOpen:', mobileMenuOpen);
+              setMobileMenuOpen(!mobileMenuOpen);
             }}
           >
             {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -215,76 +212,70 @@ export default function AppHeader() {
         </div>
       </div>
       
-      {/* Mobile Menu Overlay for Anonymous Users */}
-      {isAnonymous && mobileMenuOpen && (
+      {/* Mobile Menu Overlay for All Users */}
+      {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg z-40">
           <div className="px-3 sm:px-4 py-3">
-            {/* Primary Actions */}
-            <div className="flex items-center space-x-2 py-2 border-b border-gray-100">
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={() => {
-                  window.location.href = "/login";
-                  setMobileMenuOpen(false);
-                }}
-                className="flex-1 text-sm"
-              >
-                <User className="w-3 h-3 mr-2" />
-                Iniciar Sesión
-              </Button>
-              <Button 
-                size="sm"
-                onClick={() => {
-                  window.location.href = "/register";
-                  setMobileMenuOpen(false);
-                }}
-                className="flex-1 text-sm bg-orange-600 hover:bg-orange-700"
-              >
-                <UserPlus className="w-3 h-3 mr-2" />
-                Registro Gratis
-              </Button>
-            </div>
+            {/* Auth Actions - Only for Anonymous Users */}
+            {isAnonymous && (
+              <div className="flex items-center space-x-2 py-2 border-b border-gray-100">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => {
+                    window.location.href = "/login";
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex-1 text-sm"
+                >
+                  <User className="w-3 h-3 mr-2" />
+                  Iniciar Sesión
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={() => {
+                    window.location.href = "/register";
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex-1 text-sm bg-orange-600 hover:bg-orange-700"
+                >
+                  <UserPlus className="w-3 h-3 mr-2" />
+                  Registro Gratis
+                </Button>
+              </div>
+            )}
             
-            {/* Complete Navigation Menu */}
+            {/* Navigation Menu */}
             <div className="space-y-3 pt-3">
               {/* Main Navigation */}
               <div className="grid grid-cols-2 gap-3">
                 <div 
                   className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
-                    // Navigate to materials section
-                    const materialsSection = document.querySelector('[data-tab="materials"]');
-                    if (materialsSection) {
-                      materialsSection.scrollIntoView({ behavior: 'smooth' });
-                    }
+                    window.location.href = "/";
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Construction className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>Inicio</span>
+                </div>
+                <div 
+                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    window.location.href = "/materials";
                     setMobileMenuOpen(false);
                   }}
                 >
                   <Package className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span>Materiales</span>
                 </div>
-                <div 
-                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
-                  onClick={() => {
-                    const suppliersSection = document.querySelector('[data-tab="suppliers"]');
-                    if (suppliersSection) {
-                      suppliersSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <Store className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span>Proveedores</span>
-                </div>
               </div>
 
-              {/* Additional Options */}
               <div className="grid grid-cols-2 gap-3">
                 <div 
                   className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
-                    window.location.href = "/login?redirect=activities";
+                    window.location.href = "/activities";
                     setMobileMenuOpen(false);
                   }}
                 >
@@ -294,7 +285,7 @@ export default function AppHeader() {
                 <div 
                   className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
-                    window.location.href = "/login?redirect=budgets";
+                    window.location.href = "/budgets";
                     setMobileMenuOpen(false);
                   }}
                 >
@@ -303,8 +294,47 @@ export default function AppHeader() {
                 </div>
               </div>
 
-              {/* Information & Support */}
               <div className="grid grid-cols-2 gap-3">
+                <div 
+                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    window.location.href = "/marketplace";
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Store className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>Marketplace</span>
+                </div>
+                <div 
+                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    window.location.href = "/tools";
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Package className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>Herramientas</span>
+                </div>
+              </div>
+
+              {/* Logout for authenticated users */}
+              {!isAnonymous && (
+                <div className="border-t border-gray-100 pt-3">
+                  <div 
+                    className="flex items-center text-red-600 hover:text-red-800 cursor-pointer text-sm py-2 px-2 rounded hover:bg-red-50 transition-colors"
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span>Cerrar Sesión</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Information & Support */}
+              <div className="grid grid-cols-2 gap-3 border-t border-gray-100 pt-3">
                 <ContactForm 
                   triggerText="Contacto"
                   triggerVariant="ghost"
