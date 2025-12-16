@@ -51,7 +51,7 @@ export default function AppHeader() {
   };
 
   return (
-    <header className="bg-white shadow-material sticky top-0 z-50 border-b overflow-hidden">
+    <header className="bg-white shadow-material sticky top-0 z-50 border-b">
       <div className="flex h-10 sm:h-11 md:h-12 lg:h-14 xl:h-16 items-center justify-between px-1 sm:px-2 md:px-4 lg:px-6 max-w-full">
         <div className="flex items-center gap-1 sm:gap-2 md:gap-3 min-w-0 flex-shrink">
           <Button 
