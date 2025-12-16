@@ -126,11 +126,6 @@ export default function UnifiedHome() {
     // PUBLIC VIEW - Optimized for anonymous users
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 max-w-full overflow-x-hidden">
-        {/* Mobile Ad Banner */}
-        <div className="block sm:hidden mb-4 max-w-full overflow-hidden">
-          <AdMobile />
-        </div>
-
         {/* Hero Section - Mobile Optimized */}
         <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding max-w-full overflow-hidden">
           <div className="max-w-7xl mx-auto text-left sm:text-center max-w-full">
@@ -469,6 +464,11 @@ export default function UnifiedHome() {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        {/* Mobile Ad Banner - Moved to bottom */}
+        <div className="block sm:hidden my-4 max-w-full overflow-hidden mobile-padding">
+          <AdMobile />
         </div>
 
         {/* AdFooter */}
