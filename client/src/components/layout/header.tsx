@@ -214,7 +214,16 @@ export default function AppHeader() {
       
       {/* Mobile Menu Overlay for All Users */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg z-40">
+        <div 
+          className="md:hidden bg-white border-b shadow-lg"
+          style={{
+            position: 'fixed',
+            top: '40px',
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+          }}
+        >
           <div className="px-3 sm:px-4 py-3">
             {/* Auth Actions - Only for Anonymous Users */}
             {isAnonymous && (
