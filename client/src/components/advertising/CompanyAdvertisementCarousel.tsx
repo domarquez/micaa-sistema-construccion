@@ -72,6 +72,16 @@ export function CompanyAdvertisementCarousel() {
 
   return (
     <div className="news-panel mobile-padding mb-4 sm:mb-6 max-w-full overflow-hidden">
+      {/* Title above the card */}
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <span className="text-xs sm:text-sm text-gray-600 font-medium">
+          Empresas Proveedoras - Publicidad
+        </span>
+        <Badge variant="secondary" className="text-[9px] sm:text-[10px] px-2 py-0.5 bg-yellow-100 text-yellow-800 border border-yellow-300">
+          Patrocinado
+        </Badge>
+      </div>
+      
       <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-200 max-w-full overflow-hidden">
         <CardContent className="p-0 relative">
           {/* Advertisement Content */}
@@ -128,16 +138,6 @@ export function CompanyAdvertisementCarousel() {
 
             {/* Text Section - Below image */}
             <div className="p-3 sm:p-4 text-left">
-              {/* Header with title and labels */}
-              <div className="flex items-center justify-between gap-2 mb-1">
-                <span className="text-[10px] sm:text-xs text-gray-500">
-                  Empresas Proveedoras - Publicidad
-                </span>
-                <Badge variant="secondary" className="text-[8px] sm:text-[9px] px-1.5 py-0.5 bg-yellow-100 text-yellow-800 border-yellow-300">
-                  Patrocinado
-                </Badge>
-              </div>
-
               <h3 className="text-sm sm:text-base md:text-lg font-bold text-blue-900 leading-tight line-clamp-2 mb-1">
                 {currentAd.title}
               </h3>
