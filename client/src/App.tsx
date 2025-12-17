@@ -55,6 +55,17 @@ function Router() {
     );
   }
 
+  // Check if on login or register page - render without sidebar
+  const path = window.location.pathname;
+  if (path === '/login' || path === '/register') {
+    return (
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+      </Switch>
+    );
+  }
+
   // Always show the full authenticated layout, but with anonymous mode
   // Users can access everything without being logged in
   return <AuthenticatedLayout />;
