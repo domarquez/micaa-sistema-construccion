@@ -24,37 +24,32 @@ export function CompanyAdvertisementCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Fetch real advertisements from the admin system
   const { data: advertisements = [] } = useQuery<AdvertisementWithSupplier[]>({
     queryKey: ["/api/public/dual-advertisements"],
     staleTime: 10 * 60 * 1000,
   });
 
-  // Auto-advance carousel
   useEffect(() => {
     if (!isAutoPlaying || advertisements.length === 0) return;
     
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % advertisements.length);
-    }, 5000);
+      setCurrentIndex((prev) => (prev + 2) % advertisements.length);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, advertisements.length]);
 
   const nextAd = () => {
-    setCurrentIndex((prev) => (prev + 1) % advertisements.length);
+    setCurrentIndex((prev) => (prev + 2) % advertisements.length);
   };
 
   const prevAd = () => {
-    setCurrentIndex((prev) => (prev - 1 + advertisements.length) % advertisements.length);
+    setCurrentIndex((prev) => (prev - 2 + advertisements.length) % advertisements.length);
   };
 
   const handleAdClick = async (ad: AdvertisementWithSupplier) => {
     try {
-      // Track click
       await fetch(`/api/public/advertisements/${ad.id}/click`, { method: 'POST' });
-      
-      // Open link if available
       if (ad.linkUrl) {
         window.open(ad.linkUrl, '_blank', 'noopener,noreferrer');
       }
@@ -63,16 +58,78 @@ export function CompanyAdvertisementCarousel() {
     }
   };
 
-  // Don't render if no advertisements
   if (advertisements.length === 0) {
     return null;
   }
 
   const currentAd = advertisements[currentIndex];
+  const secondAd = advertisements[(currentIndex + 1) % advertisements.length];
+
+  const AdCard = ({ ad }: { ad: AdvertisementWithSupplier }) => (
+    <Card 
+      className="shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-200 overflow-hidden cursor-pointer hover:shadow-xl transition-shadow flex-1"
+      onClick={() => handleAdClick(ad)}
+    >
+      <CardContent className="p-0">
+        <div className="relative w-full h-32 sm:h-36 md:h-40 bg-gradient-to-br from-blue-100 to-orange-100">
+          {ad.imageUrl ? (
+            <img 
+              src={ad.imageUrl} 
+              alt={ad.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center">
+                <Eye className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mx-auto mb-1" />
+                <span className="text-xs sm:text-sm text-blue-600 font-medium">
+                  {ad.supplier.companyName}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="p-2 sm:p-3 text-left">
+          <h3 className="text-xs sm:text-sm md:text-base font-bold text-blue-900 leading-tight line-clamp-2 mb-1">
+            {ad.title}
+          </h3>
+          
+          <p className="text-[10px] sm:text-xs md:text-sm font-semibold text-orange-700 mb-1">
+            {ad.supplier.companyName}
+          </p>
+
+          {ad.description && (
+            <p className="text-[10px] sm:text-xs text-gray-700 line-clamp-2 mb-1">
+              {ad.description}
+            </p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-[9px] sm:text-[10px] text-gray-600">
+            {ad.supplier.city && (
+              <div className="flex items-center gap-0.5">
+                <MapPin className="w-2.5 h-2.5" />
+                <span>{ad.supplier.city}</span>
+              </div>
+            )}
+            {ad.supplier.phone && (
+              <div className="flex items-center gap-0.5">
+                <Phone className="w-2.5 h-2.5" />
+                <span>{ad.supplier.phone}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-0.5 text-blue-600">
+              <ExternalLink className="w-2.5 h-2.5" />
+              <span>Ver más</span>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="news-panel mobile-padding mb-4 sm:mb-6 max-w-full overflow-hidden">
-      {/* Title above the card */}
       <div className="flex items-center justify-between gap-2 mb-2">
         <span className="text-xs sm:text-sm text-gray-600 font-medium">
           Empresas Proveedoras - Publicidad
@@ -82,115 +139,63 @@ export function CompanyAdvertisementCarousel() {
         </Badge>
       </div>
       
-      <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-200 max-w-full overflow-hidden">
-        <CardContent className="p-0 relative">
-          {/* Advertisement Content */}
-          <div 
-            className="cursor-pointer"
-            onClick={() => handleAdClick(currentAd)}
-          >
-            {/* Image Section - Full width at top */}
-            <div className="relative w-full h-24 sm:h-32 md:h-40 bg-gradient-to-br from-blue-100 to-orange-100">
-              {/* Navigation Buttons */}
-              {advertisements.length > 1 && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white/90 w-6 h-6 sm:w-8 sm:h-8 p-0 rounded-full shadow-md"
-                    onClick={(e) => { e.stopPropagation(); prevAd(); }}
-                    onMouseEnter={() => setIsAutoPlaying(false)}
-                    onMouseLeave={() => setIsAutoPlaying(true)}
-                  >
-                    <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white/90 w-6 h-6 sm:w-8 sm:h-8 p-0 rounded-full shadow-md"
-                    onClick={(e) => { e.stopPropagation(); nextAd(); }}
-                    onMouseEnter={() => setIsAutoPlaying(false)}
-                    onMouseLeave={() => setIsAutoPlaying(true)}
-                  >
-                    <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                </>
-              )}
+      <div className="relative">
+        {advertisements.length > 2 && (
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-1/2 -left-2 sm:-left-3 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white w-6 h-6 sm:w-8 sm:h-8 p-0 rounded-full shadow-md"
+              onClick={prevAd}
+              onMouseEnter={() => setIsAutoPlaying(false)}
+              onMouseLeave={() => setIsAutoPlaying(true)}
+            >
+              <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-1/2 -right-2 sm:-right-3 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white w-6 h-6 sm:w-8 sm:h-8 p-0 rounded-full shadow-md"
+              onClick={nextAd}
+              onMouseEnter={() => setIsAutoPlaying(false)}
+              onMouseLeave={() => setIsAutoPlaying(true)}
+            >
+              <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+            </Button>
+          </>
+        )}
 
-              {currentAd.imageUrl ? (
-                <img 
-                  src={currentAd.imageUrl} 
-                  alt={currentAd.title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <Eye className="w-8 h-8 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-2" />
-                    <span className="text-sm sm:text-base text-blue-600 font-medium">
-                      {currentAd.supplier.companyName}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Text Section - Below image */}
-            <div className="p-3 sm:p-4 text-left">
-              <h3 className="text-sm sm:text-base md:text-lg font-bold text-blue-900 leading-tight line-clamp-2 mb-1">
-                {currentAd.title}
-              </h3>
-              
-              <p className="text-xs sm:text-sm md:text-base font-semibold text-orange-700 mb-1">
-                {currentAd.supplier.companyName}
-              </p>
-
-              {currentAd.description && (
-                <p className="text-xs sm:text-sm text-gray-700 line-clamp-2 mb-2">
-                  {currentAd.description}
-                </p>
-              )}
-
-              <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-gray-600">
-                {currentAd.supplier.city && (
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    <span>{currentAd.supplier.city}</span>
-                  </div>
-                )}
-                {currentAd.supplier.phone && (
-                  <div className="flex items-center gap-1">
-                    <Phone className="w-3 h-3" />
-                    <span>{currentAd.supplier.phone}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-1 text-blue-600">
-                  <ExternalLink className="w-3 h-3" />
-                  <span>Ver más</span>
-                </div>
-              </div>
-            </div>
+        {/* Mobile: 1 ad, Desktop: 2 ads side by side */}
+        <div className="flex gap-3 sm:gap-4">
+          {/* Always show first ad */}
+          <div className="w-full md:w-1/2">
+            <AdCard ad={currentAd} />
           </div>
+          
+          {/* Second ad only on desktop */}
+          <div className="hidden md:block md:w-1/2">
+            <AdCard ad={secondAd} />
+          </div>
+        </div>
 
-          {/* Indicators */}
-          {advertisements.length > 1 && (
-            <div className="flex justify-center gap-1 pb-2">
-              {advertisements.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentIndex 
-                      ? 'bg-blue-600' 
-                      : 'bg-gray-300'
-                  }`}
-                  onClick={() => setCurrentIndex(index)}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        {/* Indicators */}
+        {advertisements.length > 1 && (
+          <div className="flex justify-center gap-1 mt-2">
+            {Array.from({ length: Math.ceil(advertisements.length / 2) }).map((_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  Math.floor(currentIndex / 2) === index 
+                    ? 'bg-blue-600' 
+                    : 'bg-gray-300'
+                }`}
+                onClick={() => setCurrentIndex(index * 2)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
