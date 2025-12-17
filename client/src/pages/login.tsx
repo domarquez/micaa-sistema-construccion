@@ -91,7 +91,7 @@ export default function Login() {
         </Link>
       </div>
 
-      <Card className="auth-card w-full max-w-[280px] sm:max-w-xs md:max-w-md mx-2 sm:mx-auto shadow-lg mobile-ultra-compact">
+      <Card className="auth-card w-full max-w-full sm:max-w-xs md:max-w-md mx-1 sm:mx-auto shadow-lg mobile-ultra-compact">
         <CardHeader className="text-center p-2 sm:p-4 md:p-6">
           <div className="mx-auto w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-primary rounded-lg flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
             <Construction className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
