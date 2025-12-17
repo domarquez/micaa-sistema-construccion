@@ -72,107 +72,102 @@ export function CompanyAdvertisementCarousel() {
 
   return (
     <div className="news-panel mobile-padding mb-4 sm:mb-6 max-w-full overflow-hidden">
-      <div className="text-xs sm:text-sm text-gray-500 mb-2 text-left">
-        Empresas Proveedoras - Publicidades
-      </div>
-      
       <Card className="shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-200 max-w-full overflow-hidden">
         <CardContent className="p-0 relative">
-          {/* Navigation Buttons */}
-          {advertisements.length > 1 && (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white/90 w-6 h-6 sm:w-8 sm:h-8 p-0 rounded-full shadow-md"
-                onClick={prevAd}
-                onMouseEnter={() => setIsAutoPlaying(false)}
-                onMouseLeave={() => setIsAutoPlaying(true)}
-              >
-                <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white/90 w-6 h-6 sm:w-8 sm:h-8 p-0 rounded-full shadow-md"
-                onClick={nextAd}
-                onMouseEnter={() => setIsAutoPlaying(false)}
-                onMouseLeave={() => setIsAutoPlaying(true)}
-              >
-                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
-              </Button>
-            </>
-          )}
-
           {/* Advertisement Content */}
           <div 
             className="cursor-pointer"
             onClick={() => handleAdClick(currentAd)}
           >
-            <div className="p-3 sm:p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                {/* Image placeholder or actual image */}
-                <div className="flex-shrink-0">
-                  <div className="w-full sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 bg-gradient-to-br from-blue-100 to-orange-100 rounded-lg flex items-center justify-center border border-blue-200">
-                    {currentAd.imageUrl ? (
-                      <img 
-                        src={currentAd.imageUrl} 
-                        alt={currentAd.title}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="text-center">
-                        <Eye className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600 mx-auto mb-1" />
-                        <span className="text-[8px] sm:text-[10px] text-blue-600 font-medium">
-                          {currentAd.supplier.companyName.split(' ')[0]}
-                        </span>
-                      </div>
-                    )}
+            {/* Image Section - Full width at top */}
+            <div className="relative w-full h-32 sm:h-40 md:h-48 bg-gradient-to-br from-blue-100 to-orange-100">
+              {/* Navigation Buttons */}
+              {advertisements.length > 1 && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white/90 w-6 h-6 sm:w-8 sm:h-8 p-0 rounded-full shadow-md"
+                    onClick={(e) => { e.stopPropagation(); prevAd(); }}
+                    onMouseEnter={() => setIsAutoPlaying(false)}
+                    onMouseLeave={() => setIsAutoPlaying(true)}
+                  >
+                    <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white/90 w-6 h-6 sm:w-8 sm:h-8 p-0 rounded-full shadow-md"
+                    onClick={(e) => { e.stopPropagation(); nextAd(); }}
+                    onMouseEnter={() => setIsAutoPlaying(false)}
+                    onMouseLeave={() => setIsAutoPlaying(true)}
+                  >
+                    <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Button>
+                </>
+              )}
+
+              {currentAd.imageUrl ? (
+                <img 
+                  src={currentAd.imageUrl} 
+                  alt={currentAd.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <Eye className="w-8 h-8 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-2" />
+                    <span className="text-sm sm:text-base text-blue-600 font-medium">
+                      {currentAd.supplier.companyName}
+                    </span>
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* Advertisement Details */}
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-blue-900 leading-tight line-clamp-2">
-                      {currentAd.title}
-                    </h3>
-                    <Badge variant="secondary" className="text-[8px] sm:text-[9px] px-1 py-0 flex-shrink-0">
-                      Patrocinado
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mb-2">
-                    <p className="text-xs sm:text-sm md:text-base font-semibold text-orange-700">
-                      {currentAd.supplier.companyName}
-                    </p>
-                  </div>
+            {/* Text Section - Below image */}
+            <div className="p-3 sm:p-4 text-left">
+              {/* Header with title and labels */}
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="text-[10px] sm:text-xs text-gray-500">
+                  Empresas Proveedoras - Publicidad
+                </span>
+                <Badge variant="secondary" className="text-[8px] sm:text-[9px] px-1.5 py-0.5 bg-yellow-100 text-yellow-800 border-yellow-300">
+                  Patrocinado
+                </Badge>
+              </div>
 
-                  {currentAd.description && (
-                    <p className="text-xs sm:text-sm text-gray-700 line-clamp-2 mb-2">
-                      {currentAd.description}
-                    </p>
-                  )}
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-blue-900 leading-tight line-clamp-2 mb-1">
+                {currentAd.title}
+              </h3>
+              
+              <p className="text-xs sm:text-sm md:text-base font-semibold text-orange-700 mb-1">
+                {currentAd.supplier.companyName}
+              </p>
 
-                  <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-gray-600">
-                    {currentAd.supplier.city && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        <span>{currentAd.supplier.city}</span>
-                      </div>
-                    )}
-                    {currentAd.supplier.phone && (
-                      <div className="flex items-center gap-1">
-                        <Phone className="w-3 h-3" />
-                        <span>{currentAd.supplier.phone}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-1 text-blue-600">
-                      <ExternalLink className="w-3 h-3" />
-                      <span>Ver más</span>
-                    </div>
+              {currentAd.description && (
+                <p className="text-xs sm:text-sm text-gray-700 line-clamp-2 mb-2">
+                  {currentAd.description}
+                </p>
+              )}
+
+              <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-gray-600">
+                {currentAd.supplier.city && (
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    <span>{currentAd.supplier.city}</span>
                   </div>
+                )}
+                {currentAd.supplier.phone && (
+                  <div className="flex items-center gap-1">
+                    <Phone className="w-3 h-3" />
+                    <span>{currentAd.supplier.phone}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1 text-blue-600">
+                  <ExternalLink className="w-3 h-3" />
+                  <span>Ver más</span>
                 </div>
               </div>
             </div>
