@@ -1223,6 +1223,8 @@ export async function registerRoutes(app: any) {
           supplier: {
             id: supplierCompanies.id,
             companyName: supplierCompanies.companyName,
+            city: supplierCompanies.city,
+            phone: supplierCompanies.phone,
           }
         })
         .from(companyAdvertisements)
@@ -1235,7 +1237,7 @@ export async function registerRoutes(app: any) {
           )
         )
         .orderBy(sql`RANDOM()`)
-        .limit(2);
+        .limit(20);
 
       // Increment view counts
       for (const ad of activeAds) {
