@@ -80,7 +80,7 @@ export function CompanyAdvertisementCarousel() {
             onClick={() => handleAdClick(currentAd)}
           >
             {/* Image Section - Full width at top */}
-            <div className="relative w-full h-32 sm:h-40 md:h-48 bg-gradient-to-br from-blue-100 to-orange-100">
+            <div className="relative w-full h-24 sm:h-32 md:h-40 bg-gradient-to-br from-blue-100 to-orange-100">
               {/* Navigation Buttons */}
               {advertisements.length > 1 && (
                 <>
