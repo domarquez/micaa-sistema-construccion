@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ContactForm } from "@/components/contact-form";
 import { MicaaLogo } from "@/components/micaa-logo";
 import { NotificationsPanel, NotificationsBadge } from "@/components/notifications-panel";
+import { PWAInstallButton } from "@/components/pwa-install-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,6 +77,8 @@ export default function AppHeader() {
         </div>
         
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 flex-shrink-0">
+          <PWAInstallButton className="hidden sm:flex" />
+          
           <ContactForm 
             triggerText="Contacto"
             triggerVariant="outline"

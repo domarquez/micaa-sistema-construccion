@@ -39,6 +39,8 @@ import AccountSettings from "@/pages/account-settings";
 import NotFound from "@/pages/not-found";
 import AppSidebar from "@/components/layout/sidebar-simple";
 import AppHeader from "@/components/layout/header";
+import { AppFooter } from "@/components/layout/app-footer";
+import { PWAInstallBanner } from "@/components/pwa-install-button";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -100,8 +102,8 @@ function AuthenticatedLayout() {
               <Route path="/supplier-pricing" component={SupplierPricing} />
               <Route path="/company-advertising" component={CompanyAdvertising} />
               <Route path="/import-companies" component={ImportCompanies} />
-        <Route path="/review-companies" component={ReviewCompanies} />
-        <Route path="/simple-import" component={SimpleImport} />
+              <Route path="/review-companies" component={ReviewCompanies} />
+              <Route path="/simple-import" component={SimpleImport} />
               <Route path="/admin/materials" component={AdminMaterials} />
               <Route path="/admin/prices" component={AdminMaterials} />
               <Route path="/admin/users" component={AdminUsers} />
@@ -119,8 +121,10 @@ function AuthenticatedLayout() {
               <Route component={NotFound} />
             </Switch>
           </main>
+          <AppFooter />
         </div>
       </div>
+      <PWAInstallBanner />
     </SidebarProvider>
   );
 }
