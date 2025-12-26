@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, budgetItems, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions, constructionNews } from '../shared/schema';
+import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, budgetItems, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions, constructionNews, siteStats } from '../shared/schema';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
@@ -2822,6 +2822,44 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error("Error deleting budget items:", error);
       res.status(500).json({ message: "Error al eliminar elementos del presupuesto" });
+    }
+  });
+
+  // Site statistics - Get visitor count and registered users
+  router.get('/site-stats', async (req, res) => {
+    try {
+      // Get visit count
+      let stats = await db.select().from(siteStats).limit(1);
+      
+      // If no stats exist, create initial record
+      if (stats.length === 0) {
+        const newStats = await db.insert(siteStats).values({
+          visitCount: 30433
+        }).returning();
+        stats = newStats;
+      }
+      
+      // Get registered users count
+      const userCountResult = await db.select({ count: sql<number>`count(*)` }).from(users);
+      const registeredUsers = Number(userCountResult[0]?.count || 0) + 174; // Add base count
+      
+      // Increment visit count
+      const newVisitCount = (stats[0]?.visitCount || 30433) + 1;
+      await db.update(siteStats)
+        .set({ visitCount: newVisitCount, lastUpdated: new Date() })
+        .where(eq(siteStats.id, stats[0].id));
+      
+      res.json({
+        visitCount: newVisitCount,
+        registeredUsers: registeredUsers
+      });
+    } catch (error) {
+      console.error("Error fetching site stats:", error);
+      // Return default values on error
+      res.json({
+        visitCount: 30433,
+        registeredUsers: 174
+      });
     }
   });
 

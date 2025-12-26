@@ -754,3 +754,13 @@ export interface ActivityWithCustomData extends ActivityWithPhase {
 export type ConsultationMessageWithUser = ConsultationMessage & {
   user?: User;
 };
+
+export const siteStats = pgTable("site_stats", {
+  id: serial("id").primaryKey(),
+  visitCount: integer("visit_count").notNull().default(30433),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
+export const insertSiteStatsSchema = createInsertSchema(siteStats).omit({ id: true });
+export type SiteStats = typeof siteStats.$inferSelect;
+export type InsertSiteStats = z.infer<typeof insertSiteStatsSchema>;
