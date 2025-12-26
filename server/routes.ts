@@ -2839,9 +2839,9 @@ export async function registerRoutes(app: any) {
         stats = newStats;
       }
       
-      // Get registered users count
+      // Get registered users count (real users from database)
       const userCountResult = await db.select({ count: sql<number>`count(*)` }).from(users);
-      const registeredUsers = Number(userCountResult[0]?.count || 0) + 174; // Add base count
+      const registeredUsers = Number(userCountResult[0]?.count || 0);
       
       // Increment visit count
       const newVisitCount = (stats[0]?.visitCount || 30433) + 1;

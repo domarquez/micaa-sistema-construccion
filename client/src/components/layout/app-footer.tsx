@@ -8,7 +8,7 @@ interface SiteStats {
 
 export function AppFooter() {
   const currentYear = new Date().getFullYear();
-  const [stats, setStats] = useState<SiteStats>({ visitCount: 30433, registeredUsers: 174 });
+  const [stats, setStats] = useState<SiteStats | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -20,6 +20,7 @@ export function AppFooter() {
         }
       } catch (error) {
         console.error('Error fetching site stats:', error);
+        setStats({ visitCount: 30433, registeredUsers: 0 });
       }
     };
 
@@ -30,6 +31,7 @@ export function AppFooter() {
     <footer className="bg-gray-900 text-gray-400 py-3 mt-auto">
       <div className="container mx-auto px-4">
         <div className="flex flex-col gap-2">
+          {stats && (
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-1.5" data-testid="stats-visits">
               <Eye className="w-3.5 h-3.5 text-blue-400" />
@@ -42,6 +44,7 @@ export function AppFooter() {
               <span>registrados</span>
             </div>
           </div>
+          )}
           
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-t border-gray-700 pt-2">
             <div className="flex items-center gap-1">
