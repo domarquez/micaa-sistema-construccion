@@ -3,16 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Construction, ArrowLeft, Mail } from "lucide-react";
+import { Construction, ArrowLeft, Phone, Lock, CheckCircle, MessageCircle } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { SiWhatsapp } from "react-icons/si";
+
+type RecoveryStep = 'phone' | 'verify' | 'newPassword';
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
-  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [recoveryStep, setRecoveryStep] = useState<RecoveryStep>('phone');
+  const [recoveryPhone, setRecoveryPhone] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [isRecoveryLoading, setIsRecoveryLoading] = useState(false);
   const { toast } = useToast();
 
@@ -36,7 +43,6 @@ export default function Login() {
       const data = await response.json();
       localStorage.setItem('auth_token', data.token);
       
-      // Redirect to dashboard
       window.location.href = '/';
     } catch (error: any) {
       setError(error.message);
@@ -45,29 +51,28 @@ export default function Login() {
     }
   };
 
-  const handlePasswordRecovery = async (e: React.FormEvent) => {
+  const handleSendRecoveryCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsRecoveryLoading(true);
 
     try {
-      const response = await fetch('/api/auth/password-recovery', {
+      const response = await fetch('/api/auth/whatsapp/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: recoveryEmail })
+        body: JSON.stringify({ phone: recoveryPhone, type: 'password_reset' })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al enviar correo de recuperación');
+        throw new Error(errorData.message || 'Error al enviar código');
       }
 
       toast({
-        title: "Correo enviado",
-        description: "Se ha enviado un correo con tus datos de acceso a tu dirección de email.",
+        title: "Código enviado",
+        description: "Revisa tu WhatsApp para obtener el código de verificación",
       });
 
-      setShowPasswordRecovery(false);
-      setRecoveryEmail("");
+      setRecoveryStep('verify');
     } catch (error: any) {
       toast({
         title: "Error",
@@ -79,9 +84,93 @@ export default function Login() {
     }
   };
 
+  const handleVerifyRecoveryCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!verificationCode || verificationCode.length !== 6) {
+      toast({
+        title: "Código inválido",
+        description: "El código debe tener 6 dígitos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setRecoveryStep('newPassword');
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmNewPassword) {
+      toast({
+        title: "Error",
+        description: "Las contraseñas no coinciden",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "La contraseña debe tener al menos 6 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsRecoveryLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/whatsapp/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          phone: recoveryPhone, 
+          code: verificationCode,
+          newPassword: newPassword 
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al restablecer contraseña');
+      }
+
+      toast({
+        title: "Contraseña actualizada",
+        description: "Ya puedes iniciar sesión con tu nueva contraseña",
+      });
+
+      setShowPasswordRecovery(false);
+      setRecoveryStep('phone');
+      setRecoveryPhone("");
+      setVerificationCode("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsRecoveryLoading(false);
+    }
+  };
+
+  const resetRecovery = () => {
+    setShowPasswordRecovery(false);
+    setRecoveryStep('phone');
+    setRecoveryPhone("");
+    setVerificationCode("");
+    setNewPassword("");
+    setConfirmNewPassword("");
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-indigo-100 px-2 sm:px-4 py-4 sm:py-8 safe-area-inset-top safe-area-inset-bottom overflow-x-hidden flex flex-col items-center justify-center">
-      {/* Enlace para volver a vista pública */}
       <div className="absolute top-1 sm:top-2 md:top-4 left-1 sm:left-2 md:left-4 z-10">
         <Link href="/">
           <Button variant="outline" size="sm" className="flex items-center gap-1 sm:gap-2 mobile-ultra-compact text-[10px] sm:text-xs md:text-sm px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8">
@@ -115,6 +204,7 @@ export default function Login() {
                     required
                     placeholder="Ingresa tu usuario"
                     className="text-xs sm:text-sm h-8 sm:h-9 md:h-10"
+                    data-testid="input-login-username"
                   />
                 </div>
                 <div className="space-y-1 sm:space-y-2">
@@ -127,6 +217,7 @@ export default function Login() {
                     required
                     placeholder="Ingresa tu contraseña"
                     className="text-xs sm:text-sm h-8 sm:h-9 md:h-10"
+                    data-testid="input-login-password"
                   />
                 </div>
                 {error && (
@@ -134,7 +225,7 @@ export default function Login() {
                     {error}
                   </div>
                 )}
-                <Button type="submit" className="w-full text-xs sm:text-sm h-8 sm:h-9 md:h-10" disabled={isLoading}>
+                <Button type="submit" className="w-full text-xs sm:text-sm h-8 sm:h-9 md:h-10" disabled={isLoading} data-testid="button-login">
                   {isLoading ? "Iniciando..." : "Iniciar Sesión"}
                 </Button>
               </form>
@@ -144,6 +235,7 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPasswordRecovery(true)}
                   className="text-[10px] sm:text-xs md:text-sm text-primary hover:underline"
+                  data-testid="button-forgot-password"
                 >
                   ¿Olvidaste tu contraseña?
                 </button>
@@ -160,36 +252,145 @@ export default function Login() {
             </>
           ) : (
             <div className="space-y-4">
-              <div className="text-center mb-4">
-                <Mail className="w-12 h-12 text-primary mx-auto mb-2" />
-                <h3 className="text-lg font-semibold">Recuperar Contraseña</h3>
-                <p className="text-sm text-gray-600">
-                  Ingresa tu email y te enviaremos tus datos de acceso
-                </p>
-              </div>
-              
-              <form onSubmit={handlePasswordRecovery} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="recovery-email">Correo Electrónico</Label>
-                  <Input
-                    id="recovery-email"
-                    type="email"
-                    value={recoveryEmail}
-                    onChange={(e) => setRecoveryEmail(e.target.value)}
-                    required
-                    placeholder="tu@email.com"
-                  />
-                </div>
-                
-                <Button type="submit" className="w-full" disabled={isRecoveryLoading}>
-                  {isRecoveryLoading ? "Enviando..." : "Enviar datos de acceso"}
-                </Button>
-              </form>
+              {recoveryStep === 'phone' && (
+                <>
+                  <div className="text-center mb-4">
+                    <SiWhatsapp className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                    <h3 className="text-lg font-semibold">Recuperar Contraseña</h3>
+                    <p className="text-sm text-gray-600">
+                      Ingresa tu número de WhatsApp para recibir un código
+                    </p>
+                  </div>
+                  
+                  <form onSubmit={handleSendRecoveryCode} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="recovery-phone">Número de WhatsApp</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          id="recovery-phone"
+                          type="tel"
+                          value={recoveryPhone}
+                          onChange={(e) => setRecoveryPhone(e.target.value.replace(/\D/g, ''))}
+                          required
+                          placeholder="70012345"
+                          className="pl-10"
+                          data-testid="input-recovery-phone"
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isRecoveryLoading} data-testid="button-send-recovery-code">
+                      <SiWhatsapp className="w-4 h-4 mr-2" />
+                      {isRecoveryLoading ? "Enviando..." : "Enviar Código"}
+                    </Button>
+                  </form>
+                </>
+              )}
+
+              {recoveryStep === 'verify' && (
+                <>
+                  <div className="text-center mb-4">
+                    <MessageCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                    <h3 className="text-lg font-semibold">Verificar Código</h3>
+                    <p className="text-sm text-gray-600">
+                      Ingresa el código de 6 dígitos que recibiste
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Enviado a: {recoveryPhone}
+                    </p>
+                  </div>
+                  
+                  <form onSubmit={handleVerifyRecoveryCode} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="recovery-code">Código de Verificación</Label>
+                      <Input
+                        id="recovery-code"
+                        type="text"
+                        value={verificationCode}
+                        onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        required
+                        placeholder="000000"
+                        className="text-center text-2xl tracking-widest"
+                        maxLength={6}
+                        data-testid="input-recovery-code"
+                      />
+                    </div>
+                    
+                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" data-testid="button-verify-recovery-code">
+                      Verificar Código
+                    </Button>
+                  </form>
+
+                  <div className="text-center">
+                    <button 
+                      type="button"
+                      onClick={handleSendRecoveryCode}
+                      className="text-sm text-green-600 hover:underline"
+                      disabled={isRecoveryLoading}
+                    >
+                      ¿No recibiste el código? Reenviar
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {recoveryStep === 'newPassword' && (
+                <>
+                  <div className="text-center mb-4">
+                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                    <h3 className="text-lg font-semibold">Nueva Contraseña</h3>
+                    <p className="text-sm text-gray-600">
+                      Crea una nueva contraseña para tu cuenta
+                    </p>
+                  </div>
+                  
+                  <form onSubmit={handleResetPassword} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new-password">Nueva Contraseña</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          id="new-password"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          required
+                          placeholder="Mínimo 6 caracteres"
+                          className="pl-10"
+                          data-testid="input-new-password"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-new-password">Confirmar Contraseña</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          id="confirm-new-password"
+                          type="password"
+                          value={confirmNewPassword}
+                          onChange={(e) => setConfirmNewPassword(e.target.value)}
+                          required
+                          placeholder="Confirmar contraseña"
+                          className="pl-10"
+                          data-testid="input-confirm-new-password"
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button type="submit" className="w-full" disabled={isRecoveryLoading} data-testid="button-reset-password">
+                      {isRecoveryLoading ? "Actualizando..." : "Actualizar Contraseña"}
+                    </Button>
+                  </form>
+                </>
+              )}
               
               <div className="text-center">
                 <button 
                   type="button"
-                  onClick={() => setShowPasswordRecovery(false)}
+                  onClick={resetRecovery}
                   className="text-sm text-gray-600 hover:underline"
                 >
                   Volver al inicio de sesión
