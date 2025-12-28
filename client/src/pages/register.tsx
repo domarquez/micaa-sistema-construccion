@@ -205,8 +205,8 @@ export default function Register() {
           
           <div className="flex justify-center gap-2 mt-3">
             <div className={`flex items-center gap-1 text-xs ${step === 'phone' ? 'text-green-600 font-medium' : 'text-gray-400'}`}>
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${step === 'phone' ? 'bg-green-500 text-white' : step !== 'phone' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}>
-                {step !== 'phone' ? <CheckCircle className="w-4 h-4" /> : '1'}
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${step === 'phone' ? 'bg-green-500 text-white' : 'bg-green-500 text-white'}`}>
+                {step === 'phone' ? '1' : <CheckCircle className="w-4 h-4" />}
               </div>
               <span className="hidden sm:inline">Teléfono</span>
             </div>

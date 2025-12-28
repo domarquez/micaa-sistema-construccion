@@ -1465,8 +1465,16 @@ export async function registerRoutes(app: any) {
         }
       }
 
-      if (!sent) {
-        console.log(`WhatsApp not configured or failed. Code for ${phone}: ${code}`);
+      if (!sent && whatsappService.isConfigured()) {
+        console.error(`WhatsApp delivery failed for ${phone}`);
+        return res.status(500).json({ 
+          success: false, 
+          message: "Error al enviar mensaje por WhatsApp. Verifica que el número sea correcto." 
+        });
+      }
+
+      if (!whatsappService.isConfigured()) {
+        console.log(`WhatsApp not configured. Code for ${phone}: ${code}`);
       }
 
       res.json({ 
@@ -1535,6 +1543,30 @@ export async function registerRoutes(app: any) {
       
       if (!username || !password) {
         return res.status(400).json({ message: "Campos requeridos faltantes" });
+      }
+
+      // SECURITY: Verify phone was actually verified recently (within last 30 minutes)
+      if (phone) {
+        const recentVerification = await db.select()
+          .from(phoneVerificationCodes)
+          .where(and(
+            eq(phoneVerificationCodes.phone, phone),
+            eq(phoneVerificationCodes.type, 'register'),
+            eq(phoneVerificationCodes.used, true)
+          ))
+          .orderBy(desc(phoneVerificationCodes.createdAt))
+          .limit(1);
+
+        if (recentVerification.length === 0) {
+          return res.status(400).json({ message: "Debes verificar tu número de WhatsApp primero" });
+        }
+
+        // Check if verification was within last 30 minutes
+        const verificationTime = recentVerification[0].createdAt;
+        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+        if (verificationTime && verificationTime < thirtyMinutesAgo) {
+          return res.status(400).json({ message: "La verificación ha expirado. Por favor verifica tu número nuevamente." });
+        }
       }
 
       // Check if username exists
