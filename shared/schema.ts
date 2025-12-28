@@ -10,6 +10,8 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   firstName: text("first_name"),
   lastName: text("last_name"),
+  phone: text("phone").unique(),
+  phoneVerified: boolean("phone_verified").default(false),
   role: text("role").notNull().default("user"), // 'admin', 'user'
   userType: text("user_type").notNull().default("architect"), // 'architect', 'constructor', 'supplier'
   isActive: boolean("is_active").notNull().default(true),
@@ -18,6 +20,20 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
   lastLogin: timestamp("last_login"),
 });
+
+export const phoneVerificationCodes = pgTable("phone_verification_codes", {
+  id: serial("id").primaryKey(),
+  phone: text("phone").notNull(),
+  code: text("code").notNull(),
+  type: text("type").notNull().default("register"), // 'register', 'password_reset', 'login'
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPhoneVerificationCodeSchema = createInsertSchema(phoneVerificationCodes).omit({ id: true });
+export type PhoneVerificationCode = typeof phoneVerificationCodes.$inferSelect;
+export type InsertPhoneVerificationCode = z.infer<typeof insertPhoneVerificationCodeSchema>;
 
 export const constructionPhases = pgTable("construction_phases", {
   id: serial("id").primaryKey(),
