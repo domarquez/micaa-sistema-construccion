@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Newspaper } from 'lucide-react';
+import { ExternalLink, Newspaper, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface NewsItem {
   id: number;
@@ -107,11 +107,20 @@ export function NewsRotator() {
           </Badge>
         </div>
 
-        {/* News Content - Optimizado para móvil */}
+        {/* News Content - Con flechas de navegación */}
         <div className="p-2 sm:p-3 md:p-4 bg-white">
-          <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
+          <div className="flex items-center gap-2">
+            {/* Flecha izquierda */}
+            <button
+              onClick={() => setCurrentIndex((prev) => (prev - 1 + newsData.length) % newsData.length)}
+              className="flex-shrink-0 p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition-colors"
+              aria-label="Noticia anterior"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+
             {/* Main News */}
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between mb-1 sm:mb-2 gap-1">
                 <Badge className={`text-[8px] sm:text-xs px-1 py-0 ${categoryColors[currentNews.category] || categoryColors.general}`}>
                   {categoryLabels[currentNews.category] || currentNews.category}
@@ -145,41 +154,28 @@ export function NewsRotator() {
                   </a>
                 )}
               </div>
-            </div>
 
-            {/* Indicators - Compacto y minimalista */}
-            <div className="flex items-center justify-between border-t pt-1.5 sm:pt-2">
-              <span className="text-[10px] sm:text-xs text-gray-500 font-medium">
-                {currentIndex + 1}/{newsData.length}
-              </span>
-              
-              <div className="flex gap-1 sm:gap-1.5">
-                {newsData.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full transition-colors ${
-                      index === currentIndex 
-                        ? 'bg-blue-600' 
-                        : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
-                    style={{ 
-                      minWidth: '0.25rem',
-                      minHeight: '0.25rem',
-                      padding: '0.25rem'
-                    }}
-                    aria-label={`Ver noticia ${index + 1}`}
-                  />
-                ))}
+              {/* Indicador de posición */}
+              <div className="text-center mt-2 text-[10px] sm:text-xs text-gray-500">
+                {currentIndex + 1} de {newsData.length}
               </div>
             </div>
+
+            {/* Flecha derecha */}
+            <button
+              onClick={() => setCurrentIndex((prev) => (prev + 1) % newsData.length)}
+              className="flex-shrink-0 p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition-colors"
+              aria-label="Siguiente noticia"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
           </div>
         </div>
 
         {/* Footer - Oculto en móvil pequeño */}
         <div className="hidden sm:block px-2 sm:px-4 py-1 sm:py-2 bg-gray-50 border-t">
           <div className="text-[8px] sm:text-xs text-gray-500 text-center">
-            Actualizado cada 6 horas • Click en los puntos para navegar
+            Actualizado cada 6 horas • Usa las flechas para navegar
           </div>
         </div>
       </div>
