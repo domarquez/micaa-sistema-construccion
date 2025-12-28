@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
-import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, budgetItems, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions, constructionNews, siteStats } from '../shared/schema';
+import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, budgetItems, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions, constructionNews, siteStats, phoneVerificationCodes } from '../shared/schema';
+import { whatsappService } from './whatsapp-service';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
@@ -1416,11 +1417,123 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // WhatsApp verification - Send code
+  app.post("/api/auth/whatsapp/send-code", async (req, res) => {
+    try {
+      const { phone, type = 'register' } = req.body;
+      
+      if (!phone) {
+        return res.status(400).json({ message: "Número de teléfono requerido" });
+      }
+
+      // For registration, check if phone already exists
+      if (type === 'register') {
+        const existingUser = await db.select().from(users).where(eq(users.phone, phone)).limit(1);
+        if (existingUser.length > 0 && existingUser[0].phoneVerified) {
+          return res.status(409).json({ message: "Este número ya está registrado" });
+        }
+      }
+
+      // For password reset, check if phone exists
+      if (type === 'password_reset') {
+        const existingUser = await db.select().from(users).where(eq(users.phone, phone)).limit(1);
+        if (existingUser.length === 0) {
+          return res.status(404).json({ message: "No se encontró un usuario con ese número" });
+        }
+      }
+
+      // Generate verification code
+      const code = whatsappService.generateVerificationCode();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      // Save verification code
+      await db.insert(phoneVerificationCodes).values({
+        phone,
+        code,
+        type,
+        expiresAt,
+        used: false
+      });
+
+      // Send via WhatsApp
+      let sent = false;
+      if (whatsappService.isConfigured()) {
+        if (type === 'password_reset') {
+          sent = await whatsappService.sendPasswordResetCode(phone, code);
+        } else {
+          sent = await whatsappService.sendVerificationCode(phone, code);
+        }
+      }
+
+      if (!sent) {
+        console.log(`WhatsApp not configured or failed. Code for ${phone}: ${code}`);
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Código enviado por WhatsApp",
+        // Only include code in development for testing
+        ...(process.env.NODE_ENV === 'development' && { devCode: code })
+      });
+    } catch (error) {
+      console.error("Error sending verification code:", error);
+      res.status(500).json({ message: "Error al enviar código" });
+    }
+  });
+
+  // WhatsApp verification - Verify code
+  app.post("/api/auth/whatsapp/verify-code", async (req, res) => {
+    try {
+      const { phone, code } = req.body;
+      
+      if (!phone || !code) {
+        return res.status(400).json({ message: "Teléfono y código requeridos" });
+      }
+
+      // Find valid verification code
+      const verificationCodes = await db.select()
+        .from(phoneVerificationCodes)
+        .where(and(
+          eq(phoneVerificationCodes.phone, phone),
+          eq(phoneVerificationCodes.code, code),
+          eq(phoneVerificationCodes.used, false)
+        ))
+        .orderBy(desc(phoneVerificationCodes.createdAt))
+        .limit(1);
+
+      if (verificationCodes.length === 0) {
+        return res.status(400).json({ message: "Código inválido" });
+      }
+
+      const verification = verificationCodes[0];
+
+      // Check if expired
+      if (new Date() > verification.expiresAt) {
+        return res.status(400).json({ message: "Código expirado. Solicita uno nuevo." });
+      }
+
+      // Mark code as used
+      await db.update(phoneVerificationCodes)
+        .set({ used: true })
+        .where(eq(phoneVerificationCodes.id, verification.id));
+
+      res.json({ 
+        success: true, 
+        message: "Código verificado",
+        type: verification.type
+      });
+    } catch (error) {
+      console.error("Error verifying code:", error);
+      res.status(500).json({ message: "Error al verificar código" });
+    }
+  });
+
+  // Register with phone (after verification)
   app.post("/api/auth/register", async (req, res) => {
     try {
-      const { username, email, password, firstName, lastName, userType } = req.body;
+      const { username, email, password, firstName, lastName, userType, phone } = req.body;
       
-      if (!username || !email || !password) {
+      if (!username || !password) {
         return res.status(400).json({ message: "Campos requeridos faltantes" });
       }
 
@@ -1430,10 +1543,20 @@ export async function registerRoutes(app: any) {
         return res.status(409).json({ message: "El nombre de usuario ya existe" });
       }
 
-      // Check if email exists
-      const existingUserByEmail = await db.select().from(users).where(eq(users.email, email)).limit(1);
-      if (existingUserByEmail.length > 0) {
-        return res.status(409).json({ message: "El email ya está registrado. ¿Olvidaste tu contraseña?" });
+      // Check if phone exists and is verified
+      if (phone) {
+        const existingUserByPhone = await db.select().from(users).where(eq(users.phone, phone)).limit(1);
+        if (existingUserByPhone.length > 0 && existingUserByPhone[0].phoneVerified) {
+          return res.status(409).json({ message: "Este número ya está registrado" });
+        }
+      }
+
+      // Check if email exists (if provided)
+      if (email) {
+        const existingUserByEmail = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        if (existingUserByEmail.length > 0) {
+          return res.status(409).json({ message: "El email ya está registrado" });
+        }
       }
 
       // Hash password
@@ -1442,10 +1565,12 @@ export async function registerRoutes(app: any) {
 
       const newUser = await db.insert(users).values({
         username,
-        email,
+        email: email || `${phone}@whatsapp.micaa.store`,
         password: hashedPassword,
         firstName,
         lastName,
+        phone,
+        phoneVerified: !!phone,
         role: userType === 'supplier' ? 'supplier' : 'user'
       }).returning();
 
@@ -1459,18 +1584,86 @@ export async function registerRoutes(app: any) {
         });
       }
 
+      // Send welcome message via WhatsApp
+      if (phone && whatsappService.isConfigured()) {
+        await whatsappService.sendWelcomeMessage(phone, firstName || username);
+      }
+
       res.json({
         success: true,
         user: {
           id: newUser[0].id,
           username: newUser[0].username,
           email: newUser[0].email,
+          phone: newUser[0].phone,
           role: newUser[0].role
         }
       });
     } catch (error) {
       console.error("Registration error:", error);
       res.status(500).json({ message: "Error en el registro" });
+    }
+  });
+
+  // Password reset via WhatsApp
+  app.post("/api/auth/whatsapp/reset-password", async (req, res) => {
+    try {
+      const { phone, code, newPassword } = req.body;
+      
+      if (!phone || !code || !newPassword) {
+        return res.status(400).json({ message: "Todos los campos son requeridos" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres" });
+      }
+
+      // Find valid verification code
+      const verificationCodes = await db.select()
+        .from(phoneVerificationCodes)
+        .where(and(
+          eq(phoneVerificationCodes.phone, phone),
+          eq(phoneVerificationCodes.code, code),
+          eq(phoneVerificationCodes.type, 'password_reset'),
+          eq(phoneVerificationCodes.used, false)
+        ))
+        .orderBy(desc(phoneVerificationCodes.createdAt))
+        .limit(1);
+
+      if (verificationCodes.length === 0) {
+        return res.status(400).json({ message: "Código inválido" });
+      }
+
+      const verification = verificationCodes[0];
+
+      if (new Date() > verification.expiresAt) {
+        return res.status(400).json({ message: "Código expirado. Solicita uno nuevo." });
+      }
+
+      // Find user by phone
+      const user = await db.select().from(users).where(eq(users.phone, phone)).limit(1);
+      if (user.length === 0) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      // Hash new password
+      const bcrypt = await import('bcryptjs');
+      const hashedPassword = await bcrypt.default.hash(newPassword, 10);
+
+      // Update password
+      await db.update(users)
+        .set({ password: hashedPassword })
+        .where(eq(users.id, user[0].id));
+
+      // Mark code as used
+      await db.update(phoneVerificationCodes)
+        .set({ used: true })
+        .where(eq(phoneVerificationCodes.id, verification.id));
+
+      res.json({ success: true, message: "Contraseña actualizada exitosamente" });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(500).json({ message: "Error al restablecer contraseña" });
     }
   });
 
