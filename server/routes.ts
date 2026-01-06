@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
 import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, budgetItems, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions, constructionNews, siteStats, phoneVerificationCodes } from '../shared/schema';
 import { whatsappService } from './whatsapp-service';
+import { resendService } from './resend-service';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
@@ -1536,7 +1537,185 @@ export async function registerRoutes(app: any) {
     }
   });
 
-  // Register with phone (after verification)
+  // Email verification - Send code (using Resend)
+  app.post("/api/auth/email/send-code", async (req, res) => {
+    try {
+      const { email, type = 'register' } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email requerido" });
+      }
+
+      // For registration, check if email already exists
+      if (type === 'register') {
+        const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        if (existingUser.length > 0) {
+          return res.status(409).json({ message: "Este email ya está registrado" });
+        }
+      }
+
+      // For password reset, check if email exists
+      if (type === 'password_reset') {
+        const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        if (existingUser.length === 0) {
+          return res.status(404).json({ message: "No se encontró un usuario con ese email" });
+        }
+      }
+
+      // Generate verification code
+      const code = resendService.generateVerificationCode();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      // Save verification code (using phone field for email temporarily)
+      await db.insert(phoneVerificationCodes).values({
+        phone: email, // Using phone field for email
+        code,
+        type,
+        expiresAt,
+        used: false
+      });
+
+      // Send via Resend
+      let sent = false;
+      if (type === 'password_reset') {
+        sent = await resendService.sendPasswordResetCode(email, code);
+      } else {
+        sent = await resendService.sendVerificationCode(email, code);
+      }
+
+      if (!sent) {
+        console.error(`Email delivery failed for ${email}`);
+        return res.status(500).json({ 
+          success: false, 
+          message: "Error al enviar email. Verifica que la dirección sea correcta." 
+        });
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Código enviado por email",
+        // Only include code in development for testing
+        ...(process.env.NODE_ENV === 'development' && { devCode: code })
+      });
+    } catch (error) {
+      console.error("Error sending email verification code:", error);
+      res.status(500).json({ message: "Error al enviar código" });
+    }
+  });
+
+  // Email verification - Verify code
+  app.post("/api/auth/email/verify-code", async (req, res) => {
+    try {
+      const { email, code } = req.body;
+      
+      if (!email || !code) {
+        return res.status(400).json({ message: "Email y código requeridos" });
+      }
+
+      // Find valid verification code
+      const verificationCodes = await db.select()
+        .from(phoneVerificationCodes)
+        .where(and(
+          eq(phoneVerificationCodes.phone, email), // Using phone field for email
+          eq(phoneVerificationCodes.code, code),
+          eq(phoneVerificationCodes.used, false)
+        ))
+        .orderBy(desc(phoneVerificationCodes.createdAt))
+        .limit(1);
+
+      if (verificationCodes.length === 0) {
+        return res.status(400).json({ message: "Código inválido" });
+      }
+
+      const verification = verificationCodes[0];
+
+      // Check if expired
+      if (new Date() > verification.expiresAt) {
+        return res.status(400).json({ message: "Código expirado. Solicita uno nuevo." });
+      }
+
+      // Mark code as used
+      await db.update(phoneVerificationCodes)
+        .set({ used: true })
+        .where(eq(phoneVerificationCodes.id, verification.id));
+
+      res.json({ 
+        success: true, 
+        message: "Código verificado",
+        type: verification.type
+      });
+    } catch (error) {
+      console.error("Error verifying email code:", error);
+      res.status(500).json({ message: "Error al verificar código" });
+    }
+  });
+
+  // Email password reset
+  app.post("/api/auth/email/reset-password", async (req, res) => {
+    try {
+      const { email, code, newPassword } = req.body;
+      
+      if (!email || !code || !newPassword) {
+        return res.status(400).json({ message: "Email, código y nueva contraseña requeridos" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres" });
+      }
+
+      // Find and verify the code
+      const verificationCodes = await db.select()
+        .from(phoneVerificationCodes)
+        .where(and(
+          eq(phoneVerificationCodes.phone, email),
+          eq(phoneVerificationCodes.code, code),
+          eq(phoneVerificationCodes.type, 'password_reset'),
+          eq(phoneVerificationCodes.used, false)
+        ))
+        .orderBy(desc(phoneVerificationCodes.createdAt))
+        .limit(1);
+
+      if (verificationCodes.length === 0) {
+        return res.status(400).json({ message: "Código inválido o ya utilizado" });
+      }
+
+      const verification = verificationCodes[0];
+
+      if (new Date() > verification.expiresAt) {
+        return res.status(400).json({ message: "Código expirado. Solicita uno nuevo." });
+      }
+
+      // Find user by email
+      const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      if (existingUser.length === 0) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      // Hash new password
+      const bcrypt = await import('bcryptjs');
+      const hashedPassword = await bcrypt.default.hash(newPassword, 10);
+
+      // Update password
+      await db.update(users)
+        .set({ password: hashedPassword })
+        .where(eq(users.id, existingUser[0].id));
+
+      // Mark code as used
+      await db.update(phoneVerificationCodes)
+        .set({ used: true })
+        .where(eq(phoneVerificationCodes.id, verification.id));
+
+      res.json({ 
+        success: true, 
+        message: "Contraseña actualizada exitosamente" 
+      });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ message: "Error al restablecer contraseña" });
+    }
+  });
+
+  // Register with email (after verification)
   app.post("/api/auth/register", async (req, res) => {
     try {
       const { username, email, password, firstName, lastName, userType, phone } = req.body;
@@ -1545,12 +1724,12 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ message: "Campos requeridos faltantes" });
       }
 
-      // SECURITY: Verify phone was actually verified recently (within last 30 minutes)
-      if (phone) {
+      // SECURITY: Verify email was actually verified recently (within last 30 minutes)
+      if (email) {
         const recentVerification = await db.select()
           .from(phoneVerificationCodes)
           .where(and(
-            eq(phoneVerificationCodes.phone, phone),
+            eq(phoneVerificationCodes.phone, email), // Using phone field for email
             eq(phoneVerificationCodes.type, 'register'),
             eq(phoneVerificationCodes.used, true)
           ))
@@ -1558,14 +1737,14 @@ export async function registerRoutes(app: any) {
           .limit(1);
 
         if (recentVerification.length === 0) {
-          return res.status(400).json({ message: "Debes verificar tu número de WhatsApp primero" });
+          return res.status(400).json({ message: "Debes verificar tu email primero" });
         }
 
         // Check if verification was within last 30 minutes
         const verificationTime = recentVerification[0].createdAt;
         const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
         if (verificationTime && verificationTime < thirtyMinutesAgo) {
-          return res.status(400).json({ message: "La verificación ha expirado. Por favor verifica tu número nuevamente." });
+          return res.status(400).json({ message: "La verificación ha expirado. Por favor verifica tu email nuevamente." });
         }
       }
 

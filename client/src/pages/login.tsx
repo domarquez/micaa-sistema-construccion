@@ -3,20 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Construction, ArrowLeft, Phone, Lock, CheckCircle, MessageCircle } from "lucide-react";
+import { Construction, ArrowLeft, Mail, Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { SiWhatsapp } from "react-icons/si";
 
-type RecoveryStep = 'phone' | 'verify' | 'newPassword';
+type RecoveryStep = 'email' | 'verify' | 'newPassword';
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
-  const [recoveryStep, setRecoveryStep] = useState<RecoveryStep>('phone');
-  const [recoveryPhone, setRecoveryPhone] = useState("");
+  const [recoveryStep, setRecoveryStep] = useState<RecoveryStep>('email');
+  const [recoveryEmail, setRecoveryEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -56,10 +55,10 @@ export default function Login() {
     setIsRecoveryLoading(true);
 
     try {
-      const response = await fetch('/api/auth/whatsapp/send-code', {
+      const response = await fetch('/api/auth/email/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: recoveryPhone, type: 'password_reset' })
+        body: JSON.stringify({ email: recoveryEmail, type: 'password_reset' })
       });
 
       if (!response.ok) {
@@ -69,7 +68,7 @@ export default function Login() {
 
       toast({
         title: "Código enviado",
-        description: "Revisa tu WhatsApp para obtener el código de verificación",
+        description: "Revisa tu email para obtener el código de verificación",
       });
 
       setRecoveryStep('verify');
@@ -123,11 +122,11 @@ export default function Login() {
     setIsRecoveryLoading(true);
 
     try {
-      const response = await fetch('/api/auth/whatsapp/reset-password', {
+      const response = await fetch('/api/auth/email/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          phone: recoveryPhone, 
+          email: recoveryEmail, 
           code: verificationCode,
           newPassword: newPassword 
         })
@@ -144,8 +143,8 @@ export default function Login() {
       });
 
       setShowPasswordRecovery(false);
-      setRecoveryStep('phone');
-      setRecoveryPhone("");
+      setRecoveryStep('email');
+      setRecoveryEmail("");
       setVerificationCode("");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -162,8 +161,8 @@ export default function Login() {
 
   const resetRecovery = () => {
     setShowPasswordRecovery(false);
-    setRecoveryStep('phone');
-    setRecoveryPhone("");
+    setRecoveryStep('email');
+    setRecoveryEmail("");
     setVerificationCode("");
     setNewPassword("");
     setConfirmNewPassword("");
@@ -252,36 +251,36 @@ export default function Login() {
             </>
           ) : (
             <div className="space-y-4">
-              {recoveryStep === 'phone' && (
+              {recoveryStep === 'email' && (
                 <>
                   <div className="text-center mb-4">
-                    <SiWhatsapp className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                    <Mail className="w-12 h-12 text-blue-500 mx-auto mb-2" />
                     <h3 className="text-lg font-semibold">Recuperar Contraseña</h3>
                     <p className="text-sm text-gray-600">
-                      Ingresa tu número de WhatsApp para recibir un código
+                      Ingresa tu email para recibir un código
                     </p>
                   </div>
                   
                   <form onSubmit={handleSendRecoveryCode} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="recovery-phone">Número de WhatsApp</Label>
+                      <Label htmlFor="recovery-email">Email</Label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <Input
-                          id="recovery-phone"
-                          type="tel"
-                          value={recoveryPhone}
-                          onChange={(e) => setRecoveryPhone(e.target.value.replace(/\D/g, ''))}
+                          id="recovery-email"
+                          type="email"
+                          value={recoveryEmail}
+                          onChange={(e) => setRecoveryEmail(e.target.value)}
                           required
-                          placeholder="70012345"
+                          placeholder="tu@email.com"
                           className="pl-10"
-                          data-testid="input-recovery-phone"
+                          data-testid="input-recovery-email"
                         />
                       </div>
                     </div>
                     
-                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isRecoveryLoading} data-testid="button-send-recovery-code">
-                      <SiWhatsapp className="w-4 h-4 mr-2" />
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isRecoveryLoading} data-testid="button-send-recovery-code">
+                      <Mail className="w-4 h-4 mr-2" />
                       {isRecoveryLoading ? "Enviando..." : "Enviar Código"}
                     </Button>
                   </form>
@@ -291,13 +290,13 @@ export default function Login() {
               {recoveryStep === 'verify' && (
                 <>
                   <div className="text-center mb-4">
-                    <MessageCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                    <Mail className="w-12 h-12 text-blue-500 mx-auto mb-2" />
                     <h3 className="text-lg font-semibold">Verificar Código</h3>
                     <p className="text-sm text-gray-600">
                       Ingresa el código de 6 dígitos que recibiste
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      Enviado a: {recoveryPhone}
+                      Enviado a: {recoveryEmail}
                     </p>
                   </div>
                   
@@ -317,7 +316,7 @@ export default function Login() {
                       />
                     </div>
                     
-                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" data-testid="button-verify-recovery-code">
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-verify-recovery-code">
                       Verificar Código
                     </Button>
                   </form>
@@ -326,7 +325,7 @@ export default function Login() {
                     <button 
                       type="button"
                       onClick={handleSendRecoveryCode}
-                      className="text-sm text-green-600 hover:underline"
+                      className="text-sm text-blue-600 hover:underline"
                       disabled={isRecoveryLoading}
                     >
                       ¿No recibiste el código? Reenviar

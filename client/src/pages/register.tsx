@@ -13,14 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Construction, User, Lock, UserPlus, Phone, CheckCircle, MessageCircle } from "lucide-react";
-import { SiWhatsapp } from "react-icons/si";
+import { Construction, User, Lock, UserPlus, Mail, CheckCircle } from "lucide-react";
 
-type Step = 'phone' | 'verify' | 'details';
+type Step = 'email' | 'verify' | 'details';
 
 export default function Register() {
-  const [step, setStep] = useState<Step>('phone');
-  const [phone, setPhone] = useState("");
+  const [step, setStep] = useState<Step>('email');
+  const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [formData, setFormData] = useState({
     username: "",
@@ -33,11 +32,11 @@ export default function Register() {
   const { toast } = useToast();
 
   const sendCodeMutation = useMutation({
-    mutationFn: async (phoneNumber: string) => {
-      const response = await fetch('/api/auth/whatsapp/send-code', {
+    mutationFn: async (emailAddress: string) => {
+      const response = await fetch('/api/auth/email/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneNumber, type: 'register' })
+        body: JSON.stringify({ email: emailAddress, type: 'register' })
       });
       
       if (!response.ok) {
@@ -50,7 +49,7 @@ export default function Register() {
     onSuccess: () => {
       toast({
         title: "Código enviado",
-        description: "Revisa tu WhatsApp para obtener el código de verificación",
+        description: "Revisa tu email para obtener el código de verificación",
       });
       setStep('verify');
     },
@@ -64,11 +63,11 @@ export default function Register() {
   });
 
   const verifyCodeMutation = useMutation({
-    mutationFn: async ({ phone, code }: { phone: string; code: string }) => {
-      const response = await fetch('/api/auth/whatsapp/verify-code', {
+    mutationFn: async ({ email, code }: { email: string; code: string }) => {
+      const response = await fetch('/api/auth/email/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code })
+        body: JSON.stringify({ email, code })
       });
       
       if (!response.ok) {
@@ -80,7 +79,7 @@ export default function Register() {
     },
     onSuccess: () => {
       toast({
-        title: "Número verificado",
+        title: "Email verificado",
         description: "Ahora completa tu información para crear la cuenta",
       });
       setStep('details');
@@ -99,7 +98,7 @@ export default function Register() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...userData, phone })
+        body: JSON.stringify({ ...userData, email })
       });
       
       if (!response.ok) {
@@ -112,7 +111,7 @@ export default function Register() {
     onSuccess: () => {
       toast({
         title: "Registro exitoso",
-        description: "Tu cuenta ha sido creada. Recibirás un mensaje de bienvenida en WhatsApp.",
+        description: "Tu cuenta ha sido creada. Ya puedes iniciar sesión.",
       });
       window.location.href = "/login";
     },
@@ -128,16 +127,17 @@ export default function Register() {
   const handleSendCode = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!phone || phone.length < 8) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
       toast({
-        title: "Número inválido",
-        description: "Ingresa un número de teléfono válido",
+        title: "Email inválido",
+        description: "Ingresa una dirección de email válida",
         variant: "destructive",
       });
       return;
     }
 
-    sendCodeMutation.mutate(phone);
+    sendCodeMutation.mutate(email);
   };
 
   const handleVerifyCode = (e: React.FormEvent) => {
@@ -152,7 +152,7 @@ export default function Register() {
       return;
     }
 
-    verifyCodeMutation.mutate({ phone, code: verificationCode });
+    verifyCodeMutation.mutate({ email, code: verificationCode });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -201,14 +201,14 @@ export default function Register() {
             <Construction className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-primary" />
           </div>
           <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold">Crear Cuenta</CardTitle>
-          <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">Registro con WhatsApp</p>
+          <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">Registro con Email</p>
           
           <div className="flex justify-center gap-2 mt-3">
-            <div className={`flex items-center gap-1 text-xs ${step === 'phone' ? 'text-green-600 font-medium' : 'text-gray-400'}`}>
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${step === 'phone' ? 'bg-green-500 text-white' : 'bg-green-500 text-white'}`}>
-                {step === 'phone' ? '1' : <CheckCircle className="w-4 h-4" />}
+            <div className={`flex items-center gap-1 text-xs ${step === 'email' ? 'text-green-600 font-medium' : 'text-gray-400'}`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${step === 'email' ? 'bg-green-500 text-white' : 'bg-green-500 text-white'}`}>
+                {step === 'email' ? '1' : <CheckCircle className="w-4 h-4" />}
               </div>
-              <span className="hidden sm:inline">Teléfono</span>
+              <span className="hidden sm:inline">Email</span>
             </div>
             <div className="w-8 h-0.5 bg-gray-200 self-center" />
             <div className={`flex items-center gap-1 text-xs ${step === 'verify' ? 'text-green-600 font-medium' : 'text-gray-400'}`}>
@@ -228,61 +228,74 @@ export default function Register() {
         </CardHeader>
         
         <CardContent className="p-2 sm:p-4 md:p-6">
-          {step === 'phone' && (
+          {step === 'email' && (
             <form onSubmit={handleSendCode} className="space-y-4">
               <div className="text-center mb-4">
-                <SiWhatsapp className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                <Mail className="w-12 h-12 text-blue-500 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">
-                  Ingresa tu número de WhatsApp para recibir un código de verificación
+                  Ingresa tu email para recibir un código de verificación
                 </p>
               </div>
               
               <div>
-                <Label htmlFor="phone" className="text-sm">Número de WhatsApp *</Label>
+                <Label htmlFor="email" className="text-sm">Email *</Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
-                    placeholder="70012345"
+                    placeholder="tu@email.com"
                     required
-                    data-testid="input-phone"
+                    data-testid="input-email"
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Ingresa solo los números sin el código de país
+                  Recibirás un código de 6 dígitos
                 </p>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-green-600 hover:bg-green-700"
+              <Button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={sendCodeMutation.isPending}
                 data-testid="button-send-code"
               >
-                <SiWhatsapp className="w-4 h-4 mr-2" />
-                {sendCodeMutation.isPending ? 'Enviando...' : 'Enviar Código por WhatsApp'}
+                {sendCodeMutation.isPending ? (
+                  "Enviando..."
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Enviar Código
+                  </>
+                )}
               </Button>
+
+              <div className="text-center text-xs sm:text-sm">
+                <span className="text-gray-600">¿Ya tienes cuenta? </span>
+                <Link href="/login" className="text-primary hover:underline font-medium">
+                  Iniciar sesión
+                </Link>
+              </div>
             </form>
           )}
 
           {step === 'verify' && (
             <form onSubmit={handleVerifyCode} className="space-y-4">
               <div className="text-center mb-4">
-                <MessageCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Mail className="w-6 h-6 text-blue-600" />
+                </div>
                 <p className="text-sm text-gray-600">
-                  Ingresa el código de 6 dígitos que recibiste en WhatsApp
+                  Ingresa el código enviado a
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Enviado a: {phone}
-                </p>
+                <p className="font-medium text-blue-600 text-sm">{email}</p>
               </div>
-              
+
               <div>
-                <Label htmlFor="code" className="text-sm">Código de Verificación *</Label>
+                <Label htmlFor="code" className="text-sm">Código de verificación *</Label>
                 <Input
                   id="code"
                   type="text"
@@ -296,91 +309,82 @@ export default function Register() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-green-600 hover:bg-green-700"
+              <Button
+                type="submit"
+                className="w-full"
                 disabled={verifyCodeMutation.isPending}
                 data-testid="button-verify-code"
               >
-                {verifyCodeMutation.isPending ? 'Verificando...' : 'Verificar Código'}
+                {verifyCodeMutation.isPending ? "Verificando..." : "Verificar Código"}
               </Button>
 
-              <div className="text-center">
-                <button 
+              <div className="flex justify-between text-xs">
+                <button
                   type="button"
-                  onClick={() => sendCodeMutation.mutate(phone)}
-                  className="text-sm text-green-600 hover:underline"
+                  onClick={() => setStep('email')}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Cambiar email
+                </button>
+                <button
+                  type="button"
+                  onClick={() => sendCodeMutation.mutate(email)}
+                  className="text-blue-600 hover:underline"
                   disabled={sendCodeMutation.isPending}
                 >
-                  ¿No recibiste el código? Reenviar
+                  Reenviar código
                 </button>
               </div>
             </form>
           )}
 
           {step === 'details' && (
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-2 mb-3 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <span className="text-xs text-green-700">WhatsApp verificado: {phone}</span>
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+              <div className="text-center mb-2">
+                <div className="flex items-center justify-center gap-2 text-green-600 text-sm">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Email verificado: {email}</span>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label htmlFor="firstName" className="text-xs">Nombre</Label>
-                  <div className="relative">
-                    <User className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
-                    <Input
-                      id="firstName"
-                      type="text"
-                      value={formData.firstName}
-                      onChange={(e) => handleChange('firstName', e.target.value)}
-                      className="pl-7 text-sm h-8"
-                      placeholder="Nombre"
-                      data-testid="input-first-name"
-                    />
-                  </div>
+                  <Label htmlFor="firstName" className="text-xs sm:text-sm">Nombre</Label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={(e) => handleChange('firstName', e.target.value)}
+                    className="text-sm"
+                    placeholder="Juan"
+                    data-testid="input-first-name"
+                  />
                 </div>
-
                 <div>
-                  <Label htmlFor="lastName" className="text-xs">Apellido</Label>
+                  <Label htmlFor="lastName" className="text-xs sm:text-sm">Apellido</Label>
                   <Input
                     id="lastName"
                     type="text"
                     value={formData.lastName}
                     onChange={(e) => handleChange('lastName', e.target.value)}
-                    className="text-sm h-8"
-                    placeholder="Apellido"
+                    className="text-sm"
+                    placeholder="Pérez"
                     data-testid="input-last-name"
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="userType" className="text-xs">Tipo de Usuario *</Label>
-                <Select value={formData.userType} onValueChange={(value) => handleChange('userType', value)}>
-                  <SelectTrigger className="h-8 text-sm" data-testid="select-user-type">
-                    <SelectValue placeholder="Selecciona el tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="architect">Arquitecto/Diseñador</SelectItem>
-                    <SelectItem value="constructor">Constructor/Contratista</SelectItem>
-                    <SelectItem value="supplier">Empresa Proveedora</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="username" className="text-xs">Usuario *</Label>
+                <Label htmlFor="username" className="text-xs sm:text-sm">Usuario *</Label>
                 <div className="relative">
-                  <UserPlus className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
+                  <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 sm:w-4 sm:h-4" />
                   <Input
                     id="username"
                     type="text"
                     value={formData.username}
                     onChange={(e) => handleChange('username', e.target.value)}
-                    className="pl-7 text-sm h-8"
-                    placeholder="Nombre de usuario"
+                    className="pl-7 sm:pl-10 text-sm"
+                    placeholder="usuario"
                     required
                     data-testid="input-username"
                   />
@@ -388,16 +392,16 @@ export default function Register() {
               </div>
 
               <div>
-                <Label htmlFor="password" className="text-xs">Contraseña *</Label>
+                <Label htmlFor="password" className="text-xs sm:text-sm">Contraseña *</Label>
                 <div className="relative">
-                  <Lock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
+                  <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 sm:w-4 sm:h-4" />
                   <Input
                     id="password"
                     type="password"
                     value={formData.password}
                     onChange={(e) => handleChange('password', e.target.value)}
-                    className="pl-7 text-sm h-8"
-                    placeholder="Mínimo 6 caracteres"
+                    className="pl-7 sm:pl-10 text-sm"
+                    placeholder="••••••••"
                     required
                     data-testid="input-password"
                   />
@@ -405,43 +409,72 @@ export default function Register() {
               </div>
 
               <div>
-                <Label htmlFor="confirmPassword" className="text-xs">Confirmar Contraseña *</Label>
+                <Label htmlFor="confirmPassword" className="text-xs sm:text-sm">Confirmar Contraseña *</Label>
                 <div className="relative">
-                  <Lock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
+                  <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 sm:w-4 sm:h-4" />
                   <Input
                     id="confirmPassword"
                     type="password"
                     value={formData.confirmPassword}
                     onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                    className="pl-7 text-sm h-8"
-                    placeholder="Confirmar contraseña"
+                    className="pl-7 sm:pl-10 text-sm"
+                    placeholder="••••••••"
                     required
                     data-testid="input-confirm-password"
                   />
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-primary hover:bg-primary-variant"
+              <div>
+                <Label htmlFor="userType" className="text-xs sm:text-sm">Tipo de Usuario</Label>
+                <Select
+                  value={formData.userType}
+                  onValueChange={(value) => handleChange('userType', value)}
+                >
+                  <SelectTrigger className="text-sm" data-testid="select-user-type">
+                    <SelectValue placeholder="Seleccionar tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="architect">Arquitecto</SelectItem>
+                    <SelectItem value="engineer">Ingeniero</SelectItem>
+                    <SelectItem value="contractor">Contratista</SelectItem>
+                    <SelectItem value="supplier">Proveedor</SelectItem>
+                    <SelectItem value="student">Estudiante</SelectItem>
+                    <SelectItem value="other">Otro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full text-sm"
                 disabled={registerMutation.isPending}
                 data-testid="button-register"
               >
-                {registerMutation.isPending ? 'Creando cuenta...' : 'Crear Cuenta'}
+                {registerMutation.isPending ? (
+                  "Creando cuenta..."
+                ) : (
+                  <>
+                    <UserPlus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    Crear Cuenta
+                  </>
+                )}
               </Button>
+
+              <div className="text-center text-xs sm:text-sm">
+                <span className="text-gray-600">¿Ya tienes cuenta? </span>
+                <Link href="/login" className="text-primary hover:underline font-medium">
+                  Iniciar sesión
+                </Link>
+              </div>
             </form>
           )}
-
-          <div className="mt-4 text-center">
-            <p className="text-xs text-gray-600">
-              ¿Ya tienes una cuenta?{' '}
-              <Link href="/login" className="text-primary hover:underline font-medium">
-                Inicia sesión aquí
-              </Link>
-            </p>
-          </div>
         </CardContent>
       </Card>
+
+      <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-4 px-4">
+        Al registrarte, aceptas nuestros términos de servicio y política de privacidad
+      </p>
     </div>
   );
 }
