@@ -61,21 +61,23 @@ export default function Login() {
         body: JSON.stringify({ email: recoveryEmail, type: 'password_reset' })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al enviar código');
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || 'Error al enviar código');
       }
 
       toast({
         title: "Código enviado",
-        description: "Revisa tu email para obtener el código de verificación",
+        description: "Revisa tu email (también la carpeta de spam) para obtener el código de verificación",
       });
 
       setRecoveryStep('verify');
     } catch (error: any) {
+      const errorMessage = error.message || 'Error de conexión. Intenta de nuevo.';
       toast({
         title: "Error",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {

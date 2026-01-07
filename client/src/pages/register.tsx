@@ -39,24 +39,26 @@ export default function Register() {
         body: JSON.stringify({ email: emailAddress, type: 'register' })
       });
       
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error al enviar código');
+      const data = await response.json();
+      
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || 'Error al enviar código');
       }
       
-      return response.json();
+      return data;
     },
     onSuccess: () => {
       toast({
         title: "Código enviado",
-        description: "Revisa tu email para obtener el código de verificación",
+        description: "Revisa tu email (también la carpeta de spam) para obtener el código de verificación",
       });
       setStep('verify');
     },
     onError: (error: Error) => {
+      const errorMessage = error.message || 'Error de conexión. Intenta de nuevo.';
       toast({
         title: "Error",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     },
