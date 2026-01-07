@@ -6,6 +6,14 @@ let resendClient: Resend | null = null;
 async function getResendClient(): Promise<Resend> {
   if (resendClient) return resendClient;
   
+  // First, try to use direct RESEND_API_KEY (works on Railway and other platforms)
+  if (process.env.RESEND_API_KEY) {
+    console.log('Using RESEND_API_KEY from environment');
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+    return resendClient;
+  }
+  
+  // Fallback to Replit connector (works on Replit)
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
@@ -14,7 +22,7 @@ async function getResendClient(): Promise<Resend> {
     : null;
 
   if (!xReplitToken || !hostname) {
-    throw new Error('Replit connector not available');
+    throw new Error('No RESEND_API_KEY found and Replit connector not available');
   }
 
   const response = await fetch(
@@ -31,7 +39,7 @@ async function getResendClient(): Promise<Resend> {
   const connectionSettings = data.items?.[0];
 
   if (!connectionSettings?.settings?.api_key) {
-    throw new Error('Resend API key not found');
+    throw new Error('Resend API key not found in Replit connector');
   }
   
   resendClient = new Resend(connectionSettings.settings.api_key);
