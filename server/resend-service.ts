@@ -38,8 +38,8 @@ async function getResendClient(): Promise<Resend> {
   return resendClient;
 }
 
-// Use onboarding@resend.dev as sender while domain verification is pending
-const FROM_EMAIL = 'MICAA <onboarding@resend.dev>';
+// Domain verified - use micaa.store
+const FROM_EMAIL = 'MICAA <noreply@micaa.store>';
 
 class ResendEmailService {
   async sendVerificationCode(email: string, code: string): Promise<boolean> {
