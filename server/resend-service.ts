@@ -36,13 +36,11 @@ async function getCredentials() {
 
 async function getResendClient() {
   const { apiKey, fromEmail } = await getCredentials();
-  // Use Resend's test email if domain is not verified
-  const safeFromEmail = fromEmail && !fromEmail.includes('micaa.store') 
-    ? fromEmail 
-    : 'MICAA <onboarding@resend.dev>';
+  // Use micaa.store domain (should be verified in Resend)
+  const senderEmail = fromEmail || 'MICAA <noreply@micaa.store>';
   return {
     client: new Resend(apiKey),
-    fromEmail: safeFromEmail
+    fromEmail: senderEmail
   };
 }
 
