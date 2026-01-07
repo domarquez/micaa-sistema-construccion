@@ -134,14 +134,15 @@ export default function Login() {
         })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al restablecer contraseña');
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Error al restablecer contraseña');
       }
 
       toast({
         title: "Contraseña actualizada",
-        description: "Ya puedes iniciar sesión con tu nueva contraseña",
+        description: `Tu usuario es: ${data.username}. Ya puedes iniciar sesión con tu nueva contraseña.`,
       });
 
       setShowPasswordRecovery(false);
