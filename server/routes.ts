@@ -1707,7 +1707,8 @@ export async function registerRoutes(app: any) {
 
       res.json({ 
         success: true, 
-        message: "Contraseña actualizada exitosamente" 
+        message: "Contraseña actualizada exitosamente",
+        username: existingUser[0].username
       });
     } catch (error) {
       console.error("Error resetting password:", error);
