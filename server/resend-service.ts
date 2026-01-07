@@ -1,56 +1,26 @@
-// Resend Email Service - Integration with Replit Connector
-import { Resend } from 'resend';
+// Email Service - Using SMTP with Nodemailer (fallback from Resend due to domain verification issues)
+import nodemailer from 'nodemailer';
 
-let connectionSettings: any;
-
-async function getCredentials() {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'mail.micaa.store',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  },
+  tls: {
+    rejectUnauthorized: false
   }
+});
 
-  connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
-    throw new Error('Resend not connected');
-  }
-  return {
-    apiKey: connectionSettings.settings.api_key, 
-    fromEmail: connectionSettings.settings.from_email
-  };
-}
-
-async function getResendClient() {
-  const { apiKey, fromEmail } = await getCredentials();
-  // Use micaa.store domain (should be verified in Resend)
-  const senderEmail = fromEmail || 'MICAA <noreply@micaa.store>';
-  return {
-    client: new Resend(apiKey),
-    fromEmail: senderEmail
-  };
-}
+const FROM_EMAIL = 'MICAA <contacto@micaa.store>';
 
 class ResendEmailService {
   async sendVerificationCode(email: string, code: string): Promise<boolean> {
     try {
-      const { client, fromEmail } = await getResendClient();
-      
-      const { error } = await client.emails.send({
-        from: fromEmail || 'MICAA <noreply@micaa.store>',
+      await transporter.sendMail({
+        from: FROM_EMAIL,
         to: email,
         subject: '🔐 MICAA - Código de Verificación',
         html: `
@@ -75,11 +45,6 @@ class ResendEmailService {
         `
       });
 
-      if (error) {
-        console.error('Error sending verification email:', error);
-        return false;
-      }
-
       console.log('Verification email sent successfully to:', email);
       return true;
     } catch (error) {
@@ -90,10 +55,8 @@ class ResendEmailService {
 
   async sendPasswordResetCode(email: string, code: string): Promise<boolean> {
     try {
-      const { client, fromEmail } = await getResendClient();
-      
-      const { error } = await client.emails.send({
-        from: fromEmail || 'MICAA <noreply@micaa.store>',
+      await transporter.sendMail({
+        from: FROM_EMAIL,
         to: email,
         subject: '🔑 MICAA - Recuperar Contraseña',
         html: `
@@ -118,11 +81,6 @@ class ResendEmailService {
         `
       });
 
-      if (error) {
-        console.error('Error sending password reset email:', error);
-        return false;
-      }
-
       console.log('Password reset email sent successfully to:', email);
       return true;
     } catch (error) {
@@ -133,10 +91,8 @@ class ResendEmailService {
 
   async sendWelcomeEmail(email: string, userName: string): Promise<boolean> {
     try {
-      const { client, fromEmail } = await getResendClient();
-      
-      const { error } = await client.emails.send({
-        from: fromEmail || 'MICAA <noreply@micaa.store>',
+      await transporter.sendMail({
+        from: FROM_EMAIL,
         to: email,
         subject: '👋 ¡Bienvenido a MICAA!',
         html: `
@@ -155,7 +111,7 @@ class ResendEmailService {
                 <li>Calcular costos con precios regionales</li>
               </ul>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://app.micaa.store" style="background: #10b981; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold;">Ir a MICAA</a>
+                <a href="https://micaa.store" style="background: #10b981; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold;">Ir a MICAA</a>
               </div>
               <p style="color: #64748b; font-size: 14px;">¡Gracias por unirte a MICAA!</p>
             </div>
@@ -165,11 +121,6 @@ class ResendEmailService {
           </div>
         `
       });
-
-      if (error) {
-        console.error('Error sending welcome email:', error);
-        return false;
-      }
 
       console.log('Welcome email sent successfully to:', email);
       return true;
@@ -184,12 +135,7 @@ class ResendEmailService {
   }
 
   async isConfigured(): Promise<boolean> {
-    try {
-      await getCredentials();
-      return true;
-    } catch {
-      return false;
-    }
+    return !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
   }
 }
 
