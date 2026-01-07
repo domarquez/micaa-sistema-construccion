@@ -1,25 +1,51 @@
-// Email Service - Using SMTP with Nodemailer (fallback from Resend due to domain verification issues)
-import nodemailer from 'nodemailer';
+// Email Service - Using Resend API directly
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'mail.micaa.store',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
+let resendClient: Resend | null = null;
+
+async function getResendClient(): Promise<Resend> {
+  if (resendClient) return resendClient;
+  
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY 
+    ? 'repl ' + process.env.REPL_IDENTITY 
+    : process.env.WEB_REPL_RENEWAL 
+    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
+    : null;
+
+  if (!xReplitToken || !hostname) {
+    throw new Error('Replit connector not available');
   }
-});
 
-const FROM_EMAIL = 'MICAA <contacto@micaa.store>';
+  const response = await fetch(
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
+    {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    }
+  );
+  
+  const data = await response.json();
+  const connectionSettings = data.items?.[0];
+
+  if (!connectionSettings?.settings?.api_key) {
+    throw new Error('Resend API key not found');
+  }
+  
+  resendClient = new Resend(connectionSettings.settings.api_key);
+  return resendClient;
+}
+
+// Use onboarding@resend.dev as sender while domain verification is pending
+const FROM_EMAIL = 'MICAA <onboarding@resend.dev>';
 
 class ResendEmailService {
   async sendVerificationCode(email: string, code: string): Promise<boolean> {
     try {
-      await transporter.sendMail({
+      const client = await getResendClient();
+      const { error } = await client.emails.send({
         from: FROM_EMAIL,
         to: email,
         subject: '🔐 MICAA - Código de Verificación',
@@ -45,6 +71,11 @@ class ResendEmailService {
         `
       });
 
+      if (error) {
+        console.error('Error sending verification email:', error);
+        return false;
+      }
+
       console.log('Verification email sent successfully to:', email);
       return true;
     } catch (error) {
@@ -55,7 +86,8 @@ class ResendEmailService {
 
   async sendPasswordResetCode(email: string, code: string): Promise<boolean> {
     try {
-      await transporter.sendMail({
+      const client = await getResendClient();
+      const { error } = await client.emails.send({
         from: FROM_EMAIL,
         to: email,
         subject: '🔑 MICAA - Recuperar Contraseña',
@@ -81,6 +113,11 @@ class ResendEmailService {
         `
       });
 
+      if (error) {
+        console.error('Error sending password reset email:', error);
+        return false;
+      }
+
       console.log('Password reset email sent successfully to:', email);
       return true;
     } catch (error) {
@@ -91,7 +128,8 @@ class ResendEmailService {
 
   async sendWelcomeEmail(email: string, userName: string): Promise<boolean> {
     try {
-      await transporter.sendMail({
+      const client = await getResendClient();
+      const { error } = await client.emails.send({
         from: FROM_EMAIL,
         to: email,
         subject: '👋 ¡Bienvenido a MICAA!',
@@ -122,6 +160,11 @@ class ResendEmailService {
         `
       });
 
+      if (error) {
+        console.error('Error sending welcome email:', error);
+        return false;
+      }
+
       console.log('Welcome email sent successfully to:', email);
       return true;
     } catch (error) {
@@ -135,7 +178,12 @@ class ResendEmailService {
   }
 
   async isConfigured(): Promise<boolean> {
-    return !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+    try {
+      await getResendClient();
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 
