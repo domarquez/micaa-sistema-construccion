@@ -427,7 +427,7 @@ export default function Budgets() {
     // Pie de página MICAA pequeño
     yPosition = 842 - 10; // A4 height
     doc.setFontSize(7);
-    doc.text('MICAA - Sistema Integral de Construcción y Arquitectura | Santa Cruz, Bolivia | contacto@micaa.store', pageWidth / 2, yPosition, { align: 'center' });
+    doc.text('MICAA - Sistema Integral de Construcción y Arquitectura | Santa Cruz, Bolivia | contacto@micaaa.top', pageWidth / 2, yPosition, { align: 'center' });
     
     // Descargar PDF
     const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
@@ -470,7 +470,7 @@ export default function Budgets() {
     yPosition += 6;
     
     doc.setFontSize(10);
-    doc.text('Santa Cruz, Bolivia | contacto@micaa.store', pageWidth / 2, yPosition, { align: 'center' });
+    doc.text('Santa Cruz, Bolivia | contacto@micaaa.top', pageWidth / 2, yPosition, { align: 'center' });
     yPosition += 15;
     
     // Línea decorativa

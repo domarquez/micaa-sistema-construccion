@@ -28,11 +28,11 @@ class EmailService {
       this.isConfigured = true;
     }
 
-    this.notificationEmail = process.env.NOTIFICATION_EMAIL || 'contacto@micaa.store';
+    this.notificationEmail = process.env.NOTIFICATION_EMAIL || 'contacto@micaaa.top';
     
     const smtpPort = parseInt(process.env.SMTP_PORT || '587');
     const config: any = {
-      host: process.env.SMTP_HOST || 'mail.micaa.store',
+      host: process.env.SMTP_HOST || 'mail.micaaa.top',
       port: smtpPort,
       secure: smtpPort === 465, // SSL for port 465, false for 587 (uses STARTTLS)
       requireTLS: smtpPort === 587, // Force TLS upgrade for port 587
@@ -251,7 +251,7 @@ class EmailService {
         
         <p style="color: #6b7280; font-size: 14px;">
           Si no solicitaste este cambio, contacta inmediatamente a soporte.
-          Este email fue enviado automáticamente por el sistema MICAA desde contacto@micaa.store.
+          Este email fue enviado automáticamente por el sistema MICAA desde contacto@micaaa.top.
         </p>
       </div>
     `;
@@ -297,7 +297,7 @@ class EmailService {
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.FRONTEND_URL || 'https://micaa.store'}/dashboard" 
+          <a href="${process.env.FRONTEND_URL || 'https://micaaa.top'}/dashboard" 
              style="display: inline-block; background-color: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
             Comenzar a Usar MICAA
           </a>
@@ -310,7 +310,7 @@ class EmailService {
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
         <p style="color: #9ca3af; font-size: 12px; text-align: center;">
           MICAA - Sistema Integral de Construcción y Arquitectura<br>
-          contacto@micaa.store | https://micaa.store
+          contacto@micaaa.top | https://micaaa.top
         </p>
       </div>
     `;

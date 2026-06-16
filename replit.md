@@ -20,7 +20,8 @@ MICAA is a comprehensive construction management platform designed for Bolivia. 
 - **Header Optimization (520-560px)**: Fixed header overflow at 520-560px breakpoint with optimized button sizes (text-[9px]), reduced spacing (gap-0.5), hidden "Anónimo" badge on mobile, and flex-shrink controls
 - **Google AdSense Aggressive Protection**: Added !important CSS rules to force all AdSense ads, iframes, and children to respect 100% container width, preventing overflow from dynamically injected ad content
 - **Advertisement Components Update**: All ad components (AdMobile, AdInFeed, AdFooter, CompanyAdMobile, CompanyAdvertisementCarousel) now have explicit max-w-full and overflow-hidden protection at multiple levels
-- **Email System Configuration**: Fully configured and tested SMTP service using mail.micaa.store:587 with STARTTLS for password recovery, user registration notifications, welcome emails, and contact requests. All credentials secured via Replit Secrets.
+- **Email System Configuration**: Fully configured and tested SMTP service. All credentials secured via Replit Secrets.
+- **Domain Migration (June 2026)**: Domain changed from micaa.store to micaaa.top across all server and client files.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -69,4 +70,4 @@ Preferred communication style: Simple, everyday language.
 - **Charts**: `recharts`
 - **Deployment Platform**: Render
 - **Monetization**: Google AdSense (publisher ID `ca-pub-8854811165812956`)
-- **Email Service**: Nodemailer with SMTP (mail.micaa.store:587/STARTTLS) for automated emails including password recovery, user registration notifications, welcome messages, and contact requests. Sender: contacto@micaa.store
+- **Email Service**: Nodemailer with SMTP for automated emails including password recovery, user registration notifications, welcome messages, and contact requests. Domain: micaaa.top

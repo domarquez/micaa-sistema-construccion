@@ -1777,7 +1777,7 @@ export async function registerRoutes(app: any) {
 
       const newUser = await db.insert(users).values({
         username,
-        email: email || `${phone}@whatsapp.micaa.store`,
+        email: email || `${phone}@whatsapp.micaaa.top`,
         password: hashedPassword,
         firstName,
         lastName,

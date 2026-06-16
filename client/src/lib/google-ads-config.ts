@@ -52,7 +52,7 @@ GOOGLE ADSENSE SETUP FOR MICAA:
 1. CREATE GOOGLE ADSENSE ACCOUNT:
    - Go to www.google.com/adsense
    - Sign up with your Google account
-   - Add your website: micaa.store
+   - Add your website: micaaa.top
    - Wait for approval (usually 1-7 days)
 
 2. GET YOUR PUBLISHER ID:

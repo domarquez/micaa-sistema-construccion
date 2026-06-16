@@ -48,21 +48,21 @@ export async function getKnownAPUs(): Promise<APUItem[]> {
       name: 'JABONERO',
       unit: 'PZA',
       price: 0,
-      url: 'https://www.micaa.store/analisis-precio-unitario/hh/artefactos-sanitarios/5/jabonero'
+      url: 'https://www.micaaa.top/analisis-precio-unitario/hh/artefactos-sanitarios/5/jabonero'
     },
     {
       code: 'HO193',
       name: 'CIMIENTO DE HO AO',
       unit: 'M3',
       price: 0,
-      url: 'https://www.micaa.store/analisis-precio-unitario/hh/hormigones/193/cimiento-de-ho-ao'
+      url: 'https://www.micaaa.top/analisis-precio-unitario/hh/hormigones/193/cimiento-de-ho-ao'
     },
     {
       code: 'ACCES001',
       name: 'ACCESORIOS DE BAÑO',
       unit: 'JGO',
       price: 525.41,
-      url: 'https://www.micaa.store/analisis-precio-unitario/hh/artefactos-sanitarios/1/accesorios-de-bano'
+      url: 'https://www.micaaa.top/analisis-precio-unitario/hh/artefactos-sanitarios/1/accesorios-de-bano'
     }
   ];
 
@@ -74,7 +74,7 @@ export async function getKnownAPUs(): Promise<APUItem[]> {
 export async function getAPUGroups(): Promise<APUGroup[]> {
   try {
     console.log('Obteniendo grupos de APU desde base de datos...');
-    const response = await axios.get('https://www.micaa.store/analisis-precio-unitario/hh/grupos', {
+    const response = await axios.get('https://www.micaaa.top/analisis-precio-unitario/hh/grupos', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -92,7 +92,7 @@ export async function getAPUGroups(): Promise<APUGroup[]> {
       const text = link.text().trim();
       
       if (href && text && href.includes('grupos/') && href.match(/grupos\/\d+\//)) {
-        const fullUrl = href.startsWith('http') ? href : `https://www.micaa.store/${href}`;
+        const fullUrl = href.startsWith('http') ? href : `https://www.micaaa.top/${href}`;
         const pathParts = href.split('/');
         const groupId = pathParts[pathParts.length - 2] || '';
         
@@ -142,7 +142,7 @@ export async function getAPUsByGroup(groupUrl: string): Promise<APUItem[]> {
         // Verificar si es un enlace a un APU individual (tiene patrón: categoria/numero/nombre)
         const apuPattern = /\/[a-z-]+\/\d+\/[a-z0-9-]+$/;
         if (href.match(apuPattern) && !href.includes('/grupos/') && href.includes('analisis-precio-unitario/hh/')) {
-          const fullUrl = href.startsWith('http') ? href : `https://www.micaa.store/${href}`;
+          const fullUrl = href.startsWith('http') ? href : `https://www.micaaa.top/${href}`;
           const pathParts = href.split('/');
           const code = pathParts[pathParts.length - 2] || ''; // El número del APU
           const name = text;
@@ -169,7 +169,7 @@ export async function getAPUsByGroup(groupUrl: string): Promise<APUItem[]> {
         const name = link.text().trim() || cells.eq(1).text().trim();
         
         if (href && name && href.match(/\/\d+\/[a-z0-9-]+$/)) {
-          const fullUrl = href.startsWith('http') ? href : `https://www.micaa.store/${href}`;
+          const fullUrl = href.startsWith('http') ? href : `https://www.micaaa.top/${href}`;
           const pathParts = href.split('/');
           const code = pathParts[pathParts.length - 2] || '';
           

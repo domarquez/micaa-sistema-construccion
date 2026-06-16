@@ -33,11 +33,11 @@ class BulkEmailService {
   constructor() {
     // Configurar SMTP con el correo existente
     this.transporter = nodemailer.createTransport({
-      host: 'mail.micaa.store',
+      host: 'mail.micaaa.top',
       port: 587,
       secure: false, // true para 465, false para otros puertos
       auth: {
-        user: 'contacto@micaa.store',
+        user: 'contacto@micaaa.top',
         pass: process.env.EMAIL_PASSWORD || 'your-email-password'
       },
       tls: {
@@ -281,7 +281,7 @@ class BulkEmailService {
     const mailOptions = {
       from: {
         name: 'MICAA - Sistema de Construcción',
-        address: 'contacto@micaa.store'
+        address: 'contacto@micaaa.top'
       },
       to: emailData.to,
       subject,
@@ -302,7 +302,7 @@ class BulkEmailService {
    */
   private generateEmailTemplate(template: string, emailData: any): string {
     const baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://micaa.store' 
+      ? 'https://micaaa.top' 
       : 'http://localhost:5000';
 
     const commonHeader = `
@@ -318,7 +318,7 @@ class BulkEmailService {
         </div>
         <div style="background: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #666;">
           <p>© 2025 MICAA - Sistema Integral de Construcción y Arquitectura</p>
-          <p>Bolivia | contacto@micaa.store</p>
+          <p>Bolivia | contacto@micaaa.top</p>
           <p style="margin-top: 15px;">
             <a href="${baseUrl}/auth/login" style="color: #667eea; text-decoration: none;">Acceder al Sistema</a> |
             <a href="${baseUrl}/public" style="color: #667eea; text-decoration: none;">Versión Pública</a>
@@ -364,7 +364,7 @@ class BulkEmailService {
           </div>
 
           <p><strong>¿Necesitas ayuda?</strong><br>
-          Contáctanos en <a href="mailto:contacto@micaa.store">contacto@micaa.store</a></p>
+          Contáctanos en <a href="mailto:contacto@micaaa.top">contacto@micaaa.top</a></p>
         `;
         break;
 
@@ -404,7 +404,7 @@ class BulkEmailService {
           </div>
 
           <p><strong>¿Tienes preguntas?</strong><br>
-          Escríbenos a <a href="mailto:contacto@micaa.store">contacto@micaa.store</a></p>
+          Escríbenos a <a href="mailto:contacto@micaaa.top">contacto@micaaa.top</a></p>
         `;
         break;
 
@@ -442,7 +442,7 @@ class BulkEmailService {
           </div>
 
           <p><strong>¿Necesitas asistencia?</strong><br>
-          No dudes en contactarnos: <a href="mailto:contacto@micaa.store">contacto@micaa.store</a></p>
+          No dudes en contactarnos: <a href="mailto:contacto@micaaa.top">contacto@micaaa.top</a></p>
         `;
         break;
     }
@@ -455,7 +455,7 @@ class BulkEmailService {
    */
   private generateTextTemplate(template: string, emailData: any): string {
     const baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://micaa.store' 
+      ? 'https://micaaa.top' 
       : 'http://localhost:5000';
 
     switch (template) {
@@ -482,7 +482,7 @@ NUEVAS FUNCIONALIDADES:
 
 Accede al sistema: ${baseUrl}/auth/login
 
-¿Necesitas ayuda? Contáctanos en contacto@micaa.store
+¿Necesitas ayuda? Contáctanos en contacto@micaaa.top
 
 © 2025 MICAA - Bolivia
         `.trim();
@@ -511,7 +511,7 @@ CÓMO EMPEZAR:
 
 Crear publicidad: ${baseUrl}/auth/login
 
-¿Tienes preguntas? Escríbenos a contacto@micaa.store
+¿Tienes preguntas? Escríbenos a contacto@micaaa.top
 
 © 2025 MICAA - Bolivia
         `.trim();
@@ -539,7 +539,7 @@ BENEFICIOS:
 
 Actualizar datos: ${baseUrl}/auth/login
 
-¿Necesitas asistencia? Contactanos: contacto@micaa.store
+¿Necesitas asistencia? Contactanos: contacto@micaaa.top
 
 © 2025 MICAA - Bolivia
         `.trim();
