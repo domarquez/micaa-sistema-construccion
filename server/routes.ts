@@ -3,7 +3,7 @@ import { db } from './db';
 import { users, materials, activities, projects, supplierCompanies, cityPriceFactors, constructionPhases, materialCategories, tools, laborCategories, companyAdvertisements, budgets, budgetItems, activityCompositions, priceSettings, userMaterialPrices, userActivities, userActivityCompositions, customActivities, customActivityCompositions, constructionNews, siteStats, phoneVerificationCodes } from '../shared/schema';
 import { whatsappService } from './whatsapp-service';
 import { resendService } from './resend-service';
-import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
+import { eq, like, ilike, desc, asc, and, or, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
 import { getPublicMaterialPrice } from './material-price';
@@ -1173,10 +1173,23 @@ export async function registerRoutes(app: any) {
 
       let materialsData;
       if (q) {
+        // Busqueda amplia: case-insensitive, multi-palabra (AND), nombre o descripcion
+        const tokens = q
+          .split(/\s+/)
+          .map((s) => s.trim())
+          .filter((s) => s.length >= 2)
+          .slice(0, 6);
+        const terms = tokens.length > 0 ? tokens : [q];
+        const tokenClauses = terms.map((term) =>
+          or(
+            ilike(materials.name, `%${term}%`),
+            ilike(materials.description, `%${term}%`),
+          ),
+        );
         materialsData = await db
           .select()
           .from(materials)
-          .where(like(materials.name, `%${q}%`))
+          .where(and(...tokenClauses))
           .limit(limit);
       } else {
         materialsData = await db.select().from(materials).limit(limit);
