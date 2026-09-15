@@ -59,13 +59,13 @@ export async function getPublicMaterialPrice(
   let rebaseSkipped = false;
 
   if (basePrice == null || !origin) {
-    const r = rebaseCatalogPrice(catalogPrice, categoryName, DEFAULT_MACRO);
+    const r = rebaseCatalogPrice(catalogPrice, categoryName, DEFAULT_MACRO, material.name);
     basePrice = r.basePrice;
     origin = r.origin;
     alpha = r.alpha;
     rebaseSkipped = r.rebaseSkipped;
   } else {
-    const r = rebaseCatalogPrice(catalogPrice, categoryName, DEFAULT_MACRO);
+    const r = rebaseCatalogPrice(catalogPrice, categoryName, DEFAULT_MACRO, material.name);
     alpha = r.alpha;
     // if stored equals catalog and compute would skip, reflect that
     rebaseSkipped = Math.abs(basePrice - catalogPrice) < 0.005 && r.rebaseSkipped;

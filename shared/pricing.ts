@@ -53,11 +53,24 @@ const NACIONAL_KEYS = [
   "ADOQUINES",
 ] as const;
 
-export function classifyCategory(categoryName: string): {
+export function classifyCategory(
+  categoryName: string,
+  materialName?: string,
+): {
   origin: PriceOrigin;
   alpha: number;
 } {
-  const n = (categoryName || "").toUpperCase();
+  // Prefer category, but if name clearly is wood/aggregate/cement, don't treat as steel/import.
+  const n = `${categoryName || ""} ${materialName || ""}`.toUpperCase();
+  const nameOnly = (materialName || "").toUpperCase();
+  const WOOD_HINT = ["MADERA", "TAJIBO", "PINO", "MARA", "MACHIMBRE", "PARQUET", "CUARTON", "TABLON"];
+  const NACIONAL_HINT = ["ARENA", "GRAVA", "RIPIO", "CEMENTO", "LADRILLO", "ADOBITO", "BLOQUE"];
+  if (WOOD_HINT.some((k) => nameOnly.includes(k))) {
+    return { origin: "mixto", alpha: 0.4 };
+  }
+  if (NACIONAL_HINT.some((k) => nameOnly.includes(k))) {
+    return { origin: "nacional", alpha: 0.15 };
+  }
   for (const k of IMPORT_KEYS) {
     if (n.includes(k)) return { origin: "importado", alpha: 0.8 };
   }
@@ -87,8 +100,9 @@ export function rebaseCatalogPrice(
   catalogPrice: number,
   categoryName: string,
   macro: MacroRates = DEFAULT_MACRO,
+  materialName?: string,
 ): RebaseResult {
-  const { origin, alpha } = classifyCategory(categoryName);
+  const { origin, alpha } = classifyCategory(categoryName, materialName);
   const tcRatio = macro.tcHoy / macro.tcAncla;
   const ufvRatio = macro.ufvHoy / macro.ufvAncla;
   const factor = alpha * tcRatio + (1 - alpha) * ufvRatio;

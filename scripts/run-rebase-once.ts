@@ -30,6 +30,7 @@ async function main() {
       catalog,
       row.categoryName || "",
       DEFAULT_MACRO,
+      row.material.name,
     );
     await db
       .update(materials)
