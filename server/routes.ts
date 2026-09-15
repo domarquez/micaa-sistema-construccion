@@ -1032,35 +1032,47 @@ export async function registerRoutes(app: any) {
   router.post('/materials/:id/custom-price', requireAuth, async (req: any, res) => {
     try {
       const materialId = parseInt(req.params.id);
-      const { customPrice, reason } = req.body;
+      const {
+        customPrice,
+        price,
+        reason,
+        city,
+        isPublic,
+        customMaterialName,
+        unit,
+      } = req.body;
       const userId = req.user.id;
+      const priceValue = parseFloat(customPrice ?? price);
 
-      if (!customPrice || customPrice <= 0) {
+      if (!priceValue || priceValue <= 0) {
         return res.status(400).json({ error: 'Precio personalizado inválido' });
       }
 
-      // Get the original material
       const material = await db.select().from(materials).where(eq(materials.id, materialId)).limit(1);
       if (material.length === 0) {
         return res.status(404).json({ error: 'Material no encontrado' });
       }
 
-      // Check if user already has a custom price for this material
       const existingCustomPrice = await db.select()
         .from(userMaterialPrices)
         .where(and(
           eq(userMaterialPrices.userId, userId),
-          eq(userMaterialPrices.originalMaterialName, material[0].name)
+          eq(userMaterialPrices.materialId, materialId)
         ))
         .limit(1);
 
+      const displayName = customMaterialName || `${material[0].name} (Personalizado)`;
+      const publicFlag = isPublic === true || isPublic === 'true';
+
       if (existingCustomPrice.length > 0) {
-        // Update existing custom price
         const updated = await db.update(userMaterialPrices)
           .set({
-            price: customPrice.toString(),
-            customMaterialName: `${material[0].name} (Personalizado)`,
+            price: priceValue.toString(),
+            customMaterialName: displayName,
+            unit: unit || material[0].unit,
             reason: reason || 'Precio personalizado actualizado',
+            city: city || existingCustomPrice[0].city,
+            isPublic: publicFlag,
             updatedAt: new Date()
           })
           .where(eq(userMaterialPrices.id, existingCustomPrice[0].id))
@@ -1068,16 +1080,17 @@ export async function registerRoutes(app: any) {
 
         res.json({ success: true, customPrice: updated[0] });
       } else {
-        // Create new custom price
         const newCustomPrice = await db.insert(userMaterialPrices)
           .values({
             userId,
-            materialId: materialId, // Agregar material_id
+            materialId,
             originalMaterialName: material[0].name,
-            customMaterialName: `${material[0].name} (Personalizado)`,
-            price: customPrice.toString(),
-            unit: material[0].unit,
-            reason: reason || 'Precio personalizado'
+            customMaterialName: displayName,
+            price: priceValue.toString(),
+            unit: unit || material[0].unit,
+            reason: reason || 'Precio personalizado',
+            city: city || null,
+            isPublic: publicFlag,
           })
           .returning();
 
@@ -1154,7 +1167,21 @@ export async function registerRoutes(app: any) {
 
   app.get("/api/public/materials", async (req: Request, res: Response) => {
     try {
-      const materialsData = await db.select().from(materials).limit(100);
+      const q = String(req.query.q || req.query.search || "").trim();
+      const limitRaw = parseInt(String(req.query.limit || "50"), 10);
+      const limit = Math.min(Number.isFinite(limitRaw) && limitRaw > 0 ? limitRaw : 50, 100);
+
+      let materialsData;
+      if (q) {
+        materialsData = await db
+          .select()
+          .from(materials)
+          .where(like(materials.name, `%${q}%`))
+          .limit(limit);
+      } else {
+        materialsData = await db.select().from(materials).limit(limit);
+      }
+
       const categories = await db.select().from(materialCategories).orderBy(asc(materialCategories.name));
       
       const materialsWithCategories = materialsData.map(material => {
@@ -1165,7 +1192,6 @@ export async function registerRoutes(app: any) {
         };
       });
       
-      // Sort materials by category name, then by material name
       materialsWithCategories.sort((a, b) => {
         const categoryCompare = a.category.name.localeCompare(b.category.name);
         if (categoryCompare !== 0) return categoryCompare;
