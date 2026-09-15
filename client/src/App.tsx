@@ -1,10 +1,15 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import UnifiedHome from "@/pages/unified-home";
+import PriceHome from "@/pages/price-home";
+import MaterialesPage from "@/pages/materiales";
+import MaterialDetail from "@/pages/material-detail";
+import ListaPage from "@/pages/lista";
+import PublicarPrecioPage from "@/pages/publicar-precio";
 import Materials from "@/pages/materials";
 import Activities from "@/pages/activities";
 import Budgets from "@/pages/budgets";
@@ -24,7 +29,6 @@ import ImportCompanies from "@/pages/import-companies";
 import ReviewCompanies from "@/pages/review-companies";
 import SimpleImport from "@/pages/simple-import";
 import AdminMaterials from "@/pages/admin-materials";
-import AdminMaterialsCRUD from "@/pages/admin-materials-crud";
 import AdminUsers from "@/pages/admin-users";
 import AdminSuppliers from "@/pages/admin-suppliers";
 import AdminCompanies from "@/pages/admin-companies";
@@ -40,50 +44,60 @@ import NotFound from "@/pages/not-found";
 import AppSidebar from "@/components/layout/sidebar-simple";
 import AppHeader from "@/components/layout/header";
 import { AppFooter } from "@/components/layout/app-footer";
-import { PWAInstallBanner } from "@/components/pwa-install-button";
+import { GuestHeader } from "@/components/guest-header";
 import { useAuth } from "@/hooks/useAuth";
 
-function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+function usePriceSurface(path: string) {
+  return (
+    path === "/" ||
+    path === "/lista" ||
+    path === "/publicar-precio" ||
+    path === "/materiales" ||
+    path.startsWith("/materiales/")
+  );
+}
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
-        </div>
-      </div>
-    );
-  }
+function PriceRoutes() {
+  return (
+    <Switch>
+      <Route path="/" component={PriceHome} />
+      <Route path="/materiales" component={MaterialesPage} />
+      <Route path="/materiales/:id" component={MaterialDetail} />
+      <Route path="/lista" component={ListaPage} />
+      <Route path="/publicar-precio" component={PublicarPrecioPage} />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
 
-  // Check if on login or register page - render without sidebar
-  const path = window.location.pathname;
-  if (path === '/login' || path === '/register') {
-    return (
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
-      </Switch>
-    );
-  }
-
-  // Always show the full authenticated layout, but with anonymous mode
-  // Users can access everything without being logged in
-  return <AuthenticatedLayout />;
+function GuestLayout() {
+  return (
+    <div className="min-h-screen bg-[var(--micaa-bg)] text-[var(--micaa-fg)]">
+      <GuestHeader />
+      <main>
+        <PriceRoutes />
+      </main>
+    </div>
+  );
 }
 
 function AuthenticatedLayout() {
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-surface flex">
+      <div className="flex min-h-screen bg-surface">
         <AppSidebar />
-        <div className="flex flex-col flex-1 min-w-0">
+        <div className="flex min-w-0 flex-1 flex-col">
           <AppHeader />
-          <main className="flex-1 p-4 md:p-6 overflow-auto">
+          <main className="flex-1 overflow-auto p-4 md:p-6">
             <Switch>
-              <Route path="/" component={UnifiedHome} />
+              <Route path="/" component={PriceHome} />
               <Route path="/dashboard" component={UnifiedHome} />
+              <Route path="/materiales" component={MaterialesPage} />
+              <Route path="/materiales/:id" component={MaterialDetail} />
+              <Route path="/lista" component={ListaPage} />
+              <Route path="/publicar-precio" component={PublicarPrecioPage} />
               <Route path="/materials" component={Materials} />
               <Route path="/activities" component={Activities} />
               <Route path="/custom-activities" component={CustomActivities} />
@@ -115,8 +129,6 @@ function AuthenticatedLayout() {
               <Route path="/admin/bulk-email" component={AdminBulkEmail} />
               <Route path="/admin/database" component={AdminDatabase} />
               <Route path="/marketplace" component={Marketplace} />
-              <Route path="/login" component={Login} />
-              <Route path="/register" component={Register} />
               <Route path="/account-settings" component={AccountSettings} />
               <Route component={NotFound} />
             </Switch>
@@ -124,18 +136,45 @@ function AuthenticatedLayout() {
           <AppFooter />
         </div>
       </div>
-      <PWAInstallBanner />
     </SidebarProvider>
   );
+}
+
+function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const [location] = useLocation();
+  const priceSurface = usePriceSurface(location);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--micaa-bg)]">
+        <p className="text-[14px] text-[var(--micaa-muted)]">Cargando…</p>
+      </div>
+    );
+  }
+
+  if (location === "/login" || location === "/register") {
+    return (
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+      </Switch>
+    );
+  }
+
+  // Invitado siempre sin sidebar. Logueado en superficie de precios también (briefing).
+  if (!isAuthenticated || priceSurface) {
+    return <GuestLayout />;
+  }
+
+  return <AuthenticatedLayout />;
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="min-h-screen bg-surface">
-          <Router />
-        </div>
+        <Router />
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

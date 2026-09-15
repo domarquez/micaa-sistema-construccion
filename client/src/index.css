@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 :root {
+  /* MICAA Fase 1 tokens (briefing §5.8) */
+  --micaa-bg: #FAFAF8;
+  --micaa-fg: #171717;
+  --micaa-muted: #737373;
+  --micaa-line: #E7E5E4;
+  --micaa-accent: #C2410C;
+  --micaa-accent-fg: #FFFAF7;
+  --micaa-ok: #15803D;
+
   --background: 0 0% 100%;
   --foreground: 240 10% 3.9%;
   --muted: 210 40% 98%;
