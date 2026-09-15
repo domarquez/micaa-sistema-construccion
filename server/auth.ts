@@ -3,7 +3,10 @@ import jwt from 'jsonwebtoken';
 import { storage } from './storage';
 import type { InsertUser, User } from '../shared/schema';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET must be set. Refusing to start with a default secret.');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '7d';
 
 export interface AuthTokenPayload {

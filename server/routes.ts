@@ -18,6 +18,15 @@ interface AuthRequest extends Request {
 }
 
 // Middleware de autenticación
+
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET must be set');
+  }
+  return secret;
+}
+
 const requireAuth = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
@@ -30,7 +39,7 @@ const requireAuth = async (req: AuthRequest, res: Response, next: NextFunction) 
     // Verificar token JWT
     let decoded: CustomJwtPayload;
     try {
-      const secret = process.env.JWT_SECRET || 'micaa-secret-key';
+      const secret = getJwtSecret();
       decoded = jwt.verify(token, secret) as CustomJwtPayload;
     } catch (error) {
       console.error("JWT verification error:", error);
@@ -176,7 +185,7 @@ export async function registerRoutes(app: any) {
         try {
           const token = authHeader.substring(7);
           console.log('🔑 Token received:', token.substring(0, 20) + '...');
-          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          const decoded = jwt.verify(token, getJwtSecret()) as any;
           userId = decoded.userId;
           console.log('🔍 Materials request with user ID:', userId);
         } catch (error) {
@@ -298,7 +307,7 @@ export async function registerRoutes(app: any) {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         try {
           const token = authHeader.substring(7);
-          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          const decoded = jwt.verify(token, getJwtSecret()) as any;
           userId = decoded.userId;
           console.log('🔍 Activities request with user ID:', userId);
         } catch (error) {
@@ -487,7 +496,7 @@ export async function registerRoutes(app: any) {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         try {
           const token = authHeader.substring(7);
-          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          const decoded = jwt.verify(token, getJwtSecret()) as any;
           userId = decoded.userId;
         } catch (error) {
           return res.status(401).json({ error: 'Invalid authentication token' });
@@ -578,7 +587,7 @@ export async function registerRoutes(app: any) {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         try {
           const token = authHeader.substring(7);
-          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          const decoded = jwt.verify(token, getJwtSecret()) as any;
           userId = decoded.userId;
         } catch (error) {
           return res.status(401).json({ error: 'Invalid authentication token' });
@@ -641,7 +650,7 @@ export async function registerRoutes(app: any) {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         try {
           const token = authHeader.substring(7);
-          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          const decoded = jwt.verify(token, getJwtSecret()) as any;
           userId = decoded.userId;
         } catch (error) {
           return res.status(401).json({ error: 'Invalid authentication token' });
@@ -699,7 +708,7 @@ export async function registerRoutes(app: any) {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         try {
           const token = authHeader.substring(7);
-          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'micaa-secret-key') as any;
+          const decoded = jwt.verify(token, getJwtSecret()) as any;
           userId = decoded.userId;
         } catch (error) {
           return res.status(401).json({ error: 'Invalid authentication token' });
@@ -1188,8 +1197,11 @@ export async function registerRoutes(app: any) {
   });
 
   // Forzar actualización manual de noticias (para testing/admin)
-  app.post("/api/admin/update-news", async (req: Request, res: Response) => {
+  app.post("/api/admin/update-news", requireAuth, async (req: AuthRequest, res: Response) => {
     try {
+      if (req.user?.role !== 'admin') {
+        return res.status(403).json({ message: 'Acceso denegado: Se requiere rol de administrador' });
+      }
       const { newsScraperService } = await import("./news-scraper");
       await newsScraperService.updateNews();
       
@@ -1395,7 +1407,7 @@ export async function registerRoutes(app: any) {
             email: user[0].email,
             role: user[0].role
           },
-          process.env.JWT_SECRET || 'micaa-secret-key',
+          getJwtSecret(),
           { expiresIn: '24h' }
         );
         
@@ -1892,7 +1904,7 @@ export async function registerRoutes(app: any) {
       const jwt = await import('jsonwebtoken');
       let decoded;
       try {
-        decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key');
+        decoded = jwt.default.verify(token, getJwtSecret());
       } catch (error) {
         return res.status(401).json({ message: "Invalid token" });
       }
@@ -2018,7 +2030,7 @@ export async function registerRoutes(app: any) {
       const jwt = await import('jsonwebtoken');
       let decoded;
       try {
-        decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key');
+        decoded = jwt.default.verify(token, getJwtSecret());
       } catch (error) {
         return res.status(401).json({ message: "Token inválido" });
       }
@@ -2214,7 +2226,7 @@ export async function registerRoutes(app: any) {
       const jwt = await import('jsonwebtoken');
       let decoded;
       try {
-        decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'micaa-secret-key');
+        decoded = jwt.default.verify(token, getJwtSecret());
       } catch (error) {
         return res.status(401).json({ message: "Token inválido" });
       }
@@ -2716,7 +2728,7 @@ export async function registerRoutes(app: any) {
   });
 
   // Update price settings
-  app.put("/api/price-settings", requireAuth, async (req: any, res) => {
+  app.put("/api/price-settings", requireAdmin, async (req: any, res) => {
     try {
       const { usdExchangeRate, inflationFactor, globalAdjustmentFactor, updatedBy } = req.body;
       
@@ -2762,7 +2774,7 @@ export async function registerRoutes(app: any) {
   });
 
   // Apply global price adjustment to all materials
-  app.post("/api/apply-price-adjustment", requireAuth, async (req: any, res) => {
+  app.post("/api/apply-price-adjustment", requireAdmin, async (req: any, res) => {
     try {
       const { factor, updatedBy } = req.body;
       
@@ -3030,12 +3042,50 @@ export async function registerRoutes(app: any) {
   // BUDGETS ENDPOINTS
   
   // Create budget
+
+  // Ownership helpers for budgets / budget items (IDOR protection)
+  async function assertBudgetOwnedByUser(budgetId: number, userId: number) {
+    const row = await db
+      .select({ id: budgets.id })
+      .from(budgets)
+      .innerJoin(projects, eq(budgets.projectId, projects.id))
+      .where(and(eq(budgets.id, budgetId), eq(projects.userId, userId)))
+      .limit(1);
+    return row.length > 0 ? row[0] : null;
+  }
+
+  async function assertProjectOwnedByUser(projectId: number, userId: number) {
+    const row = await db
+      .select()
+      .from(projects)
+      .where(and(eq(projects.id, projectId), eq(projects.userId, userId)))
+      .limit(1);
+    return row.length > 0 ? row[0] : null;
+  }
+
+  async function assertBudgetItemOwnedByUser(itemId: number, userId: number) {
+    const row = await db
+      .select({ id: budgetItems.id, budgetId: budgetItems.budgetId })
+      .from(budgetItems)
+      .innerJoin(budgets, eq(budgetItems.budgetId, budgets.id))
+      .innerJoin(projects, eq(budgets.projectId, projects.id))
+      .where(and(eq(budgetItems.id, itemId), eq(projects.userId, userId)))
+      .limit(1);
+    return row.length > 0 ? row[0] : null;
+  }
+
   app.post("/api/budgets", requireAuth, async (req, res) => {
     try {
       const { projectId, phaseId, total, status } = req.body;
+      const userId = (req as any).user.id;
       
       if (!projectId || !total) {
         return res.status(400).json({ message: "Datos incompletos para crear presupuesto" });
+      }
+
+      const project = await assertProjectOwnedByUser(parseInt(projectId), userId);
+      if (!project) {
+        return res.status(404).json({ message: "Proyecto no encontrado" });
       }
 
       const budget = await dbStorage.createBudget({
@@ -3115,7 +3165,13 @@ export async function registerRoutes(app: any) {
   app.put("/api/budgets/:id", requireAuth, async (req, res) => {
     try {
       const budgetId = parseInt(req.params.id);
+      const userId = (req as any).user.id;
       const updateData = req.body;
+
+      const owned = await assertBudgetOwnedByUser(budgetId, userId);
+      if (!owned) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
+      }
 
       const updatedBudget = await dbStorage.updateBudget(budgetId, updateData);
       res.json(updatedBudget);
@@ -3129,6 +3185,13 @@ export async function registerRoutes(app: any) {
   app.delete("/api/budgets/:id", requireAuth, async (req, res) => {
     try {
       const budgetId = parseInt(req.params.id);
+      const userId = (req as any).user.id;
+
+      const owned = await assertBudgetOwnedByUser(budgetId, userId);
+      if (!owned) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
+      }
+
       await dbStorage.deleteBudget(budgetId);
       res.json({ message: "Presupuesto eliminado exitosamente" });
     } catch (error) {
@@ -3143,9 +3206,15 @@ export async function registerRoutes(app: any) {
   app.post("/api/budget-items", requireAuth, async (req, res) => {
     try {
       const { budgetId, activityId, phaseId, quantity, unitPrice, subtotal } = req.body;
+      const userId = (req as any).user.id;
       
       if (!budgetId || !activityId || !quantity || !unitPrice) {
         return res.status(400).json({ message: "Datos incompletos para crear elemento de presupuesto" });
+      }
+
+      const owned = await assertBudgetOwnedByUser(parseInt(budgetId), userId);
+      if (!owned) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
       }
 
       const budgetItem = await dbStorage.createBudgetItem({
@@ -3185,7 +3254,13 @@ export async function registerRoutes(app: any) {
   app.put("/api/budget-items/:id", requireAuth, async (req, res) => {
     try {
       const itemId = parseInt(req.params.id);
+      const userId = (req as any).user.id;
       const updateData = req.body;
+
+      const owned = await assertBudgetItemOwnedByUser(itemId, userId);
+      if (!owned) {
+        return res.status(404).json({ message: "Elemento no encontrado" });
+      }
 
       const updatedItem = await dbStorage.updateBudgetItem(itemId, updateData);
       res.json(updatedItem);
@@ -3199,6 +3274,13 @@ export async function registerRoutes(app: any) {
   app.delete("/api/budget-items/:id", requireAuth, async (req, res) => {
     try {
       const itemId = parseInt(req.params.id);
+      const userId = (req as any).user.id;
+
+      const owned = await assertBudgetItemOwnedByUser(itemId, userId);
+      if (!owned) {
+        return res.status(404).json({ message: "Elemento no encontrado" });
+      }
+
       await dbStorage.deleteBudgetItem(itemId);
       res.json({ message: "Elemento eliminado exitosamente" });
     } catch (error) {
@@ -3211,6 +3293,12 @@ export async function registerRoutes(app: any) {
   app.delete("/api/budgets/:id/items", requireAuth, async (req, res) => {
     try {
       const budgetId = parseInt(req.params.id);
+      const userId = (req as any).user.id;
+
+      const owned = await assertBudgetOwnedByUser(budgetId, userId);
+      if (!owned) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
+      }
       
       // Get all budget items first
       const items = await dbStorage.getBudgetItemsByBudgetId(budgetId);
