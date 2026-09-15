@@ -69,6 +69,10 @@ export const materials = pgTable("materials", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   description: text("description"),
   lastUpdated: timestamp("last_updated").defaultNow(),
+  // Fase 1: rebase estimado (no pisa `price`)
+  rebasedPrice: decimal("rebased_price", { precision: 10, scale: 2 }),
+  rebasedAt: timestamp("rebased_at"),
+  priceOrigin: text("price_origin"), // importado | mixto | nacional
 });
 
 // Precios personalizados de materiales por usuario
@@ -81,6 +85,8 @@ export const userMaterialPrices = pgTable("user_material_prices", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   unit: text("unit").notNull(),
   reason: text("reason"), // Motivo del cambio de precio/nombre
+  city: text("city"),
+  isPublic: boolean("is_public").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -292,6 +298,32 @@ export const materialSupplierPrices = pgTable("material_supplier_prices", {
   validUntil: timestamp("valid_until"),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+// Listas de materiales (Capa 1 — snapshot; invitados usan localStorage)
+export const materialLists = pgTable("material_lists", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  title: text("title").notNull().default("Mi lista"),
+  city: text("city"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const materialListItems = pgTable("material_list_items", {
+  id: serial("id").primaryKey(),
+  listId: integer("list_id").notNull().references(() => materialLists.id),
+  materialId: integer("material_id").notNull().references(() => materials.id),
+  sourceKind: text("source_kind").notNull(), // base | person | supplier
+  sourceId: integer("source_id"),
+  qty: decimal("qty", { precision: 12, scale: 4 }).notNull().default("1"),
+  unitPriceSnapshot: decimal("unit_price_snapshot", { precision: 12, scale: 4 }).notNull(),
+  nameSnapshot: text("name_snapshot").notNull(),
+  unitSnapshot: text("unit_snapshot").notNull(),
+  sourceLabelSnapshot: text("source_label_snapshot"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+
 
 export const tools = pgTable("tools", {
   id: serial("id").primaryKey(),

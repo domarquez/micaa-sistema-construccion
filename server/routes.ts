@@ -6,6 +6,7 @@ import { resendService } from './resend-service';
 import { eq, like, desc, asc, and, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
+import { getPublicMaterialPrice } from './material-price';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -1133,6 +1134,24 @@ export async function registerRoutes(app: any) {
   });
 
   // Public routes (no authentication required)
+  app.get("/api/public/material-price/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (!id || Number.isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+      const ciudad = typeof req.query.ciudad === "string" ? req.query.ciudad : null;
+      const payload = await getPublicMaterialPrice(id, ciudad);
+      if (!payload) {
+        return res.status(404).json({ message: "Material no encontrado" });
+      }
+      res.json(payload);
+    } catch (error) {
+      console.error("Error fetching material price:", error);
+      res.status(500).json({ message: "Failed to fetch material price" });
+    }
+  });
+
   app.get("/api/public/materials", async (req: Request, res: Response) => {
     try {
       const materialsData = await db.select().from(materials).limit(100);
