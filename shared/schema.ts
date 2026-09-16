@@ -91,6 +91,14 @@ export const userMaterialPrices = pgTable("user_material_prices", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+/** Idempotency keys for price ingest endpoints (WhatsApp / market). Additive — run SQL on Railway. */
+export const priceIngestKeys = pgTable("price_ingest_keys", {
+  idempotencyKey: text("idempotency_key").primaryKey(),
+  quoteId: integer("quote_id"),
+  payloadHash: text("payload_hash"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Actividades personalizadas por usuario
 export const userActivities = pgTable("user_activities", {
   id: serial("id").primaryKey(),
@@ -757,6 +765,7 @@ export type LaborCategory = typeof laborCategories.$inferSelect;
 export type InsertLaborCategory = z.infer<typeof insertLaborCategorySchema>;
 
 export type UserMaterialPrice = typeof userMaterialPrices.$inferSelect;
+export type PriceIngestKey = typeof priceIngestKeys.$inferSelect;
 export type InsertUserMaterialPrice = z.infer<typeof insertUserMaterialPriceSchema>;
 
 export type MaterialWithCustomPrice = Material & {

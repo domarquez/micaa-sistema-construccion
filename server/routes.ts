@@ -7,6 +7,7 @@ import { eq, like, ilike, desc, asc, and, or, sql } from 'drizzle-orm';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
 import { getPublicMaterialPrice } from './material-price';
+import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -63,6 +64,9 @@ const requireAuth = async (req: AuthRequest, res: Response, next: NextFunction) 
 };
 
 export async function registerRoutes(app: any) {
+  // WhatsApp ferretería price ingest (API key, no JWT) — register early
+  app.post('/api/ingest/whatsapp-price', handleWhatsappPriceIngest);
+
   const router = Router();
   // Usar la instancia de storage global
 
