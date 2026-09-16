@@ -1,0 +1,822 @@
+{
+  "_comment": "Cotizaciones públicas curadas (whitelist) desde Insucons materiales por ciudad. No es dump mayorista. CBDI/noticias solo contexto macro.",
+  "_contextNotes": [
+    "Fuente: https://www.insucons.com/insumos/materiales (grid público)",
+    "Ciudades: Santa Cruz=1, Cochabamba=2, La Paz=3 via POST insumos/set_ciudad/{id} + insumos/json_datos/mat con grupoid de categoría",
+    "Arena Fina SCZ 70 / LP 120 / CBBA 90 Bs/m3; Corrugado 1/2\" SCZ ~89.5 Bs/barra; Cemento IP-30 SCZ 60 / CBBA 55 / LP 50 Bs/bolsa",
+    "Re-harvest: npx tsx scripts/harvest-insucons-public.ts"
+  ],
+  "collectedAt": "2026-09-16T08:51:08Z",
+  "items": [
+    {
+      "name": "Alambre de amarre",
+      "unit": "kg",
+      "city": "Cochabamba",
+      "price": 13.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre amarre"
+    },
+    {
+      "name": "Alambre de amarre",
+      "unit": "kg",
+      "city": "La Paz",
+      "price": 13.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre amarre"
+    },
+    {
+      "name": "Alambre de amarre",
+      "unit": "kg",
+      "city": "Santa Cruz",
+      "price": 11.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre amarre"
+    },
+    {
+      "name": "Alambre Galvanizado # 12",
+      "unit": "kg",
+      "city": "Cochabamba",
+      "price": 20.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre galvanizado"
+    },
+    {
+      "name": "Alambre Galvanizado # 12",
+      "unit": "kg",
+      "city": "La Paz",
+      "price": 20.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre galvanizado"
+    },
+    {
+      "name": "Alambre Galvanizado # 12",
+      "unit": "kg",
+      "city": "Santa Cruz",
+      "price": 20.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre galvanizado"
+    },
+    {
+      "name": "Alambre Galvanizado # 8",
+      "unit": "kg",
+      "city": "Cochabamba",
+      "price": 20.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre galvanizado"
+    },
+    {
+      "name": "Alambre Galvanizado # 8",
+      "unit": "kg",
+      "city": "La Paz",
+      "price": 20.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre galvanizado"
+    },
+    {
+      "name": "Alambre Galvanizado # 8",
+      "unit": "kg",
+      "city": "Santa Cruz",
+      "price": 20.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "alambre galvanizado"
+    },
+    {
+      "name": "Arena Fina",
+      "unit": "m3",
+      "city": "Cochabamba",
+      "price": 90.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "arena fina"
+    },
+    {
+      "name": "Arena Fina",
+      "unit": "m3",
+      "city": "La Paz",
+      "price": 120.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "arena fina"
+    },
+    {
+      "name": "Arena Fina",
+      "unit": "m3",
+      "city": "Santa Cruz",
+      "price": 70.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "arena fina"
+    },
+    {
+      "name": "bloque prefabricado",
+      "unit": "pza",
+      "city": "Cochabamba",
+      "price": 5.3,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "bloque"
+    },
+    {
+      "name": "bloque prefabricado",
+      "unit": "pza",
+      "city": "La Paz",
+      "price": 5.3,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "bloque"
+    },
+    {
+      "name": "bloque prefabricado",
+      "unit": "pza",
+      "city": "Santa Cruz",
+      "price": 5.3,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "bloque"
+    },
+    {
+      "name": "Cemento blanco",
+      "unit": "kg",
+      "city": "Cochabamba",
+      "price": 5.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "cemento blanco"
+    },
+    {
+      "name": "Cemento blanco",
+      "unit": "kg",
+      "city": "La Paz",
+      "price": 5.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "cemento blanco"
+    },
+    {
+      "name": "Cemento blanco",
+      "unit": "kg",
+      "city": "Santa Cruz",
+      "price": 7.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "cemento blanco"
+    },
+    {
+      "name": "Cemento portland IP-30",
+      "unit": "blsa",
+      "city": "Cochabamba",
+      "price": 55.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "cemento portland"
+    },
+    {
+      "name": "Cemento portland IP-30",
+      "unit": "blsa",
+      "city": "La Paz",
+      "price": 50.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "cemento portland"
+    },
+    {
+      "name": "Cemento portland IP-30",
+      "unit": "blsa",
+      "city": "Santa Cruz",
+      "price": 60.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "cemento portland"
+    },
+    {
+      "name": "Clavos de 2 pulg",
+      "unit": "kg",
+      "city": "Cochabamba",
+      "price": 14.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "clavo"
+    },
+    {
+      "name": "Clavos de 2 pulg",
+      "unit": "kg",
+      "city": "La Paz",
+      "price": 14.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "clavo"
+    },
+    {
+      "name": "Clavos de 2 pulg",
+      "unit": "kg",
+      "city": "Santa Cruz",
+      "price": 13.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "clavo"
+    },
+    {
+      "name": "Clavos de 3 pulg",
+      "unit": "kg",
+      "city": "Cochabamba",
+      "price": 14.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "clavo"
+    },
+    {
+      "name": "Clavos de 3 pulg",
+      "unit": "kg",
+      "city": "La Paz",
+      "price": 14.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "clavo"
+    },
+    {
+      "name": "Clavos de 3 pulg",
+      "unit": "kg",
+      "city": "Santa Cruz",
+      "price": 13.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "clavo"
+    },
+    {
+      "name": "Corrugado 1 plg. (25 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Cochabamba",
+      "price": 400.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 1 plg. (25 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "La Paz",
+      "price": 400.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 1 plg. (25 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Santa Cruz",
+      "price": 400.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 1/2 plg. (12 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Cochabamba",
+      "price": 89.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 1/2 plg. (12 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "La Paz",
+      "price": 89.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 1/2 plg. (12 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Santa Cruz",
+      "price": 89.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 1/4 plg. (6 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Cochabamba",
+      "price": 22.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 1/4 plg. (6 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "La Paz",
+      "price": 22.45,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 1/4 plg. (6 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Santa Cruz",
+      "price": 22.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 3/4 plg. (20 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Cochabamba",
+      "price": 254.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 3/4 plg. (20 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "La Paz",
+      "price": 255.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 3/4 plg. (20 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Santa Cruz",
+      "price": 254.8,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 3/8 plg. (10 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Cochabamba",
+      "price": 58.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 3/8 plg. (10 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "La Paz",
+      "price": 58.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 3/8 plg. (10 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Santa Cruz",
+      "price": 61.8,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 5/16 plg. (8 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Cochabamba",
+      "price": 39.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 5/16 plg. (8 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "La Paz",
+      "price": 40.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 5/16 plg. (8 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Santa Cruz",
+      "price": 39.7,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 5/8 plg. (16 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Cochabamba",
+      "price": 158.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 5/8 plg. (16 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "La Paz",
+      "price": 158.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Corrugado 5/8 plg. (16 mm.) Bar 12m.",
+      "unit": "brra",
+      "city": "Santa Cruz",
+      "price": 158.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "corrugado"
+    },
+    {
+      "name": "Estuco",
+      "unit": "blsa",
+      "city": "Cochabamba",
+      "price": 11.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "estuco"
+    },
+    {
+      "name": "Estuco",
+      "unit": "blsa",
+      "city": "La Paz",
+      "price": 11.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "estuco"
+    },
+    {
+      "name": "Estuco",
+      "unit": "blsa",
+      "city": "Santa Cruz",
+      "price": 15.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "estuco"
+    },
+    {
+      "name": "Hormigón premezclado fck=210",
+      "unit": "m3",
+      "city": "Cochabamba",
+      "price": 595.7,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "hormigon"
+    },
+    {
+      "name": "Hormigón premezclado fck=210",
+      "unit": "m3",
+      "city": "La Paz",
+      "price": 595.7,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "hormigon"
+    },
+    {
+      "name": "Hormigón premezclado fck=210",
+      "unit": "m3",
+      "city": "Santa Cruz",
+      "price": 830.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "hormigon"
+    },
+    {
+      "name": "Ladrillo adobito",
+      "unit": "pza",
+      "city": "Cochabamba",
+      "price": 0.7,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Ladrillo adobito",
+      "unit": "pza",
+      "city": "La Paz",
+      "price": 0.7,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Ladrillo adobito",
+      "unit": "pza",
+      "city": "Santa Cruz",
+      "price": 0.65,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Ladrillo Ceramico de 21 H esp visto",
+      "unit": "pza",
+      "city": "Cochabamba",
+      "price": 1.31,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Ladrillo Ceramico de 21 H esp visto",
+      "unit": "pza",
+      "city": "La Paz",
+      "price": 1.31,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Ladrillo Ceramico de 21 H esp visto",
+      "unit": "pza",
+      "city": "Santa Cruz",
+      "price": 1.31,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Ladrillo Ceramico de 6 H tabique",
+      "unit": "pza",
+      "city": "Cochabamba",
+      "price": 1.2,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Ladrillo Ceramico de 6 H tabique",
+      "unit": "pza",
+      "city": "La Paz",
+      "price": 1.2,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Ladrillo Ceramico de 6 H tabique",
+      "unit": "pza",
+      "city": "Santa Cruz",
+      "price": 1.2,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ladrillo"
+    },
+    {
+      "name": "Machimbre tajibo",
+      "unit": "m2",
+      "city": "Cochabamba",
+      "price": 195.8,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "machimbre tajibo"
+    },
+    {
+      "name": "Machimbre tajibo",
+      "unit": "m2",
+      "city": "La Paz",
+      "price": 195.8,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "machimbre tajibo"
+    },
+    {
+      "name": "Machimbre tajibo",
+      "unit": "m2",
+      "city": "Santa Cruz",
+      "price": 195.8,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "machimbre tajibo"
+    },
+    {
+      "name": "Madera tajibo",
+      "unit": "p2",
+      "city": "Cochabamba",
+      "price": 8.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "tajibo"
+    },
+    {
+      "name": "Madera tajibo",
+      "unit": "p2",
+      "city": "La Paz",
+      "price": 8.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "tajibo"
+    },
+    {
+      "name": "Madera tajibo",
+      "unit": "p2",
+      "city": "Santa Cruz",
+      "price": 20.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "tajibo"
+    },
+    {
+      "name": "Marco de 2x4 tajibo",
+      "unit": "ml",
+      "city": "Cochabamba",
+      "price": 30.88,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "tajibo"
+    },
+    {
+      "name": "Marco de 2x4 tajibo",
+      "unit": "ml",
+      "city": "La Paz",
+      "price": 30.88,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "tajibo"
+    },
+    {
+      "name": "Marco de 2x4 tajibo",
+      "unit": "ml",
+      "city": "Santa Cruz",
+      "price": 30.88,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "tajibo"
+    },
+    {
+      "name": "Pintura latex",
+      "unit": "lt",
+      "city": "Cochabamba",
+      "price": 22.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pintura latex"
+    },
+    {
+      "name": "Pintura latex",
+      "unit": "lt",
+      "city": "La Paz",
+      "price": 22.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pintura latex"
+    },
+    {
+      "name": "Pintura latex",
+      "unit": "lt",
+      "city": "Santa Cruz",
+      "price": 30.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pintura latex"
+    },
+    {
+      "name": "Ripio bruto",
+      "unit": "m3",
+      "city": "Cochabamba",
+      "price": 160.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ripio"
+    },
+    {
+      "name": "Ripio bruto",
+      "unit": "m3",
+      "city": "La Paz",
+      "price": 120.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ripio"
+    },
+    {
+      "name": "Ripio bruto",
+      "unit": "m3",
+      "city": "Santa Cruz",
+      "price": 180.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ripio"
+    },
+    {
+      "name": "Ripio chancado",
+      "unit": "m3",
+      "city": "Cochabamba",
+      "price": 160.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ripio"
+    },
+    {
+      "name": "Ripio chancado",
+      "unit": "m3",
+      "city": "La Paz",
+      "price": 120.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ripio"
+    },
+    {
+      "name": "Ripio chancado",
+      "unit": "m3",
+      "city": "Santa Cruz",
+      "price": 230.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "ripio"
+    },
+    {
+      "name": "Tubo de PVC de 1 1/2 pulg",
+      "unit": "ml",
+      "city": "Cochabamba",
+      "price": 4.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pvc"
+    },
+    {
+      "name": "Tubo de PVC de 1 1/2 pulg",
+      "unit": "ml",
+      "city": "La Paz",
+      "price": 4.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pvc"
+    },
+    {
+      "name": "Tubo de PVC de 1 1/2 pulg",
+      "unit": "ml",
+      "city": "Santa Cruz",
+      "price": 10.0,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pvc"
+    },
+    {
+      "name": "Tubo de PVC de 4 pulg L=4.00",
+      "unit": "pza",
+      "city": "Cochabamba",
+      "price": 76.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pvc 4"
+    },
+    {
+      "name": "Tubo de PVC de 4 pulg L=4.00",
+      "unit": "pza",
+      "city": "La Paz",
+      "price": 76.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pvc 4"
+    },
+    {
+      "name": "Tubo de PVC de 4 pulg L=4.00",
+      "unit": "pza",
+      "city": "Santa Cruz",
+      "price": 76.5,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "pvc 4"
+    },
+    {
+      "name": "Yeso",
+      "unit": "kg",
+      "city": "Cochabamba",
+      "price": 0.55,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "yeso"
+    },
+    {
+      "name": "Yeso",
+      "unit": "kg",
+      "city": "La Paz",
+      "price": 0.55,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "yeso"
+    },
+    {
+      "name": "Yeso",
+      "unit": "kg",
+      "city": "Santa Cruz",
+      "price": 0.7,
+      "source": "insucons-public",
+      "collectedAt": "2026-09-16T08:51:08Z",
+      "matchHint": "yeso"
+    }
+  ]
+}
