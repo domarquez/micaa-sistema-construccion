@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { titleCaseMaterial } from "@/lib/lista";
+import { CITY_LIST, getCity, setCity, type MicaaCity } from "@/lib/city";
 
 type Hit = { id: number; name: string; unit: string };
 
@@ -15,9 +16,19 @@ export default function PublicarPrecioPage() {
   const [materialName, setMaterialName] = useState("");
   const [unit, setUnit] = useState("");
   const [price, setPrice] = useState("");
-  const [city, setCity] = useState("Santa Cruz");
+  const [city, setCityState] = useState<MicaaCity>(() => getCity());
   const [isPublic, setIsPublic] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setCityState(getCity());
+    window.addEventListener("storage", sync);
+    window.addEventListener("micaa-city", sync as EventListener);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("micaa-city", sync as EventListener);
+    };
+  }, []);
 
   const search = async () => {
     const params = new URLSearchParams({ q: q.trim(), limit: "20" });
@@ -35,6 +46,14 @@ export default function PublicarPrecioPage() {
     }
     if (!materialId || !price) {
       toast({ title: "Faltan datos", description: "Elegí un material y un precio." });
+      return;
+    }
+    if (!city || !CITY_LIST.includes(city)) {
+      toast({
+        title: "Ciudad requerida",
+        description: "Elegí la ciudad donde viste o pagaste ese precio.",
+        variant: "destructive",
+      });
       return;
     }
     setSaving(true);
@@ -59,6 +78,7 @@ export default function PublicarPrecioPage() {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || err.error || "No se pudo guardar");
       }
+      setCity(city);
       toast({ title: "Precio guardado", description: isPublic ? "Visible en la ficha." : "Solo para vos." });
       setPrice("");
     } catch (err: any) {
@@ -89,7 +109,7 @@ export default function PublicarPrecioPage() {
     <div className="mx-auto max-w-xl px-4 py-8">
       <h1 className="text-[20px] font-semibold">Publicar precio</h1>
       <p className="mt-1 text-[12px] text-[var(--micaa-muted)]">
-        Buscá el material, poné el precio en Bs y elegí si es visible en la ficha.
+        Buscá el material, poné el precio en Bs y elegí ciudad (obligatoria) y si es visible en la ficha.
       </p>
 
       <div className="mt-4 flex gap-2">
@@ -150,12 +170,26 @@ export default function PublicarPrecioPage() {
           className="h-10 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
           required
         />
-        <input
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="Ciudad"
-          className="h-10 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
-        />
+        <div>
+          <label className="mb-1 block text-[12px] text-[var(--micaa-muted)]">
+            Ciudad <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={city}
+            onChange={(e) => {
+              const next = setCity(e.target.value);
+              setCityState(next);
+            }}
+            required
+            className="h-10 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
+          >
+            {CITY_LIST.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
         <label className="flex items-center gap-2 text-[14px]">
           <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
           Visible en la ficha pública

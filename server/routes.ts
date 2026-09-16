@@ -1048,6 +1048,12 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ error: 'Precio personalizado inválido' });
       }
 
+      const publicFlagEarly = isPublic === true || isPublic === 'true';
+      const cityTrim = typeof city === 'string' ? city.trim() : '';
+      if (publicFlagEarly && !cityTrim) {
+        return res.status(400).json({ error: 'La ciudad es obligatoria para publicar un precio' });
+      }
+
       const material = await db.select().from(materials).where(eq(materials.id, materialId)).limit(1);
       if (material.length === 0) {
         return res.status(404).json({ error: 'Material no encontrado' });
@@ -1071,7 +1077,7 @@ export async function registerRoutes(app: any) {
             customMaterialName: displayName,
             unit: unit || material[0].unit,
             reason: reason || 'Precio personalizado actualizado',
-            city: city || existingCustomPrice[0].city,
+            city: (typeof city === 'string' && city.trim()) ? city.trim() : existingCustomPrice[0].city,
             isPublic: publicFlag,
             updatedAt: new Date()
           })
@@ -1089,7 +1095,7 @@ export async function registerRoutes(app: any) {
             price: priceValue.toString(),
             unit: unit || material[0].unit,
             reason: reason || 'Precio personalizado',
-            city: city || null,
+            city: (typeof city === 'string' && city.trim()) ? city.trim() : null,
             isPublic: publicFlag,
           })
           .returning();

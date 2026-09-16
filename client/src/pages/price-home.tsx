@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { titleCaseMaterial } from "@/lib/lista";
+import { getCity } from "@/lib/city";
 
 type MaterialRow = {
   id: number;
@@ -12,6 +13,12 @@ type MaterialRow = {
   category?: { id: number; name: string };
   rebasedPrice?: string | number | null;
   lastUpdated?: string;
+};
+
+type CityFactor = {
+  city: string;
+  materialsFactor: string | number;
+  isActive?: boolean;
 };
 
 const SUGGESTIONS = [
@@ -31,13 +38,49 @@ function formatBs(n: number) {
   return `Bs ${n.toLocaleString("es-BO", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 }
 
+function matchFactor(factors: CityFactor[], city: string): number {
+  const aliases: Record<string, string[]> = {
+    Beni: ["Beni", "Trinidad"],
+    Pando: ["Pando", "Cobija"],
+    "Potosí": ["Potosí", "Potosi"],
+  };
+  const names = (aliases[city] || [city]).map((x) => x.toLowerCase());
+  const hit = factors.find((f) => names.includes(String(f.city || "").toLowerCase()));
+  if (!hit) return 1;
+  const n = parseFloat(String(hit.materialsFactor));
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 export default function PriceHome() {
   const [, setLocation] = useLocation();
   const [q, setQ] = useState("");
   const [submitted, setSubmitted] = useState("");
+  const [city, setCityState] = useState(() => getCity());
+
+  useEffect(() => {
+    const sync = () => setCityState(getCity());
+    window.addEventListener("storage", sync);
+    window.addEventListener("micaa-city", sync as EventListener);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("micaa-city", sync as EventListener);
+    };
+  }, []);
+
+  const { data: factors = [] } = useQuery<CityFactor[]>({
+    queryKey: ["/api/city-factors"],
+    queryFn: async () => {
+      const res = await fetch("/api/city-factors");
+      if (!res.ok) return [];
+      return res.json();
+    },
+    staleTime: 300_000,
+  });
+
+  const materialsFactor = useMemo(() => matchFactor(factors, city), [factors, city]);
 
   const { data: materials = [], isLoading } = useQuery<MaterialRow[]>({
-    queryKey: ["/api/public/materials", { q: submitted || undefined, limit: 24 }],
+    queryKey: ["/api/public/materials", { q: submitted || undefined, limit: 24, city }],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (submitted) params.set("q", submitted);
@@ -64,6 +107,10 @@ export default function PriceHome() {
         <h1 className="text-[32px] font-semibold tracking-tight text-[var(--micaa-fg)]">MICAA</h1>
         <p className="mt-1 text-[14px] text-[var(--micaa-muted)]">
           Precios de materiales en Bolivia
+        </p>
+        <p className="mt-1 text-[12px] text-[var(--micaa-muted)]">
+          Vista: {city}
+          {materialsFactor !== 1 ? ` · factor mat. ×${materialsFactor.toFixed(2)}` : " · base SCZ"}
         </p>
       </div>
 
@@ -116,7 +163,7 @@ export default function PriceHome() {
                 </div>
               </div>
               <div className="shrink-0 text-[20px] font-medium tabular-nums text-[var(--micaa-fg)]">
-                {formatBs(priceOf(m))}
+                {formatBs(priceOf(m) * materialsFactor)}
               </div>
             </Link>
           ))}

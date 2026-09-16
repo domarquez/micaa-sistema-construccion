@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "wouter";
 import { addListaItem, titleCaseMaterial } from "@/lib/lista";
+import { getCity } from "@/lib/city";
 import { useToast } from "@/hooks/use-toast";
 
 type Quote = {
@@ -29,6 +30,8 @@ type Payload = {
   quotes: Quote[];
   pRed: number | null;
   confidence: string;
+  city?: string | null;
+  cityFactor?: number | null;
 };
 
 function formatBs(n: number) {
@@ -48,11 +51,23 @@ export default function MaterialDetail() {
   const [selected, setSelected] = useState(0);
   const [qty, setQty] = useState(1);
 
+  const [city, setCityState] = useState(() => getCity());
+
+  useEffect(() => {
+    const sync = () => setCityState(getCity());
+    window.addEventListener("storage", sync);
+    window.addEventListener("micaa-city", sync as EventListener);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("micaa-city", sync as EventListener);
+    };
+  }, []);
+
   const { data, isLoading, error } = useQuery<Payload>({
-    queryKey: ["/api/public/material-price", id],
+    queryKey: ["/api/public/material-price", id, city],
     queryFn: async () => {
       const res = await fetch(
-        `/api/public/material-price/${id}?ciudad=${encodeURIComponent("Santa Cruz")}`,
+        `/api/public/material-price/${id}?ciudad=${encodeURIComponent(city)}`,
       );
       if (!res.ok) throw new Error("Material no encontrado");
       return res.json();
@@ -118,6 +133,10 @@ export default function MaterialDetail() {
       <p className="mt-1 text-[12px] text-[var(--micaa-muted)]">
         {titleCaseMaterial(data.category)}
         {data.catalogAgeDays ? ` · catálogo hace ${data.catalogAgeDays} d` : ""}
+        {` · ${city}`}
+        {data.cityFactor != null && data.cityFactor !== 1
+          ? ` · factor mat. ×${Number(data.cityFactor).toFixed(2)}`
+          : ""}
       </p>
 
       <div className="mt-6 divide-y divide-[var(--micaa-line)] border-y border-[var(--micaa-line)]">

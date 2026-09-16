@@ -1,0 +1,474 @@
+{
+  "_comment": "Curated common Bolivia construction materials for gap reporting only. Estimates are rough SCZ retail Bs; not scraped from Insucons wholesale.",
+  "baselineCity": "Santa Cruz",
+  "items": [
+    {
+      "name": "Cemento Portland IP-30 bolsa 50 kg",
+      "unit": "bolsa",
+      "categoryHint": "CEMENTOS",
+      "estimatePrice": 65
+    },
+    {
+      "name": "Cemento Portland Tipo I bolsa 50 kg",
+      "unit": "bolsa",
+      "categoryHint": "CEMENTOS",
+      "estimatePrice": 68
+    },
+    {
+      "name": "Arena fina m3",
+      "unit": "m3",
+      "categoryHint": "ARIDOS Y PIEDRAS",
+      "estimatePrice": 180
+    },
+    {
+      "name": "Arena gruesa m3",
+      "unit": "m3",
+      "categoryHint": "ARIDOS Y PIEDRAS",
+      "estimatePrice": 160
+    },
+    {
+      "name": "Grava 3/4 m3",
+      "unit": "m3",
+      "categoryHint": "ARIDOS Y PIEDRAS",
+      "estimatePrice": 200
+    },
+    {
+      "name": "Ripio m3",
+      "unit": "m3",
+      "categoryHint": "ARIDOS Y PIEDRAS",
+      "estimatePrice": 140
+    },
+    {
+      "name": "Hormigón premezclado H21 m3",
+      "unit": "m3",
+      "categoryHint": "CEMENTOS",
+      "estimatePrice": 850
+    },
+    {
+      "name": "Ladrillo hueco 6 huecos",
+      "unit": "pza",
+      "categoryHint": "LADRILLOS",
+      "estimatePrice": 1.8
+    },
+    {
+      "name": "Ladrillo hueco 18 huecos",
+      "unit": "pza",
+      "categoryHint": "LADRILLOS",
+      "estimatePrice": 2.5
+    },
+    {
+      "name": "Bloque de cemento 15x20x40",
+      "unit": "pza",
+      "categoryHint": "LADRILLOS",
+      "estimatePrice": 4.5
+    },
+    {
+      "name": "Bloque de cemento 20x20x40",
+      "unit": "pza",
+      "categoryHint": "LADRILLOS",
+      "estimatePrice": 5.5
+    },
+    {
+      "name": "Fierro corrugado 3/8\"",
+      "unit": "kg",
+      "categoryHint": "ACERO PARA CONSTRUCCION",
+      "estimatePrice": 8.5
+    },
+    {
+      "name": "Fierro corrugado 1/2\"",
+      "unit": "kg",
+      "categoryHint": "ACERO PARA CONSTRUCCION",
+      "estimatePrice": 8.5
+    },
+    {
+      "name": "Fierro corrugado 5/8\"",
+      "unit": "kg",
+      "categoryHint": "ACERO PARA CONSTRUCCION",
+      "estimatePrice": 8.5
+    },
+    {
+      "name": "Fierro corrugado 3/4\"",
+      "unit": "kg",
+      "categoryHint": "ACERO PARA CONSTRUCCION",
+      "estimatePrice": 8.5
+    },
+    {
+      "name": "Alambre negro N14",
+      "unit": "kg",
+      "categoryHint": "ALAMBRES Y MALLAS",
+      "estimatePrice": 12
+    },
+    {
+      "name": "Alambre de amarre",
+      "unit": "kg",
+      "categoryHint": "ALAMBRES Y MALLAS",
+      "estimatePrice": 11
+    },
+    {
+      "name": "Malla electrosoldada 15x15 6mm",
+      "unit": "m2",
+      "categoryHint": "MALLAS ELECTROSOLDADAS",
+      "estimatePrice": 45
+    },
+    {
+      "name": "Clavo de 2\"",
+      "unit": "kg",
+      "categoryHint": "CLAVOS",
+      "estimatePrice": 15
+    },
+    {
+      "name": "Clavo de 3\"",
+      "unit": "kg",
+      "categoryHint": "CLAVOS",
+      "estimatePrice": 15
+    },
+    {
+      "name": "Madera tajibo 2x4\"",
+      "unit": "pza",
+      "categoryHint": "MADERAS",
+      "estimatePrice": 45
+    },
+    {
+      "name": "Madera tajibo 2x6\"",
+      "unit": "pza",
+      "categoryHint": "MADERAS",
+      "estimatePrice": 65
+    },
+    {
+      "name": "Madera pino 1x4\"",
+      "unit": "pza",
+      "categoryHint": "MADERAS",
+      "estimatePrice": 25
+    },
+    {
+      "name": "Machimbre pino",
+      "unit": "m2",
+      "categoryHint": "MADERAS",
+      "estimatePrice": 80
+    },
+    {
+      "name": "Contrachapado 15 mm",
+      "unit": "plancha",
+      "categoryHint": "MADERA ELABORADA",
+      "estimatePrice": 180
+    },
+    {
+      "name": "Melamina blanca 15 mm",
+      "unit": "plancha",
+      "categoryHint": "MADERA ELABORADA",
+      "estimatePrice": 220
+    },
+    {
+      "name": "Yeso en bolsa 40 kg",
+      "unit": "bolsa",
+      "categoryHint": "ESTUCOS Y CALES",
+      "estimatePrice": 35
+    },
+    {
+      "name": "Cal hidratada bolsa 25 kg",
+      "unit": "bolsa",
+      "categoryHint": "ESTUCOS Y CALES",
+      "estimatePrice": 28
+    },
+    {
+      "name": "Estuco interior bolsa",
+      "unit": "bolsa",
+      "categoryHint": "ESTUCOS Y CALES",
+      "estimatePrice": 40
+    },
+    {
+      "name": "Pintura látex interior galón",
+      "unit": "gal",
+      "categoryHint": "PINTURAS",
+      "estimatePrice": 95
+    },
+    {
+      "name": "Pintura látex exterior galón",
+      "unit": "gal",
+      "categoryHint": "PINTURAS",
+      "estimatePrice": 110
+    },
+    {
+      "name": "Antióxido galón",
+      "unit": "gal",
+      "categoryHint": "PINTURAS",
+      "estimatePrice": 85
+    },
+    {
+      "name": "Thinner galón",
+      "unit": "gal",
+      "categoryHint": "PINTURAS",
+      "estimatePrice": 55
+    },
+    {
+      "name": "Impermeabilizante acrílico balde 20 kg",
+      "unit": "balde",
+      "categoryHint": "IMPERMEABILIZANTES",
+      "estimatePrice": 280
+    },
+    {
+      "name": "Membrana asfáltica 4 mm",
+      "unit": "rollo",
+      "categoryHint": "IMPERMEABILIZANTES",
+      "estimatePrice": 320
+    },
+    {
+      "name": "Cerámica piso 30x30",
+      "unit": "m2",
+      "categoryHint": "AZULEJOS Y CERAMICOS",
+      "estimatePrice": 45
+    },
+    {
+      "name": "Cerámica piso 45x45",
+      "unit": "m2",
+      "categoryHint": "AZULEJOS Y CERAMICOS",
+      "estimatePrice": 55
+    },
+    {
+      "name": "Azulejo muro 20x30",
+      "unit": "m2",
+      "categoryHint": "AZULEJOS Y CERAMICOS",
+      "estimatePrice": 50
+    },
+    {
+      "name": "Porcelanato 60x60",
+      "unit": "m2",
+      "categoryHint": "PISOS",
+      "estimatePrice": 95
+    },
+    {
+      "name": "Pegamento cerámico bolsa 25 kg",
+      "unit": "bolsa",
+      "categoryHint": "ADHESIVOS",
+      "estimatePrice": 45
+    },
+    {
+      "name": "Fragua kg",
+      "unit": "kg",
+      "categoryHint": "ADHESIVOS",
+      "estimatePrice": 12
+    },
+    {
+      "name": "Tubo PVC desagüe 4\"",
+      "unit": "m",
+      "categoryHint": "CAÑOS Y ACCESORIOS",
+      "estimatePrice": 35
+    },
+    {
+      "name": "Tubo PVC desagüe 2\"",
+      "unit": "m",
+      "categoryHint": "CAÑOS Y ACCESORIOS",
+      "estimatePrice": 18
+    },
+    {
+      "name": "Tubo PVC presión 1/2\"",
+      "unit": "m",
+      "categoryHint": "CAÑOS Y ACCESORIOS",
+      "estimatePrice": 8
+    },
+    {
+      "name": "Tubo PVC presión 3/4\"",
+      "unit": "m",
+      "categoryHint": "CAÑOS Y ACCESORIOS",
+      "estimatePrice": 12
+    },
+    {
+      "name": "Codo PVC 90° 4\"",
+      "unit": "pza",
+      "categoryHint": "CAÑOS Y ACCESORIOS",
+      "estimatePrice": 12
+    },
+    {
+      "name": "Inodoro tanque bajo",
+      "unit": "pza",
+      "categoryHint": "INSTALACION SANITARIA",
+      "estimatePrice": 450
+    },
+    {
+      "name": "Lavamanos de pedestal",
+      "unit": "pza",
+      "categoryHint": "INSTALACION SANITARIA",
+      "estimatePrice": 280
+    },
+    {
+      "name": "Grifería lavamanos monocomando",
+      "unit": "pza",
+      "categoryHint": "GRIFERIA",
+      "estimatePrice": 180
+    },
+    {
+      "name": "Grifería ducha monocomando",
+      "unit": "pza",
+      "categoryHint": "GRIFERIA",
+      "estimatePrice": 220
+    },
+    {
+      "name": "Cable THW 2.5 mm2",
+      "unit": "m",
+      "categoryHint": "INSTALACION ELECTRICA",
+      "estimatePrice": 3.5
+    },
+    {
+      "name": "Cable THW 4 mm2",
+      "unit": "m",
+      "categoryHint": "INSTALACION ELECTRICA",
+      "estimatePrice": 5.5
+    },
+    {
+      "name": "Cable THW 6 mm2",
+      "unit": "m",
+      "categoryHint": "INSTALACION ELECTRICA",
+      "estimatePrice": 8
+    },
+    {
+      "name": "Tubo conduit PVC 3/4\"",
+      "unit": "m",
+      "categoryHint": "INSTALACION ELECTRICA",
+      "estimatePrice": 6
+    },
+    {
+      "name": "Interruptor simple",
+      "unit": "pza",
+      "categoryHint": "INSTALACION ELECTRICA",
+      "estimatePrice": 18
+    },
+    {
+      "name": "Tomacorriente doble",
+      "unit": "pza",
+      "categoryHint": "INSTALACION ELECTRICA",
+      "estimatePrice": 22
+    },
+    {
+      "name": "Breaker 20A",
+      "unit": "pza",
+      "categoryHint": "INSTALACION ELECTRICA",
+      "estimatePrice": 45
+    },
+    {
+      "name": "Tablero 8 circuitos",
+      "unit": "pza",
+      "categoryHint": "INSTALACION ELECTRICA",
+      "estimatePrice": 180
+    },
+    {
+      "name": "Chapa de seguridad",
+      "unit": "pza",
+      "categoryHint": "FIJACIONES EN SECO",
+      "estimatePrice": 120
+    },
+    {
+      "name": "Bisagra 3.5\"",
+      "unit": "pza",
+      "categoryHint": "FIJACIONES EN SECO",
+      "estimatePrice": 15
+    },
+    {
+      "name": "Plancha zinc acanalada calibre 26",
+      "unit": "m2",
+      "categoryHint": "CUBIERTAS",
+      "estimatePrice": 55
+    },
+    {
+      "name": "Teja colonial",
+      "unit": "pza",
+      "categoryHint": "CUBIERTAS",
+      "estimatePrice": 8
+    },
+    {
+      "name": "Drywall placa 12 mm",
+      "unit": "plancha",
+      "categoryHint": "CIELO FALSO PLAFON",
+      "estimatePrice": 95
+    },
+    {
+      "name": "Perfil drywall U",
+      "unit": "pza",
+      "categoryHint": "CIELO FALSO PLAFON",
+      "estimatePrice": 18
+    },
+    {
+      "name": "Silicona transparente tubo",
+      "unit": "pza",
+      "categoryHint": "ADHESIVOS",
+      "estimatePrice": 25
+    },
+    {
+      "name": "Espuma de poliuretano",
+      "unit": "pza",
+      "categoryHint": "ADHESIVOS",
+      "estimatePrice": 45
+    },
+    {
+      "name": "Cinta masking 2\"",
+      "unit": "rollo",
+      "categoryHint": "HERRAMIENTAS",
+      "estimatePrice": 12
+    },
+    {
+      "name": "Lija grano 80",
+      "unit": "pliego",
+      "categoryHint": "HERRAMIENTAS",
+      "estimatePrice": 3
+    },
+    {
+      "name": "Brocha 3\"",
+      "unit": "pza",
+      "categoryHint": "HERRAMIENTAS",
+      "estimatePrice": 18
+    },
+    {
+      "name": "Rodillo 9\"",
+      "unit": "pza",
+      "categoryHint": "HERRAMIENTAS",
+      "estimatePrice": 25
+    },
+    {
+      "name": "Vidrio templado 8 mm",
+      "unit": "m2",
+      "categoryHint": "VIDRIOS",
+      "estimatePrice": 280
+    },
+    {
+      "name": "Perfil aluminio ventana",
+      "unit": "m",
+      "categoryHint": "CARPINTERIA DE ALUMINIO",
+      "estimatePrice": 45
+    },
+    {
+      "name": "Polietileno negro 200 micras",
+      "unit": "m2",
+      "categoryHint": "IMPERMEABILIZANTES SUPERFICIALES",
+      "estimatePrice": 8
+    },
+    {
+      "name": "Geomembrana HDPE 1 mm",
+      "unit": "m2",
+      "categoryHint": "IMPERMEABILIZANTES",
+      "estimatePrice": 35
+    },
+    {
+      "name": "Tubería PPR 20 mm",
+      "unit": "m",
+      "categoryHint": "CAÑOS Y ACCESORIOS",
+      "estimatePrice": 9
+    },
+    {
+      "name": "Tubería PPR 25 mm",
+      "unit": "m",
+      "categoryHint": "CAÑOS Y ACCESORIOS",
+      "estimatePrice": 12
+    },
+    {
+      "name": "Aditivo impermeabilizante liquido",
+      "unit": "lt",
+      "categoryHint": "ADITIVOS",
+      "estimatePrice": 35
+    },
+    {
+      "name": "Acelerante de fragua",
+      "unit": "lt",
+      "categoryHint": "ADITIVOS",
+      "estimatePrice": 40
+    }
+  ]
+}

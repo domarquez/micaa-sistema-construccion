@@ -9,6 +9,7 @@ import {
   type ListaState,
 } from "@/lib/lista";
 import { useAuth } from "@/hooks/useAuth";
+import { getCity } from "@/lib/city";
 
 function formatBs(n: number) {
   return `Bs ${n.toLocaleString("es-BO", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
@@ -17,6 +18,7 @@ function formatBs(n: number) {
 export default function ListaPage() {
   const { isAuthenticated } = useAuth();
   const [lista, setLista] = useState<ListaState>(() => loadLista());
+  const [city, setCityState] = useState(() => getCity());
 
   useEffect(() => {
     const sync = () => setLista(loadLista());
@@ -25,6 +27,16 @@ export default function ListaPage() {
     return () => {
       window.removeEventListener("micaa-lista", sync);
       window.removeEventListener("storage", sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    const sync = () => setCityState(getCity());
+    window.addEventListener("storage", sync);
+    window.addEventListener("micaa-city", sync as EventListener);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("micaa-city", sync as EventListener);
     };
   }, []);
 
@@ -37,6 +49,7 @@ export default function ListaPage() {
         {isAuthenticated
           ? "Guardada en este dispositivo. La sincronización en cuenta llega en el siguiente paso."
           : "Se guarda en este dispositivo. Para no perderla, entrá a tu cuenta más tarde."}
+        {" "}Ciudad preferida: <strong className="text-[var(--micaa-fg)]">{city}</strong>.
       </p>
 
       <div className="mt-6 divide-y divide-[var(--micaa-line)] border-y border-[var(--micaa-line)]">
