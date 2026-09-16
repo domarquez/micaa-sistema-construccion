@@ -303,19 +303,47 @@ export interface QuoteRow {
   verified?: boolean;
 }
 
+const CITY_SORT_ALIASES: Record<string, string[]> = {
+  beni: ["beni", "trinidad"],
+  pando: ["pando", "cobija"],
+  "potosí": ["potosí", "potosi"],
+  potosi: ["potosí", "potosi"],
+  "santa cruz": ["santa cruz", "santa cruz de la sierra"],
+};
+
+function citySortKeys(city: string): Set<string> {
+  const k = city.trim().toLowerCase();
+  const out = new Set<string>([k]);
+  for (const list of Object.values(CITY_SORT_ALIASES)) {
+    if (list.includes(k)) list.forEach((x) => out.add(x));
+  }
+  if (CITY_SORT_ALIASES[k]) CITY_SORT_ALIASES[k].forEach((x) => out.add(x));
+  return out;
+}
+
+function sameCitySort(a?: string | null, b?: string | null): boolean {
+  if (!a || !b) return false;
+  const A = citySortKeys(a);
+  for (const x of citySortKeys(b)) if (A.has(x)) return true;
+  return false;
+}
+
 /** Sort: suppliers (verified, same city, fresh) → persons → base last */
 export function sortQuotes(
   quotes: QuoteRow[],
   viewerCity?: string | null,
 ): QuoteRow[] {
-  const city = (viewerCity || "").toLowerCase();
   const rank = (q: QuoteRow): number => {
     if (q.kind === "base") return 3000;
-    if (q.kind === "person") return 2000 + (q.ageDays ?? 0);
+    if (q.kind === "person") {
+      let r = 2000 + (q.ageDays ?? 0);
+      if (viewerCity && q.city && !sameCitySort(q.city, viewerCity)) r += 50;
+      return r;
+    }
     // supplier
     let r = 0;
     if (!q.verified) r += 100;
-    if (city && (q.city || "").toLowerCase() !== city) r += 50;
+    if (viewerCity && q.city && !sameCitySort(q.city, viewerCity)) r += 50;
     r += q.ageDays ?? 0;
     return r;
   };

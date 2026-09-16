@@ -6,6 +6,7 @@ import {
   materialSupplierPrices,
   supplierCompanies,
   users,
+  cityPriceFactors,
 } from "../shared/schema";
 import { and, eq, desc } from "drizzle-orm";
 import {
@@ -25,8 +26,64 @@ function num(v: unknown, fallback = 0): number {
   return Number.isFinite(n) ? n : fallback;
 }
 
+/** Alias de ciudades del selector público ↔ filas históricas en city_price_factors. */
+const CITY_ALIASES: Record<string, string[]> = {
+  beni: ["beni", "trinidad"],
+  pando: ["pando", "cobija"],
+  "potosí": ["potosí", "potosi"],
+  "santa cruz": ["santa cruz", "santa cruz de la sierra"],
+};
+
+function normalizeCityKey(s: string): string {
+  return s.trim().toLowerCase();
+}
+
+function cityKeys(ciudad: string): string[] {
+  const key = normalizeCityKey(ciudad);
+  for (const [canon, list] of Object.entries(CITY_ALIASES)) {
+    if (canon === key || list.includes(key)) {
+      return [...new Set([canon, ...list, key])];
+    }
+  }
+  return [key];
+}
+
+function citiesMatch(a?: string | null, b?: string | null): boolean {
+  if (!a || !b) return false;
+  const A = new Set(cityKeys(a));
+  return cityKeys(b).some((k) => A.has(k));
+}
+
+async function lookupMaterialsFactor(ciudad: string | null | undefined): Promise<{
+  cityFactor: number;
+  factorCity: string | null;
+  materialsFactor: number;
+}> {
+  if (!ciudad) {
+    return { cityFactor: 1, factorCity: null, materialsFactor: 1 };
+  }
+  const rows = await db
+    .select()
+    .from(cityPriceFactors)
+    .where(eq(cityPriceFactors.isActive, true));
+  const keys = new Set(cityKeys(ciudad));
+  const hit = rows.find((r) => keys.has(normalizeCityKey(r.city)));
+  if (!hit) {
+    return { cityFactor: 1, factorCity: null, materialsFactor: 1 };
+  }
+  const materialsFactor = num(hit.materialsFactor, 1);
+  const safe = materialsFactor > 0 ? materialsFactor : 1;
+  return {
+    cityFactor: safe,
+    factorCity: hit.city,
+    materialsFactor: safe,
+  };
+}
+
 /**
  * GET payload for /api/public/material-price/:id?ciudad=
+ * - Prioriza cotizaciones de la misma ciudad (sortQuotes / network sameCity).
+ * - Aplica materialsFactor de city_price_factors al Base MICAA cuando ciudad ≠ SCZ.
  */
 export async function getPublicMaterialPrice(
   materialId: number,
@@ -71,11 +128,21 @@ export async function getPublicMaterialPrice(
     rebaseSkipped = Math.abs(basePrice - catalogPrice) < 0.005 && r.rebaseSkipped;
   }
 
+  const { cityFactor, factorCity, materialsFactor } = await lookupMaterialsFactor(
+    ciudad,
+  );
+  // Base MICAA is SCZ-anchored; scale by materialsFactor when a city factor exists.
+  const adjustedBase =
+    materialsFactor !== 1
+      ? Math.round(basePrice * materialsFactor * 100) / 100
+      : basePrice;
+
   const quotes: QuoteRow[] = [
     {
       kind: "base",
       label: "Base MICAA",
-      price: basePrice,
+      price: adjustedBase,
+      city: factorCity || ciudad || "Santa Cruz",
     },
   ];
 
@@ -157,16 +224,13 @@ export async function getPublicMaterialPrice(
     .map((q) => ({
       price: q.price,
       ageDays: q.ageDays ?? 999,
-      sameCity: !!(
-        viewerCity &&
-        q.city &&
-        q.city.toLowerCase() === viewerCity.toLowerCase()
-      ),
+      sameCity: !!(viewerCity && q.city && citiesMatch(q.city, viewerCity)),
       verified: q.kind === "supplier" ? !!q.verified : false,
       active: true,
     }));
 
   const network = summarizeNetwork(networkInputs);
+  // Prefer same-city person/supplier quotes in the UI order
   const sorted = sortQuotes(quotes, viewerCity);
 
   return {
@@ -178,9 +242,14 @@ export async function getPublicMaterialPrice(
     alpha,
     catalogPrice,
     catalogAgeDays,
-    basePrice,
+    basePrice: adjustedBase,
+    basePriceScz: basePrice,
     baseLabel: "estimada",
     rebaseSkipped,
+    city: viewerCity,
+    cityFactor,
+    factorCity,
+    materialsFactor,
     pRed: network.pRed,
     p25: network.p25,
     p75: network.p75,
