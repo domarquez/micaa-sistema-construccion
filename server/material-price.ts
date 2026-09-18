@@ -5,10 +5,11 @@ import {
   userMaterialPrices,
   materialSupplierPrices,
   supplierCompanies,
+  companyAdvertisements,
   users,
   cityPriceFactors,
 } from "../shared/schema";
-import { and, eq, desc } from "drizzle-orm";
+import { and, eq, desc, inArray, or, isNull, gte, lte } from "drizzle-orm";
 import {
   rebaseCatalogPrice,
   summarizeNetwork,
@@ -17,6 +18,7 @@ import {
   sortQuotes,
   DEFAULT_MACRO,
   type QuoteRow,
+  type QuoteSource,
   type NetworkQuoteInput,
 } from "../shared/pricing";
 
@@ -24,6 +26,45 @@ function num(v: unknown, fallback = 0): number {
   if (v == null) return fallback;
   const n = typeof v === "number" ? v : parseFloat(String(v));
   return Number.isFinite(n) ? n : fallback;
+}
+
+function toIsoDate(d: Date | string | null | undefined): string | null {
+  if (!d) return null;
+  const dt = typeof d === "string" ? new Date(d) : d;
+  if (Number.isNaN(dt.getTime())) return null;
+  return dt.toISOString().slice(0, 10);
+}
+
+/** Fallback: WA reason is "WA | supplierName | confidence | collectedAt | ..." */
+export function parseSupplierNameFromReason(
+  reason?: string | null,
+): string | null {
+  if (!reason) return null;
+  const parts = reason.split("|").map((p) => p.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+  if (parts[0] !== "WA" && parts[0] !== "MARKET") return null;
+  const candidate = parts[1];
+  // Skip if second token looks like confidence / ISO date
+  if (
+    ["visto", "whatsapp", "factura", "estimado"].includes(candidate.toLowerCase())
+  ) {
+    return null;
+  }
+  if (/^\d{4}-\d{2}-\d{2}/.test(candidate)) return null;
+  return candidate || null;
+}
+
+function detectPersonSource(
+  ump: {
+    reason?: string | null;
+    supplierName?: string | null;
+  },
+  username?: string | null,
+): QuoteSource {
+  const reason = (ump.reason || "").toUpperCase();
+  if (username === "micaa_whatsapp" || reason.startsWith("WA")) return "whatsapp";
+  if (username === "micaa_market" || reason.startsWith("MARKET")) return "market";
+  return "person";
 }
 
 /** Alias de ciudades del selector público ↔ filas históricas en city_price_factors. */
@@ -80,10 +121,43 @@ async function lookupMaterialsFactor(ciudad: string | null | undefined): Promise
   };
 }
 
+async function activeAdSupplierIds(supplierIds: number[]): Promise<Set<number>> {
+  const out = new Set<number>();
+  if (supplierIds.length === 0) return out;
+  const now = new Date();
+  const ads = await db
+    .select({
+      supplierId: companyAdvertisements.supplierId,
+      linkUrl: companyAdvertisements.linkUrl,
+    })
+    .from(companyAdvertisements)
+    .where(
+      and(
+        inArray(companyAdvertisements.supplierId, supplierIds),
+        eq(companyAdvertisements.isActive, true),
+        or(
+          isNull(companyAdvertisements.startDate),
+          lte(companyAdvertisements.startDate, now),
+        ),
+        or(
+          isNull(companyAdvertisements.endDate),
+          gte(companyAdvertisements.endDate, now),
+        ),
+      ),
+    );
+  for (const ad of ads) {
+    // Prefer rows with linkUrl, but any active ad unlocks
+    out.add(ad.supplierId);
+  }
+  return out;
+}
+
 /**
  * GET payload for /api/public/material-price/:id?ciudad=
  * - Prioriza cotizaciones de la misma ciudad (sortQuotes / network sameCity).
  * - Aplica materialsFactor de city_price_factors al Base MICAA cuando ciudad ≠ SCZ.
+ * - Procedencia (name · city · date) always; link only if premium or active ad.
+ * - NEVER writes materials.price / rebase.
  */
 export async function getPublicMaterialPrice(
   materialId: number,
@@ -143,10 +217,13 @@ export async function getPublicMaterialPrice(
       label: "Base MICAA",
       price: adjustedBase,
       city: factorCity || ciudad || "Santa Cruz",
+      source: "base",
+      linkUnlocked: false,
+      link: null,
     },
   ];
 
-  // Public person quotes
+  // Public person / WA / market quotes
   const personRows = await db
     .select({
       ump: userMaterialPrices,
@@ -165,11 +242,22 @@ export async function getPublicMaterialPrice(
   for (const row of personRows) {
     const price = num(row.ump.price);
     const ageDays = daysSince(row.ump.updatedAt || row.ump.createdAt);
-    const label =
+    const source = detectPersonSource(row.ump, row.user?.username);
+    const provenanceName =
+      row.ump.supplierName ||
+      parseSupplierNameFromReason(row.ump.reason) ||
+      null;
+    const personLabel =
+      provenanceName ||
       [row.user?.firstName, row.user?.lastName].filter(Boolean).join(" ") ||
       row.user?.username ||
       row.ump.customMaterialName ||
       "Profesional";
+    // WA/market system user: prefer supplier name as label when present
+    const label =
+      (source === "whatsapp" || source === "market") && provenanceName
+        ? provenanceName
+        : personLabel;
     quotes.push({
       kind: "person",
       label,
@@ -178,6 +266,13 @@ export async function getPublicMaterialPrice(
       city: row.ump.city || row.user?.city || null,
       public: true,
       userId: row.ump.userId,
+      provenanceName: provenanceName || label,
+      supplierPhone: row.ump.supplierPhone || null,
+      provenanceDate: toIsoDate(row.ump.updatedAt || row.ump.createdAt),
+      source,
+      link: null,
+      linkType: null,
+      linkUnlocked: false,
     });
   }
 
@@ -201,10 +296,20 @@ export async function getPublicMaterialPrice(
     )
     .orderBy(desc(materialSupplierPrices.lastUpdated));
 
+  const supplierIds = [
+    ...new Set(supplierRows.map((r) => r.supplier.id)),
+  ];
+  const adActiveIds = await activeAdSupplierIds(supplierIds);
+
   for (const row of supplierRows) {
     const price = num(row.msp.price);
     const ageDays = daysSince(row.msp.lastUpdated);
-    const { link, linkType } = supplierLink(row.supplier);
+    const adActive = adActiveIds.has(row.supplier.id);
+    const { link, linkType, linkUnlocked } = supplierLink(row.supplier, {
+      membershipType: row.supplier.membershipType,
+      membershipExpiresAt: row.supplier.membershipExpiresAt,
+      adActive,
+    });
     quotes.push({
       kind: "supplier",
       label: row.supplier.companyName,
@@ -214,7 +319,12 @@ export async function getPublicMaterialPrice(
       supplierId: row.supplier.id,
       link,
       linkType,
+      linkUnlocked,
       verified: !!row.supplier.isVerified,
+      provenanceName: row.supplier.companyName,
+      supplierPhone: row.supplier.phone || row.supplier.whatsapp || null,
+      provenanceDate: toIsoDate(row.msp.lastUpdated),
+      source: "supplier",
     });
   }
 

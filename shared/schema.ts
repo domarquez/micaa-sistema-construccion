@@ -86,6 +86,10 @@ export const userMaterialPrices = pgTable("user_material_prices", {
   unit: text("unit").notNull(),
   reason: text("reason"), // Motivo del cambio de precio/nombre
   city: text("city"),
+  /** Provenance from WA/market ingest — display name (nullable). */
+  supplierName: text("supplier_name"),
+  /** Provenance phone from WA/market ingest (nullable). */
+  supplierPhone: text("supplier_phone"),
   isPublic: boolean("is_public").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

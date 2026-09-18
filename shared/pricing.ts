@@ -268,26 +268,79 @@ export function daysSince(date: Date | string | null | undefined, now = new Date
   return Math.max(0, Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24)));
 }
 
-export function supplierLink(supplier: {
-  website?: string | null;
-  whatsapp?: string | null;
-  facebook?: string | null;
-  phone?: string | null;
-}): { link: string | null; linkType: string | null } {
-  if (supplier.website) return { link: supplier.website, linkType: "website" };
+/** Premium membership or active paid ad unlocks clickable supplier links. */
+export function isSupplierLinkUnlocked(opts: {
+  membershipType?: string | null;
+  membershipExpiresAt?: Date | string | null;
+  adActive?: boolean;
+  now?: Date;
+}): boolean {
+  if (opts.adActive) return true;
+  if (opts.membershipType !== "premium") return false;
+  if (opts.membershipExpiresAt == null) return true;
+  const now = opts.now ?? new Date();
+  const exp =
+    typeof opts.membershipExpiresAt === "string"
+      ? new Date(opts.membershipExpiresAt)
+      : opts.membershipExpiresAt;
+  if (Number.isNaN(exp.getTime())) return false;
+  return exp.getTime() > now.getTime();
+}
+
+/**
+ * Resolve a contact link for a supplier.
+ * Free suppliers (no premium / no active ad) → link=null (name-only procedencia).
+ */
+export function supplierLink(
+  supplier: {
+    website?: string | null;
+    whatsapp?: string | null;
+    facebook?: string | null;
+    phone?: string | null;
+  },
+  gate?: {
+    unlocked?: boolean;
+    membershipType?: string | null;
+    membershipExpiresAt?: Date | string | null;
+    adActive?: boolean;
+    now?: Date;
+  },
+): { link: string | null; linkType: string | null; linkUnlocked: boolean } {
+  const linkUnlocked =
+    gate?.unlocked ??
+    isSupplierLinkUnlocked({
+      membershipType: gate?.membershipType,
+      membershipExpiresAt: gate?.membershipExpiresAt,
+      adActive: gate?.adActive,
+      now: gate?.now,
+    });
+  if (!linkUnlocked) {
+    return { link: null, linkType: null, linkUnlocked: false };
+  }
+  if (supplier.website) {
+    return { link: supplier.website, linkType: "website", linkUnlocked: true };
+  }
   if (supplier.whatsapp) {
     const n = String(supplier.whatsapp).replace(/[^0-9]/g, "");
-    return { link: n ? `https://wa.me/${n}` : null, linkType: "whatsapp" };
+    return {
+      link: n ? `https://wa.me/${n}` : null,
+      linkType: "whatsapp",
+      linkUnlocked: true,
+    };
   }
   if (supplier.facebook) {
     const fb = supplier.facebook.startsWith("http")
       ? supplier.facebook
       : `https://facebook.com/${supplier.facebook}`;
-    return { link: fb, linkType: "facebook" };
+    return { link: fb, linkType: "facebook", linkUnlocked: true };
   }
-  if (supplier.phone) return { link: `tel:${supplier.phone}`, linkType: "phone" };
-  return { link: null, linkType: null };
+  if (supplier.phone) {
+    return { link: `tel:${supplier.phone}`, linkType: "phone", linkUnlocked: true };
+  }
+  return { link: null, linkType: null, linkUnlocked: true };
 }
+
+export type QuoteSource = "whatsapp" | "market" | "person" | "supplier" | "base";
 
 export interface QuoteRow {
   kind: QuoteKind;
@@ -300,7 +353,15 @@ export interface QuoteRow {
   supplierId?: number;
   link?: string | null;
   linkType?: string | null;
+  /** True when premium membership or active ad unlocks the link. */
+  linkUnlocked?: boolean;
   verified?: boolean;
+  /** Supplier/company name for procedencia line (may differ from label). */
+  provenanceName?: string | null;
+  supplierPhone?: string | null;
+  /** ISO date (YYYY-MM-DD) for procedencia display. */
+  provenanceDate?: string | null;
+  source?: QuoteSource;
 }
 
 const CITY_SORT_ALIASES: Record<string, string[]> = {
