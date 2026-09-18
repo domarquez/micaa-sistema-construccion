@@ -15,8 +15,13 @@ type Quote = {
   supplierId?: number;
   link?: string | null;
   linkType?: string | null;
+  linkUnlocked?: boolean;
   verified?: boolean;
   public?: boolean;
+  provenanceName?: string | null;
+  supplierPhone?: string | null;
+  provenanceDate?: string | null;
+  source?: "whatsapp" | "market" | "person" | "supplier" | "base";
 };
 
 type Payload = {
@@ -42,6 +47,26 @@ function ageLabel(d?: number) {
   if (d == null) return "";
   if (d <= 0) return "hace 0 d";
   return `hace ${d} d`;
+}
+
+function formatProvenanceDate(iso?: string | null): string | null {
+  if (!iso) return null;
+  // Keep YYYY-MM-DD as-is; also accept full ISO
+  const day = iso.slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
+  const [y, m, d] = day.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+function procedenciaLine(q: Quote): string | null {
+  if (q.kind === "base") return null;
+  const name = q.provenanceName || q.label;
+  if (!name) return null;
+  const parts = [name, q.city, formatProvenanceDate(q.provenanceDate)].filter(
+    Boolean,
+  ) as string[];
+  if (parts.length === 0) return null;
+  return `Procedencia: ${parts.join(" · ")}`;
 }
 
 export default function MaterialDetail() {
@@ -142,6 +167,8 @@ export default function MaterialDetail() {
       <div className="mt-6 divide-y divide-[var(--micaa-line)] border-y border-[var(--micaa-line)]">
         {quotes.map((q, i) => {
           const fresh = (q.ageDays ?? 999) <= 21 && q.kind !== "base";
+          const procedencia = procedenciaLine(q);
+          const showLink = !!(q.linkUnlocked && q.link);
           return (
             <label
               key={`${q.kind}-${q.supplierId ?? q.userId ?? "base"}-${i}`}
@@ -171,25 +198,30 @@ export default function MaterialDetail() {
                     </div>
                     <div className="mt-0.5 text-[12px] text-[var(--micaa-muted)]">
                       {[q.city, ageLabel(q.ageDays)].filter(Boolean).join(" · ")}
-                      {q.link && (
-                        <>
-                          {" · "}
-                          <a
-                            href={q.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-[var(--micaa-accent)]"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {q.linkType === "whatsapp"
-                              ? "WhatsApp"
-                              : q.linkType === "website"
-                                ? "Web"
-                                : "Ver"}
-                          </a>
-                        </>
-                      )}
                     </div>
+                    {procedencia && (
+                      <div className="mt-0.5 text-[12px] text-[var(--micaa-muted)]">
+                        {procedencia}
+                        {showLink && (
+                          <>
+                            {" · "}
+                            <a
+                              href={q.link!}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[var(--micaa-accent)]"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {q.linkType === "whatsapp"
+                                ? "WhatsApp"
+                                : q.linkType === "website"
+                                  ? "Web"
+                                  : "Ver"}
+                            </a>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="shrink-0 text-[20px] font-medium tabular-nums">
                     {formatBs(q.price)}

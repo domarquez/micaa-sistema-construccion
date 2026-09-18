@@ -651,6 +651,8 @@ async function persistQuote(
         customMaterialName: resolved.materialName,
         originalMaterialName: resolved.materialName,
         reason,
+        supplierName: item.supplierName ?? null,
+        supplierPhone: item.phone ?? null,
         isPublic: item.isPublic,
         updatedAt: new Date(),
       })
@@ -669,6 +671,8 @@ async function persistQuote(
         price: item.price.toFixed(2),
         unit: resolved.unit,
         reason,
+        supplierName: item.supplierName ?? null,
+        supplierPhone: item.phone ?? null,
         city: item.city,
         isPublic: item.isPublic,
       })
