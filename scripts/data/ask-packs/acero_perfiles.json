@@ -8,36 +8,48 @@
       "name": "Perfil C 100x50x15x2.0 mm barra 6 m",
       "unit": "barra",
       "categoryHint": "ACERO PARA CONSTRUCCION",
-      "materialId": null,
+      "materialId": 2160,
       "estimatePrice": null,
-      "aliases": ["Perfil C 100x50x15x2.0", "C 100x50x15x2.0 mm barra 6 m"]
+      "aliases": [
+        "Perfil C 100x50x15x2.0",
+        "C 100x50x15x2.0 mm barra 6 m"
+      ]
     },
     {
       "askLine": "Perfil U 100×50×2.0 mm barra 6 m",
       "name": "Perfil U 100x50x2.0 mm barra 6 m",
       "unit": "barra",
       "categoryHint": "ACERO PARA CONSTRUCCION",
-      "materialId": null,
+      "materialId": 2161,
       "estimatePrice": null,
-      "aliases": ["Perfil U 100x50x2.0", "U 100x50x2.0 mm barra 6 m"]
+      "aliases": [
+        "Perfil U 100x50x2.0",
+        "U 100x50x2.0 mm barra 6 m"
+      ]
     },
     {
       "askLine": "Plancha negra 1.20×2.40 × 3 mm",
       "name": "Plancha negra 1.20x2.40 x 3 mm",
       "unit": "plancha",
       "categoryHint": "PLANCHAS DE ACERO",
-      "materialId": null,
+      "materialId": 2162,
       "estimatePrice": null,
-      "aliases": ["Plancha negra 1.20x2.40x3mm", "Chapa negra 3 mm 1.20x2.40"]
+      "aliases": [
+        "Plancha negra 1.20x2.40x3mm",
+        "Chapa negra 3 mm 1.20x2.40"
+      ]
     },
     {
       "askLine": "Plancha negra 1.20×2.40 × 4 mm",
       "name": "Plancha negra 1.20x2.40 x 4 mm",
       "unit": "plancha",
       "categoryHint": "PLANCHAS DE ACERO",
-      "materialId": null,
+      "materialId": 2163,
       "estimatePrice": null,
-      "aliases": ["Plancha negra 1.20x2.40x4mm", "Chapa negra 4 mm 1.20x2.40"]
+      "aliases": [
+        "Plancha negra 1.20x2.40x4mm",
+        "Chapa negra 4 mm 1.20x2.40"
+      ]
     },
     {
       "askLine": "Ángulo 1 1/2\" × 1/8\" barra 6 m",
@@ -58,9 +70,12 @@
       "name": "Perfil C 150x50x15x2.0 mm barra 6 m",
       "unit": "barra",
       "categoryHint": "ACERO PARA CONSTRUCCION",
-      "materialId": null,
+      "materialId": 2164,
       "estimatePrice": null,
-      "aliases": ["Perfil C 150x50x15x2.0", "C 150x50x15x2.0 mm barra 6 m"]
+      "aliases": [
+        "Perfil C 150x50x15x2.0",
+        "C 150x50x15x2.0 mm barra 6 m"
+      ]
     },
     {
       "askLine": "Ángulo 1\" × 1/8\" barra 6 m",
