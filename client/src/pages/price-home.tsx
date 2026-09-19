@@ -80,11 +80,11 @@ export default function PriceHome() {
   const materialsFactor = useMemo(() => matchFactor(factors, city), [factors, city]);
 
   const { data: materials = [], isLoading } = useQuery<MaterialRow[]>({
-    queryKey: ["/api/public/materials", { q: submitted || undefined, limit: 24, city }],
+    queryKey: ["/api/public/materials", { q: submitted || undefined, limit: 100, city }],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (submitted) params.set("q", submitted);
-      params.set("limit", "24");
+      params.set("limit", "100");
       const res = await fetch(`/api/public/materials?${params}`);
       if (!res.ok) throw new Error("No se pudo cargar materiales");
       return res.json();
@@ -92,7 +92,11 @@ export default function PriceHome() {
     staleTime: 60_000,
   });
 
-  const rows = useMemo(() => materials.slice(0, 8), [materials]);
+  // Home teaser: 8 rows; when a search is active show all matches (server already filters).
+  const rows = useMemo(
+    () => (submitted ? materials : materials.slice(0, 8)),
+    [materials, submitted],
+  );
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();

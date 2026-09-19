@@ -139,6 +139,19 @@ export const NETWORK = {
   STALE_DAYS: 60,
 } as const;
 
+/**
+ * Calle (sin factura) ≈ factura/WA × this factor when deriving a street price
+ * from same-city factura averages. Market Bot quotes are street/no-invoice.
+ * Default 0.90 (10% under factura). Used when market quote is missing.
+ */
+export const STREET_NO_INVOICE_FACTOR = 0.90;
+
+/** Derive calle/sin-factura price from a same-city factura average. */
+export function deriveStreetNoInvoicePrice(facturaAvg: number): number {
+  if (!(facturaAvg > 0) || !Number.isFinite(facturaAvg)) return facturaAvg;
+  return Math.round(facturaAvg * STREET_NO_INVOICE_FACTOR * 100) / 100;
+}
+
 export interface NetworkQuoteInput {
   price: number;
   ageDays: number;
@@ -366,6 +379,8 @@ export interface QuoteRow {
   weightKg?: number | null;
   /** Precio por kg cuando weightKg > 0. */
   pricePerKg?: number | null;
+  /** UI: show "estimada" (e.g. Calle sin factura / derived street). */
+  estimated?: boolean;
 }
 
 const CITY_SORT_ALIASES: Record<string, string[]> = {

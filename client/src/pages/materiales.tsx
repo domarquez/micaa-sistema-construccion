@@ -75,11 +75,11 @@ export default function MaterialesPage() {
   const materialsFactor = useMemo(() => matchFactor(factors, city), [factors, city]);
 
   const { data: materials = [], isLoading } = useQuery<MaterialRow[]>({
-    queryKey: ["/api/public/materials", { q, limit: 50, city }],
+    queryKey: ["/api/public/materials", { q, limit: 100, city }],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (q.trim()) params.set("q", q.trim());
-      params.set("limit", "50");
+      params.set("limit", "100");
       const res = await fetch(`/api/public/materials?${params}`);
       if (!res.ok) throw new Error("Error al cargar");
       return res.json();

@@ -167,9 +167,66 @@ async function activeAdSupplierIds(supplierIds: number[]): Promise<Set<number>> 
   return out;
 }
 
+
+/** Public display label for source=market (calle / sin factura). */
+export const MARKET_DISPLAY_LABEL = "Calle (sin factura)";
+
+/** Factura-like quotes: WA, person (non-market), or supplier — better truth than market. */
+function isFacturaLikeQuote(q: QuoteRow): boolean {
+  if (q.kind === "base" || q.source === "market" || q.source === "base") return false;
+  return (
+    q.source === "whatsapp" ||
+    q.source === "person" ||
+    q.source === "supplier" ||
+    q.kind === "supplier"
+  );
+}
+
+/**
+ * Same-city only (base always kept). When same-city factura/WA exists,
+ * suppress market quotes. Relabel remaining market → Calle (sin factura).
+ * Does not write materials.price.
+ */
+function applyCityAndMarketPolicy(
+  quotes: QuoteRow[],
+  viewerCity: string | null,
+): QuoteRow[] {
+  let out = quotes;
+  if (viewerCity) {
+    out = out.filter(
+      (q) => q.kind === "base" || (q.city != null && citiesMatch(q.city, viewerCity)),
+    );
+  }
+
+  const hasFactura = out.some(
+    (q) =>
+      q.kind !== "base" &&
+      isFacturaLikeQuote(q) &&
+      (!viewerCity || (q.city != null && citiesMatch(q.city, viewerCity))),
+  );
+
+  if (hasFactura) {
+    out = out.filter((q) => q.source !== "market");
+  }
+
+  // STREET_NO_INVOICE_FACTOR (shared/pricing) reserved to derive calle when
+  // market is missing; simplest ship: show/relabel market or suppress vs WA.
+
+  return out.map((q) => {
+    if (q.source !== "market") return q;
+    return {
+      ...q,
+      label: MARKET_DISPLAY_LABEL,
+      estimated: true,
+    };
+  });
+}
+
 /**
  * GET payload for /api/public/material-price/:id?ciudad=
- * - Prioriza cotizaciones de la misma ciudad (sortQuotes / network sameCity).
+ * - Solo cotizaciones de la misma ciudad que el viewer (?ciudad=); base siempre.
+ * - Market Bot (source=market) se muestra como "Calle (sin factura)"; se omite
+ *   si ya hay cotización factura/WA/supplier same-city.
  * - Aplica materialsFactor de city_price_factors al Base MICAA cuando ciudad ≠ SCZ.
  * - Procedencia (name · city · date) always; link only if premium or active ad.
  * - NEVER writes materials.price / rebase.
@@ -353,19 +410,21 @@ export async function getPublicMaterialPrice(
   }
 
   const viewerCity = ciudad || null;
-  const networkInputs: NetworkQuoteInput[] = quotes
+  const visibleQuotes = applyCityAndMarketPolicy(quotes, viewerCity);
+
+  const networkInputs: NetworkQuoteInput[] = visibleQuotes
     .filter((q) => q.kind !== "base")
     .map((q) => ({
       price: q.price,
       ageDays: q.ageDays ?? 999,
-      sameCity: !!(viewerCity && q.city && citiesMatch(q.city, viewerCity)),
+      // After same-city filter, remaining non-base quotes are same-city (or no city filter)
+      sameCity: !viewerCity || !!(q.city && citiesMatch(q.city, viewerCity)),
       verified: q.kind === "supplier" ? !!q.verified : false,
       active: true,
     }));
 
   const network = summarizeNetwork(networkInputs);
-  // Prefer same-city person/supplier quotes in the UI order
-  const sorted = sortQuotes(quotes, viewerCity);
+  const sorted = sortQuotes(visibleQuotes, viewerCity);
 
   return {
     materialId: material.id,
