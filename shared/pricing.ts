@@ -140,16 +140,16 @@ export const NETWORK = {
 } as const;
 
 /**
- * Calle (sin factura) ≈ factura/WA × this factor when deriving a street price
- * from same-city factura averages. Market Bot quotes are street/no-invoice.
- * Default 0.90 (10% under factura). Used when market quote is missing.
+ * Calle (sin factura) = display base × this factor.
+ * Market Bot estimate is street/no-invoice, derived from MICAA base (not WA).
+ * Default 0.90 (10% under base / sin IVA orientation).
  */
 export const STREET_NO_INVOICE_FACTOR = 0.90;
 
-/** Derive calle/sin-factura price from a same-city factura average. */
-export function deriveStreetNoInvoicePrice(facturaAvg: number): number {
-  if (!(facturaAvg > 0) || !Number.isFinite(facturaAvg)) return facturaAvg;
-  return Math.round(facturaAvg * STREET_NO_INVOICE_FACTOR * 100) / 100;
+/** Derive Calle (sin factura) from MICAA display basePrice. */
+export function deriveStreetNoInvoicePrice(basePrice: number): number {
+  if (!(basePrice > 0) || !Number.isFinite(basePrice)) return basePrice;
+  return Math.round(basePrice * STREET_NO_INVOICE_FACTOR * 100) / 100;
 }
 
 export interface NetworkQuoteInput {
@@ -408,20 +408,24 @@ function sameCitySort(a?: string | null, b?: string | null): boolean {
   return false;
 }
 
-/** Sort: suppliers (verified, same city, fresh) → persons → base last */
+/**
+ * Sort: base first → providers (supplier / WA / person) → market/calle last.
+ */
 export function sortQuotes(
   quotes: QuoteRow[],
   viewerCity?: string | null,
 ): QuoteRow[] {
   const rank = (q: QuoteRow): number => {
-    if (q.kind === "base") return 3000;
+    if (q.kind === "base" || q.source === "base") return 0;
+    // Market Bot / Calle sin factura always last
+    if (q.source === "market") return 5000 + (q.ageDays ?? 0);
     if (q.kind === "person") {
       let r = 2000 + (q.ageDays ?? 0);
       if (viewerCity && q.city && !sameCitySort(q.city, viewerCity)) r += 50;
       return r;
     }
-    // supplier
-    let r = 0;
+    // supplier (verified / same city / fresh first among providers)
+    let r = 1000;
     if (!q.verified) r += 100;
     if (viewerCity && q.city && !sameCitySort(q.city, viewerCity)) r += 50;
     r += q.ageDays ?? 0;
