@@ -17,6 +17,7 @@ import {
   supplierLink,
   sortQuotes,
   DEFAULT_MACRO,
+  deriveStreetNoInvoicePrice,
   type QuoteRow,
   type QuoteSource,
   type NetworkQuoteInput,
@@ -167,9 +168,58 @@ async function activeAdSupplierIds(supplierIds: number[]): Promise<Set<number>> 
   return out;
 }
 
+
+/** Public display label for source=market (calle / sin factura). */
+export const MARKET_DISPLAY_LABEL = "Calle (sin factura)";
+
+/**
+ * Same-city filter for provider quotes (base always kept).
+ * Market Bot is NEVER suppressed: drop scraped market rows and always append
+ * one Calle (sin factura) estimate = deriveStreetNoInvoicePrice(displayBase).
+ * Does not write materials.price.
+ */
+function applyCityAndMarketPolicy(
+  quotes: QuoteRow[],
+  viewerCity: string | null,
+  displayBase: number,
+  materialWeightKg: number | null,
+  marketCity: string,
+): QuoteRow[] {
+  const out = quotes.filter((q) => {
+    if (q.kind === "base") return true;
+    // Prefer derived-from-base market estimate over stale scraped market rows
+    if (q.source === "market") return false;
+    if (!viewerCity) return true;
+    return q.city != null && citiesMatch(q.city, viewerCity);
+  });
+
+  const streetPrice = deriveStreetNoInvoicePrice(displayBase);
+  out.push({
+    kind: "person",
+    label: MARKET_DISPLAY_LABEL,
+    price: streetPrice,
+    ageDays: 0,
+    city: marketCity,
+    public: true,
+    provenanceName: MARKET_DISPLAY_LABEL,
+    provenanceDate: null,
+    source: "market",
+    link: null,
+    linkType: null,
+    linkUnlocked: false,
+    estimated: true,
+    weightKg: materialWeightKg,
+    pricePerKg: computePricePerKg(streetPrice, materialWeightKg),
+  });
+
+  return out;
+}
+
 /**
  * GET payload for /api/public/material-price/:id?ciudad=
- * - Prioriza cotizaciones de la misma ciudad (sortQuotes / network sameCity).
+ * - Solo cotizaciones de proveedores de la misma ciudad (?ciudad=); base siempre.
+ * - Market Bot siempre visible como "Calle (sin factura)" = base × STREET_NO_INVOICE_FACTOR
+ *   (derivado del base, no de WA); va al final; no se suprime si hay WA/supplier.
  * - Aplica materialsFactor de city_price_factors al Base MICAA cuando ciudad ≠ SCZ.
  * - Procedencia (name · city · date) always; link only if premium or active ad.
  * - NEVER writes materials.price / rebase.
@@ -353,19 +403,29 @@ export async function getPublicMaterialPrice(
   }
 
   const viewerCity = ciudad || null;
-  const networkInputs: NetworkQuoteInput[] = quotes
-    .filter((q) => q.kind !== "base")
+  const marketCity = factorCity || viewerCity || "Santa Cruz";
+  const visibleQuotes = applyCityAndMarketPolicy(
+    quotes,
+    viewerCity,
+    adjustedBase,
+    materialWeightKg,
+    marketCity,
+  );
+
+  // Network from real providers only (exclude base + derived market estimate)
+  const networkInputs: NetworkQuoteInput[] = visibleQuotes
+    .filter((q) => q.kind !== "base" && q.source !== "market")
     .map((q) => ({
       price: q.price,
       ageDays: q.ageDays ?? 999,
-      sameCity: !!(viewerCity && q.city && citiesMatch(q.city, viewerCity)),
+      sameCity: !viewerCity || !!(q.city && citiesMatch(q.city, viewerCity)),
       verified: q.kind === "supplier" ? !!q.verified : false,
       active: true,
     }));
 
   const network = summarizeNetwork(networkInputs);
-  // Prefer same-city person/supplier quotes in the UI order
-  const sorted = sortQuotes(quotes, viewerCity);
+  // Order: base → providers → Calle (sin factura) last
+  const sorted = sortQuotes(visibleQuotes, viewerCity);
 
   return {
     materialId: material.id,

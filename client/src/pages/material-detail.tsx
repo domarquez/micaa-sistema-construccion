@@ -24,6 +24,7 @@ type Quote = {
   source?: "whatsapp" | "market" | "person" | "supplier" | "base";
   weightKg?: number | null;
   pricePerKg?: number | null;
+  estimated?: boolean;
 };
 
 type Payload = {
@@ -210,7 +211,7 @@ export default function MaterialDetail() {
                         />
                       )}
                       <span className="truncate">{q.label}</span>
-                      {q.kind === "base" && (
+                      {(q.kind === "base" || q.estimated || q.source === "market") && (
                         <span className="text-[12px] text-[var(--micaa-muted)]">estimada</span>
                       )}
                     </div>

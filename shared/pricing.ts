@@ -139,6 +139,19 @@ export const NETWORK = {
   STALE_DAYS: 60,
 } as const;
 
+/**
+ * Calle (sin factura) = display base × this factor.
+ * Market Bot estimate is street/no-invoice, derived from MICAA base (not WA).
+ * Default 0.90 (10% under base / sin IVA orientation).
+ */
+export const STREET_NO_INVOICE_FACTOR = 0.90;
+
+/** Derive Calle (sin factura) from MICAA display basePrice. */
+export function deriveStreetNoInvoicePrice(basePrice: number): number {
+  if (!(basePrice > 0) || !Number.isFinite(basePrice)) return basePrice;
+  return Math.round(basePrice * STREET_NO_INVOICE_FACTOR * 100) / 100;
+}
+
 export interface NetworkQuoteInput {
   price: number;
   ageDays: number;
@@ -366,6 +379,8 @@ export interface QuoteRow {
   weightKg?: number | null;
   /** Precio por kg cuando weightKg > 0. */
   pricePerKg?: number | null;
+  /** UI: show "estimada" (e.g. Calle sin factura / derived street). */
+  estimated?: boolean;
 }
 
 const CITY_SORT_ALIASES: Record<string, string[]> = {
@@ -393,20 +408,24 @@ function sameCitySort(a?: string | null, b?: string | null): boolean {
   return false;
 }
 
-/** Sort: suppliers (verified, same city, fresh) → persons → base last */
+/**
+ * Sort: base first → providers (supplier / WA / person) → market/calle last.
+ */
 export function sortQuotes(
   quotes: QuoteRow[],
   viewerCity?: string | null,
 ): QuoteRow[] {
   const rank = (q: QuoteRow): number => {
-    if (q.kind === "base") return 3000;
+    if (q.kind === "base" || q.source === "base") return 0;
+    // Market Bot / Calle sin factura always last
+    if (q.source === "market") return 5000 + (q.ageDays ?? 0);
     if (q.kind === "person") {
       let r = 2000 + (q.ageDays ?? 0);
       if (viewerCity && q.city && !sameCitySort(q.city, viewerCity)) r += 50;
       return r;
     }
-    // supplier
-    let r = 0;
+    // supplier (verified / same city / fresh first among providers)
+    let r = 1000;
     if (!q.verified) r += 100;
     if (viewerCity && q.city && !sameCitySort(q.city, viewerCity)) r += 50;
     r += q.ageDays ?? 0;
