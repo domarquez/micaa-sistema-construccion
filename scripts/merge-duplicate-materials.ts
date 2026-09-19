@@ -21,7 +21,7 @@ import {
 } from "../shared/schema";
 import { eq } from "drizzle-orm";
 
-type Mat = typeof materials.$inferSelect;
+export type Mat = typeof materials.$inferSelect;
 
 const UNIT_MAP: Record<string, string> = {
   kg: "kg",
@@ -141,7 +141,7 @@ function pickKeeper(group: Mat[]): Mat {
   return [...group].sort((a, b) => scoreKeeper(b) - scoreKeeper(a))[0];
 }
 
-const FK_TABLES: { label: string; table: any; col: any }[] = [
+export const FK_TABLES: { label: string; table: any; col: any }[] = [
   { label: "user_material_prices", table: userMaterialPrices, col: userMaterialPrices.materialId },
   { label: "material_supplier_prices", table: materialSupplierPrices, col: materialSupplierPrices.materialId },
   { label: "material_list_items", table: materialListItems, col: materialListItems.materialId },
@@ -150,7 +150,7 @@ const FK_TABLES: { label: string; table: any; col: any }[] = [
   { label: "custom_activity_compositions", table: customActivityCompositions, col: customActivityCompositions.materialId },
 ];
 
-async function countRefs(materialId: number): Promise<number> {
+export async function countRefs(materialId: number): Promise<number> {
   let total = 0;
   for (const fk of FK_TABLES) {
     const rows = await db.select({ id: fk.col }).from(fk.table).where(eq(fk.col, materialId));
@@ -159,7 +159,7 @@ async function countRefs(materialId: number): Promise<number> {
   return total;
 }
 
-async function reassignFks(loserId: number, keeperId: number): Promise<Record<string, number>> {
+export async function reassignFks(loserId: number, keeperId: number): Promise<Record<string, number>> {
   const moved: Record<string, number> = {};
   for (const fk of FK_TABLES) {
     const result = await db.update(fk.table).set({ materialId: keeperId }).where(eq(fk.col, loserId));
@@ -167,6 +167,150 @@ async function reassignFks(loserId: number, keeperId: number): Promise<Record<st
     moved[fk.label] = (result as any)?.rowCount ?? -1;
   }
   return moved;
+}
+
+
+/** Soft-deactivate: [DUPLICADO …] + priceOrigin=duplicado (hidden by public search). */
+export async function deactivateMaterial(
+  loser: Mat,
+  opts: { keeperId?: number; reason?: string } = {},
+): Promise<{ action: string; newName: string }> {
+  const arrow = opts.keeperId != null ? `→${opts.keeperId}` : "";
+  const newName = `[DUPLICADO #${loser.id}${arrow}] ${loser.name}`.slice(0, 240);
+  const description =
+    opts.reason ||
+    (opts.keeperId != null
+      ? `Duplicado de material #${opts.keeperId}`
+      : "Desactivado (priceOrigin=duplicado)");
+  await db
+    .update(materials)
+    .set({
+      name: newName,
+      priceOrigin: "duplicado",
+      description: description.slice(0, 500),
+      lastUpdated: new Date(),
+    })
+    .where(eq(materials.id, loser.id));
+  return { action: "deactivated", newName };
+}
+
+/** Prefer catalog names starting with "Corrugado …" over WA "Fierro corrugado …". */
+export function preferCorrugadoCatalogName(keeperName: string, loserName?: string): string {
+  const kCanon = canonicalName(keeperName);
+  const lCanon = loserName ? canonicalName(loserName) : "";
+  if (/^corrugado\b/i.test(kCanon)) return kCanon;
+  if (lCanon && /^corrugado\b/i.test(lCanon)) return lCanon;
+  return kCanon;
+}
+
+export async function getMaterialById(id: number): Promise<Mat | null> {
+  const rows = await db.select().from(materials).where(eq(materials.id, id)).limit(1);
+  return rows[0] || null;
+}
+
+export type MergePairResult = {
+  keeperId: number;
+  loserId: number;
+  action: string;
+  moved?: Record<string, number>;
+  weightKgCopied?: string | null;
+  keeperName?: string;
+  remaining?: number;
+  error?: string;
+};
+
+/**
+ * Merge one loser into keeper (pair mode):
+ * - reassign FKs
+ * - copy weightKg → keeper only if keeper.weightKg is null
+ * - NEVER overwrite materials.price
+ * - prefer Corrugado catalog name on keeper
+ * - delete loser if 0 refs, else soft-deactivate
+ */
+export async function mergeLoserIntoKeeper(
+  loser: Mat,
+  keeper: Mat,
+  opts: { preferCorrugadoName?: boolean } = {},
+): Promise<MergePairResult> {
+  const preferCorrugado = opts.preferCorrugadoName !== false;
+  const desiredName = preferCorrugado
+    ? preferCorrugadoCatalogName(keeper.name, loser.name)
+    : canonicalName(keeper.name);
+  const unitCanon = normalizeUnit(keeper.unit);
+
+  const patch: Record<string, unknown> = { lastUpdated: new Date() };
+  if (desiredName !== keeper.name) patch.name = desiredName;
+  if (unitCanon !== keeper.unit) patch.unit = unitCanon;
+
+  let weightKgCopied: string | null = null;
+  const keeperW =
+    keeper.weightKg != null && String(keeper.weightKg).trim() !== ""
+      ? String(keeper.weightKg)
+      : null;
+  const loserW =
+    loser.weightKg != null && String(loser.weightKg).trim() !== ""
+      ? String(loser.weightKg)
+      : null;
+  if (!keeperW && loserW) {
+    patch.weightKg = loserW;
+    weightKgCopied = loserW;
+  }
+
+  if (Object.keys(patch).length > 1) {
+    await db.update(materials).set(patch).where(eq(materials.id, keeper.id));
+  }
+
+  try {
+    const moved = await reassignFks(loser.id, keeper.id);
+    const remaining = await countRefs(loser.id);
+    if (remaining === 0) {
+      try {
+        await db.delete(materials).where(eq(materials.id, loser.id));
+        return {
+          keeperId: keeper.id,
+          loserId: loser.id,
+          action: "deleted",
+          moved,
+          weightKgCopied,
+          keeperName: desiredName,
+        };
+      } catch (delErr: any) {
+        await deactivateMaterial(loser, {
+          keeperId: keeper.id,
+          reason: `Duplicado de material #${keeper.id}; delete falló: ${String(delErr?.message || delErr).slice(0, 180)}`,
+        });
+        return {
+          keeperId: keeper.id,
+          loserId: loser.id,
+          action: "renamed-after-delete-fail",
+          moved,
+          weightKgCopied,
+          keeperName: desiredName,
+          error: String(delErr?.message || delErr),
+        };
+      }
+    }
+    await deactivateMaterial(loser, {
+      keeperId: keeper.id,
+      reason: `Duplicado de #${keeper.id}; refs restantes=${remaining}`,
+    });
+    return {
+      keeperId: keeper.id,
+      loserId: loser.id,
+      action: "renamed-refs-remain",
+      remaining,
+      moved,
+      weightKgCopied,
+      keeperName: desiredName,
+    };
+  } catch (err: any) {
+    return {
+      keeperId: keeper.id,
+      loserId: loser.id,
+      action: "skipped",
+      error: String(err?.message || err),
+    };
+  }
 }
 
 async function main() {
@@ -320,7 +464,14 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+const isDirect =
+  typeof process !== "undefined" &&
+  !!process.argv[1] &&
+  /merge-duplicate-materials\.(ts|js)$/.test(process.argv[1].replace(/\\/g, "/"));
+
+if (isDirect) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
