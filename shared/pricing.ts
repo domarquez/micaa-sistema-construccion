@@ -140,13 +140,13 @@ export const NETWORK = {
 } as const;
 
 /**
- * Calle (sin factura) = display base × this factor.
+ * MICAA Market (sin IVA) = display base × this factor.
  * Market Bot estimate is street/no-invoice, derived from MICAA base (not WA).
  * Default 0.90 (10% under base / sin IVA orientation).
  */
 export const STREET_NO_INVOICE_FACTOR = 0.90;
 
-/** Derive Calle (sin factura) from MICAA display basePrice. */
+/** Derive MICAA Market (sin IVA) price from MICAA display basePrice. */
 export function deriveStreetNoInvoicePrice(basePrice: number): number {
   if (!(basePrice > 0) || !Number.isFinite(basePrice)) return basePrice;
   return Math.round(basePrice * STREET_NO_INVOICE_FACTOR * 100) / 100;
@@ -379,7 +379,7 @@ export interface QuoteRow {
   weightKg?: number | null;
   /** Precio por kg cuando weightKg > 0. */
   pricePerKg?: number | null;
-  /** UI: show "estimada" (e.g. Calle sin factura / derived street). */
+  /** UI: show "estimada" (e.g. MICAA Market sin IVA / derived street). */
   estimated?: boolean;
 }
 
@@ -409,7 +409,7 @@ function sameCitySort(a?: string | null, b?: string | null): boolean {
 }
 
 /**
- * Sort: base first → providers (supplier / WA / person) → market/calle last.
+ * Sort: base first → providers (supplier / WA / person) → market last.
  */
 export function sortQuotes(
   quotes: QuoteRow[],
@@ -417,7 +417,7 @@ export function sortQuotes(
 ): QuoteRow[] {
   const rank = (q: QuoteRow): number => {
     if (q.kind === "base" || q.source === "base") return 0;
-    // Market Bot / Calle sin factura always last
+    // Market Bot / MICAA Market (sin IVA) always last
     if (q.source === "market") return 5000 + (q.ageDays ?? 0);
     if (q.kind === "person") {
       let r = 2000 + (q.ageDays ?? 0);
