@@ -169,13 +169,13 @@ async function activeAdSupplierIds(supplierIds: number[]): Promise<Set<number>> 
 }
 
 
-/** Public display label for source=market (calle / sin factura). */
-export const MARKET_DISPLAY_LABEL = "Calle (sin factura)";
+/** Public display label for source=market (MICAA Market / sin IVA). */
+export const MARKET_DISPLAY_LABEL = "MICAA Market (sin IVA)";
 
 /**
  * Same-city filter for provider quotes (base always kept).
  * Market Bot is NEVER suppressed: drop scraped market rows and always append
- * one Calle (sin factura) estimate = deriveStreetNoInvoicePrice(displayBase).
+ * one MICAA Market (sin IVA) estimate = deriveStreetNoInvoicePrice(displayBase).
  * Does not write materials.price.
  */
 function applyCityAndMarketPolicy(
@@ -218,7 +218,7 @@ function applyCityAndMarketPolicy(
 /**
  * GET payload for /api/public/material-price/:id?ciudad=
  * - Solo cotizaciones de proveedores de la misma ciudad (?ciudad=); base siempre.
- * - Market Bot siempre visible como "Calle (sin factura)" = base × STREET_NO_INVOICE_FACTOR
+ * - Market Bot siempre visible como "MICAA Market (sin IVA)" = base × STREET_NO_INVOICE_FACTOR
  *   (derivado del base, no de WA); va al final; no se suprime si hay WA/supplier.
  * - Aplica materialsFactor de city_price_factors al Base MICAA cuando ciudad ≠ SCZ.
  * - Procedencia (name · city · date) always; link only if premium or active ad.
@@ -424,7 +424,7 @@ export async function getPublicMaterialPrice(
     }));
 
   const network = summarizeNetwork(networkInputs);
-  // Order: base → providers → Calle (sin factura) last
+  // Order: base → providers → MICAA Market (sin IVA) last
   const sorted = sortQuotes(visibleQuotes, viewerCity);
 
   return {
