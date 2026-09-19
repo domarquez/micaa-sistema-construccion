@@ -1181,6 +1181,9 @@ export async function registerRoutes(app: any) {
       const limitRaw = parseInt(String(req.query.limit || "50"), 10);
       const limit = Math.min(Number.isFinite(limitRaw) && limitRaw > 0 ? limitRaw : 50, 100);
 
+      // Hide soft-deactivated duplicates ([DUPLICADO …] / priceOrigin=duplicado)
+      const notDeactivated = sql`(coalesce(${materials.priceOrigin}, '') <> 'duplicado' AND ${materials.name} NOT LIKE '[DUPLICADO%')`;
+
       let materialsData;
       if (q) {
         // Busqueda amplia: case-insensitive, multi-palabra (AND), nombre o descripcion
@@ -1199,10 +1202,10 @@ export async function registerRoutes(app: any) {
         materialsData = await db
           .select()
           .from(materials)
-          .where(and(...tokenClauses))
+          .where(and(notDeactivated, ...tokenClauses))
           .limit(limit);
       } else {
-        materialsData = await db.select().from(materials).limit(limit);
+        materialsData = await db.select().from(materials).where(notDeactivated).limit(limit);
       }
 
       const categories = await db.select().from(materialCategories).orderBy(asc(materialCategories.name));
