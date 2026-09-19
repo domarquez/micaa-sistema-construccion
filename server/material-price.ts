@@ -28,6 +28,21 @@ function num(v: unknown, fallback = 0): number {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function optionalPositiveNum(v: unknown): number | null {
+  if (v == null || v === "") return null;
+  const n = typeof v === "number" ? v : parseFloat(String(v));
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return n;
+}
+
+function computePricePerKg(
+  price: number,
+  weightKg: number | null | undefined,
+): number | null {
+  if (weightKg == null || weightKg <= 0 || !Number.isFinite(price)) return null;
+  return Math.round((price / weightKg) * 100) / 100;
+}
+
 function toIsoDate(d: Date | string | null | undefined): string | null {
   if (!d) return null;
   const dt = typeof d === "string" ? new Date(d) : d;
@@ -182,6 +197,7 @@ export async function getPublicMaterialPrice(
   const categoryName = category?.name || "Sin categoría";
   const catalogPrice = num(material.price);
   const catalogAgeDays = daysSince(material.lastUpdated);
+  const materialWeightKg = optionalPositiveNum(material.weightKg);
 
   // Prefer stored rebase; else compute on the fly (does not write)
   let basePrice = material.rebasedPrice != null ? num(material.rebasedPrice) : null;
@@ -220,6 +236,8 @@ export async function getPublicMaterialPrice(
       source: "base",
       linkUnlocked: false,
       link: null,
+      weightKg: materialWeightKg,
+      pricePerKg: computePricePerKg(adjustedBase, materialWeightKg),
     },
   ];
 
@@ -258,6 +276,8 @@ export async function getPublicMaterialPrice(
       (source === "whatsapp" || source === "market") && provenanceName
         ? provenanceName
         : personLabel;
+    const quoteWeightKg =
+      optionalPositiveNum(row.ump.weightKg) ?? materialWeightKg;
     quotes.push({
       kind: "person",
       label,
@@ -273,6 +293,8 @@ export async function getPublicMaterialPrice(
       link: null,
       linkType: null,
       linkUnlocked: false,
+      weightKg: quoteWeightKg,
+      pricePerKg: computePricePerKg(price, quoteWeightKg),
     });
   }
 
@@ -325,6 +347,8 @@ export async function getPublicMaterialPrice(
       supplierPhone: row.supplier.phone || row.supplier.whatsapp || null,
       provenanceDate: toIsoDate(row.msp.lastUpdated),
       source: "supplier",
+      weightKg: materialWeightKg,
+      pricePerKg: computePricePerKg(price, materialWeightKg),
     });
   }
 
@@ -347,6 +371,8 @@ export async function getPublicMaterialPrice(
     materialId: material.id,
     name: material.name,
     unit: material.unit,
+    weightKg: materialWeightKg,
+    pricePerKg: computePricePerKg(adjustedBase, materialWeightKg),
     category: categoryName,
     origin,
     alpha,

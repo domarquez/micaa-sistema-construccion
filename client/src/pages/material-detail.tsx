@@ -22,12 +22,16 @@ type Quote = {
   supplierPhone?: string | null;
   provenanceDate?: string | null;
   source?: "whatsapp" | "market" | "person" | "supplier" | "base";
+  weightKg?: number | null;
+  pricePerKg?: number | null;
 };
 
 type Payload = {
   materialId: number;
   name: string;
   unit: string;
+  weightKg?: number | null;
+  pricePerKg?: number | null;
   category: string;
   basePrice: number;
   baseLabel: string;
@@ -41,6 +45,17 @@ type Payload = {
 
 function formatBs(n: number) {
   return `Bs ${n.toLocaleString("es-BO", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+}
+
+function formatKg(n: number) {
+  return `${n.toLocaleString("es-BO", { minimumFractionDigits: 0, maximumFractionDigits: 4 })} kg`;
+}
+
+function resolvePricePerKg(q: Quote, materialWeightKg?: number | null): number | null {
+  if (q.pricePerKg != null && Number.isFinite(q.pricePerKg)) return q.pricePerKg;
+  const w = q.weightKg ?? materialWeightKg;
+  if (w == null || w <= 0 || !Number.isFinite(q.price)) return null;
+  return Math.round((q.price / w) * 100) / 100;
 }
 
 function ageLabel(d?: number) {
@@ -162,6 +177,9 @@ export default function MaterialDetail() {
         {data.cityFactor != null && data.cityFactor !== 1
           ? ` · factor mat. ×${Number(data.cityFactor).toFixed(2)}`
           : ""}
+        {data.weightKg != null && data.weightKg > 0
+          ? ` · peso ${formatKg(data.weightKg)}`
+          : ""}
       </p>
 
       <div className="mt-6 divide-y divide-[var(--micaa-line)] border-y border-[var(--micaa-line)]">
@@ -223,8 +241,22 @@ export default function MaterialDetail() {
                       </div>
                     )}
                   </div>
-                  <div className="shrink-0 text-[20px] font-medium tabular-nums">
-                    {formatBs(q.price)}
+                  <div className="shrink-0 text-right">
+                    <div className="text-[20px] font-medium tabular-nums">
+                      {formatBs(q.price)}
+                    </div>
+                    {(q.weightKg ?? data.weightKg) != null &&
+                      (q.weightKg ?? data.weightKg)! > 0 && (
+                        <div className="mt-0.5 text-[11px] text-[var(--micaa-muted)] tabular-nums">
+                          peso {(q.weightKg ?? data.weightKg)!.toLocaleString("es-BO", {
+                            maximumFractionDigits: 4,
+                          })}{" "}
+                          kg
+                          {resolvePricePerKg(q, data.weightKg) != null
+                            ? ` · ≈ ${formatBs(resolvePricePerKg(q, data.weightKg)!)}/kg`
+                            : ""}
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>

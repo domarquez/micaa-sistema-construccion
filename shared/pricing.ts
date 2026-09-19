@@ -362,6 +362,10 @@ export interface QuoteRow {
   /** ISO date (YYYY-MM-DD) for procedencia display. */
   provenanceDate?: string | null;
   source?: QuoteSource;
+  /** Kg por unidad de venta (cotización o material). */
+  weightKg?: number | null;
+  /** Precio por kg cuando weightKg > 0. */
+  pricePerKg?: number | null;
 }
 
 const CITY_SORT_ALIASES: Record<string, string[]> = {
