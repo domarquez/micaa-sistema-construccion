@@ -94,6 +94,7 @@ export type IngestSuccessBody = {
   city: string;
   price: number;
   unit: string;
+  weightKg?: number | null;
   isPublic: boolean;
   idempotencyKey: string;
 };
@@ -124,6 +125,8 @@ type ParsedItem = {
   specialty?: string;
   categoryHint?: string;
   notes?: string;
+  /** Kg por unidad de venta (opcional; alias JSON: peso). */
+  weightKg?: number | null;
   createStubIfMissing: boolean;
   whatsappMessageId?: string;
   chatJid?: string;
@@ -160,6 +163,17 @@ function resolveCity(raw: string): string | null {
   return hit || null;
 }
 
+
+function parseOptionalWeightKg(raw: unknown): number | null | undefined {
+  if (raw === undefined) return undefined;
+  if (raw === null || raw === "") return null;
+  const n = typeof raw === "number" ? raw : parseFloat(String(raw));
+  if (!Number.isFinite(n) || n <= 0) return null;
+  // Cap absurd values (kg per unit)
+  if (n > 1_000_000) return null;
+  return Math.round(n * 10000) / 10000;
+}
+
 function truncate(s: string, max: number): string {
   if (s.length <= max) return s;
   return s.slice(0, max);
@@ -181,6 +195,7 @@ function payloadHash(item: ParsedItem): string {
     createStubIfMissing: item.createStubIfMissing,
     supplierName: item.supplierName ?? null,
     phone: item.phone ?? null,
+    weightKg: item.weightKg ?? null,
   };
   return createHash("sha256").update(JSON.stringify(stable)).digest("hex");
 }
@@ -279,6 +294,24 @@ function parseItem(raw: unknown): { ok: true; item: ParsedItem } | { ok: false; 
     };
   }
 
+  const weightRaw = b.weightKg !== undefined ? b.weightKg : b.peso;
+  const weightKg = parseOptionalWeightKg(weightRaw);
+  if (
+    weightRaw !== undefined &&
+    weightRaw !== null &&
+    weightRaw !== "" &&
+    weightKg == null
+  ) {
+    return {
+      ok: false,
+      error: {
+        ok: false,
+        error: "weightKg/peso must be a number > 0 when provided",
+        code: "validation_error",
+      },
+    };
+  }
+
   const currency = String(b.currency ?? "BOB").trim().toUpperCase() || "BOB";
   if (currency !== "BOB") {
     return {
@@ -350,6 +383,7 @@ function parseItem(raw: unknown): { ok: true; item: ParsedItem } | { ok: false; 
       name,
       unit: normalizeUnit(unitRaw),
       price,
+      weightKg: weightKg === undefined ? undefined : weightKg,
       currency,
       city,
       isPublic,
@@ -545,6 +579,10 @@ async function resolveMaterial(
       price: item.price.toFixed(2),
       description: "stub",
       priceOrigin: "pendiente",
+      weightKg:
+        item.weightKg != null && item.weightKg > 0
+          ? item.weightKg.toFixed(4)
+          : null,
       lastUpdated: new Date(),
     })
     .returning();
@@ -609,6 +647,7 @@ async function replayOrConflict(
     city: q.city || item.city,
     price: parseFloat(String(q.price)),
     unit: q.unit,
+    weightKg: q.weightKg != null ? parseFloat(String(q.weightKg)) : null,
     isPublic: !!q.isPublic,
     idempotencyKey: item.idempotencyKey,
   };
@@ -642,6 +681,12 @@ async function persistQuote(
   let quoteId: number;
   let action: "inserted" | "updated";
 
+  const hasWeight =
+    item.weightKg !== undefined &&
+    item.weightKg != null &&
+    item.weightKg > 0;
+  const quoteWeightKg = hasWeight ? item.weightKg!.toFixed(4) : null;
+
   if (existing.length > 0) {
     const updated = await db
       .update(userMaterialPrices)
@@ -655,6 +700,8 @@ async function persistQuote(
         supplierPhone: item.phone ?? null,
         isPublic: item.isPublic,
         updatedAt: new Date(),
+        // Only overwrite quote weight when ingest sends weightKg|peso
+        ...(item.weightKg !== undefined ? { weightKg: quoteWeightKg } : {}),
       })
       .where(eq(userMaterialPrices.id, existing[0].id))
       .returning();
@@ -673,12 +720,28 @@ async function persistQuote(
         reason,
         supplierName: item.supplierName ?? null,
         supplierPhone: item.phone ?? null,
+        weightKg: quoteWeightKg,
         city: item.city,
         isPublic: item.isPublic,
       })
       .returning();
     quoteId = inserted[0].id;
     action = "inserted";
+  }
+
+  // Fill-only materials.weightKg when null — NEVER touch materials.price
+  if (item.weightKg != null && item.weightKg > 0) {
+    const matRows = await db
+      .select({ id: materials.id, weightKg: materials.weightKg })
+      .from(materials)
+      .where(eq(materials.id, resolved.materialId))
+      .limit(1);
+    if (matRows.length > 0 && matRows[0].weightKg == null) {
+      await db
+        .update(materials)
+        .set({ weightKg: item.weightKg.toFixed(4) })
+        .where(eq(materials.id, resolved.materialId));
+    }
   }
 
   try {
@@ -705,6 +768,7 @@ async function persistQuote(
     city: item.city,
     price: item.price,
     unit: resolved.unit,
+    weightKg: item.weightKg ?? null,
     isPublic: item.isPublic,
     idempotencyKey: item.idempotencyKey,
   };

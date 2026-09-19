@@ -73,6 +73,8 @@ export const materials = pgTable("materials", {
   rebasedPrice: decimal("rebased_price", { precision: 10, scale: 2 }),
   rebasedAt: timestamp("rebased_at"),
   priceOrigin: text("price_origin"), // importado | mixto | nacional
+  /** Peso en kg por unidad de venta (nullable; fill-only desde ingest). */
+  weightKg: decimal("weight_kg", { precision: 12, scale: 4 }),
 });
 
 // Precios personalizados de materiales por usuario
@@ -90,6 +92,8 @@ export const userMaterialPrices = pgTable("user_material_prices", {
   supplierName: text("supplier_name"),
   /** Provenance phone from WA/market ingest (nullable). */
   supplierPhone: text("supplier_phone"),
+  /** Peso en kg por unidad de venta reportado en la cotización (nullable). */
+  weightKg: decimal("weight_kg", { precision: 12, scale: 4 }),
   isPublic: boolean("is_public").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -630,6 +634,10 @@ export const insertUserMaterialPriceSchema = createInsertSchema(userMaterialPric
   updatedAt: true,
 }).extend({
   price: z.union([z.string(), z.number()]).transform(val => String(val)),
+  weightKg: z
+    .union([z.string(), z.number(), z.null(), z.undefined()])
+    .optional()
+    .transform((val) => (val == null || val === "" ? undefined : String(val))),
 });
 
 export const insertUserActivitySchema = createInsertSchema(userActivities).omit({
