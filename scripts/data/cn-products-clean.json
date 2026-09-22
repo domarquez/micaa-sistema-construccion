@@ -1,0 +1,436 @@
+[
+  {
+    "id": 9,
+    "code": "1",
+    "name": "6H 15x25 | 24 pz/m2 | m2= 36 Bs",
+    "description": "Ladrillo 6 Huecos 15x25x10 | 24 pz/m2",
+    "price_bs": 1.5,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "15x25x10",
+    "weight": "2.00000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 10,
+    "code": "2",
+    "name": "6H 18x25 | 20pz/m2 | m2= 32 Bs",
+    "description": "Ladrillo 6 Huecos 18x25x10 | 20pz/m2",
+    "price_bs": 1.6,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "18x25x10",
+    "weight": "2.70000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 11,
+    "code": "3",
+    "name": "6 Huecos | 15pz/m2 | m2= 29.70 Bs",
+    "description": "Ladrillo 6 Huecos 18x33x10 | 15pz/m2",
+    "price_bs": 1.98,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "18x33x10",
+    "weight": "3.50000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 13,
+    "code": "4",
+    "name": "9 Huecos | 20pz/m2 | m2=44 Bs",
+    "description": "Ladrillo 9 Huecos 15x18x25 | 20pz/m2",
+    "price_bs": 2.2,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "15x18x25",
+    "weight": "4.00000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 25,
+    "code": "5",
+    "name": "Complemento | 10pz/m2 | m2= 30 Bs",
+    "description": "Complemento 42x10x20 | 10pz/m2",
+    "price_bs": 3.0,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "42x10x20",
+    "weight": "5.00000",
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 31,
+    "code": "22",
+    "name": "Complemento | 10pz/m2 | m2=30 Bs",
+    "description": "Complemento 42x12x20 | 10pz/m2",
+    "price_bs": 3.0,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "42x12x20",
+    "weight": "5.15000",
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 14,
+    "code": "6",
+    "name": "Mitad 6 Huecos | 15x25",
+    "description": "Mitad 6 Huecos | 15x25",
+    "price_bs": 0.8,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "15x25",
+    "weight": "1.00000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 15,
+    "code": "7",
+    "name": "Mitad 6 huecos | 18x25",
+    "description": "Mitad 6 huecos | 18x25",
+    "price_bs": 0.8,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "18x25",
+    "weight": "1.35000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 16,
+    "code": "8",
+    "name": "Mitad 6 huecos | 18x33",
+    "description": "Mitad 6 huecos | 18x33",
+    "price_bs": 1.1,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "18x33",
+    "weight": "1.75000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 26,
+    "code": "9",
+    "name": "Mitad 3 Huecos",
+    "description": "Mitad 3 Huecos | 11.5x7.5x12.5",
+    "price_bs": 0.7,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "11.5x7.5x12.5",
+    "weight": "1.00000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 12,
+    "code": "10",
+    "name": "Teja Normal | 20pz/m2 | m2=76 Bs",
+    "description": "Teja Normal 21x17x50 | 20pz/m2",
+    "price_bs": 3.8,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "21x17x50",
+    "weight": "2.70000",
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 17,
+    "code": "11",
+    "name": "Teja Canal con Trabe | 20pz/m2 | m2=76 Bs",
+    "description": "Teja Canal con Trabe 21x17x50 | 20pz/m2",
+    "price_bs": 3.8,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "21x17x50",
+    "weight": "2.70000",
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 18,
+    "code": "12",
+    "name": "Teja Canal con Hueco | 20pz/m2 | m2=76 Bs",
+    "description": "Teja Canal con Hueco 21x17x50 | 20pz/m2",
+    "price_bs": 3.8,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "21x17x50",
+    "weight": "2.70000",
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 19,
+    "code": "13",
+    "name": "Teja Tapa con Hueco | 20 pz/m2 | m2=76 Bs",
+    "description": "Teja Tapa con Hueco 21x17x50 | 20 pz/m2",
+    "price_bs": 3.8,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "21x17x50",
+    "weight": null,
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 1,
+    "code": "14",
+    "name": "18 Huecos | 43pz/m2 | m2= 90.3 Bs",
+    "description": "Ladrillo 18 Huecos 11.5x7.5x25 | 43pz/m2",
+    "price_bs": 2.1,
+    "brand": "producto",
+    "dimensions": "11.5x7.5x25",
+    "weight": "2.10000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 8,
+    "code": "15",
+    "name": "3 Huecos | 43pz/m2 | m2= 60.20 Bs",
+    "description": "Ladrillo 3 Huecos 11.5x7.5x25 | 43pz/m2",
+    "price_bs": 1.4,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "11.5x7.5x25",
+    "weight": "2.00000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 22,
+    "code": "16",
+    "name": "Piso 20x20| 25pz/m2 | m2=31.25 Bs",
+    "description": "Piso 20x20 | 25pz/m2",
+    "price_bs": 1.25,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "20x20",
+    "weight": "1.00000",
+    "is_active": true,
+    "categories": [
+      "PISO"
+    ]
+  },
+  {
+    "id": 23,
+    "code": "17",
+    "name": "Adoquin Peatonal | 50pz/m2 | m2=92.5 Bs",
+    "description": "Piso Adoquin Peatonal 4.5x20.5x10 | 50pz/m2",
+    "price_bs": 1.85,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "4.5x20.5x10",
+    "weight": "1.80000",
+    "is_active": true,
+    "categories": [
+      "PISO"
+    ]
+  },
+  {
+    "id": 24,
+    "code": "18",
+    "name": "Adoquin Alto Trafico | 50pz/m2 | m2=105 Bs",
+    "description": "Piso Adoquin Alto Trafico 6.5x20.5x10 | 50 pz/m2",
+    "price_bs": 2.1,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "6.5x20.5x10",
+    "weight": "2.45000",
+    "is_active": true,
+    "categories": [
+      "PISO"
+    ]
+  },
+  {
+    "id": 20,
+    "code": "19",
+    "name": "Parasol Recticulado | 30pz/m2 | m2=48 Bs",
+    "description": "Parasol Recticulado 26x12.5x10 | 30pz/m2",
+    "price_bs": 1.6,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "26x12.5x10",
+    "weight": "2.10000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 21,
+    "code": "20",
+    "name": "Parasol 45 Grados | 19pz/m2 | m2=47.5 Bs",
+    "description": "Parasol 45 Grados 18.5x24.5x8 | 19pz/m2",
+    "price_bs": 2.5,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "18.5x24.5x8",
+    "weight": "2.70000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 36,
+    "code": "25",
+    "name": "Adoquin Con Drenaje | 50pz/m2 | m2=90 Bs",
+    "description": "Piso Adoquin Con Drenaje 20.5x10x4.5 | 50pz/m2 | m2=90 Bs",
+    "price_bs": 1.8,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "20.5x10x4.5",
+    "weight": "1.60000",
+    "is_active": true,
+    "categories": [
+      "PISO"
+    ]
+  },
+  {
+    "id": 39,
+    "code": "28",
+    "name": "6H 18x25 | 20pz/m2 | m2= 23 Bs",
+    "description": "Ladrillo 6H 18x25x10 | 20pz/m2",
+    "price_bs": 1.15,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "18x25x10",
+    "weight": "2.70000",
+    "is_active": true,
+    "categories": [
+      "MURO"
+    ]
+  },
+  {
+    "id": 40,
+    "code": "29",
+    "name": "Teja Fibrocemento Residencial Saint Gobain - Brasilit 1.83x1.10 m",
+    "description": "Teja Fibrocemento Residencial Saint Gobain - Brasilit 1.83x1.10 m",
+    "price_bs": 130.0,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "1.83x1.10 m",
+    "weight": "18.00000",
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 41,
+    "code": "30",
+    "name": "Teja Fibrocemento Residencial Saint Gobain - Brasilit 2.44x1.10 m",
+    "description": "Teja Fibrocemento Residencial Saint Gobain - Brasilit 2.44x1.10 m",
+    "price_bs": 165.0,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "2.44x1.10 m",
+    "weight": "14.00000",
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 42,
+    "code": "31",
+    "name": "Cumbrera Universal Fibrocemento Residencial Saint Gobain - Brasilit 1.10 m",
+    "description": "Cumbrera Universal Fibrocemento Residencial Saint Gobain - Brasilit 1.10 m",
+    "price_bs": 130.0,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "1.10 m",
+    "weight": null,
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 43,
+    "code": "32",
+    "name": "Teja Top confort Saint Gobain - Brasilit 1.83x1.10 m",
+    "description": "Brasilit 1.83x1.10 m",
+    "price_bs": 180.0,
+    "brand": null,
+    "dimensions": null,
+    "weight": null,
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 44,
+    "code": "33",
+    "name": "Teja Top confort Saint Gobain - Brasilit 2.44x1.10 m",
+    "description": "",
+    "price_bs": 210.0,
+    "brand": null,
+    "dimensions": null,
+    "weight": null,
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 45,
+    "code": "34",
+    "name": "Teja Fibrotex Gobain - Brasilit 1.22x0.50 m",
+    "description": "",
+    "price_bs": 45.0,
+    "brand": null,
+    "dimensions": null,
+    "weight": null,
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 46,
+    "code": "35",
+    "name": "Teja Fibrotex Gobain - Brasilit 2.44x0.50 m",
+    "description": "",
+    "price_bs": 75.0,
+    "brand": null,
+    "dimensions": null,
+    "weight": null,
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  },
+  {
+    "id": 47,
+    "code": "47",
+    "name": "Cumbrera Universal Fibrocemento Top Confort",
+    "description": "Cumbrera Universal Fibrocemento Top Confort",
+    "price_bs": 180.0,
+    "brand": "CERAMICA NORTE",
+    "dimensions": "1.10 m",
+    "weight": null,
+    "is_active": true,
+    "categories": [
+      "TECHO"
+    ]
+  }
+]
