@@ -381,6 +381,10 @@ export interface QuoteRow {
   pricePerKg?: number | null;
   /** UI: show "estimada" (e.g. MICAA Market sin IVA / derived street). */
   estimated?: boolean;
+  /** user_material_prices.id (person / WA quotes) — used by APU price overrides. */
+  quoteId?: number;
+  /** material_supplier_prices.id (supplier company quotes) — used by APU price overrides. */
+  supplierPriceId?: number;
 }
 
 const CITY_SORT_ALIASES: Record<string, string[]> = {

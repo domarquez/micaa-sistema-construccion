@@ -70,6 +70,12 @@ export default function ActivityDetailDialog({
     enabled: open && activityId > 0,
   });
 
+  // Precio en vivo por composición (APU live: Base MICAA / tarifa vigente); fallback unit_cost importado
+  const liveCost = (comp: any): number => {
+    const row = (apuCalculation as any)?.rows?.find((r: any) => r.compositionId === comp.id);
+    return row ? Number(row.unitPrice) : parseFloat(comp.unitCost);
+  };
+
   // Mutations for editing custom activity compositions
   const updateCompositionMutation = useMutation({
     mutationFn: async ({ compositionId, data }: { compositionId: number, data: any }) => {
@@ -281,11 +287,11 @@ export default function ActivityDetailDialog({
                         <span>{formatCurrency(apuCalculation.laborTotal)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Cargas sociales (55.00%)</span>
+                        <span>Cargas sociales ({Number(apuCalculation.breakdown.socialChargesPercentage ?? 71.18).toFixed(2)}%)</span>
                         <span>{formatCurrency(apuCalculation.breakdown.laborCharges)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>I.V.A. de M.O. y cargas sociales (14.94%)</span>
+                        <span>I.V.A. de M.O. y cargas sociales ({Number(apuCalculation.breakdown.laborIvaPercentage ?? 14.94).toFixed(2)}%)</span>
                         <span>{formatCurrency(apuCalculation.breakdown.laborIVA)}</span>
                       </div>
                       <div className="flex justify-between font-medium text-sm">
@@ -307,7 +313,7 @@ export default function ActivityDetailDialog({
                         <span>{formatCurrency(apuCalculation.equipmentTotal)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Herramientas (5.00%)</span>
+                        <span>Herramientas menores ({Number(apuCalculation.breakdown.toolsPercentage ?? 5).toFixed(2)}% de la M.O.)</span>
                         <span>{formatCurrency(apuCalculation.breakdown.tools)}</span>
                       </div>
                       <div className="flex justify-between font-medium text-sm">
@@ -325,7 +331,7 @@ export default function ActivityDetailDialog({
                     </div>
                     <div className="ml-4 text-xs">
                       <div className="flex justify-between font-medium">
-                        <span>Gastos generales (8.00%)</span>
+                        <span>Gastos generales ({Number(apuCalculation.breakdown.administrativePercentage ?? 8).toFixed(2)}%)</span>
                         <span>{formatCurrency(apuCalculation.administrativeCost)}</span>
                       </div>
                     </div>
@@ -339,7 +345,7 @@ export default function ActivityDetailDialog({
                     </div>
                     <div className="ml-4 text-xs">
                       <div className="flex justify-between font-medium">
-                        <span>Utilidad (15.00%)</span>
+                        <span>Utilidad ({Number(apuCalculation.breakdown.utilityPercentage ?? 15).toFixed(2)}%)</span>
                         <span>{formatCurrency(apuCalculation.utilityCost)}</span>
                       </div>
                     </div>
@@ -353,7 +359,7 @@ export default function ActivityDetailDialog({
                     </div>
                     <div className="ml-4 text-xs">
                       <div className="flex justify-between font-medium">
-                        <span>IT (3.09%)</span>
+                        <span>IT ({Number(apuCalculation.breakdown.taxPercentage ?? 3.09).toFixed(2)}%)</span>
                         <span>{formatCurrency(apuCalculation.taxCost)}</span>
                       </div>
                     </div>
@@ -387,7 +393,7 @@ export default function ActivityDetailDialog({
                   <CardContent>
                     <div className="flex items-center justify-between mb-4">
                       <div className="text-sm text-gray-600">
-                        Total materiales: {formatCurrency(materials.reduce((sum, m) => sum + parseFloat(m.quantity) * parseFloat(m.unitCost), 0))}
+                        Total materiales: {formatCurrency(materials.reduce((sum, m) => sum + parseFloat(m.quantity) * liveCost(m), 0))}
                       </div>
                       {isCustomActivity && user && (
                         <Button size="sm" onClick={() => handleAddComposition('material')}>
@@ -449,7 +455,7 @@ export default function ActivityDetailDialog({
                                   })}
                                   className="w-24 text-right"
                                 />
-                              ) : formatCurrency(parseFloat(item.unitCost))}
+                              ) : formatCurrency(liveCost(item))}
                             </TableCell>
                             <TableCell className="text-right font-medium">
                               {editingComposition === item.id ? 
@@ -457,7 +463,7 @@ export default function ActivityDetailDialog({
                                   parseFloat(editValues[item.id]?.quantity || '0') * 
                                   parseFloat(editValues[item.id]?.unitCost || '0')
                                 ) :
-                                formatCurrency(parseFloat(item.quantity) * parseFloat(item.unitCost))
+                                formatCurrency(parseFloat(item.quantity) * liveCost(item))
                               }
                             </TableCell>
                             {isCustomActivity && user && (
@@ -504,7 +510,7 @@ export default function ActivityDetailDialog({
                   <CardContent>
                     <div className="flex items-center justify-between mb-4">
                       <div className="text-sm text-gray-600">
-                        Total mano de obra: {formatCurrency(labor.reduce((sum, l) => sum + parseFloat(l.quantity) * parseFloat(l.unitCost), 0))}
+                        Total mano de obra: {formatCurrency(labor.reduce((sum, l) => sum + parseFloat(l.quantity) * liveCost(l), 0))}
                       </div>
                       {isCustomActivity && user && (
                         <Button size="sm" onClick={() => handleAddComposition('labor')}>
@@ -566,7 +572,7 @@ export default function ActivityDetailDialog({
                                   })}
                                   className="w-24 text-right"
                                 />
-                              ) : formatCurrency(parseFloat(item.unitCost))}
+                              ) : formatCurrency(liveCost(item))}
                             </TableCell>
                             <TableCell className="text-right font-medium">
                               {editingComposition === item.id ? 
@@ -574,7 +580,7 @@ export default function ActivityDetailDialog({
                                   parseFloat(editValues[item.id]?.quantity || '0') * 
                                   parseFloat(editValues[item.id]?.unitCost || '0')
                                 ) :
-                                formatCurrency(parseFloat(item.quantity) * parseFloat(item.unitCost))
+                                formatCurrency(parseFloat(item.quantity) * liveCost(item))
                               }
                             </TableCell>
                             {isCustomActivity && user && (
@@ -635,9 +641,9 @@ export default function ActivityDetailDialog({
                             <TableCell className="font-medium">{item.description}</TableCell>
                             <TableCell>{item.unit}</TableCell>
                             <TableCell className="text-right">{parseFloat(item.quantity).toFixed(3)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(parseFloat(item.unitCost))}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(liveCost(item))}</TableCell>
                             <TableCell className="text-right font-medium">
-                              {formatCurrency(parseFloat(item.quantity) * parseFloat(item.unitCost))}
+                              {formatCurrency(parseFloat(item.quantity) * liveCost(item))}
                             </TableCell>
                           </TableRow>
                         ))}

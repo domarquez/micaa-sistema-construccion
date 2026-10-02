@@ -8,6 +8,8 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
 import { getPublicMaterialPrice } from './material-price';
 import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
+import { registerApuRoutes } from './apu-routes';
+import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal } from './apu-live';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -476,9 +478,11 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ error: 'Invalid activity ID' });
       }
 
-      // Import APU calculator
+      // APU en vivo (sin proyecto: porcentajes por defecto del proyecto, ciudad ?ciudad= o SCZ)
       const { calculateAPU } = await import('./apu-calculator');
-      const calculation = await calculateAPU(activityId);
+      const ciudad = typeof req.query.ciudad === 'string' ? req.query.ciudad
+        : typeof req.query.city === 'string' ? req.query.city : null;
+      const calculation = await calculateAPU(activityId, { city: ciudad, includeOptions: false });
       
       res.json(calculation);
     } catch (error) {
@@ -3110,6 +3114,9 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // APU en vivo + overrides de precio por proyecto / ítem (server/apu-routes.ts)
+  registerApuRoutes(app, requireAuth as any);
+
   // BUDGETS ENDPOINTS
   
   // Create budget
@@ -3276,10 +3283,12 @@ export async function registerRoutes(app: any) {
   // Create budget item
   app.post("/api/budget-items", requireAuth, async (req, res) => {
     try {
-      const { budgetId, activityId, phaseId, quantity, unitPrice, subtotal } = req.body;
+      const { budgetId, activityId, phaseId, quantity, unitPrice, manualUnitPrice } = req.body;
       const userId = (req as any).user.id;
-      
-      if (!budgetId || !activityId || !quantity || !unitPrice) {
+      const qty = parseFloat(quantity);
+      const aid = parseInt(activityId);
+
+      if (!budgetId || !aid || !(qty > 0)) {
         return res.status(400).json({ message: "Datos incompletos para crear elemento de presupuesto" });
       }
 
@@ -3287,17 +3296,42 @@ export async function registerRoutes(app: any) {
       if (!owned) {
         return res.status(404).json({ message: "Presupuesto no encontrado" });
       }
+      const [budgetRow] = await db.select({ projectId: budgets.projectId }).from(budgets).where(eq(budgets.id, owned.id)).limit(1);
+
+      // El precio lo calcula el servidor (APU en vivo con overrides del proyecto),
+      // salvo que el usuario lo haya escrito a mano (manualUnitPrice: true) o que
+      // la actividad no tenga composiciones (fallback al precio enviado).
+      let finalUnitPrice = parseFloat(unitPrice);
+      let apu: Awaited<ReturnType<typeof computeActivityApu>> | null = null;
+      if (manualUnitPrice !== true) {
+        try {
+          apu = await computeActivityApu(aid, budgetRow.projectId, null, { includeOptions: false });
+          if (apu.rows.length > 0 && apu.totalUnitPrice > 0) finalUnitPrice = apu.totalUnitPrice;
+          else apu = null;
+        } catch (e) {
+          console.warn("APU en vivo no disponible para actividad", aid, e);
+          apu = null;
+        }
+      }
+      if (!Number.isFinite(finalUnitPrice) || finalUnitPrice < 0) {
+        return res.status(400).json({ message: "Precio unitario inválido" });
+      }
 
       const budgetItem = await dbStorage.createBudgetItem({
-        budgetId: parseInt(budgetId),
-        activityId: parseInt(activityId),
+        budgetId: owned.id,
+        activityId: aid,
         phaseId: phaseId ? parseInt(phaseId) : null,
-        quantity: parseFloat(quantity),
-        unitPrice: parseFloat(unitPrice),
-        subtotal: parseFloat(subtotal)
-      });
+        quantity: qty,
+        unitPrice: Math.round(finalUnitPrice * 100) / 100,
+        subtotal: Math.round(qty * finalUnitPrice * 100) / 100
+      } as any);
 
-      res.status(201).json(budgetItem);
+      if (apu) {
+        const saved = await saveBudgetItemPrice(budgetItem.id, apu);
+        return res.status(201).json({ ...budgetItem, unitPrice: String(saved.unitPrice), subtotal: String(saved.subtotal), pricedBy: "apu" });
+      }
+      await recomputeBudgetTotal(owned.id);
+      res.status(201).json({ ...budgetItem, pricedBy: "manual" });
     } catch (error) {
       console.error("Error creating budget item:", error);
       res.status(500).json({ message: "Error al crear elemento de presupuesto" });
@@ -3313,6 +3347,11 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ message: "ID de presupuesto requerido" });
       }
 
+      const owned = await assertBudgetOwnedByUser(parseInt(budgetId as string), (req as any).user.id);
+      if (!owned) {
+        return res.status(404).json({ message: "Presupuesto no encontrado" });
+      }
+
       const items = await dbStorage.getBudgetItemsByBudgetId(parseInt(budgetId as string));
       res.json(items);
     } catch (error) {
@@ -3326,15 +3365,64 @@ export async function registerRoutes(app: any) {
     try {
       const itemId = parseInt(req.params.id);
       const userId = (req as any).user.id;
-      const updateData = req.body;
+      const body = req.body || {};
 
       const owned = await assertBudgetItemOwnedByUser(itemId, userId);
       if (!owned) {
         return res.status(404).json({ message: "Elemento no encontrado" });
       }
+      const [current] = await db
+        .select({ item: budgetItems, projectId: budgets.projectId })
+        .from(budgetItems)
+        .innerJoin(budgets, eq(budgetItems.budgetId, budgets.id))
+        .where(eq(budgetItems.id, itemId))
+        .limit(1);
 
-      const updatedItem = await dbStorage.updateBudgetItem(itemId, updateData);
-      res.json(updatedItem);
+      // Solo campos editables (nunca budgetId → no se puede mover a otro presupuesto)
+      const nextActivityId = body.activityId != null ? parseInt(body.activityId) : current.item.activityId;
+      const nextQty = body.quantity != null ? parseFloat(body.quantity) : parseFloat(String(current.item.quantity));
+      const nextPhaseId = body.phaseId !== undefined ? (body.phaseId ? parseInt(body.phaseId) : null) : current.item.phaseId;
+      if (!nextActivityId || !(nextQty > 0)) {
+        return res.status(400).json({ message: "Datos inválidos" });
+      }
+      const currentUnit = parseFloat(String(current.item.unitPrice));
+      const sentUnit = body.unitPrice != null ? parseFloat(body.unitPrice) : null;
+      const activityChanged = nextActivityId !== current.item.activityId;
+      const manual = body.manualUnitPrice === true ||
+        (body.reprice !== true && !activityChanged && sentUnit != null && Number.isFinite(sentUnit) && Math.abs(sentUnit - currentUnit) > 0.005);
+
+      await db.update(budgetItems)
+        .set({ activityId: nextActivityId, quantity: String(nextQty), phaseId: nextPhaseId })
+        .where(eq(budgetItems.id, itemId));
+
+      let pricedBy: "apu" | "manual" | "kept" = "kept";
+      if (!manual && (body.reprice === true || activityChanged)) {
+        try {
+          const apu = await computeActivityApu(nextActivityId, current.projectId, itemId, { includeOptions: false });
+          if (apu.rows.length > 0 && apu.totalUnitPrice > 0) {
+            await saveBudgetItemPrice(itemId, apu);
+            pricedBy = "apu";
+          }
+        } catch (e) {
+          console.warn("APU en vivo no disponible para ítem", itemId, e);
+        }
+      }
+      if (pricedBy !== "apu") {
+        const unit = manual && sentUnit != null && Number.isFinite(sentUnit) && sentUnit >= 0
+          ? sentUnit
+          : (activityChanged && sentUnit != null && Number.isFinite(sentUnit) ? sentUnit : currentUnit);
+        await db.update(budgetItems)
+          .set({ unitPrice: String(Math.round(unit * 100) / 100), subtotal: String(Math.round(unit * nextQty * 100) / 100) })
+          .where(eq(budgetItems.id, itemId));
+        if (manual) {
+          await clearBudgetItemSnapshot(itemId);
+          pricedBy = "manual";
+        }
+        await recomputeBudgetTotal(current.item.budgetId);
+      }
+
+      const [updatedItem] = await db.select().from(budgetItems).where(eq(budgetItems.id, itemId)).limit(1);
+      res.json({ ...updatedItem, pricedBy });
     } catch (error) {
       console.error("Error updating budget item:", error);
       res.status(500).json({ message: "Error al actualizar elemento del presupuesto" });
@@ -3353,6 +3441,7 @@ export async function registerRoutes(app: any) {
       }
 
       await dbStorage.deleteBudgetItem(itemId);
+      await recomputeBudgetTotal(owned.budgetId);
       res.json({ message: "Elemento eliminado exitosamente" });
     } catch (error) {
       console.error("Error deleting budget item:", error);
