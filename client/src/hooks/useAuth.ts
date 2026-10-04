@@ -14,6 +14,8 @@ interface User {
   createdAt: string;
   lastLogin?: string;
   phone?: string | null;
+  /** WhatsApp verificado con código (nivel 1 de divulgación progresiva) */
+  phoneVerified?: boolean;
   /** JWT renovado desde la cookie de dispositivo recordado */
   token?: string;
 }

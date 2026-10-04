@@ -2021,6 +2021,7 @@ export async function registerRoutes(app: any) {
         city: userData.city,
         country: userData.country,
         phone: userData.phone ?? null,
+        phoneVerified: !!userData.phoneVerified,
         // JWT nuevo emitido desde la cookie de dispositivo recordado (el cliente lo guarda en localStorage)
         ...(res.locals?.micaaToken ? { token: res.locals.micaaToken } : {}),
       });

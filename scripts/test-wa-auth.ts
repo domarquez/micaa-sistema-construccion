@@ -35,6 +35,7 @@ const logs: string[] = [];
 const otp = createMemoryOtpStore();
 const users = createMemoryUserStore([
   { id: 1, username: "diego", email: "diego@example.com", role: "user", isActive: true, phone: null },
+  { id: 50, username: "legacy", email: "legacy@example.com", role: "user", isActive: true, phone: "+59176666666", phoneVerified: false },
 ]);
 const sessions = createMemorySessionStore();
 
@@ -137,6 +138,7 @@ async function test(name: string, fn: () => Promise<void>) {
     const r = await call("POST", "/api/auth/wa/verify", { phone: "+591 71234567", code: codeFromLastMessage() }, { ...ip(1), "User-Agent": "Mozilla/5.0 (Linux; Android 14) Chrome/120.0" });
     assert.equal(r.status, 200);
     assert.equal(r.json.isNewUser, true);
+    assert.equal(r.json.user.phoneVerified, true, "cuenta creada por WhatsApp = teléfono verificado");
     assert.ok(r.json.token);
     const sc = r.setCookie.find((c: string) => c.startsWith("micaa_session="))!;
     assert.ok(sc, "cookie de sesión");
@@ -301,6 +303,17 @@ async function test(name: string, fn: () => Promise<void>) {
     assert.equal(a.status, b.status);
     assert.deepEqual(Object.keys(a.json).sort(), Object.keys(b.json).sort());
     assert.equal(a.json.message, b.json.message);
+  });
+
+  await test("login por WhatsApp de cuenta existente con teléfono sin verificar → queda verificado", async () => {
+    advance(3600_000);
+    const q = await call("POST", "/api/auth/wa/request", { phone: "76666666" }, ip(20));
+    assert.equal(q.status, 200);
+    const v = await call("POST", "/api/auth/wa/verify", { phone: "76666666", code: codeFromLastMessage() }, ip(20));
+    assert.equal(v.status, 200);
+    assert.equal(v.json.user.id, 50);
+    assert.equal(v.json.user.phoneVerified, true);
+    assert.equal(users.users.find((u) => u.id === 50)?.phoneVerified, true);
   });
 
   await test("logs sin códigos", async () => {

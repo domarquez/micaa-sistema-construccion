@@ -1,5 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useDisclosureLevel } from "@/hooks/useDisclosureLevel";
+import type { DisclosureFeature } from "@/lib/disclosure";
 import {
   Sidebar,
   SidebarContent,
@@ -29,9 +31,12 @@ import {
   Mail,
   Shield,
   LayoutTemplate,
+  MessageCircle,
 } from "lucide-react";
 
-const menuItems = [
+type NavItem = { title: string; url: string; icon: any; feature?: DisclosureFeature };
+
+const menuItems: NavItem[] = [
   {
     title: "Inicio",
     url: "/",
@@ -45,39 +50,46 @@ const menuItems = [
   {
     title: "Actividades",
     url: "/activities",
+    feature: "catalog",
     icon: Combine,
   },
   {
     title: "Presupuestos",
     url: "/budgets",
+    feature: "projects",
     icon: Calculator,
   },
   {
     title: "Desde plantilla",
     url: "/plantillas",
+    feature: "templates",
     icon: LayoutTemplate,
   },
   {
     title: "Marketplace",
     url: "/marketplace",
+    feature: "catalog",
     icon: Store,
   },
 ];
 
-const toolsItems = [
+const toolsItems: NavItem[] = [
   {
     title: "Herramientas",
     url: "/tools",
+    feature: "catalog",
     icon: Wrench,
   },
   {
     title: "Mano de Obra",
     url: "/labor",
+    feature: "catalog",
     icon: Users,
   },
   {
     title: "Actividades Personalizadas",
     url: "/custom-activities",
+    feature: "catalog",
     icon: Settings,
   },
 ];
@@ -151,6 +163,9 @@ const adminItems = [
 export default function AppSidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const { can, nextStep } = useDisclosureLevel();
+  const visible = (items: NavItem[]) => items.filter((i) => !i.feature || can(i.feature));
+  const visibleTools = visible(toolsItems);
 
   const isActive = (url: string) => {
     if (url === "/" && (location === "/" || location === "/dashboard")) {
@@ -175,7 +190,17 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Sistema</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {nextStep && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive("/inscribete")} className="w-full font-medium text-green-700">
+                    <Link href={nextStep === "login" ? "/login" : "/inscribete"} data-testid="sidebar-cta-whatsapp">
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Inscríbete con WhatsApp</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+              {visible(menuItems).map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
@@ -193,11 +218,12 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
         
+        {visibleTools.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel>Herramientas</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {toolsItems.map((item) => (
+              {visibleTools.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
@@ -214,6 +240,7 @@ export default function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        )}
 
         {(user as any)?.role === "supplier" && (
           <SidebarGroup>

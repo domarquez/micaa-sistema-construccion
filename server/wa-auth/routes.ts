@@ -34,7 +34,7 @@ export function publicUser(u: AuthUser) {
   return {
     id: u.id, username: u.username, email: u.email, firstName: u.firstName ?? null, lastName: u.lastName ?? null,
     role: u.role, userType: u.userType ?? null, city: u.city ?? null, country: u.country ?? null,
-    phone: u.phone ?? null, isActive: u.isActive,
+    phone: u.phone ?? null, phoneVerified: !!u.phoneVerified, isActive: u.isActive,
   };
 }
 
@@ -140,6 +140,9 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
         user = await deps.users.createForPhone(phone);
         isNewUser = true;
         log(`[wa-auth] cuenta creada user=${user.id} phone=${maskPhone(phone)}`);
+      } else if (!user.phoneVerified) {
+        // Cuenta existente con ese número (p. ej. registro antiguo): el código acaba de probar que el número es suyo.
+        if ((await deps.users.setPhone(user.id, phone)) === "ok") user = { ...user, phoneVerified: true };
       }
       if (!user.isActive) return res.status(403).json({ ok: false, message: "Cuenta desactivada. Contacta al administrador." });
       await deps.users.touchLastLogin(user.id);
