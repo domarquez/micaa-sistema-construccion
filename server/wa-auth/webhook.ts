@@ -5,6 +5,7 @@
  */
 import { createHash, timingSafeEqual } from "crypto";
 import { normalizePhoneE164 } from "./phone";
+import { refFromText } from "./login-refs";
 
 export const LOGIN_REQUEST_TEXT = "Quiero mi código MICAA";
 const MAX_AGE_S = 10 * 60;
@@ -43,7 +44,7 @@ export function senderPhone(m: any): string | null {
   return null;
 }
 
-export type InboundLoginRequest = { phone: string; messageId: string | null };
+export type InboundLoginRequest = { phone: string; messageId: string | null; ref: string | null };
 
 export function extractLoginRequests(payload: any, opts: { instance?: string; nowS?: number } = {}): { requests: InboundLoginRequest[]; skipped: string[] } {
   const skipped: string[] = [];
@@ -59,10 +60,11 @@ export function extractLoginRequests(payload: any, opts: { instance?: string; no
     if (/@g\.us$|@newsletter$|@broadcast$/.test(jid)) { skipped.push("not_dm"); continue; }
     const ts = Number(m?.messageTimestamp || 0);
     if (ts && nowS - ts > MAX_AGE_S) { skipped.push("old"); continue; }
-    if (!isLoginRequestText(textOf(m))) { skipped.push("other_text"); continue; }
+    const text = textOf(m);
+    if (!isLoginRequestText(text)) { skipped.push("other_text"); continue; }
     const phone = senderPhone(m);
     if (!phone) { skipped.push("no_phone"); continue; }
-    requests.push({ phone, messageId: key.id ? String(key.id) : null });
+    requests.push({ phone, messageId: key.id ? String(key.id) : null, ref: refFromText(text) });
   }
   return { requests, skipped };
 }

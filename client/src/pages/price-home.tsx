@@ -51,7 +51,7 @@ function matchFactor(factors: CityFactor[], city: string): number {
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
 
-export default function PriceHome() {
+export default function PriceHome({ afterSearch }: { afterSearch?: React.ReactNode } = {}) {
   const [, setLocation] = useLocation();
   const [q, setQ] = useState("");
   const [submitted, setSubmitted] = useState("");
@@ -144,6 +144,8 @@ export default function PriceHome() {
           </button>
         ))}
       </div>
+
+      {afterSearch}
 
       <div className="divide-y divide-[var(--micaa-line)] border-t border-[var(--micaa-line)]">
         {isLoading && (

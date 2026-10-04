@@ -52,7 +52,7 @@ export type IssueResult =
 
 export interface OtpService {
   issue(opts: { phone: string; ip: string | null; purpose: OtpPurpose; channel: OtpChannel; userId?: number | null }): Promise<IssueResult>;
-  verify(phone: string, code: string): Promise<{ ok: true; otpId: number } | { ok: false; reason: "invalid" | "too_many_attempts" }>;
+  verify(phone: string, code: string): Promise<{ ok: true; otpId: number } | { ok: false; reason: "invalid" | "no_active" | "too_many_attempts" }>;
 }
 
 export function createOtpService(deps: { store: OtpStore; sender: WaSender; now?: () => Date; log?: (msg: string) => void }): OtpService {
@@ -100,7 +100,8 @@ export function createOtpService(deps: { store: OtpStore; sender: WaSender; now?
       const given = /^\d{6}$/.test(code) ? hashCode(phone, code) : hashCode("x", "x");
       if (!row) {
         safeEqualHex(expected, given);
-        return { ok: false, reason: "invalid" };
+        // No hay código vigente para ESTE número (venció, ya se usó o se envió a otro número).
+        return { ok: false, reason: "no_active" };
       }
       const attempts = await deps.store.incrementAttempts(row.id);
       if (attempts === null) return { ok: false, reason: "too_many_attempts" };
