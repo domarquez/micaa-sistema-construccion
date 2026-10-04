@@ -1,0 +1,6587 @@
+{
+ "version": 1,
+ "generatedFrom": "micaa-scripts/plantillas-proyecto.json (2026-10-04)",
+ "city": "Santa Cruz",
+ "missingActivities": [
+  {
+   "key": "F_DESBROCE",
+   "name": "DESBROCE Y LIMPIEZA DE TERRENO (RETIRO CAPA VEGETAL ≈10 CM, CARGUÍO)",
+   "unit": "m2",
+   "phaseId": 1
+  },
+  {
+   "key": "F_RELLENO_TIERRA",
+   "name": "RELLENO Y COMPACTACIÓN DE LOTE CON TIERRA SELECCIONADA POR CAPAS DE 20 CM (A MÁQUINA)",
+   "unit": "m3",
+   "phaseId": 2
+  },
+  {
+   "key": "F_PINT_INT",
+   "name": "PINTURA LÁTEX INTERIOR EN MUROS Y CIELOS (SELLADOR + 2 MANOS)",
+   "unit": "m2",
+   "phaseId": 7
+  },
+  {
+   "key": "F_TOMA",
+   "name": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+   "unit": "pto",
+   "phaseId": 6
+  },
+  {
+   "key": "C36",
+   "name": "TABLERO DE DISTRIBUCIÓN MONOFÁSICO 12 POLOS CON DIFERENCIAL Y TÉRMICOS",
+   "unit": "pza",
+   "phaseId": 6
+  },
+  {
+   "key": "F_HIGHBAY",
+   "name": "LUMINARIA LED INDUSTRIAL (HIGH-BAY) 100 W CON CIRCUITO",
+   "unit": "pza",
+   "phaseId": 6
+  },
+  {
+   "key": "F_INODORO",
+   "name": "INODORO TANQUE BAJO COMPLETO, INSTALADO (CHICOTILLO, LLAVE ANGULAR, SELLADO)",
+   "unit": "pza",
+   "phaseId": 5
+  },
+  {
+   "key": "C32",
+   "name": "PUNTO DE DESAGÜE PVC 4\" (INODORO) (≈3 M)",
+   "unit": "pto",
+   "phaseId": 5
+  },
+  {
+   "key": "C33",
+   "name": "PUNTO DE GAS NATURAL DOMICILIARIO PE-AL-PE 1620 (≈8 M) (COCINA/CALEFÓN)",
+   "unit": "pto",
+   "phaseId": 5
+  },
+  {
+   "key": "E15",
+   "name": "BOX DE DUCHA CORREDIZO DE VIDRIO TEMPLADO 8 MM CON KIT INOX",
+   "unit": "m2",
+   "phaseId": 5
+  },
+  {
+   "key": "F_BOMBA",
+   "name": "ELECTROBOMBA 1/2 HP CON AUTOMÁTICO DE NIVEL, INSTALADA",
+   "unit": "pza",
+   "phaseId": 5
+  },
+  {
+   "key": "F_REV_PISC",
+   "name": "REVESTIMIENTO CERÁMICO DE PISCINA (VENECITA/CERÁMICA 11.5x23.5) CON PEGAMENTO Y FRAGUA",
+   "unit": "m2",
+   "phaseId": 4
+  },
+  {
+   "key": "F_COR_PISC",
+   "name": "BORDE/CORONACIÓN DE PISCINA CON PIEZA ATÉRMICA 50 CM",
+   "unit": "ml",
+   "phaseId": 4
+  },
+  {
+   "key": "F_EQ_PISC",
+   "name": "EQUIPO DE FILTRADO DE PISCINA (BOMBA 1 HP + FILTRO DE ARENA 20\" + VÁLVULA SELECTORA), INSTALADO",
+   "unit": "glb",
+   "phaseId": 5
+  },
+  {
+   "key": "F_HID_PISC",
+   "name": "RED HIDRÁULICA DE PISCINA (2 SKIMMER, 3 RETORNOS, 1 SUMIDERO, PVC 2\" ≈40 M)",
+   "unit": "glb",
+   "phaseId": 5
+  },
+  {
+   "key": "F_LUZ_PISC",
+   "name": "FOCO SUBACUÁTICO LED 12 V CON TRANSFORMADOR, INSTALADO",
+   "unit": "pza",
+   "phaseId": 6
+  },
+  {
+   "key": "F_ESC_PISC",
+   "name": "ESCALERA MARINERA DE ACERO INOXIDABLE 3 PELDAÑOS, INSTALADA",
+   "unit": "pza",
+   "phaseId": 4
+  },
+  {
+   "key": "F_MACHIMBRE",
+   "name": "REVESTIMIENTO DE MACHIMBRE DE PINO/CEDRO EN MUROS Y CIELO (SOBRE LISTONES)",
+   "unit": "m2",
+   "phaseId": 4
+  },
+  {
+   "key": "F_AISLAM",
+   "name": "AISLAMIENTO TÉRMICO LANA DE VIDRIO 25 MM + BARRERA DE VAPOR",
+   "unit": "m2",
+   "phaseId": 4
+  },
+  {
+   "key": "F_BANCA_SAUNA",
+   "name": "BANCA DE SAUNA EN LISTONES DE MADERA (2 NIVELES)",
+   "unit": "ml",
+   "phaseId": 4
+  },
+  {
+   "key": "F_CALEF_SAUNA",
+   "name": "CALEFACTOR ELÉCTRICO PARA SAUNA 6 KW CON PIEDRAS Y CONTROL, INSTALADO (CIRCUITO 6 MM2)",
+   "unit": "pza",
+   "phaseId": 6
+  },
+  {
+   "key": "E13",
+   "name": "PUERTA DE VIDRIO TEMPLADO 10 MM 0.90X2.10 CON HERRAJES",
+   "unit": "pza",
+   "phaseId": 4
+  },
+  {
+   "key": "C34",
+   "name": "ACERA DE HORMIGÓN E=7 CM CON JUNTAS DE DILATACIÓN, ACABADO FROTACHADO",
+   "unit": "m2",
+   "phaseId": 9
+  },
+  {
+   "key": "C35",
+   "name": "PORTÓN METÁLICO DE TUBO CUADRADO Y PLANCHA 1/16\" CON PINTURA",
+   "unit": "m2",
+   "phaseId": 3
+  },
+  {
+   "key": "E8",
+   "name": "CUBIERTA DE POLICARBONATO ALVEOLAR 6 MM (SOLO COBERTURA, SOBRE ESTRUCTURA)",
+   "unit": "m2",
+   "phaseId": 3
+  },
+  {
+   "key": "E9",
+   "name": "PÉRGOLA METÁLICA TUBULAR (COLUMNAS 100X100, VIGAS 50X100, CORREAS 40X80 C/60 CM) CON PINTURA",
+   "unit": "m2",
+   "phaseId": 8
+  },
+  {
+   "key": "F_TORRE_KG",
+   "name": "ESTRUCTURA METÁLICA DE TORRE/PÓRTICO (TUBULAR 100x100 Y PERFILES), CON ANTICORROSIVO Y ESMALTE",
+   "unit": "kg",
+   "phaseId": 3
+  },
+  {
+   "key": "F_CAMPANA",
+   "name": "CAMPANA Y DUCTO DE CHURRASQUERA EN PLANCHA 3 MM CON SOMBRERETE (DUCTO ≈2 M)",
+   "unit": "pza",
+   "phaseId": 4
+  },
+  {
+   "key": "F_MOTOR_PORTON",
+   "name": "MOTOR PARA PORTÓN CORREDIZO (≤600 KG) CON 2 CONTROLES Y CREMALLERA, INSTALADO",
+   "unit": "pza",
+   "phaseId": 3
+  },
+  {
+   "key": "E20",
+   "name": "MUEBLE BAJO DE COCINA EN MELAMINA 18 MM (H=0.85, P=0.60) CON PUERTAS Y 1 CAJONERA, SIN MESÓN",
+   "unit": "ml",
+   "phaseId": 4
+  },
+  {
+   "key": "E21",
+   "name": "MUEBLE ALTO DE COCINA EN MELAMINA 18 MM (H=0.70, P=0.33) CON PUERTAS",
+   "unit": "ml",
+   "phaseId": 4
+  }
+ ],
+ "templates": [
+  {
+   "slug": "casa-economica-1p-60",
+   "name": "Casa económica de 1 planta (60 m², 2 dormitorios)",
+   "category": "vivienda",
+   "description": "Vivienda unifamiliar económica: 2 dormitorios, 1 baño, cocina-sala-comedor. Cimiento corrido HoCo, sobrecimiento, columnas y encadenado de HoAo, muro de ladrillo 6H, cubierta de calamina sobre cerchas metálicas, cielo falso, piso cerámico, ventanas de aluminio.",
+   "unitRef": "m2",
+   "refQuantityFormula": "A",
+   "params": {
+    "A": {
+     "default": 60,
+     "min": 36,
+     "max": 120,
+     "unit": "m2",
+     "label": "Área construida"
+    },
+    "H": {
+     "default": 2.6,
+     "min": 2.4,
+     "max": 3.0,
+     "unit": "m",
+     "label": "Altura de muros"
+    },
+    "D": {
+     "default": 2,
+     "min": 1,
+     "max": 4,
+     "unit": "u",
+     "label": "Dormitorios"
+    },
+    "B": {
+     "default": 1,
+     "min": 1,
+     "max": 2,
+     "unit": "u",
+     "label": "Baños"
+    },
+    "NP": {
+     "default": 1,
+     "min": 1,
+     "max": 1,
+     "unit": "u",
+     "label": "Plantas (fijo)"
+    },
+    "SEP": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Cámara séptica + pozo (sin alcantarillado)"
+    },
+    "GAS": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Punto de gas domiciliario"
+    }
+   },
+   "derived": [
+    {
+     "name": "Ap",
+     "expr": "A/NP",
+     "label": "área por planta (m2)"
+    },
+    {
+     "name": "L",
+     "expr": "sqrt(Ap*10/6)",
+     "label": "largo de planta (rect. 10:6)"
+    },
+    {
+     "name": "W",
+     "expr": "Ap/L",
+     "label": "ancho de planta"
+    },
+    {
+     "name": "Pext",
+     "expr": "2*(L+W)",
+     "label": "perímetro exterior por planta (ml)"
+    },
+    {
+     "name": "Lint",
+     "expr": "Ap/3",
+     "label": "muros interiores por planta (ml, ≈A/3)"
+    },
+    {
+     "name": "Lm",
+     "expr": "Pext+Lint",
+     "label": "longitud total de muros por planta"
+    },
+    {
+     "name": "Ncol",
+     "expr": "ceil(Pext/3)+4",
+     "label": "columnas por planta (c/3 m en perímetro + 4 interiores)"
+    },
+    {
+     "name": "Avent",
+     "expr": "0.12*A",
+     "label": "ventanas (12 % del área construida)"
+    },
+    {
+     "name": "Npi",
+     "expr": "D+B",
+     "label": "puertas interiores (dormitorios + baños)"
+    },
+    {
+     "name": "Aab",
+     "expr": "1.89+Npi*1.68+Avent",
+     "label": "vanos totales (puerta ext 0.9×2.1 + interiores 0.8×2.1 + ventanas)"
+    },
+    {
+     "name": "Anet",
+     "expr": "A-NP*Lm*0.12",
+     "label": "área neta de piso (descuenta muros e=12)"
+    },
+    {
+     "name": "Acer",
+     "expr": "B*12.6+3*0.6",
+     "label": "revestimiento cerámico (baño 2×1.5×h1.8 perímetro 7 ml≈12.6 m2 c/u + cocina 3 ml×0.6)"
+    },
+    {
+     "name": "Arevi",
+     "expr": "NP*(Pext+2*Lint)*H-1.5*Aab",
+     "label": "revoque interior (cara int. de muros ext + 2 caras de interiores − vanos ×1.5)"
+    },
+    {
+     "name": "Arevx",
+     "expr": "Pext*(NP*H+0.3)-(Avent+1.89)",
+     "label": "revoque exterior (perímetro × altura total + 0.3 sobrecimiento − vanos exteriores)"
+    },
+    {
+     "name": "Acub",
+     "expr": "Ap*1.25",
+     "label": "cubierta inclinada (planta × 1.25 por aleros y pendiente)"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 240614.2,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ap",
+     "defaultQuantity": 60.0,
+     "breakdown": "Replanteo = área de planta Ap",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 1,
+     "activityId": null,
+     "missingKey": "F_DESBROCE",
+     "missingName": "DESBROCE Y LIMPIEZA DE TERRENO (RETIRO CAPA VEGETAL ≈10 CM, CARGUÍO)",
+     "quantityFormula": "Ap*1.5",
+     "defaultQuantity": 90.0,
+     "breakdown": "Desbroce = área de planta × 1.5 (franja de trabajo)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 9.66
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.4*0.6",
+     "defaultQuantity": 12.48,
+     "breakdown": "Excavación cimiento corrido = Lm × 0.40 × 0.60",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 2,
+     "activityId": 520,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.4*0.6*1.3*0.5",
+     "defaultQuantity": 8.112,
+     "breakdown": "Retiro de excedente = excavación × 1.3 (esponjamiento) × 50 %",
+     "unit": "m3",
+     "designUnitPriceSCZ": 74.02
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 2,
+     "activityId": 392,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Anet*0.2",
+     "defaultQuantity": 10.752,
+     "breakdown": "Relleno compactado bajo piso = Anet × 0.20 m",
+     "unit": "m3",
+     "designUnitPriceSCZ": 314.73
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 193,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.4*0.5",
+     "defaultQuantity": 10.4,
+     "breakdown": "Cimiento HoCo 1:2:3 50 % piedra = Lm × 0.40 × 0.50 (m3)",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1581.83
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.15*0.3",
+     "defaultQuantity": 2.34,
+     "breakdown": "Sobrecimiento 15×30: volumen H21 = Lm*0.15*0.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Lm*0.15*0.3)*80",
+     "defaultQuantity": 187.2,
+     "breakdown": "Sobrecimiento 15×30: acero = V × 80 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.6",
+     "defaultQuantity": 31.2,
+     "breakdown": "Sobrecimiento 15×30: encofrado = 2 caras × 0.30 × Lm",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": 236,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm",
+     "defaultQuantity": 52.0,
+     "breakdown": "Impermeabilización de sobrecimiento = Lm",
+     "unit": "ml",
+     "designUnitPriceSCZ": 36.64
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.15*0.2*(H+0.3)",
+     "defaultQuantity": 1.305,
+     "breakdown": "Columnas 15×20 (h=H+0.3): volumen H21 = Ncol*0.15*0.2*(H+0.3)",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*0.15*0.2*(H+0.3))*130",
+     "defaultQuantity": 169.65,
+     "breakdown": "Columnas 15×20 (h=H+0.3): acero = V × 130 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.7*(H+0.3)",
+     "defaultQuantity": 30.45,
+     "breakdown": "Columnas 15×20 (h=H+0.3): encofrado = perímetro 0.70 × (H+0.3) × Ncol",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.15*0.2",
+     "defaultQuantity": 1.56,
+     "breakdown": "Viga de encadenado 15×20: volumen H21 = Lm*0.15*0.2",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Lm*0.15*0.2)*110",
+     "defaultQuantity": 171.6,
+     "breakdown": "Viga de encadenado 15×20: acero = V × 110 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.4",
+     "defaultQuantity": 20.8,
+     "breakdown": "Viga de encadenado 15×20: encofrado = 2 caras × 0.20 × Lm (fondo sobre muro)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "NP*(Lm*H-Ncol*0.2*H)-Aab",
+     "defaultQuantity": 113.27,
+     "breakdown": "Muro 6H = NP × (Lm × H − columnas Ncol×0.20×H) − vanos Aab",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 3,
+     "activityId": 543,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub*5",
+     "defaultQuantity": 375.0,
+     "breakdown": "Cerchas metálicas = cubierta Acub × 5 kg/m2",
+     "unit": "kg",
+     "designUnitPriceSCZ": 27.36
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 3,
+     "activityId": 542,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub",
+     "defaultQuantity": 75.0,
+     "breakdown": "Calamina N°28 sobre costaneras = Acub",
+     "unit": "m2",
+     "designUnitPriceSCZ": 270.62
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 3,
+     "activityId": 187,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*L",
+     "defaultQuantity": 20.0,
+     "breakdown": "Canaleta = 2 × L",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 3,
+     "activityId": 186,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*(NP*H+0.5)",
+     "defaultQuantity": 6.2,
+     "breakdown": "Bajantes = 2 × (altura + 0.5)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 22,
+     "phaseId": 3,
+     "activityId": 539,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Anet/NP",
+     "defaultQuantity": 53.76,
+     "breakdown": "Contrapiso sobre empedrado = área neta PB",
+     "unit": "m2",
+     "designUnitPriceSCZ": 214.36
+    },
+    {
+     "sortOrder": 23,
+     "phaseId": 4,
+     "activityId": 530,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevi",
+     "defaultQuantity": 166.005,
+     "breakdown": "Revoque grueso interior = Arevi",
+     "unit": "m2",
+     "designUnitPriceSCZ": 54.99
+    },
+    {
+     "sortOrder": 24,
+     "phaseId": 4,
+     "activityId": 532,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevi-Acer",
+     "defaultQuantity": 151.605,
+     "breakdown": "Enlucido de estuco = Arevi − revestimiento cerámico",
+     "unit": "m2",
+     "designUnitPriceSCZ": 30.75
+    },
+    {
+     "sortOrder": 25,
+     "phaseId": 4,
+     "activityId": 536,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevi-Acer",
+     "defaultQuantity": 151.605,
+     "breakdown": "Empastado = superficie enlucida",
+     "unit": "m2",
+     "designUnitPriceSCZ": 37.07
+    },
+    {
+     "sortOrder": 26,
+     "phaseId": 4,
+     "activityId": 533,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevx",
+     "defaultQuantity": 83.71,
+     "breakdown": "Revoque grueso exterior = Arevx",
+     "unit": "m2",
+     "designUnitPriceSCZ": 77.36
+    },
+    {
+     "sortOrder": 27,
+     "phaseId": 4,
+     "activityId": 534,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevx",
+     "defaultQuantity": 83.71,
+     "breakdown": "Enlucido exterior frotachado = Arevx",
+     "unit": "m2",
+     "designUnitPriceSCZ": 31.81
+    },
+    {
+     "sortOrder": 28,
+     "phaseId": 4,
+     "activityId": 151,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ap",
+     "defaultQuantity": 60.0,
+     "breakdown": "Cielo falso de yeso bajo cubierta = Ap (última planta)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 71.25
+    },
+    {
+     "sortOrder": 29,
+     "phaseId": 4,
+     "activityId": 421,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Anet",
+     "defaultQuantity": 53.76,
+     "breakdown": "Piso cerámico 40×40 = Anet",
+     "unit": "m2",
+     "designUnitPriceSCZ": 194.05
+    },
+    {
+     "sortOrder": 30,
+     "phaseId": 4,
+     "activityId": 440,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "NP*(Pext+2*Lint)*0.82",
+     "defaultQuantity": 59.04,
+     "breakdown": "Zócalo cerámico = (Pext + 2·Lint) × NP × 0.82 (descuenta puertas y baños)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 79.48
+    },
+    {
+     "sortOrder": 31,
+     "phaseId": 4,
+     "activityId": 461,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acer",
+     "defaultQuantity": 14.4,
+     "breakdown": "Revestimiento cerámico = Acer",
+     "unit": "m2",
+     "designUnitPriceSCZ": 174.58
+    },
+    {
+     "sortOrder": 32,
+     "phaseId": 7,
+     "activityId": null,
+     "missingKey": "F_PINT_INT",
+     "missingName": "PINTURA LÁTEX INTERIOR EN MUROS Y CIELOS (SELLADOR + 2 MANOS)",
+     "quantityFormula": "Arevi-Acer+Ap",
+     "defaultQuantity": 211.605,
+     "breakdown": "Pintura látex interior = muros enlucidos + cielo falso Ap",
+     "unit": "m2",
+     "designUnitPriceSCZ": 39.93
+    },
+    {
+     "sortOrder": 33,
+     "phaseId": 7,
+     "activityId": 537,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevx",
+     "defaultQuantity": 83.71,
+     "breakdown": "Pintura látex fachada = Arevx",
+     "unit": "m2",
+     "designUnitPriceSCZ": 47.37
+    },
+    {
+     "sortOrder": 34,
+     "phaseId": 4,
+     "activityId": 106,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta de ingreso tablero 0.90×2.10 = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 2651.6
+    },
+    {
+     "sortOrder": 35,
+     "phaseId": 4,
+     "activityId": 109,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Npi",
+     "defaultQuantity": 3,
+     "breakdown": "Puertas interiores placa 0.80 = D + B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1654.98
+    },
+    {
+     "sortOrder": 36,
+     "phaseId": 4,
+     "activityId": 450,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Chapa exterior = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 814.39
+    },
+    {
+     "sortOrder": 37,
+     "phaseId": 4,
+     "activityId": 449,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Npi",
+     "defaultQuantity": 3,
+     "breakdown": "Chapas interiores/baño = D + B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 619.01
+    },
+    {
+     "sortOrder": 38,
+     "phaseId": 4,
+     "activityId": 78,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Avent",
+     "defaultQuantity": 7.2,
+     "breakdown": "Ventanas de aluminio con vidrio 4 mm = Avent (m2)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 703.88
+    },
+    {
+     "sortOrder": 39,
+     "phaseId": 4,
+     "activityId": 131,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Avent/NP",
+     "defaultQuantity": 7.2,
+     "breakdown": "Protector de ventanas = ventanas de PB (Avent/NP)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 730.37
+    },
+    {
+     "sortOrder": 40,
+     "phaseId": 4,
+     "activityId": 97,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Mueble bajo mesón cocina = 3 ml",
+     "unit": "ml",
+     "designUnitPriceSCZ": 906.27
+    },
+    {
+     "sortOrder": 41,
+     "phaseId": 4,
+     "activityId": 379,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Mesón de granito 60 cm = 3 ml",
+     "unit": "ml",
+     "designUnitPriceSCZ": 1231.82
+    },
+    {
+     "sortOrder": 42,
+     "phaseId": 5,
+     "activityId": 289,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Acometida de agua potable = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1090.95
+    },
+    {
+     "sortOrder": 43,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*B+3",
+     "defaultQuantity": 7,
+     "breakdown": "Puntos de agua fría PPR = 4/baño (inodoro, lavamanos, ducha, grifo) + 3 (lavaplatos, lavarropa, grifo ext.)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 44,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3*B+2",
+     "defaultQuantity": 5,
+     "breakdown": "Puntos de desagüe 2\" = 3/baño (lavamanos, ducha, rejilla) + lavaplatos + lavarropa",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 45,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "C32",
+     "missingName": "PUNTO DE DESAGÜE PVC 4\" (INODORO) (≈3 M)",
+     "quantityFormula": "B",
+     "defaultQuantity": 1,
+     "breakdown": "Puntos de desagüe 4\" (inodoro) = B",
+     "unit": "pto",
+     "designUnitPriceSCZ": 426.45
+    },
+    {
+     "sortOrder": 46,
+     "phaseId": 5,
+     "activityId": 317,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 1,
+     "breakdown": "Caja sifonada = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 181.51
+    },
+    {
+     "sortOrder": 47,
+     "phaseId": 5,
+     "activityId": 322,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2+NP-1",
+     "defaultQuantity": 2,
+     "breakdown": "Cámaras de registro 40×40 = 2 (+1 si hay 2 plantas)",
+     "unit": "UND",
+     "designUnitPriceSCZ": 995.15
+    },
+    {
+     "sortOrder": 48,
+     "phaseId": 5,
+     "activityId": 547,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tanque de polietileno 1100 L = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 6890.95
+    },
+    {
+     "sortOrder": 49,
+     "phaseId": 5,
+     "activityId": 324,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "SEP",
+     "defaultQuantity": 1,
+     "breakdown": "Cámara séptica = SEP (1 si no hay alcantarillado)",
+     "unit": "UND",
+     "designUnitPriceSCZ": 6660.65
+    },
+    {
+     "sortOrder": 50,
+     "phaseId": 5,
+     "activityId": 326,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "SEP",
+     "defaultQuantity": 1,
+     "breakdown": "Pozo absorbente = SEP",
+     "unit": "UND",
+     "designUnitPriceSCZ": 2534.36
+    },
+    {
+     "sortOrder": 51,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "F_INODORO",
+     "missingName": "INODORO TANQUE BAJO COMPLETO, INSTALADO (CHICOTILLO, LLAVE ANGULAR, SELLADO)",
+     "quantityFormula": "B",
+     "defaultQuantity": 1,
+     "breakdown": "Inodoro instalado = B",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1219.73
+    },
+    {
+     "sortOrder": 52,
+     "phaseId": 5,
+     "activityId": 56,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 1,
+     "breakdown": "Lavamanos con pedestal = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 865.07
+    },
+    {
+     "sortOrder": 53,
+     "phaseId": 5,
+     "activityId": 43,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 1,
+     "breakdown": "Grifería de lavamanos = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 578.16
+    },
+    {
+     "sortOrder": 54,
+     "phaseId": 5,
+     "activityId": 39,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 1,
+     "breakdown": "Ducha eléctrica = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 359.75
+    },
+    {
+     "sortOrder": 55,
+     "phaseId": 5,
+     "activityId": 32,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 1,
+     "breakdown": "Accesorios de baño = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 713.12
+    },
+    {
+     "sortOrder": 56,
+     "phaseId": 5,
+     "activityId": 61,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Lavaplatos 1 bacha = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 696.54
+    },
+    {
+     "sortOrder": 57,
+     "phaseId": 5,
+     "activityId": 45,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Grifería lavaplatos = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 554.23
+    },
+    {
+     "sortOrder": 58,
+     "phaseId": 5,
+     "activityId": 65,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Lavarropa de cemento = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1168.22
+    },
+    {
+     "sortOrder": 59,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "C33",
+     "missingName": "PUNTO DE GAS NATURAL DOMICILIARIO PE-AL-PE 1620 (≈8 M) (COCINA/CALEFÓN)",
+     "quantityFormula": "GAS",
+     "defaultQuantity": 1,
+     "breakdown": "Punto de gas natural (cocina) = GAS",
+     "unit": "pto",
+     "designUnitPriceSCZ": 790.37
+    },
+    {
+     "sortOrder": 60,
+     "phaseId": 6,
+     "activityId": 241,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Acometida eléctrica = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 752.48
+    },
+    {
+     "sortOrder": 61,
+     "phaseId": 6,
+     "activityId": 264,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Pilastra prefabricada medidor = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1176.45
+    },
+    {
+     "sortOrder": 62,
+     "phaseId": 6,
+     "activityId": 260,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Instalación de medidor = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 903.07
+    },
+    {
+     "sortOrder": 63,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "C36",
+     "missingName": "TABLERO DE DISTRIBUCIÓN MONOFÁSICO 12 POLOS CON DIFERENCIAL Y TÉRMICOS",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tablero con diferencial = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1029.51
+    },
+    {
+     "sortOrder": 64,
+     "phaseId": 6,
+     "activityId": 262,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Jabalina = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 360.59
+    },
+    {
+     "sortOrder": 65,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "D+B+5+2*(NP-1)",
+     "defaultQuantity": 8,
+     "breakdown": "Puntos LED = dormitorios + baños + 5 (sala ×2, cocina, ingreso, patio) + 2 por planta adicional (escalera/pasillo)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 66,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "2*D+B+6",
+     "defaultQuantity": 11,
+     "breakdown": "Tomacorrientes = 2/dormitorio + 1/baño + 6 (sala 3, cocina 3)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 67,
+     "phaseId": 6,
+     "activityId": 276,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 1,
+     "breakdown": "Punto para ducha eléctrica = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 255.81
+    },
+    {
+     "sortOrder": 68,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 60,
+     "breakdown": "Limpieza final = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    }
+   ]
+  },
+  {
+   "slug": "casa-2p-120",
+   "name": "Casa de 2 plantas (120 m², 3 dormitorios, 2 baños)",
+   "category": "vivienda",
+   "description": "Vivienda de 2 plantas (60 m2 por planta) con pórtico de HoAo (zapatas, columnas 25×25, vigas), losa alivianada de entrepiso, escalera de HoAo, cubierta de calamina en la planta alta.",
+   "unitRef": "m2",
+   "refQuantityFormula": "A",
+   "params": {
+    "A": {
+     "default": 120,
+     "min": 80,
+     "max": 240,
+     "unit": "m2",
+     "label": "Área construida total"
+    },
+    "H": {
+     "default": 2.6,
+     "min": 2.4,
+     "max": 3.0,
+     "unit": "m",
+     "label": "Altura de muros"
+    },
+    "D": {
+     "default": 3,
+     "min": 2,
+     "max": 5,
+     "unit": "u",
+     "label": "Dormitorios"
+    },
+    "B": {
+     "default": 2,
+     "min": 1,
+     "max": 4,
+     "unit": "u",
+     "label": "Baños"
+    },
+    "NP": {
+     "default": 2,
+     "min": 2,
+     "max": 2,
+     "unit": "u",
+     "label": "Plantas (fijo)"
+    },
+    "SEP": {
+     "default": 0,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Cámara séptica + pozo"
+    },
+    "GAS": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Punto de gas"
+    }
+   },
+   "derived": [
+    {
+     "name": "Ap",
+     "expr": "A/NP",
+     "label": "área por planta (m2)"
+    },
+    {
+     "name": "L",
+     "expr": "sqrt(Ap*10/6)",
+     "label": "largo de planta (rect. 10:6)"
+    },
+    {
+     "name": "W",
+     "expr": "Ap/L",
+     "label": "ancho de planta"
+    },
+    {
+     "name": "Pext",
+     "expr": "2*(L+W)",
+     "label": "perímetro exterior por planta (ml)"
+    },
+    {
+     "name": "Lint",
+     "expr": "Ap/3",
+     "label": "muros interiores por planta (ml, ≈A/3)"
+    },
+    {
+     "name": "Lm",
+     "expr": "Pext+Lint",
+     "label": "longitud total de muros por planta"
+    },
+    {
+     "name": "Ncol",
+     "expr": "ceil(Pext/3)+4",
+     "label": "columnas por planta (c/3 m en perímetro + 4 interiores)"
+    },
+    {
+     "name": "Avent",
+     "expr": "0.12*A",
+     "label": "ventanas (12 % del área construida)"
+    },
+    {
+     "name": "Npi",
+     "expr": "D+B",
+     "label": "puertas interiores (dormitorios + baños)"
+    },
+    {
+     "name": "Aab",
+     "expr": "1.89+Npi*1.68+Avent",
+     "label": "vanos totales (puerta ext 0.9×2.1 + interiores 0.8×2.1 + ventanas)"
+    },
+    {
+     "name": "Anet",
+     "expr": "A-NP*Lm*0.12",
+     "label": "área neta de piso (descuenta muros e=12)"
+    },
+    {
+     "name": "Acer",
+     "expr": "B*12.6+3*0.6",
+     "label": "revestimiento cerámico (baño 2×1.5×h1.8 perímetro 7 ml≈12.6 m2 c/u + cocina 3 ml×0.6)"
+    },
+    {
+     "name": "Arevi",
+     "expr": "NP*(Pext+2*Lint)*H-1.5*Aab",
+     "label": "revoque interior (cara int. de muros ext + 2 caras de interiores − vanos ×1.5)"
+    },
+    {
+     "name": "Arevx",
+     "expr": "Pext*(NP*H+0.3)-(Avent+1.89)",
+     "label": "revoque exterior (perímetro × altura total + 0.3 sobrecimiento − vanos exteriores)"
+    },
+    {
+     "name": "Acub",
+     "expr": "Ap*1.25",
+     "label": "cubierta inclinada (planta × 1.25 por aleros y pendiente)"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 413213.43,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ap",
+     "defaultQuantity": 60.0,
+     "breakdown": "Replanteo = área de planta Ap",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 1,
+     "activityId": null,
+     "missingKey": "F_DESBROCE",
+     "missingName": "DESBROCE Y LIMPIEZA DE TERRENO (RETIRO CAPA VEGETAL ≈10 CM, CARGUÍO)",
+     "quantityFormula": "Ap*1.5",
+     "defaultQuantity": 90.0,
+     "breakdown": "Desbroce = área de planta × 1.5 (franja de trabajo)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 9.66
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*1.2*1.2*1.5+Lm*0.3*0.4",
+     "defaultQuantity": 38.64,
+     "breakdown": "Excavación = zapatas Ncol × 1.2×1.2×1.5 + zanja viga de fundación Lm × 0.3 × 0.4",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 2,
+     "activityId": 520,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*1.2*1.2*1.5+Lm*0.3*0.4)*1.3*0.5",
+     "defaultQuantity": 25.116,
+     "breakdown": "Retiro = excavación × 1.3 × 50 %",
+     "unit": "m3",
+     "designUnitPriceSCZ": 74.02
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 2,
+     "activityId": 392,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Anet/NP*0.2",
+     "defaultQuantity": 10.752,
+     "breakdown": "Relleno compactado bajo piso PB = (Anet/NP) × 0.20",
+     "unit": "m3",
+     "designUnitPriceSCZ": 314.73
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 522,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*1.0",
+     "defaultQuantity": 15.0,
+     "breakdown": "Hormigón pobre bajo zapatas = Ncol × 1.0×1.0",
+     "unit": "m2",
+     "designUnitPriceSCZ": 63.43
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.3",
+     "defaultQuantity": 4.5,
+     "breakdown": "Zapatas 1.0×1.0×0.30: volumen H21 = Ncol*0.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*0.3)*60",
+     "defaultQuantity": 270.0,
+     "breakdown": "Zapatas 1.0×1.0×0.30: acero = V × 60 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*4*0.3",
+     "defaultQuantity": 18.0,
+     "breakdown": "Zapatas 1.0×1.0×0.30: encofrado = 4 caras × 0.30 × Ncol",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.2*0.3",
+     "defaultQuantity": 3.12,
+     "breakdown": "Viga de fundación 20×30: volumen H21 = Lm*0.2*0.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Lm*0.2*0.3)*100",
+     "defaultQuantity": 312.0,
+     "breakdown": "Viga de fundación 20×30: acero = V × 100 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.6",
+     "defaultQuantity": 31.2,
+     "breakdown": "Viga de fundación 20×30: encofrado = 2 caras × 0.30 × Lm",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 3,
+     "activityId": 236,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm",
+     "defaultQuantity": 52.0,
+     "breakdown": "Impermeabilización sobre viga de fundación = Lm",
+     "unit": "ml",
+     "designUnitPriceSCZ": 36.64
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.0625*(1.2+NP*2.7)",
+     "defaultQuantity": 6.188,
+     "breakdown": "Columnas 25×25 (1.2 m bajo NPT + NP×2.7): volumen H21 = Ncol*0.0625*(1.2+NP*2.7)",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*0.0625*(1.2+NP*2.7))*140",
+     "defaultQuantity": 866.25,
+     "breakdown": "Columnas 25×25 (1.2 m bajo NPT + NP×2.7): acero = V × 140 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*1.0*(1.2+NP*2.7)",
+     "defaultQuantity": 99.0,
+     "breakdown": "Columnas 25×25 (1.2 m bajo NPT + NP×2.7): encofrado = perímetro 1.0 × altura total × Ncol",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(NP)*Lm*0.2*0.35",
+     "defaultQuantity": 7.28,
+     "breakdown": "Vigas de entrepiso y techo 20×35: volumen H21 = (NP)*Lm*0.2*0.35",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "((NP)*Lm*0.2*0.35)*120",
+     "defaultQuantity": 873.6,
+     "breakdown": "Vigas de entrepiso y techo 20×35: acero = V × 120 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "NP*Lm*0.9",
+     "defaultQuantity": 93.6,
+     "breakdown": "Vigas de entrepiso y techo 20×35: encofrado = (2×0.35 + 0.20) × Lm × NP",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 3,
+     "activityId": 525,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(NP-1)*Ap*0.92",
+     "defaultQuantity": 55.2,
+     "breakdown": "Losa alivianada entrepiso = Ap × (NP−1) × 0.92 (descuenta vano de escalera)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 341.6
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(NP-1)*1.3",
+     "defaultQuantity": 1.3,
+     "breakdown": "Escalera de HoAo (1 tramo + descanso): volumen H21 = (NP-1)*1.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 22,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "((NP-1)*1.3)*100",
+     "defaultQuantity": 130.0,
+     "breakdown": "Escalera de HoAo (1 tramo + descanso): acero = V × 100 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 23,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(NP-1)*12",
+     "defaultQuantity": 12,
+     "breakdown": "Escalera de HoAo (1 tramo + descanso): encofrado = 12 m2 por escalera",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 24,
+     "phaseId": 4,
+     "activityId": 154,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(NP-1)*Ap*0.92",
+     "defaultQuantity": 55.2,
+     "breakdown": "Cielo raso bajo losa = área de losa",
+     "unit": "m2",
+     "designUnitPriceSCZ": 162.15
+    },
+    {
+     "sortOrder": 25,
+     "phaseId": 7,
+     "activityId": null,
+     "missingKey": "F_PINT_INT",
+     "missingName": "PINTURA LÁTEX INTERIOR EN MUROS Y CIELOS (SELLADOR + 2 MANOS)",
+     "quantityFormula": "(NP-1)*Ap*0.92",
+     "defaultQuantity": 55.2,
+     "breakdown": "Pintura cielo bajo losa = área de losa",
+     "unit": "m2",
+     "designUnitPriceSCZ": 39.93
+    },
+    {
+     "sortOrder": 26,
+     "phaseId": 4,
+     "activityId": 421,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(NP-1)*1.3*4",
+     "defaultQuantity": 5.2,
+     "breakdown": "Cerámica en gradas = 4 m2 por escalera (huella+contrahuella)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 194.05
+    },
+    {
+     "sortOrder": 27,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "NP*(Lm*H-Ncol*0.2*H)-Aab",
+     "defaultQuantity": 230.11,
+     "breakdown": "Muro 6H = NP × (Lm × H − columnas Ncol×0.20×H) − vanos Aab",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 28,
+     "phaseId": 3,
+     "activityId": 543,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub*5",
+     "defaultQuantity": 375.0,
+     "breakdown": "Cerchas metálicas = cubierta Acub × 5 kg/m2",
+     "unit": "kg",
+     "designUnitPriceSCZ": 27.36
+    },
+    {
+     "sortOrder": 29,
+     "phaseId": 3,
+     "activityId": 542,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub",
+     "defaultQuantity": 75.0,
+     "breakdown": "Calamina N°28 sobre costaneras = Acub",
+     "unit": "m2",
+     "designUnitPriceSCZ": 270.62
+    },
+    {
+     "sortOrder": 30,
+     "phaseId": 3,
+     "activityId": 187,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*L",
+     "defaultQuantity": 20.0,
+     "breakdown": "Canaleta = 2 × L",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 31,
+     "phaseId": 3,
+     "activityId": 186,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*(NP*H+0.5)",
+     "defaultQuantity": 11.4,
+     "breakdown": "Bajantes = 2 × (altura + 0.5)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 32,
+     "phaseId": 3,
+     "activityId": 539,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Anet/NP",
+     "defaultQuantity": 53.76,
+     "breakdown": "Contrapiso sobre empedrado = área neta PB",
+     "unit": "m2",
+     "designUnitPriceSCZ": 214.36
+    },
+    {
+     "sortOrder": 33,
+     "phaseId": 4,
+     "activityId": 530,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevi",
+     "defaultQuantity": 337.365,
+     "breakdown": "Revoque grueso interior = Arevi",
+     "unit": "m2",
+     "designUnitPriceSCZ": 54.99
+    },
+    {
+     "sortOrder": 34,
+     "phaseId": 4,
+     "activityId": 532,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevi-Acer",
+     "defaultQuantity": 310.365,
+     "breakdown": "Enlucido de estuco = Arevi − revestimiento cerámico",
+     "unit": "m2",
+     "designUnitPriceSCZ": 30.75
+    },
+    {
+     "sortOrder": 35,
+     "phaseId": 4,
+     "activityId": 536,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevi-Acer",
+     "defaultQuantity": 310.365,
+     "breakdown": "Empastado = superficie enlucida",
+     "unit": "m2",
+     "designUnitPriceSCZ": 37.07
+    },
+    {
+     "sortOrder": 36,
+     "phaseId": 4,
+     "activityId": 533,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevx",
+     "defaultQuantity": 159.71,
+     "breakdown": "Revoque grueso exterior = Arevx",
+     "unit": "m2",
+     "designUnitPriceSCZ": 77.36
+    },
+    {
+     "sortOrder": 37,
+     "phaseId": 4,
+     "activityId": 534,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevx",
+     "defaultQuantity": 159.71,
+     "breakdown": "Enlucido exterior frotachado = Arevx",
+     "unit": "m2",
+     "designUnitPriceSCZ": 31.81
+    },
+    {
+     "sortOrder": 38,
+     "phaseId": 4,
+     "activityId": 151,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ap",
+     "defaultQuantity": 60.0,
+     "breakdown": "Cielo falso de yeso bajo cubierta = Ap (última planta)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 71.25
+    },
+    {
+     "sortOrder": 39,
+     "phaseId": 4,
+     "activityId": 421,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Anet",
+     "defaultQuantity": 107.52,
+     "breakdown": "Piso cerámico 40×40 = Anet",
+     "unit": "m2",
+     "designUnitPriceSCZ": 194.05
+    },
+    {
+     "sortOrder": 40,
+     "phaseId": 4,
+     "activityId": 440,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "NP*(Pext+2*Lint)*0.82",
+     "defaultQuantity": 118.08,
+     "breakdown": "Zócalo cerámico = (Pext + 2·Lint) × NP × 0.82 (descuenta puertas y baños)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 79.48
+    },
+    {
+     "sortOrder": 41,
+     "phaseId": 4,
+     "activityId": 461,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acer",
+     "defaultQuantity": 27.0,
+     "breakdown": "Revestimiento cerámico = Acer",
+     "unit": "m2",
+     "designUnitPriceSCZ": 174.58
+    },
+    {
+     "sortOrder": 42,
+     "phaseId": 7,
+     "activityId": null,
+     "missingKey": "F_PINT_INT",
+     "missingName": "PINTURA LÁTEX INTERIOR EN MUROS Y CIELOS (SELLADOR + 2 MANOS)",
+     "quantityFormula": "Arevi-Acer+Ap",
+     "defaultQuantity": 370.365,
+     "breakdown": "Pintura látex interior = muros enlucidos + cielo falso Ap",
+     "unit": "m2",
+     "designUnitPriceSCZ": 39.93
+    },
+    {
+     "sortOrder": 43,
+     "phaseId": 7,
+     "activityId": 537,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arevx",
+     "defaultQuantity": 159.71,
+     "breakdown": "Pintura látex fachada = Arevx",
+     "unit": "m2",
+     "designUnitPriceSCZ": 47.37
+    },
+    {
+     "sortOrder": 44,
+     "phaseId": 4,
+     "activityId": 106,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta de ingreso tablero 0.90×2.10 = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 2651.6
+    },
+    {
+     "sortOrder": 45,
+     "phaseId": 4,
+     "activityId": 109,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Npi",
+     "defaultQuantity": 5,
+     "breakdown": "Puertas interiores placa 0.80 = D + B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1654.98
+    },
+    {
+     "sortOrder": 46,
+     "phaseId": 4,
+     "activityId": 450,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Chapa exterior = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 814.39
+    },
+    {
+     "sortOrder": 47,
+     "phaseId": 4,
+     "activityId": 449,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Npi",
+     "defaultQuantity": 5,
+     "breakdown": "Chapas interiores/baño = D + B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 619.01
+    },
+    {
+     "sortOrder": 48,
+     "phaseId": 4,
+     "activityId": 78,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Avent",
+     "defaultQuantity": 14.4,
+     "breakdown": "Ventanas de aluminio con vidrio 4 mm = Avent (m2)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 703.88
+    },
+    {
+     "sortOrder": 49,
+     "phaseId": 4,
+     "activityId": 131,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Avent/NP",
+     "defaultQuantity": 7.2,
+     "breakdown": "Protector de ventanas = ventanas de PB (Avent/NP)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 730.37
+    },
+    {
+     "sortOrder": 50,
+     "phaseId": 4,
+     "activityId": 97,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Mueble bajo mesón cocina = 3 ml",
+     "unit": "ml",
+     "designUnitPriceSCZ": 906.27
+    },
+    {
+     "sortOrder": 51,
+     "phaseId": 4,
+     "activityId": 379,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Mesón de granito 60 cm = 3 ml",
+     "unit": "ml",
+     "designUnitPriceSCZ": 1231.82
+    },
+    {
+     "sortOrder": 52,
+     "phaseId": 5,
+     "activityId": 289,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Acometida de agua potable = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1090.95
+    },
+    {
+     "sortOrder": 53,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*B+3",
+     "defaultQuantity": 11,
+     "breakdown": "Puntos de agua fría PPR = 4/baño (inodoro, lavamanos, ducha, grifo) + 3 (lavaplatos, lavarropa, grifo ext.)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 54,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3*B+2",
+     "defaultQuantity": 8,
+     "breakdown": "Puntos de desagüe 2\" = 3/baño (lavamanos, ducha, rejilla) + lavaplatos + lavarropa",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 55,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "C32",
+     "missingName": "PUNTO DE DESAGÜE PVC 4\" (INODORO) (≈3 M)",
+     "quantityFormula": "B",
+     "defaultQuantity": 2,
+     "breakdown": "Puntos de desagüe 4\" (inodoro) = B",
+     "unit": "pto",
+     "designUnitPriceSCZ": 426.45
+    },
+    {
+     "sortOrder": 56,
+     "phaseId": 5,
+     "activityId": 317,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 2,
+     "breakdown": "Caja sifonada = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 181.51
+    },
+    {
+     "sortOrder": 57,
+     "phaseId": 5,
+     "activityId": 322,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2+NP-1",
+     "defaultQuantity": 3,
+     "breakdown": "Cámaras de registro 40×40 = 2 (+1 si hay 2 plantas)",
+     "unit": "UND",
+     "designUnitPriceSCZ": 995.15
+    },
+    {
+     "sortOrder": 58,
+     "phaseId": 5,
+     "activityId": 547,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tanque de polietileno 1100 L = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 6890.95
+    },
+    {
+     "sortOrder": 59,
+     "phaseId": 5,
+     "activityId": 324,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "SEP",
+     "defaultQuantity": 0,
+     "breakdown": "Cámara séptica = SEP (1 si no hay alcantarillado)",
+     "unit": "UND",
+     "designUnitPriceSCZ": 6660.65
+    },
+    {
+     "sortOrder": 60,
+     "phaseId": 5,
+     "activityId": 326,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "SEP",
+     "defaultQuantity": 0,
+     "breakdown": "Pozo absorbente = SEP",
+     "unit": "UND",
+     "designUnitPriceSCZ": 2534.36
+    },
+    {
+     "sortOrder": 61,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "F_INODORO",
+     "missingName": "INODORO TANQUE BAJO COMPLETO, INSTALADO (CHICOTILLO, LLAVE ANGULAR, SELLADO)",
+     "quantityFormula": "B",
+     "defaultQuantity": 2,
+     "breakdown": "Inodoro instalado = B",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1219.73
+    },
+    {
+     "sortOrder": 62,
+     "phaseId": 5,
+     "activityId": 56,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 2,
+     "breakdown": "Lavamanos con pedestal = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 865.07
+    },
+    {
+     "sortOrder": 63,
+     "phaseId": 5,
+     "activityId": 43,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 2,
+     "breakdown": "Grifería de lavamanos = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 578.16
+    },
+    {
+     "sortOrder": 64,
+     "phaseId": 5,
+     "activityId": 39,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 2,
+     "breakdown": "Ducha eléctrica = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 359.75
+    },
+    {
+     "sortOrder": 65,
+     "phaseId": 5,
+     "activityId": 32,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 2,
+     "breakdown": "Accesorios de baño = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 713.12
+    },
+    {
+     "sortOrder": 66,
+     "phaseId": 5,
+     "activityId": 61,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Lavaplatos 1 bacha = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 696.54
+    },
+    {
+     "sortOrder": 67,
+     "phaseId": 5,
+     "activityId": 45,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Grifería lavaplatos = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 554.23
+    },
+    {
+     "sortOrder": 68,
+     "phaseId": 5,
+     "activityId": 65,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Lavarropa de cemento = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1168.22
+    },
+    {
+     "sortOrder": 69,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "C33",
+     "missingName": "PUNTO DE GAS NATURAL DOMICILIARIO PE-AL-PE 1620 (≈8 M) (COCINA/CALEFÓN)",
+     "quantityFormula": "GAS",
+     "defaultQuantity": 1,
+     "breakdown": "Punto de gas natural (cocina) = GAS",
+     "unit": "pto",
+     "designUnitPriceSCZ": 790.37
+    },
+    {
+     "sortOrder": 70,
+     "phaseId": 6,
+     "activityId": 241,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Acometida eléctrica = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 752.48
+    },
+    {
+     "sortOrder": 71,
+     "phaseId": 6,
+     "activityId": 264,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Pilastra prefabricada medidor = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1176.45
+    },
+    {
+     "sortOrder": 72,
+     "phaseId": 6,
+     "activityId": 260,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Instalación de medidor = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 903.07
+    },
+    {
+     "sortOrder": 73,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "C36",
+     "missingName": "TABLERO DE DISTRIBUCIÓN MONOFÁSICO 12 POLOS CON DIFERENCIAL Y TÉRMICOS",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tablero con diferencial = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1029.51
+    },
+    {
+     "sortOrder": 74,
+     "phaseId": 6,
+     "activityId": 262,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Jabalina = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 360.59
+    },
+    {
+     "sortOrder": 75,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "D+B+5+2*(NP-1)",
+     "defaultQuantity": 12,
+     "breakdown": "Puntos LED = dormitorios + baños + 5 (sala ×2, cocina, ingreso, patio) + 2 por planta adicional (escalera/pasillo)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 76,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "2*D+B+6",
+     "defaultQuantity": 14,
+     "breakdown": "Tomacorrientes = 2/dormitorio + 1/baño + 6 (sala 3, cocina 3)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 77,
+     "phaseId": 6,
+     "activityId": 276,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "B",
+     "defaultQuantity": 2,
+     "breakdown": "Punto para ducha eléctrica = B",
+     "unit": "UND",
+     "designUnitPriceSCZ": 255.81
+    },
+    {
+     "sortOrder": 78,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 120,
+     "breakdown": "Limpieza final = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    }
+   ]
+  },
+  {
+   "slug": "muro-perimetral-lote",
+   "name": "Muro perimetral / cerramiento de lote (12×30 m, h=2.4 m)",
+   "category": "exteriores",
+   "description": "Cerramiento de lote con cimiento corrido HoCo, sobrecimiento y columnas de HoAo c/3 m, viga de coronamiento, muro 6H revocado y pintado en una cara (CARAS=2 para ambas), portón metálico y puerta peatonal en el frente.",
+   "unitRef": "ml",
+   "refQuantityFormula": "P",
+   "params": {
+    "F": {
+     "default": 12,
+     "min": 8,
+     "max": 40,
+     "unit": "m",
+     "label": "Frente del lote"
+    },
+    "Fd": {
+     "default": 30,
+     "min": 15,
+     "max": 60,
+     "unit": "m",
+     "label": "Fondo del lote"
+    },
+    "H": {
+     "default": 2.4,
+     "min": 2.0,
+     "max": 3.0,
+     "unit": "m",
+     "label": "Altura del muro"
+    },
+    "LADOS": {
+     "default": 4,
+     "min": 1,
+     "max": 4,
+     "unit": "u",
+     "label": "Lados a cerrar (4 = todo)"
+    },
+    "CARAS": {
+     "default": 1,
+     "min": 1,
+     "max": 2,
+     "unit": "u",
+     "label": "Caras revocadas y pintadas"
+    },
+    "WP": {
+     "default": 3,
+     "min": 0,
+     "max": 6,
+     "unit": "m",
+     "label": "Ancho del portón"
+    }
+   },
+   "derived": [
+    {
+     "name": "P",
+     "expr": "(F+Fd)*2*LADOS/4",
+     "label": "perímetro a cerrar (ml)"
+    },
+    {
+     "name": "Lm",
+     "expr": "P-WP-1",
+     "label": "muro neto (descuenta portón y puerta peatonal de 1 m)"
+    },
+    {
+     "name": "Ncol",
+     "expr": "ceil(P/3)+2",
+     "label": "columnas c/3 m + 2 de refuerzo en el portón"
+    },
+    {
+     "name": "Am",
+     "expr": "Lm*H-Ncol*0.2*H",
+     "label": "área neta de muro"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": false,
+   "version": 1,
+   "designTotalSCZ": 126356.67,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*1.0",
+     "defaultQuantity": 84.0,
+     "breakdown": "Replanteo = franja de 1 m × P",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*0.4*0.5",
+     "defaultQuantity": 16.8,
+     "breakdown": "Excavación = P × 0.40 × 0.50",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 520,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*0.4*0.5*1.3*0.6",
+     "defaultQuantity": 13.104,
+     "breakdown": "Retiro = excavación × 1.3 × 60 %",
+     "unit": "m3",
+     "designUnitPriceSCZ": 74.02
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 3,
+     "activityId": 193,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*0.4*0.4",
+     "defaultQuantity": 13.44,
+     "breakdown": "Cimiento HoCo = P × 0.40 × 0.40",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1581.83
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*0.15*0.3",
+     "defaultQuantity": 3.78,
+     "breakdown": "Sobrecimiento 15×30: volumen H21 = P*0.15*0.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(P*0.15*0.3)*80",
+     "defaultQuantity": 302.4,
+     "breakdown": "Sobrecimiento 15×30: acero = V × 80 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*0.6",
+     "defaultQuantity": 50.4,
+     "breakdown": "Sobrecimiento 15×30: encofrado = 2 caras × 0.30 × P",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 236,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P",
+     "defaultQuantity": 84.0,
+     "breakdown": "Impermeabilización = P",
+     "unit": "ml",
+     "designUnitPriceSCZ": 36.64
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.03*(H+0.5)",
+     "defaultQuantity": 2.61,
+     "breakdown": "Columnas 15×20 (h=H+0.5): volumen H21 = Ncol*0.03*(H+0.5)",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*0.03*(H+0.5))*130",
+     "defaultQuantity": 339.3,
+     "breakdown": "Columnas 15×20 (h=H+0.5): acero = V × 130 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.7*(H+0.5)",
+     "defaultQuantity": 60.9,
+     "breakdown": "Columnas 15×20 (h=H+0.5): encofrado = 0.70 × (H+0.5) × Ncol",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.0225",
+     "defaultQuantity": 1.8,
+     "breakdown": "Viga de coronamiento 15×15: volumen H21 = Lm*0.0225",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Lm*0.0225)*110",
+     "defaultQuantity": 198.0,
+     "breakdown": "Viga de coronamiento 15×15: acero = V × 110 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Lm*0.3",
+     "defaultQuantity": 24.0,
+     "breakdown": "Viga de coronamiento 15×15: encofrado = 2 caras × 0.15 × Lm",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Am",
+     "defaultQuantity": 177.6,
+     "breakdown": "Muro 6H = Lm × H − columnas (Ncol × 0.20 × H)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 4,
+     "activityId": 533,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "CARAS*Am",
+     "defaultQuantity": 177.6,
+     "breakdown": "Revoque grueso exterior = Am × caras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 77.36
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 4,
+     "activityId": 534,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "CARAS*Am",
+     "defaultQuantity": 177.6,
+     "breakdown": "Enlucido frotachado = Am × caras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 31.81
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 7,
+     "activityId": 537,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "CARAS*Am",
+     "defaultQuantity": 177.6,
+     "breakdown": "Pintura látex de fachada = Am × caras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 47.37
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "C35",
+     "missingName": "PORTÓN METÁLICO DE TUBO CUADRADO Y PLANCHA 1/16\" CON PINTURA",
+     "quantityFormula": "WP*2.2",
+     "defaultQuantity": 6.6,
+     "breakdown": "Portón metálico = WP × 2.2 m",
+     "unit": "m2",
+     "designUnitPriceSCZ": 1084.5
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 3,
+     "activityId": 133,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta peatonal metálica = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1656.91
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*1.0",
+     "defaultQuantity": 84.0,
+     "breakdown": "Limpieza final = franja de 1 m × P",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    }
+   ]
+  },
+  {
+   "slug": "churrasquera",
+   "name": "Churrasquera de ladrillo con campana (frente 2.4 m)",
+   "category": "exteriores",
+   "description": "Churrasquera de obra: base de ladrillo con mesón de HoAo, fogón de ladrillo refractario, parrilla, campana y ducto metálicos, mesón lateral de granito, bacha con grifería, luz y tomacorriente.",
+   "unitRef": "pza",
+   "refQuantityFormula": "1",
+   "params": {
+    "AN": {
+     "default": 2.4,
+     "min": 1.6,
+     "max": 4.0,
+     "unit": "m",
+     "label": "Frente de la churrasquera"
+    },
+    "BACHA": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Incluye bacha"
+    }
+   },
+   "derived": [],
+   "isPremium": false,
+   "futurePremium": false,
+   "version": 1,
+   "designTotalSCZ": 13136.13,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4",
+     "defaultQuantity": 4,
+     "breakdown": "Replanteo = 2.0×2.0 m",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(2*AN+2*0.8)*0.4*0.4",
+     "defaultQuantity": 1.024,
+     "breakdown": "Excavación de cimiento = perímetro (2·AN + 1.6) × 0.4 × 0.4",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 3,
+     "activityId": 193,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(2*AN+2*0.8)*0.4*0.3",
+     "defaultQuantity": 0.768,
+     "breakdown": "Cimiento HoCo = perímetro × 0.4 × 0.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1581.83
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "AN*0.8*0.1",
+     "defaultQuantity": 0.192,
+     "breakdown": "Losa/mesón de HoAo e=10 (AN×0.8): volumen H21 = AN*0.8*0.1",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN*0.8*0.1)*80",
+     "defaultQuantity": 15.36,
+     "breakdown": "Losa/mesón de HoAo e=10 (AN×0.8): acero = V × 80 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "AN*0.8+0.1*(2*AN+1.6)",
+     "defaultQuantity": 2.56,
+     "breakdown": "Losa/mesón de HoAo e=10 (AN×0.8): encofrado = fondo AN×0.8 + cantos 0.1 × perímetro",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN+1.6)*0.9+AN*1.8+1.6*1.0",
+     "defaultQuantity": 9.52,
+     "breakdown": "Muro 6H = base (frente+laterales) (AN+1.6)×0.9 + fondo AN×1.8 + laterales de campana 1.6×1.0",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 4,
+     "activityId": 462,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1.2*0.8+1.2*0.6",
+     "defaultQuantity": 1.68,
+     "breakdown": "Ladrillo refractario = fogón 1.2×0.8 + fondo 1.2×0.6",
+     "unit": "m2",
+     "designUnitPriceSCZ": 495.44
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 4,
+     "activityId": 533,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN+1.6)*0.9+AN*1.8",
+     "defaultQuantity": 7.92,
+     "breakdown": "Revoque grueso exterior = caras vistas",
+     "unit": "m2",
+     "designUnitPriceSCZ": 77.36
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 4,
+     "activityId": 534,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN+1.6)*0.9+AN*1.8",
+     "defaultQuantity": 7.92,
+     "breakdown": "Enlucido = caras vistas",
+     "unit": "m2",
+     "designUnitPriceSCZ": 31.81
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 4,
+     "activityId": 461,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "AN*0.9",
+     "defaultQuantity": 2.16,
+     "breakdown": "Revestimiento cerámico frontal = AN × 0.9",
+     "unit": "m2",
+     "designUnitPriceSCZ": 174.58
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 4,
+     "activityId": 379,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "AN-1.2",
+     "defaultQuantity": 1.2,
+     "breakdown": "Mesón de granito lateral = AN − 1.2 (fogón)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 1231.82
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 4,
+     "activityId": 130,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Parrilla para churrasquera = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1147.96
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "F_CAMPANA",
+     "missingName": "CAMPANA Y DUCTO DE CHURRASQUERA EN PLANCHA 3 MM CON SOMBRERETE (DUCTO ≈2 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Campana y ducto metálico = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 2290.77
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 5,
+     "activityId": 61,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "BACHA",
+     "defaultQuantity": 1,
+     "breakdown": "Lavaplatos = BACHA",
+     "unit": "UND",
+     "designUnitPriceSCZ": 696.54
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 5,
+     "activityId": 45,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "BACHA",
+     "defaultQuantity": 1,
+     "breakdown": "Grifería = BACHA",
+     "unit": "UND",
+     "designUnitPriceSCZ": 554.23
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "BACHA",
+     "defaultQuantity": 1,
+     "breakdown": "Punto de agua = BACHA",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "BACHA",
+     "defaultQuantity": 1,
+     "breakdown": "Punto de desagüe = BACHA",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto LED = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tomacorriente = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 7,
+     "activityId": 537,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN+1.6)*0.9+AN*1.8",
+     "defaultQuantity": 7.92,
+     "breakdown": "Pintura látex exterior = caras vistas revocadas − revestimiento (aprox. igual)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 47.37
+    }
+   ]
+  },
+  {
+   "slug": "garaje-metalico",
+   "name": "Garaje techado metálico para 2 autos (6×6 m)",
+   "category": "exteriores",
+   "description": "Garaje abierto con columnas y cerchas metálicas sobre dados de HoAo, cubierta de calamina (o policarbonato con POLI=1), piso de HoAo e=10 sobre relleno compactado, canaleta y bajantes, 2 puntos de luz.",
+   "unitRef": "m2",
+   "refQuantityFormula": "A",
+   "params": {
+    "N": {
+     "default": 2,
+     "min": 1,
+     "max": 3,
+     "unit": "u",
+     "label": "Número de autos"
+    },
+    "LG": {
+     "default": 6,
+     "min": 5,
+     "max": 7,
+     "unit": "m",
+     "label": "Largo"
+    },
+    "POLI": {
+     "default": 0,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Cubierta de policarbonato en vez de calamina"
+    }
+   },
+   "derived": [
+    {
+     "name": "W",
+     "expr": "3*N",
+     "label": "ancho = 3 m por auto"
+    },
+    {
+     "name": "A",
+     "expr": "W*LG",
+     "label": "área cubierta útil"
+    },
+    {
+     "name": "Acub",
+     "expr": "(W+0.6)*(LG+0.6)",
+     "label": "cubierta con aleros 0.30"
+    },
+    {
+     "name": "Ncol",
+     "expr": "2*(ceil(LG/3)+1)",
+     "label": "columnas (2 filas c/3 m)"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 47269.47,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 36,
+     "breakdown": "Replanteo = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 1,
+     "activityId": null,
+     "missingKey": "F_DESBROCE",
+     "missingName": "DESBROCE Y LIMPIEZA DE TERRENO (RETIRO CAPA VEGETAL ≈10 CM, CARGUÍO)",
+     "quantityFormula": "A",
+     "defaultQuantity": 36,
+     "breakdown": "Desbroce = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 9.66
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.6*0.6*0.8",
+     "defaultQuantity": 1.728,
+     "breakdown": "Excavación de dados = Ncol × 0.6×0.6×0.8",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 3,
+     "activityId": 522,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.36",
+     "defaultQuantity": 2.16,
+     "breakdown": "Hormigón pobre = Ncol × 0.6×0.6",
+     "unit": "m2",
+     "designUnitPriceSCZ": 63.43
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.15",
+     "defaultQuantity": 0.9,
+     "breakdown": "Dados 50×50×60: volumen H21 = Ncol*0.15",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*0.15)*50",
+     "defaultQuantity": 45.0,
+     "breakdown": "Dados 50×50×60: acero = V × 50 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*4*0.5*0.3",
+     "defaultQuantity": 3.6,
+     "breakdown": "Dados 50×50×60: encofrado = 4 caras × 0.5 × 0.30 (parte vista)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 543,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub*(14+4*POLI)",
+     "defaultQuantity": 609.84,
+     "breakdown": "Estructura metálica (columnas + cerchas) = Acub × 14 kg/m2 (+4 kg/m2 de costaneras si es policarbonato)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 27.36
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": 542,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub*(1-POLI)",
+     "defaultQuantity": 43.56,
+     "breakdown": "Calamina N°28 sobre costaneras = Acub (si POLI=0)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 270.62
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "E8",
+     "missingName": "CUBIERTA DE POLICARBONATO ALVEOLAR 6 MM (SOLO COBERTURA, SOBRE ESTRUCTURA)",
+     "quantityFormula": "Acub*POLI",
+     "defaultQuantity": 0.0,
+     "breakdown": "Policarbonato alveolar 6 mm = Acub (si POLI=1)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 147.56
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 3,
+     "activityId": 187,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "LG+0.6",
+     "defaultQuantity": 6.6,
+     "breakdown": "Canaleta = largo + aleros",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 3,
+     "activityId": 186,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*2.8",
+     "defaultQuantity": 5.6,
+     "breakdown": "Bajantes = 2 × 2.8 m",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 2,
+     "activityId": 521,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*0.15",
+     "defaultQuantity": 5.4,
+     "breakdown": "Relleno compactado con material seleccionado = A × 0.15",
+     "unit": "m3",
+     "designUnitPriceSCZ": 516.6
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 3,
+     "activityId": 217,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 36,
+     "breakdown": "Piso de HoAo e=10 = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 261
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2",
+     "defaultQuantity": 2,
+     "breakdown": "Puntos LED = 2",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tomacorriente = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 36,
+     "breakdown": "Limpieza final = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    }
+   ]
+  },
+  {
+   "slug": "piscina-hoao-4x8",
+   "name": "Piscina de HoAo 4×8 m (prof. 1.2–1.8) con sala de máquinas",
+   "category": "recreacion",
+   "description": "Vaso de HoAo (losa de fondo y muros e=20), revoque impermeable, revestimiento cerámico, borde atérmico, playa perimetral de 1 m, equipo de filtrado, red hidráulica con skimmers, 2 focos, escalera inox y sala de máquinas enterrada de 1.5×1.5.",
+   "unitRef": "m2 de espejo de agua",
+   "refQuantityFormula": "LP*WP",
+   "params": {
+    "LP": {
+     "default": 8,
+     "min": 5,
+     "max": 12,
+     "unit": "m",
+     "label": "Largo"
+    },
+    "WP": {
+     "default": 4,
+     "min": 2.5,
+     "max": 6,
+     "unit": "m",
+     "label": "Ancho"
+    },
+    "PMIN": {
+     "default": 1.2,
+     "min": 0.9,
+     "max": 1.4,
+     "unit": "m",
+     "label": "Profundidad mínima"
+    },
+    "PMAX": {
+     "default": 1.8,
+     "min": 1.4,
+     "max": 2.4,
+     "unit": "m",
+     "label": "Profundidad máxima"
+    },
+    "PLAYA": {
+     "default": 1.0,
+     "min": 0,
+     "max": 2,
+     "unit": "m",
+     "label": "Ancho de playa perimetral"
+    }
+   },
+   "derived": [
+    {
+     "name": "Pp",
+     "expr": "(PMIN+PMAX)/2",
+     "label": "profundidad media"
+    },
+    {
+     "name": "Vexc",
+     "expr": "(LP+1)*(WP+1)*(Pp+0.3)",
+     "label": "excavación con sobreancho 0.5 m"
+    },
+    {
+     "name": "Vfondo",
+     "expr": "(LP+0.4)*(WP+0.4)*0.2",
+     "label": "losa de fondo e=20"
+    },
+    {
+     "name": "Vmuro",
+     "expr": "2*(LP+WP+0.4)*0.2*(Pp+0.1)",
+     "label": "muros e=20 por eje"
+    },
+    {
+     "name": "Aint",
+     "expr": "LP*WP+2*(LP+WP)*Pp",
+     "label": "superficie interior del vaso"
+    },
+    {
+     "name": "Aplaya",
+     "expr": "(LP+2*PLAYA)*(WP+2*PLAYA)-LP*WP",
+     "label": "playa perimetral"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 159560.03,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(LP+2)*(WP+2)",
+     "defaultQuantity": 60,
+     "breakdown": "Replanteo = (LP+2)×(WP+2)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 2,
+     "activityId": 382,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Vexc+1.5*1.5*1.6",
+     "defaultQuantity": 84.6,
+     "breakdown": "Excavación a máquina = vaso + sala de máquinas 1.5×1.5×1.6",
+     "unit": "m3",
+     "designUnitPriceSCZ": 35.69
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 520,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Vexc*1.3*0.8",
+     "defaultQuantity": 84.24,
+     "breakdown": "Retiro = excavación × 1.3 × 80 % (20 % se reutiliza en relleno)",
+     "unit": "m3",
+     "designUnitPriceSCZ": 74.02
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 2,
+     "activityId": 393,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Vexc-(LP+0.4)*(WP+0.4)*(Pp+0.3)",
+     "defaultQuantity": 14.472,
+     "breakdown": "Relleno perimetral = excavación − volumen exterior del vaso",
+     "unit": "m3",
+     "designUnitPriceSCZ": 178.29
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 522,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(LP+0.4)*(WP+0.4)",
+     "defaultQuantity": 36.96,
+     "breakdown": "Hormigón pobre = (LP+0.4)×(WP+0.4)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 63.43
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Vfondo+Vmuro",
+     "defaultQuantity": 15.328,
+     "breakdown": "Vaso: losa de fondo + muros: volumen H21 = Vfondo+Vmuro",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Vfondo+Vmuro)*100",
+     "defaultQuantity": 1532.8,
+     "breakdown": "Vaso: losa de fondo + muros: acero = V × 100 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*(LP+WP)*(Pp+0.1)+2*(LP+WP+0.8)*(Pp+0.1)",
+     "defaultQuantity": 79.36,
+     "breakdown": "Vaso: losa de fondo + muros: encofrado = cara interior + exterior de muros",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 4,
+     "activityId": 535,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Aint",
+     "defaultQuantity": 68.0,
+     "breakdown": "Revoque impermeable con hidrófugo = Aint",
+     "unit": "m2",
+     "designUnitPriceSCZ": 123.71
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "F_REV_PISC",
+     "missingName": "REVESTIMIENTO CERÁMICO DE PISCINA (VENECITA/CERÁMICA 11.5x23.5) CON PEGAMENTO Y FRAGUA",
+     "quantityFormula": "Aint",
+     "defaultQuantity": 68.0,
+     "breakdown": "Revestimiento cerámico de piscina = Aint",
+     "unit": "m2",
+     "designUnitPriceSCZ": 466.41
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "F_COR_PISC",
+     "missingName": "BORDE/CORONACIÓN DE PISCINA CON PIEZA ATÉRMICA 50 CM",
+     "quantityFormula": "2*(LP+WP)+1.6",
+     "defaultQuantity": 25.6,
+     "breakdown": "Borde atérmico = perímetro + 1.6 (esquinas)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 230.05
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 8,
+     "activityId": 539,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Aplaya",
+     "defaultQuantity": 28.0,
+     "breakdown": "Contrapiso de playa = Aplaya",
+     "unit": "m2",
+     "designUnitPriceSCZ": 214.36
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 8,
+     "activityId": 423,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Aplaya",
+     "defaultQuantity": 28.0,
+     "breakdown": "Piso cerámico exterior antideslizante = Aplaya",
+     "unit": "m2",
+     "designUnitPriceSCZ": 286.7
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "F_EQ_PISC",
+     "missingName": "EQUIPO DE FILTRADO DE PISCINA (BOMBA 1 HP + FILTRO DE ARENA 20\" + VÁLVULA SELECTORA), INSTALADO",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Equipo de filtrado = 1",
+     "unit": "glb",
+     "designUnitPriceSCZ": 13652.46
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "F_HID_PISC",
+     "missingName": "RED HIDRÁULICA DE PISCINA (2 SKIMMER, 3 RETORNOS, 1 SUMIDERO, PVC 2\" ≈40 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Red hidráulica (skimmers, retornos, sumidero) = 1",
+     "unit": "glb",
+     "designUnitPriceSCZ": 6251.8
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto de agua para llenado = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Desagüe de sala de máquinas = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 5,
+     "activityId": 322,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Cámara de registro de vaciado = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 995.15
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_LUZ_PISC",
+     "missingName": "FOCO SUBACUÁTICO LED 12 V CON TRANSFORMADOR, INSTALADO",
+     "quantityFormula": "2",
+     "defaultQuantity": 2,
+     "breakdown": "Focos subacuáticos = 2",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1534.16
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "F_ESC_PISC",
+     "missingName": "ESCALERA MARINERA DE ACERO INOXIDABLE 3 PELDAÑOS, INSTALADA",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Escalera inox = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1310.93
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*1.5*1.3",
+     "defaultQuantity": 7.8,
+     "breakdown": "Sala de máquinas: muros 6H = 4 × 1.5 × 1.3",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 22,
+     "phaseId": 4,
+     "activityId": 535,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*1.5*1.3",
+     "defaultQuantity": 7.8,
+     "breakdown": "Sala de máquinas: revoque impermeable interior",
+     "unit": "m2",
+     "designUnitPriceSCZ": 123.71
+    },
+    {
+     "sortOrder": 23,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1.6*1.6*0.1*2",
+     "defaultQuantity": 0.512,
+     "breakdown": "Sala de máquinas: losa tapa e=10 + piso: volumen H21 = 1.6*1.6*0.1*2",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 24,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(1.6*1.6*0.1*2)*80",
+     "defaultQuantity": 40.96,
+     "breakdown": "Sala de máquinas: losa tapa e=10 + piso: acero = V × 80 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 25,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1.6*1.6",
+     "defaultQuantity": 2.56,
+     "breakdown": "Sala de máquinas: losa tapa e=10 + piso: encofrado = fondo de losa tapa",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 26,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "C36",
+     "missingName": "TABLERO DE DISTRIBUCIÓN MONOFÁSICO 12 POLOS CON DIFERENCIAL Y TÉRMICOS",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tablero con diferencial para equipos = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1029.51
+    },
+    {
+     "sortOrder": 27,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto LED sala de máquinas = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 28,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tomacorriente = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 29,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(LP+2)*(WP+2)",
+     "defaultQuantity": 60,
+     "breakdown": "Limpieza final",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    }
+   ]
+  },
+  {
+   "slug": "sauna-seco-2x2",
+   "name": "Sauna seco de 2×2 m (4 personas) con ducha",
+   "category": "recreacion",
+   "description": "Cabina de mampostería con losa, aislamiento de lana de vidrio y revestimiento interior de machimbre, bancas de 2 niveles, calefactor eléctrico 6 kW, puerta de vidrio templado, ducha fría contigua.",
+   "unitRef": "pza",
+   "refQuantityFormula": "1",
+   "params": {
+    "LS": {
+     "default": 2.0,
+     "min": 1.5,
+     "max": 3.0,
+     "unit": "m",
+     "label": "Largo interior"
+    },
+    "WS": {
+     "default": 2.0,
+     "min": 1.5,
+     "max": 3.0,
+     "unit": "m",
+     "label": "Ancho interior"
+    },
+    "HS": {
+     "default": 2.2,
+     "min": 2.1,
+     "max": 2.4,
+     "unit": "m",
+     "label": "Altura interior"
+    }
+   },
+   "derived": [
+    {
+     "name": "Pe",
+     "expr": "2*(LS+WS+0.24)",
+     "label": "perímetro exterior"
+    },
+    {
+     "name": "Ai",
+     "expr": "2*(LS+WS)*HS-1.9+LS*WS",
+     "label": "superficie interior a revestir (muros − puerta + cielo)"
+    },
+    {
+     "name": "Am",
+     "expr": "2*(LS+WS+0.12)*(HS+0.2)-1.9",
+     "label": "muro 6H por eje − puerta"
+    },
+    {
+     "name": "Al",
+     "expr": "(LS+0.5)*(WS+0.5)",
+     "label": "losa con alero"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 39592.27,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Al",
+     "defaultQuantity": 6.25,
+     "breakdown": "Replanteo = área de losa",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pe*0.4*0.5",
+     "defaultQuantity": 1.696,
+     "breakdown": "Excavación de cimiento = Pe × 0.4 × 0.5",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 3,
+     "activityId": 193,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pe*0.4*0.4",
+     "defaultQuantity": 1.357,
+     "breakdown": "Cimiento HoCo = Pe × 0.4 × 0.4",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1581.83
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pe*0.045+4*0.03*(HS+0.5)+Pe*0.03",
+     "defaultQuantity": 0.96,
+     "breakdown": "Sobrecimiento + 4 columnas 15×20 + viga 15×20: volumen H21 = Pe*0.045+4*0.03*(HS+0.5)+Pe*0.03",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Pe*0.045+4*0.03*(HS+0.5)+Pe*0.03)*100",
+     "defaultQuantity": 96.0,
+     "breakdown": "Sobrecimiento + 4 columnas 15×20 + viga 15×20: acero = V × 100 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pe*0.6+4*0.7*(HS+0.5)+Pe*0.4",
+     "defaultQuantity": 16.04,
+     "breakdown": "Sobrecimiento + 4 columnas 15×20 + viga 15×20: encofrado = sobrecimiento 2 caras + columnas + viga",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Am",
+     "defaultQuantity": 17.876,
+     "breakdown": "Muro 6H = 2·(LS+WS+0.12)·(HS+0.2) − puerta",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 525,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Al",
+     "defaultQuantity": 6.25,
+     "breakdown": "Losa alivianada = (LS+0.5)·(WS+0.5)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 341.6
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": 239,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Al",
+     "defaultQuantity": 6.25,
+     "breakdown": "Membrana asfáltica sobre losa",
+     "unit": "m2",
+     "designUnitPriceSCZ": 106.88
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": 539,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "LS*WS",
+     "defaultQuantity": 4.0,
+     "breakdown": "Contrapiso = LS×WS",
+     "unit": "m2",
+     "designUnitPriceSCZ": 214.36
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 4,
+     "activityId": 421,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "LS*WS",
+     "defaultQuantity": 4.0,
+     "breakdown": "Piso cerámico = LS×WS",
+     "unit": "m2",
+     "designUnitPriceSCZ": 194.05
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "F_AISLAM",
+     "missingName": "AISLAMIENTO TÉRMICO LANA DE VIDRIO 25 MM + BARRERA DE VAPOR",
+     "quantityFormula": "Ai",
+     "defaultQuantity": 19.7,
+     "breakdown": "Aislamiento lana de vidrio + barrera de vapor = Ai",
+     "unit": "m2",
+     "designUnitPriceSCZ": 145.4
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "F_MACHIMBRE",
+     "missingName": "REVESTIMIENTO DE MACHIMBRE DE PINO/CEDRO EN MUROS Y CIELO (SOBRE LISTONES)",
+     "quantityFormula": "Ai",
+     "defaultQuantity": 19.7,
+     "breakdown": "Machimbre = Ai",
+     "unit": "m2",
+     "designUnitPriceSCZ": 209.55
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "F_BANCA_SAUNA",
+     "missingName": "BANCA DE SAUNA EN LISTONES DE MADERA (2 NIVELES)",
+     "quantityFormula": "2*LS",
+     "defaultQuantity": 4.0,
+     "breakdown": "Bancas 2 niveles = 2 × LS",
+     "unit": "ml",
+     "designUnitPriceSCZ": 465.96
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "E13",
+     "missingName": "PUERTA DE VIDRIO TEMPLADO 10 MM 0.90X2.10 CON HERRAJES",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta de vidrio templado 10 mm = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 3520.19
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 4,
+     "activityId": 533,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Am",
+     "defaultQuantity": 17.876,
+     "breakdown": "Revoque exterior",
+     "unit": "m2",
+     "designUnitPriceSCZ": 77.36
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 4,
+     "activityId": 534,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Am",
+     "defaultQuantity": 17.876,
+     "breakdown": "Enlucido exterior",
+     "unit": "m2",
+     "designUnitPriceSCZ": 31.81
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 7,
+     "activityId": 537,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Am",
+     "defaultQuantity": 17.876,
+     "breakdown": "Pintura exterior",
+     "unit": "m2",
+     "designUnitPriceSCZ": 47.37
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_CALEF_SAUNA",
+     "missingName": "CALEFACTOR ELÉCTRICO PARA SAUNA 6 KW CON PIEDRAS Y CONTROL, INSTALADO (CIRCUITO 6 MM2)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Calefactor 6 kW con circuito = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 9359.95
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto LED (luminaria apta para calor) = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto de agua (ducha) = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 22,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Desagüe de ducha = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 23,
+     "phaseId": 5,
+     "activityId": 47,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Grifería de ducha = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 606.75
+    },
+    {
+     "sortOrder": 24,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Al",
+     "defaultQuantity": 6.25,
+     "breakdown": "Limpieza final",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    }
+   ]
+  },
+  {
+   "slug": "ampliacion-cuarto-bano",
+   "name": "Ampliación: dormitorio con baño (20 m²)",
+   "category": "vivienda",
+   "description": "Ampliación adosada a vivienda existente (1 muro compartido): dormitorio de ~14 m2 + baño de 1.5×2.5, cimiento corrido, muro 6H, losa alivianada impermeabilizada, acabados y conexión a redes existentes.",
+   "unitRef": "m2",
+   "refQuantityFormula": "A",
+   "params": {
+    "A": {
+     "default": 20,
+     "min": 12,
+     "max": 40,
+     "unit": "m2",
+     "label": "Área"
+    },
+    "H": {
+     "default": 2.6,
+     "min": 2.4,
+     "max": 3.0,
+     "unit": "m",
+     "label": "Altura"
+    }
+   },
+   "derived": [
+    {
+     "name": "L",
+     "expr": "sqrt(A*5/4)",
+     "label": "largo (rect. 5:4)"
+    },
+    {
+     "name": "W",
+     "expr": "A/L",
+     "label": "ancho"
+    },
+    {
+     "name": "Pn",
+     "expr": "2*L+W",
+     "label": "muros exteriores nuevos (1 lado compartido)"
+    },
+    {
+     "name": "Lint",
+     "expr": "4",
+     "label": "muros del baño (2.5 + 1.5)"
+    },
+    {
+     "name": "Ncol",
+     "expr": "ceil(Pn/3)+2",
+     "label": "columnas"
+    },
+    {
+     "name": "Aab",
+     "expr": "1.89+1.68+2.4",
+     "label": "vanos: puerta de conexión + puerta de baño + ventanas 2.4 m2"
+    },
+    {
+     "name": "Am",
+     "expr": "(Pn+Lint)*H-Ncol*0.2*H-Aab",
+     "label": "muro neto"
+    },
+    {
+     "name": "Acer",
+     "expr": "8*1.8+0.6",
+     "label": "revestimiento del baño (perímetro 8 ml × 1.8)"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 78891.87,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 20,
+     "breakdown": "Replanteo",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Pn+Lint)*0.4*0.6",
+     "defaultQuantity": 4.32,
+     "breakdown": "Excavación cimiento",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 520,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Pn+Lint)*0.4*0.6*0.65",
+     "defaultQuantity": 2.808,
+     "breakdown": "Retiro",
+     "unit": "m3",
+     "designUnitPriceSCZ": 74.02
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 3,
+     "activityId": 193,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Pn+Lint)*0.4*0.5",
+     "defaultQuantity": 3.6,
+     "breakdown": "Cimiento HoCo",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1581.83
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Pn+Lint)*0.045+Ncol*0.03*(H+0.3)+(Pn+Lint)*0.03",
+     "defaultQuantity": 1.959,
+     "breakdown": "Sobrecimiento + columnas + viga de encadenado: volumen H21 = (Pn+Lint)*0.045+Ncol*0.03*(H+0.3)+(Pn+Lint)*0.03",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "((Pn+Lint)*0.045+Ncol*0.03*(H+0.3)+(Pn+Lint)*0.03)*105",
+     "defaultQuantity": 205.695,
+     "breakdown": "Sobrecimiento + columnas + viga de encadenado: acero = V × 105 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Pn+Lint)*0.6+Ncol*0.7*(H+0.3)+(Pn+Lint)*0.4",
+     "defaultQuantity": 32.21,
+     "breakdown": "Sobrecimiento + columnas + viga de encadenado: encofrado = sobrecimiento 2 caras + columnas + viga",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 236,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pn+Lint",
+     "defaultQuantity": 18.0,
+     "breakdown": "Impermeabilización sobrecimiento",
+     "unit": "ml",
+     "designUnitPriceSCZ": 36.64
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Am",
+     "defaultQuantity": 37.19,
+     "breakdown": "Muro 6H",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": 525,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*1.1",
+     "defaultQuantity": 22.0,
+     "breakdown": "Losa alivianada con alero",
+     "unit": "m2",
+     "designUnitPriceSCZ": 341.6
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 3,
+     "activityId": 239,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*1.1",
+     "defaultQuantity": 22.0,
+     "breakdown": "Membrana asfáltica",
+     "unit": "m2",
+     "designUnitPriceSCZ": 106.88
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 2,
+     "activityId": 392,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*0.15",
+     "defaultQuantity": 3.0,
+     "breakdown": "Relleno compactado",
+     "unit": "m3",
+     "designUnitPriceSCZ": 314.73
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 3,
+     "activityId": 539,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 20,
+     "breakdown": "Contrapiso",
+     "unit": "m2",
+     "designUnitPriceSCZ": 214.36
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 4,
+     "activityId": 530,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pn*H+2*Lint*H+L*H-2*Aab",
+     "defaultQuantity": 58.26,
+     "breakdown": "Revoque grueso interior",
+     "unit": "m2",
+     "designUnitPriceSCZ": 54.99
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 4,
+     "activityId": 532,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pn*H+2*Lint*H+L*H-2*Aab-Acer",
+     "defaultQuantity": 43.26,
+     "breakdown": "Enlucido",
+     "unit": "m2",
+     "designUnitPriceSCZ": 30.75
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 4,
+     "activityId": 536,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pn*H+2*Lint*H+L*H-2*Aab-Acer",
+     "defaultQuantity": 43.26,
+     "breakdown": "Empastado",
+     "unit": "m2",
+     "designUnitPriceSCZ": 37.07
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 4,
+     "activityId": 533,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pn*(H+0.5)-2.4",
+     "defaultQuantity": 41.0,
+     "breakdown": "Revoque exterior",
+     "unit": "m2",
+     "designUnitPriceSCZ": 77.36
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 4,
+     "activityId": 534,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pn*(H+0.5)-2.4",
+     "defaultQuantity": 41.0,
+     "breakdown": "Enlucido exterior",
+     "unit": "m2",
+     "designUnitPriceSCZ": 31.81
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 7,
+     "activityId": 537,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Pn*(H+0.5)-2.4",
+     "defaultQuantity": 41.0,
+     "breakdown": "Pintura fachada",
+     "unit": "m2",
+     "designUnitPriceSCZ": 47.37
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 4,
+     "activityId": 154,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 20,
+     "breakdown": "Cielo raso bajo losa",
+     "unit": "m2",
+     "designUnitPriceSCZ": 162.15
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 7,
+     "activityId": null,
+     "missingKey": "F_PINT_INT",
+     "missingName": "PINTURA LÁTEX INTERIOR EN MUROS Y CIELOS (SELLADOR + 2 MANOS)",
+     "quantityFormula": "Pn*H+2*Lint*H+L*H-2*Aab-Acer+A",
+     "defaultQuantity": 63.26,
+     "breakdown": "Pintura interior muros + cielo",
+     "unit": "m2",
+     "designUnitPriceSCZ": 39.93
+    },
+    {
+     "sortOrder": 22,
+     "phaseId": 4,
+     "activityId": 421,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 20,
+     "breakdown": "Piso cerámico",
+     "unit": "m2",
+     "designUnitPriceSCZ": 194.05
+    },
+    {
+     "sortOrder": 23,
+     "phaseId": 4,
+     "activityId": 440,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*(L+W)-6",
+     "defaultQuantity": 12.0,
+     "breakdown": "Zócalo",
+     "unit": "ml",
+     "designUnitPriceSCZ": 79.48
+    },
+    {
+     "sortOrder": 24,
+     "phaseId": 4,
+     "activityId": 461,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acer",
+     "defaultQuantity": 15.0,
+     "breakdown": "Revestimiento baño",
+     "unit": "m2",
+     "designUnitPriceSCZ": 174.58
+    },
+    {
+     "sortOrder": 25,
+     "phaseId": 4,
+     "activityId": 109,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta placa 0.80 (dormitorio)",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1654.98
+    },
+    {
+     "sortOrder": 26,
+     "phaseId": 4,
+     "activityId": 108,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta placa 0.70 (baño)",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1582.47
+    },
+    {
+     "sortOrder": 27,
+     "phaseId": 4,
+     "activityId": 449,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2",
+     "defaultQuantity": 2,
+     "breakdown": "Chapas",
+     "unit": "UND",
+     "designUnitPriceSCZ": 619.01
+    },
+    {
+     "sortOrder": 28,
+     "phaseId": 4,
+     "activityId": 78,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2.4",
+     "defaultQuantity": 2.4,
+     "breakdown": "Ventanas aluminio",
+     "unit": "m2",
+     "designUnitPriceSCZ": 703.88
+    },
+    {
+     "sortOrder": 29,
+     "phaseId": 4,
+     "activityId": 131,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2.4",
+     "defaultQuantity": 2.4,
+     "breakdown": "Protector de ventanas",
+     "unit": "m2",
+     "designUnitPriceSCZ": 730.37
+    },
+    {
+     "sortOrder": 30,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Puntos de agua (inodoro, lavamanos, ducha)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 31,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2",
+     "defaultQuantity": 2,
+     "breakdown": "Desagües 2\"",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 32,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "C32",
+     "missingName": "PUNTO DE DESAGÜE PVC 4\" (INODORO) (≈3 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Desagüe 4\" inodoro",
+     "unit": "pto",
+     "designUnitPriceSCZ": 426.45
+    },
+    {
+     "sortOrder": 33,
+     "phaseId": 5,
+     "activityId": 317,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Caja sifonada",
+     "unit": "UND",
+     "designUnitPriceSCZ": 181.51
+    },
+    {
+     "sortOrder": 34,
+     "phaseId": 5,
+     "activityId": 322,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Cámara de registro de empalme",
+     "unit": "UND",
+     "designUnitPriceSCZ": 995.15
+    },
+    {
+     "sortOrder": 35,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "F_INODORO",
+     "missingName": "INODORO TANQUE BAJO COMPLETO, INSTALADO (CHICOTILLO, LLAVE ANGULAR, SELLADO)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Inodoro",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1219.73
+    },
+    {
+     "sortOrder": 36,
+     "phaseId": 5,
+     "activityId": 56,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Lavamanos",
+     "unit": "UND",
+     "designUnitPriceSCZ": 865.07
+    },
+    {
+     "sortOrder": 37,
+     "phaseId": 5,
+     "activityId": 43,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Grifería lavamanos",
+     "unit": "UND",
+     "designUnitPriceSCZ": 578.16
+    },
+    {
+     "sortOrder": 38,
+     "phaseId": 5,
+     "activityId": 39,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Ducha eléctrica",
+     "unit": "UND",
+     "designUnitPriceSCZ": 359.75
+    },
+    {
+     "sortOrder": 39,
+     "phaseId": 5,
+     "activityId": 32,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Accesorios de baño",
+     "unit": "UND",
+     "designUnitPriceSCZ": 713.12
+    },
+    {
+     "sortOrder": 40,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Puntos LED (dormitorio 2 + baño)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 41,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Tomacorrientes",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 42,
+     "phaseId": 6,
+     "activityId": 276,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto ducha eléctrica",
+     "unit": "UND",
+     "designUnitPriceSCZ": 255.81
+    },
+    {
+     "sortOrder": 43,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 20,
+     "breakdown": "Limpieza final",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    }
+   ]
+  },
+  {
+   "slug": "bano-completo",
+   "name": "Baño completo (2.0×1.5 m) dentro de vivienda",
+   "category": "remodelacion",
+   "description": "Baño nuevo o remodelación total dentro de un ambiente existente: revoque impermeable, cerámica en muros (h=2.0) y piso, artefactos, box de vidrio, instalaciones, puerta y cielo falso.",
+   "unitRef": "pza",
+   "refQuantityFormula": "1",
+   "params": {
+    "LB": {
+     "default": 2.0,
+     "min": 1.5,
+     "max": 3.0,
+     "unit": "m",
+     "label": "Largo"
+    },
+    "WB": {
+     "default": 1.5,
+     "min": 1.2,
+     "max": 2.5,
+     "unit": "m",
+     "label": "Ancho"
+    },
+    "HR": {
+     "default": 2.0,
+     "min": 1.8,
+     "max": 2.6,
+     "unit": "m",
+     "label": "Altura de revestimiento"
+    }
+   },
+   "derived": [
+    {
+     "name": "Ab",
+     "expr": "LB*WB",
+     "label": "área de piso"
+    },
+    {
+     "name": "Arev",
+     "expr": "2*(LB+WB)*HR-1.5",
+     "label": "revestimiento de muros − puerta"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": false,
+   "version": 1,
+   "designTotalSCZ": 16924.69,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 4,
+     "activityId": 535,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arev",
+     "defaultQuantity": 12.5,
+     "breakdown": "Revoque impermeable = Arev",
+     "unit": "m2",
+     "designUnitPriceSCZ": 123.71
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 4,
+     "activityId": 461,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Arev",
+     "defaultQuantity": 12.5,
+     "breakdown": "Revestimiento cerámico = Arev",
+     "unit": "m2",
+     "designUnitPriceSCZ": 174.58
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 4,
+     "activityId": 412,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ab",
+     "defaultQuantity": 3.0,
+     "breakdown": "Contrapiso de mortero 5 cm (pendiente)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 134.86
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 4,
+     "activityId": 421,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ab",
+     "defaultQuantity": 3.0,
+     "breakdown": "Piso cerámico",
+     "unit": "m2",
+     "designUnitPriceSCZ": 194.05
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 4,
+     "activityId": 151,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ab",
+     "defaultQuantity": 3.0,
+     "breakdown": "Cielo falso de yeso",
+     "unit": "m2",
+     "designUnitPriceSCZ": 71.25
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 7,
+     "activityId": null,
+     "missingKey": "F_PINT_INT",
+     "missingName": "PINTURA LÁTEX INTERIOR EN MUROS Y CIELOS (SELLADOR + 2 MANOS)",
+     "quantityFormula": "Ab+2*(LB+WB)*(2.6-HR)",
+     "defaultQuantity": 7.2,
+     "breakdown": "Pintura cielo + franja superior de muros",
+     "unit": "m2",
+     "designUnitPriceSCZ": 39.93
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Puntos de agua",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2",
+     "defaultQuantity": 2,
+     "breakdown": "Desagües 2\" (lavamanos, ducha)",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "C32",
+     "missingName": "PUNTO DE DESAGÜE PVC 4\" (INODORO) (≈3 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Desagüe 4\"",
+     "unit": "pto",
+     "designUnitPriceSCZ": 426.45
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 5,
+     "activityId": 317,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Caja sifonada",
+     "unit": "UND",
+     "designUnitPriceSCZ": 181.51
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 5,
+     "activityId": 327,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Rejilla de piso",
+     "unit": "UND",
+     "designUnitPriceSCZ": 210.06
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "F_INODORO",
+     "missingName": "INODORO TANQUE BAJO COMPLETO, INSTALADO (CHICOTILLO, LLAVE ANGULAR, SELLADO)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Inodoro",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1219.73
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 5,
+     "activityId": 56,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Lavamanos",
+     "unit": "UND",
+     "designUnitPriceSCZ": 865.07
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 5,
+     "activityId": 43,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Grifería lavamanos",
+     "unit": "UND",
+     "designUnitPriceSCZ": 578.16
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 5,
+     "activityId": 39,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Ducha eléctrica",
+     "unit": "UND",
+     "designUnitPriceSCZ": 359.75
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 5,
+     "activityId": 32,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Accesorios",
+     "unit": "UND",
+     "designUnitPriceSCZ": 713.12
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 5,
+     "activityId": 477,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Espejo",
+     "unit": "UND",
+     "designUnitPriceSCZ": 152.46
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "E15",
+     "missingName": "BOX DE DUCHA CORREDIZO DE VIDRIO TEMPLADO 8 MM CON KIT INOX",
+     "quantityFormula": "0.9*1.9",
+     "defaultQuantity": 1.71,
+     "breakdown": "Box de ducha 0.9 × 1.9",
+     "unit": "m2",
+     "designUnitPriceSCZ": 1555.64
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 4,
+     "activityId": 108,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta placa 0.70",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1582.47
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 4,
+     "activityId": 449,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Chapa de baño",
+     "unit": "UND",
+     "designUnitPriceSCZ": 619.01
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto LED",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 22,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tomacorriente",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 23,
+     "phaseId": 6,
+     "activityId": 276,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto ducha eléctrica",
+     "unit": "UND",
+     "designUnitPriceSCZ": 255.81
+    }
+   ]
+  },
+  {
+   "slug": "cocina-melamina",
+   "name": "Cocina con muebles de melamina (3 ml lineal)",
+   "category": "remodelacion",
+   "description": "Muebles bajos y altos de melamina 18 mm, mesón de granito, lavaplatos con grifería, salpicadero cerámico, puntos de agua, desagüe, gas y tomacorrientes.",
+   "unitRef": "ml",
+   "refQuantityFormula": "LC",
+   "params": {
+    "LC": {
+     "default": 3,
+     "min": 1.5,
+     "max": 8,
+     "unit": "ml",
+     "label": "Largo de mesón"
+    },
+    "GAS": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Punto de gas"
+    }
+   },
+   "derived": [],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 12535.54,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "E20",
+     "missingName": "MUEBLE BAJO DE COCINA EN MELAMINA 18 MM (H=0.85, P=0.60) CON PUERTAS Y 1 CAJONERA, SIN MESÓN",
+     "quantityFormula": "LC",
+     "defaultQuantity": 3,
+     "breakdown": "Mueble bajo de melamina = LC",
+     "unit": "ml",
+     "designUnitPriceSCZ": 1018.13
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "E21",
+     "missingName": "MUEBLE ALTO DE COCINA EN MELAMINA 18 MM (H=0.70, P=0.33) CON PUERTAS",
+     "quantityFormula": "LC*0.8",
+     "defaultQuantity": 2.4,
+     "breakdown": "Mueble alto = 80 % de LC (deja espacio para campana)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 689.25
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 4,
+     "activityId": 379,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "LC",
+     "defaultQuantity": 3,
+     "breakdown": "Mesón de granito = LC",
+     "unit": "ml",
+     "designUnitPriceSCZ": 1231.82
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 4,
+     "activityId": 461,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "LC*0.6",
+     "defaultQuantity": 1.8,
+     "breakdown": "Salpicadero cerámico = LC × 0.6",
+     "unit": "m2",
+     "designUnitPriceSCZ": 174.58
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 5,
+     "activityId": 61,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Lavaplatos",
+     "unit": "UND",
+     "designUnitPriceSCZ": 696.54
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 5,
+     "activityId": 45,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Grifería",
+     "unit": "UND",
+     "designUnitPriceSCZ": 554.23
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto de agua",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Desagüe 2\"",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "C33",
+     "missingName": "PUNTO DE GAS NATURAL DOMICILIARIO PE-AL-PE 1620 (≈8 M) (COCINA/CALEFÓN)",
+     "quantityFormula": "GAS",
+     "defaultQuantity": 1,
+     "breakdown": "Punto de gas",
+     "unit": "pto",
+     "designUnitPriceSCZ": 790.37
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "ceil(LC/1)",
+     "defaultQuantity": 3,
+     "breakdown": "Tomacorrientes = 1 por ml",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Punto LED bajo mueble",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    }
+   ]
+  },
+  {
+   "slug": "quincho-churrasquera",
+   "name": "Quincho 5×6 m con churrasquera",
+   "category": "recreacion",
+   "description": "Área social techada abierta: 6 columnas de HoAo sobre zapatas, viga perimetral, cubierta de calamina sobre cerchas metálicas con cielo de machimbre, muro de fondo, piso cerámico exterior, churrasquera integrada, bacha, luces y tomas.",
+   "unitRef": "m2",
+   "refQuantityFormula": "A",
+   "params": {
+    "LQ": {
+     "default": 6,
+     "min": 4,
+     "max": 10,
+     "unit": "m",
+     "label": "Largo"
+    },
+    "WQ": {
+     "default": 5,
+     "min": 3,
+     "max": 8,
+     "unit": "m",
+     "label": "Ancho"
+    },
+    "HQ": {
+     "default": 2.8,
+     "min": 2.5,
+     "max": 3.2,
+     "unit": "m",
+     "label": "Altura libre"
+    },
+    "AN": {
+     "default": 2.4,
+     "min": 1.6,
+     "max": 4.0,
+     "unit": "m",
+     "label": "Frente churrasquera"
+    },
+    "BACHA": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Bacha"
+    }
+   },
+   "derived": [
+    {
+     "name": "A",
+     "expr": "LQ*WQ",
+     "label": "área"
+    },
+    {
+     "name": "Ncol",
+     "expr": "2*(ceil(LQ/3.5)+1)",
+     "label": "columnas"
+    },
+    {
+     "name": "Acub",
+     "expr": "(LQ+1)*(WQ+1)*1.1",
+     "label": "cubierta con alero 0.5 y pendiente"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 81793.61,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 30,
+     "breakdown": "Replanteo",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 1,
+     "activityId": null,
+     "missingKey": "F_DESBROCE",
+     "missingName": "DESBROCE Y LIMPIEZA DE TERRENO (RETIRO CAPA VEGETAL ≈10 CM, CARGUÍO)",
+     "quantityFormula": "A",
+     "defaultQuantity": 30,
+     "breakdown": "Desbroce",
+     "unit": "m2",
+     "designUnitPriceSCZ": 9.66
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.8*0.8*1.0+LQ*0.4*0.5",
+     "defaultQuantity": 5.04,
+     "breakdown": "Excavación zapatas + cimiento del muro de fondo",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 3,
+     "activityId": 522,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.64",
+     "defaultQuantity": 3.84,
+     "breakdown": "Hormigón pobre",
+     "unit": "m2",
+     "designUnitPriceSCZ": 63.43
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.16",
+     "defaultQuantity": 0.96,
+     "breakdown": "Zapatas 0.8×0.8×0.25: volumen H21 = Ncol*0.16",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*0.16)*60",
+     "defaultQuantity": 57.6,
+     "breakdown": "Zapatas 0.8×0.8×0.25: acero = V × 60 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.8",
+     "defaultQuantity": 4.8,
+     "breakdown": "Zapatas 0.8×0.8×0.25: encofrado = 4 caras × 0.8 × 0.25",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.04*(HQ+0.8)",
+     "defaultQuantity": 0.864,
+     "breakdown": "Columnas 20×20: volumen H21 = Ncol*0.04*(HQ+0.8)",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*0.04*(HQ+0.8))*130",
+     "defaultQuantity": 112.32,
+     "breakdown": "Columnas 20×20: acero = V × 130 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*0.8*(HQ+0.8)",
+     "defaultQuantity": 17.28,
+     "breakdown": "Columnas 20×20: encofrado = 0.80 × altura × Ncol",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*(LQ+WQ)*0.06",
+     "defaultQuantity": 1.32,
+     "breakdown": "Viga perimetral 20×30: volumen H21 = 2*(LQ+WQ)*0.06",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(2*(LQ+WQ)*0.06)*110",
+     "defaultQuantity": 145.2,
+     "breakdown": "Viga perimetral 20×30: acero = V × 110 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*(LQ+WQ)*0.8",
+     "defaultQuantity": 17.6,
+     "breakdown": "Viga perimetral 20×30: encofrado = (2×0.30+0.20) × perímetro",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 3,
+     "activityId": 193,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "LQ*0.4*0.4",
+     "defaultQuantity": 0.96,
+     "breakdown": "Cimiento muro de fondo",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1581.83
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "LQ*HQ",
+     "defaultQuantity": 16.8,
+     "breakdown": "Muro de fondo 6H",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 4,
+     "activityId": 533,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*LQ*HQ",
+     "defaultQuantity": 33.6,
+     "breakdown": "Revoque 2 caras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 77.36
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 4,
+     "activityId": 534,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*LQ*HQ",
+     "defaultQuantity": 33.6,
+     "breakdown": "Enlucido 2 caras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 31.81
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 7,
+     "activityId": 537,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*LQ*HQ",
+     "defaultQuantity": 33.6,
+     "breakdown": "Pintura 2 caras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 47.37
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 3,
+     "activityId": 543,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub*5",
+     "defaultQuantity": 231.0,
+     "breakdown": "Cerchas metálicas 5 kg/m2",
+     "unit": "kg",
+     "designUnitPriceSCZ": 27.36
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 3,
+     "activityId": 542,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub",
+     "defaultQuantity": 46.2,
+     "breakdown": "Calamina sobre costaneras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 270.62
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 4,
+     "activityId": null,
+     "missingKey": "F_MACHIMBRE",
+     "missingName": "REVESTIMIENTO DE MACHIMBRE DE PINO/CEDRO EN MUROS Y CIELO (SOBRE LISTONES)",
+     "quantityFormula": "A",
+     "defaultQuantity": 30,
+     "breakdown": "Cielo de machimbre = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 209.55
+    },
+    {
+     "sortOrder": 22,
+     "phaseId": 3,
+     "activityId": 187,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "LQ+1",
+     "defaultQuantity": 7,
+     "breakdown": "Canaleta",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 23,
+     "phaseId": 2,
+     "activityId": 392,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*0.15",
+     "defaultQuantity": 4.5,
+     "breakdown": "Relleno compactado",
+     "unit": "m3",
+     "designUnitPriceSCZ": 314.73
+    },
+    {
+     "sortOrder": 24,
+     "phaseId": 3,
+     "activityId": 539,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 30,
+     "breakdown": "Contrapiso",
+     "unit": "m2",
+     "designUnitPriceSCZ": 214.36
+    },
+    {
+     "sortOrder": 25,
+     "phaseId": 4,
+     "activityId": 423,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 30,
+     "breakdown": "Piso cerámico exterior",
+     "unit": "m2",
+     "designUnitPriceSCZ": 286.7
+    },
+    {
+     "sortOrder": 26,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4",
+     "defaultQuantity": 4,
+     "breakdown": "Puntos LED",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 27,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "3",
+     "defaultQuantity": 3,
+     "breakdown": "Tomacorrientes",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 28,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 30,
+     "breakdown": "Limpieza final",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    },
+    {
+     "sortOrder": 29,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(2*AN+2*0.8)*0.4*0.4",
+     "defaultQuantity": 1.024,
+     "breakdown": "Churrasquera: Excavación de cimiento = perímetro (2·AN + 1.6) × 0.4 × 0.4",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 30,
+     "phaseId": 3,
+     "activityId": 193,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(2*AN+2*0.8)*0.4*0.3",
+     "defaultQuantity": 0.768,
+     "breakdown": "Churrasquera: Cimiento HoCo = perímetro × 0.4 × 0.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1581.83
+    },
+    {
+     "sortOrder": 31,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "AN*0.8*0.1",
+     "defaultQuantity": 0.192,
+     "breakdown": "Churrasquera: Losa/mesón de HoAo e=10 (AN×0.8): volumen H21 = AN*0.8*0.1",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 32,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN*0.8*0.1)*80",
+     "defaultQuantity": 15.36,
+     "breakdown": "Churrasquera: Losa/mesón de HoAo e=10 (AN×0.8): acero = V × 80 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 33,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "AN*0.8+0.1*(2*AN+1.6)",
+     "defaultQuantity": 2.56,
+     "breakdown": "Churrasquera: Losa/mesón de HoAo e=10 (AN×0.8): encofrado = fondo AN×0.8 + cantos 0.1 × perímetro",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 34,
+     "phaseId": 3,
+     "activityId": 527,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN+1.6)*0.9+AN*1.8+1.6*1.0",
+     "defaultQuantity": 9.52,
+     "breakdown": "Churrasquera: Muro 6H = base (frente+laterales) (AN+1.6)×0.9 + fondo AN×1.8 + laterales de campana 1.6×1.0",
+     "unit": "m2",
+     "designUnitPriceSCZ": 131.32
+    },
+    {
+     "sortOrder": 35,
+     "phaseId": 4,
+     "activityId": 462,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1.2*0.8+1.2*0.6",
+     "defaultQuantity": 1.68,
+     "breakdown": "Churrasquera: Ladrillo refractario = fogón 1.2×0.8 + fondo 1.2×0.6",
+     "unit": "m2",
+     "designUnitPriceSCZ": 495.44
+    },
+    {
+     "sortOrder": 36,
+     "phaseId": 4,
+     "activityId": 533,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN+1.6)*0.9+AN*1.8",
+     "defaultQuantity": 7.92,
+     "breakdown": "Churrasquera: Revoque grueso exterior = caras vistas",
+     "unit": "m2",
+     "designUnitPriceSCZ": 77.36
+    },
+    {
+     "sortOrder": 37,
+     "phaseId": 4,
+     "activityId": 534,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN+1.6)*0.9+AN*1.8",
+     "defaultQuantity": 7.92,
+     "breakdown": "Churrasquera: Enlucido = caras vistas",
+     "unit": "m2",
+     "designUnitPriceSCZ": 31.81
+    },
+    {
+     "sortOrder": 38,
+     "phaseId": 4,
+     "activityId": 461,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "AN*0.9",
+     "defaultQuantity": 2.16,
+     "breakdown": "Churrasquera: Revestimiento cerámico frontal = AN × 0.9",
+     "unit": "m2",
+     "designUnitPriceSCZ": 174.58
+    },
+    {
+     "sortOrder": 39,
+     "phaseId": 4,
+     "activityId": 379,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "AN-1.2",
+     "defaultQuantity": 1.2,
+     "breakdown": "Churrasquera: Mesón de granito lateral = AN − 1.2 (fogón)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 1231.82
+    },
+    {
+     "sortOrder": 40,
+     "phaseId": 4,
+     "activityId": 130,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Churrasquera: Parrilla para churrasquera = 1",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1147.96
+    },
+    {
+     "sortOrder": 41,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "F_CAMPANA",
+     "missingName": "CAMPANA Y DUCTO DE CHURRASQUERA EN PLANCHA 3 MM CON SOMBRERETE (DUCTO ≈2 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Churrasquera: Campana y ducto metálico = 1",
+     "unit": "pza",
+     "designUnitPriceSCZ": 2290.77
+    },
+    {
+     "sortOrder": 42,
+     "phaseId": 5,
+     "activityId": 61,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "BACHA",
+     "defaultQuantity": 1,
+     "breakdown": "Churrasquera: Lavaplatos = BACHA",
+     "unit": "UND",
+     "designUnitPriceSCZ": 696.54
+    },
+    {
+     "sortOrder": 43,
+     "phaseId": 5,
+     "activityId": 45,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "BACHA",
+     "defaultQuantity": 1,
+     "breakdown": "Churrasquera: Grifería = BACHA",
+     "unit": "UND",
+     "designUnitPriceSCZ": 554.23
+    },
+    {
+     "sortOrder": 44,
+     "phaseId": 5,
+     "activityId": 544,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "BACHA",
+     "defaultQuantity": 1,
+     "breakdown": "Churrasquera: Punto de agua = BACHA",
+     "unit": "pto",
+     "designUnitPriceSCZ": 247.53
+    },
+    {
+     "sortOrder": 45,
+     "phaseId": 5,
+     "activityId": 545,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "BACHA",
+     "defaultQuantity": 1,
+     "breakdown": "Churrasquera: Punto de desagüe = BACHA",
+     "unit": "pto",
+     "designUnitPriceSCZ": 257.39
+    },
+    {
+     "sortOrder": 46,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Churrasquera: Punto LED = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    },
+    {
+     "sortOrder": 47,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Churrasquera: Tomacorriente = 1",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 48,
+     "phaseId": 7,
+     "activityId": 537,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(AN+1.6)*0.9+AN*1.8",
+     "defaultQuantity": 7.92,
+     "breakdown": "Churrasquera: Pintura látex exterior = caras vistas revocadas − revestimiento (aprox. igual)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 47.37
+    }
+   ]
+  },
+  {
+   "slug": "pergola-metalica",
+   "name": "Pérgola metálica 4×5 m (opcional policarbonato y piso de adoquín)",
+   "category": "exteriores",
+   "description": "Pérgola de tubo metálico pintado sobre dados de hormigón; opcional cubierta de policarbonato alveolar y piso de adoquín.",
+   "unitRef": "m2",
+   "refQuantityFormula": "A",
+   "params": {
+    "LPg": {
+     "default": 5,
+     "min": 2,
+     "max": 10,
+     "unit": "m",
+     "label": "Largo"
+    },
+    "WPg": {
+     "default": 4,
+     "min": 2,
+     "max": 8,
+     "unit": "m",
+     "label": "Ancho"
+    },
+    "POLI": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Policarbonato"
+    },
+    "ADOQ": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Piso de adoquín"
+    }
+   },
+   "derived": [
+    {
+     "name": "A",
+     "expr": "LPg*WPg",
+     "label": "área"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 18924.92,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 20,
+     "breakdown": "Replanteo",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 8,
+     "activityId": null,
+     "missingKey": "E9",
+     "missingName": "PÉRGOLA METÁLICA TUBULAR (COLUMNAS 100X100, VIGAS 50X100, CORREAS 40X80 C/60 CM) CON PINTURA",
+     "quantityFormula": "A",
+     "defaultQuantity": 20,
+     "breakdown": "Pérgola metálica (incluye dados y pintura) = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 568.73
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "E8",
+     "missingName": "CUBIERTA DE POLICARBONATO ALVEOLAR 6 MM (SOLO COBERTURA, SOBRE ESTRUCTURA)",
+     "quantityFormula": "A*POLI",
+     "defaultQuantity": 20,
+     "breakdown": "Policarbonato = A × POLI",
+     "unit": "m2",
+     "designUnitPriceSCZ": 147.56
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 8,
+     "activityId": 541,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*ADOQ",
+     "defaultQuantity": 20,
+     "breakdown": "Adoquín = A × ADOQ",
+     "unit": "m2",
+     "designUnitPriceSCZ": 188.07
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 6,
+     "activityId": 546,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2",
+     "defaultQuantity": 2,
+     "breakdown": "Puntos LED",
+     "unit": "pto",
+     "designUnitPriceSCZ": 304.86
+    }
+   ]
+  },
+  {
+   "slug": "tanque-elevado-torre",
+   "name": "Tanque elevado 1100 L sobre torre metálica de 6 m",
+   "category": "instalaciones",
+   "description": "Torre metálica de 4 columnas de tubo 100×100 arriostradas con plataforma, sobre zapatas de HoAo; tanque de polietileno 1100 L; montante y bajada, electrobomba con automático.",
+   "unitRef": "pza",
+   "refQuantityFormula": "1",
+   "params": {
+    "HT": {
+     "default": 6,
+     "min": 3,
+     "max": 10,
+     "unit": "m",
+     "label": "Altura de torre"
+    },
+    "NT": {
+     "default": 1,
+     "min": 1,
+     "max": 2,
+     "unit": "u",
+     "label": "Tanques de 1100 L"
+    },
+    "BOMBA": {
+     "default": 1,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Electrobomba"
+    }
+   },
+   "derived": [
+    {
+     "name": "KG",
+     "expr": "4*6.1*(HT+0.5)+0.6*4*6.1*HT+60*NT",
+     "label": "torre: 4 columnas 6.1 kg/m + arriostres 60 % + plataforma 60 kg/tanque"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 25583.28,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4",
+     "defaultQuantity": 4,
+     "breakdown": "Replanteo",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 2,
+     "activityId": 385,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*0.8*0.8*1.0",
+     "defaultQuantity": 2.56,
+     "breakdown": "Excavación zapatas",
+     "unit": "m3",
+     "designUnitPriceSCZ": 108.85
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 3,
+     "activityId": 522,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*0.64",
+     "defaultQuantity": 2.56,
+     "breakdown": "Hormigón pobre",
+     "unit": "m2",
+     "designUnitPriceSCZ": 63.43
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*(0.256+0.054)",
+     "defaultQuantity": 1.24,
+     "breakdown": "Zapatas 0.8×0.8×0.4 + pedestal 0.3×0.3×0.6: volumen H21 = 4*(0.256+0.054)",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(4*(0.256+0.054))*60",
+     "defaultQuantity": 74.4,
+     "breakdown": "Zapatas 0.8×0.8×0.4 + pedestal 0.3×0.3×0.6: acero = V × 60 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*(4*0.8*0.4+4*0.3*0.6)",
+     "defaultQuantity": 8.0,
+     "breakdown": "Zapatas 0.8×0.8×0.4 + pedestal 0.3×0.3×0.6: encofrado = caras de zapata + pedestal",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "F_TORRE_KG",
+     "missingName": "ESTRUCTURA METÁLICA DE TORRE/PÓRTICO (TUBULAR 100x100 Y PERFILES), CON ANTICORROSIVO Y ESMALTE",
+     "quantityFormula": "KG",
+     "defaultQuantity": 306.44,
+     "breakdown": "Torre metálica = KG",
+     "unit": "kg",
+     "designUnitPriceSCZ": 32.39
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 5,
+     "activityId": 547,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "NT",
+     "defaultQuantity": 1,
+     "breakdown": "Tanque 1100 L con accesorios = NT",
+     "unit": "pza",
+     "designUnitPriceSCZ": 6890.95
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 5,
+     "activityId": 311,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*(HT+3)",
+     "defaultQuantity": 18,
+     "breakdown": "Montante + bajada PVC 3/4\" = 2 × (HT + 3)",
+     "unit": "ml",
+     "designUnitPriceSCZ": 78.16
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 5,
+     "activityId": 296,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2",
+     "defaultQuantity": 2,
+     "breakdown": "Llaves de paso",
+     "unit": "UND",
+     "designUnitPriceSCZ": 131.02
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 5,
+     "activityId": null,
+     "missingKey": "F_BOMBA",
+     "missingName": "ELECTROBOMBA 1/2 HP CON AUTOMÁTICO DE NIVEL, INSTALADA",
+     "quantityFormula": "BOMBA",
+     "defaultQuantity": 1,
+     "breakdown": "Electrobomba 1/2 HP",
+     "unit": "pza",
+     "designUnitPriceSCZ": 2860.77
+    }
+   ]
+  },
+  {
+   "slug": "acera-porton",
+   "name": "Acera frontal y portón metálico (frente 12 m)",
+   "category": "exteriores",
+   "description": "Acera de hormigón e=7 con cordón, rampa vehicular de HoAo, franja de grama, portón metálico corredizo (motor opcional) y puerta peatonal.",
+   "unitRef": "ml de frente",
+   "refQuantityFormula": "F",
+   "params": {
+    "F": {
+     "default": 12,
+     "min": 8,
+     "max": 40,
+     "unit": "m",
+     "label": "Frente"
+    },
+    "AA": {
+     "default": 1.2,
+     "min": 1.0,
+     "max": 2.5,
+     "unit": "m",
+     "label": "Ancho de acera"
+    },
+    "WP": {
+     "default": 3,
+     "min": 2.5,
+     "max": 6,
+     "unit": "m",
+     "label": "Ancho del portón"
+    },
+    "MOTOR": {
+     "default": 0,
+     "min": 0,
+     "max": 1,
+     "unit": "0/1",
+     "label": "Motor de portón"
+    }
+   },
+   "derived": [],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 16244.73,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "F*(AA+0.5)",
+     "defaultQuantity": 20.4,
+     "breakdown": "Replanteo",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 2,
+     "activityId": 393,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "F*AA*0.1",
+     "defaultQuantity": 1.44,
+     "breakdown": "Nivelación/relleno compactado bajo acera = F × AA × 0.10",
+     "unit": "m3",
+     "designUnitPriceSCZ": 178.29
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 9,
+     "activityId": null,
+     "missingKey": "C34",
+     "missingName": "ACERA DE HORMIGÓN E=7 CM CON JUNTAS DE DILATACIÓN, ACABADO FROTACHADO",
+     "quantityFormula": "(F-WP)*AA",
+     "defaultQuantity": 10.8,
+     "breakdown": "Acera de hormigón = (F − WP) × AA",
+     "unit": "m2",
+     "designUnitPriceSCZ": 141.53
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 9,
+     "activityId": 217,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "WP*AA",
+     "defaultQuantity": 3.6,
+     "breakdown": "Rampa vehicular HoAo e=10 = WP × AA",
+     "unit": "m2",
+     "designUnitPriceSCZ": 261
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 9,
+     "activityId": 197,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "F",
+     "defaultQuantity": 12,
+     "breakdown": "Cordón de acera = F",
+     "unit": "ml",
+     "designUnitPriceSCZ": 175.58
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 8,
+     "activityId": 341,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "F*0.5",
+     "defaultQuantity": 6.0,
+     "breakdown": "Grama = F × 0.5",
+     "unit": "m2",
+     "designUnitPriceSCZ": 82.48
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "C35",
+     "missingName": "PORTÓN METÁLICO DE TUBO CUADRADO Y PLANCHA 1/16\" CON PINTURA",
+     "quantityFormula": "WP*2.2",
+     "defaultQuantity": 6.6,
+     "breakdown": "Portón metálico = WP × 2.2",
+     "unit": "m2",
+     "designUnitPriceSCZ": 1084.5
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 133,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta peatonal",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1656.91
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "F_MOTOR_PORTON",
+     "missingName": "MOTOR PARA PORTÓN CORREDIZO (≤600 KG) CON 2 CONTROLES Y CREMALLERA, INSTALADO",
+     "quantityFormula": "MOTOR",
+     "defaultQuantity": 0,
+     "breakdown": "Motor de portón",
+     "unit": "pza",
+     "designUnitPriceSCZ": 5569.5
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*0.04*2.8+2*0.6*0.6*0.3",
+     "defaultQuantity": 0.44,
+     "breakdown": "2 columnas de portón 20×20 h=2.8 + zapatas: volumen H21 = 2*0.04*2.8+2*0.6*0.6*0.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(2*0.04*2.8+2*0.6*0.6*0.3)*120",
+     "defaultQuantity": 52.8,
+     "breakdown": "2 columnas de portón 20×20 h=2.8 + zapatas: acero = V × 120 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*0.8*2.8",
+     "defaultQuantity": 4.48,
+     "breakdown": "2 columnas de portón 20×20 h=2.8 + zapatas: encofrado = columnas",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    }
+   ]
+  },
+  {
+   "slug": "nivelacion-relleno-lote",
+   "name": "Nivelación y relleno de lote (12×30 m, +30 cm)",
+   "category": "movimiento-de-tierras",
+   "description": "Desbroce, corte/escarificado de 10 cm, retiro, relleno con material seleccionado compactado por capas hasta +30 cm, y replanteo.",
+   "unitRef": "m2",
+   "refQuantityFormula": "F*Fd",
+   "params": {
+    "F": {
+     "default": 12,
+     "min": 8,
+     "max": 40,
+     "unit": "m",
+     "label": "Frente"
+    },
+    "Fd": {
+     "default": 30,
+     "min": 15,
+     "max": 60,
+     "unit": "m",
+     "label": "Fondo"
+    },
+    "HR": {
+     "default": 0.3,
+     "min": 0.1,
+     "max": 1.0,
+     "unit": "m",
+     "label": "Altura de relleno"
+    }
+   },
+   "derived": [
+    {
+     "name": "A",
+     "expr": "F*Fd",
+     "label": "área"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 44874.22,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": null,
+     "missingKey": "F_DESBROCE",
+     "missingName": "DESBROCE Y LIMPIEZA DE TERRENO (RETIRO CAPA VEGETAL ≈10 CM, CARGUÍO)",
+     "quantityFormula": "A",
+     "defaultQuantity": 360,
+     "breakdown": "Desbroce y retiro de capa vegetal = A",
+     "unit": "m2",
+     "designUnitPriceSCZ": 9.66
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 2,
+     "activityId": 382,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*0.1",
+     "defaultQuantity": 36.0,
+     "breakdown": "Corte/escarificado a máquina = A × 0.10",
+     "unit": "m3",
+     "designUnitPriceSCZ": 35.69
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 520,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*0.1*1.3",
+     "defaultQuantity": 46.8,
+     "breakdown": "Retiro = corte × 1.3",
+     "unit": "m3",
+     "designUnitPriceSCZ": 74.02
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 2,
+     "activityId": null,
+     "missingKey": "F_RELLENO_TIERRA",
+     "missingName": "RELLENO Y COMPACTACIÓN DE LOTE CON TIERRA SELECCIONADA POR CAPAS DE 20 CM (A MÁQUINA)",
+     "quantityFormula": "A*HR",
+     "defaultQuantity": 108.0,
+     "breakdown": "Relleno compactado con tierra seleccionada = A × HR",
+     "unit": "m3",
+     "designUnitPriceSCZ": 301.33
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 360,
+     "breakdown": "Replanteo/nivelación final",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    }
+   ]
+  },
+  {
+   "slug": "galpon-deposito",
+   "name": "Galpón / depósito metálico 10×20 m (h=5 m)",
+   "category": "industrial",
+   "description": "Nave de pórticos metálicos sobre zapatas, muro de bloque h=2.5 y cierre lateral de calamina, cubierta de calamina, piso de HoAo, portón corredizo, puerta peatonal, iluminación industrial y tablero.",
+   "unitRef": "m2",
+   "refQuantityFormula": "A",
+   "params": {
+    "LG": {
+     "default": 20,
+     "min": 10,
+     "max": 50,
+     "unit": "m",
+     "label": "Largo"
+    },
+    "WG": {
+     "default": 10,
+     "min": 6,
+     "max": 20,
+     "unit": "m",
+     "label": "Luz"
+    },
+    "HG": {
+     "default": 5,
+     "min": 3.5,
+     "max": 8,
+     "unit": "m",
+     "label": "Altura de columna"
+    }
+   },
+   "derived": [
+    {
+     "name": "A",
+     "expr": "LG*WG",
+     "label": "área"
+    },
+    {
+     "name": "P",
+     "expr": "2*(LG+WG)",
+     "label": "perímetro"
+    },
+    {
+     "name": "Ncol",
+     "expr": "2*(ceil(LG/5)+1)",
+     "label": "columnas de pórtico c/5 m"
+    },
+    {
+     "name": "Acub",
+     "expr": "(WG+0.6)*(LG+0.6)*1.05",
+     "label": "cubierta"
+    },
+    {
+     "name": "KG",
+     "expr": "Acub*(18+WG/2)",
+     "label": "estructura: 18 kg/m2 + 0.5 kg/m2 por m de luz"
+    }
+   ],
+   "isPremium": false,
+   "futurePremium": true,
+   "version": 1,
+   "designTotalSCZ": 454723.74,
+   "items": [
+    {
+     "sortOrder": 1,
+     "phaseId": 1,
+     "activityId": 518,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 200,
+     "breakdown": "Replanteo",
+     "unit": "m2",
+     "designUnitPriceSCZ": 11.4
+    },
+    {
+     "sortOrder": 2,
+     "phaseId": 1,
+     "activityId": null,
+     "missingKey": "F_DESBROCE",
+     "missingName": "DESBROCE Y LIMPIEZA DE TERRENO (RETIRO CAPA VEGETAL ≈10 CM, CARGUÍO)",
+     "quantityFormula": "A*1.2",
+     "defaultQuantity": 240.0,
+     "breakdown": "Desbroce",
+     "unit": "m2",
+     "designUnitPriceSCZ": 9.66
+    },
+    {
+     "sortOrder": 3,
+     "phaseId": 2,
+     "activityId": 382,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*1.4*1.4*1.3+P*0.4*0.5",
+     "defaultQuantity": 37.48,
+     "breakdown": "Excavación zapatas + cimiento perimetral",
+     "unit": "m3",
+     "designUnitPriceSCZ": 35.69
+    },
+    {
+     "sortOrder": 4,
+     "phaseId": 2,
+     "activityId": 520,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*1.4*1.4*1.3+P*0.4*0.5)*0.5",
+     "defaultQuantity": 18.74,
+     "breakdown": "Retiro",
+     "unit": "m3",
+     "designUnitPriceSCZ": 74.02
+    },
+    {
+     "sortOrder": 5,
+     "phaseId": 3,
+     "activityId": 522,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*1.44",
+     "defaultQuantity": 14.4,
+     "breakdown": "Hormigón pobre",
+     "unit": "m2",
+     "designUnitPriceSCZ": 63.43
+    },
+    {
+     "sortOrder": 6,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*(0.576+0.072)",
+     "defaultQuantity": 6.48,
+     "breakdown": "Zapatas 1.2×1.2×0.4 + pedestales 0.3×0.3×0.8: volumen H21 = Ncol*(0.576+0.072)",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 7,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(Ncol*(0.576+0.072))*60",
+     "defaultQuantity": 388.8,
+     "breakdown": "Zapatas 1.2×1.2×0.4 + pedestales 0.3×0.3×0.8: acero = V × 60 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 8,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Ncol*(4*1.2*0.4+4*0.3*0.8)",
+     "defaultQuantity": 28.8,
+     "breakdown": "Zapatas 1.2×1.2×0.4 + pedestales 0.3×0.3×0.8: encofrado = caras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 9,
+     "phaseId": 3,
+     "activityId": 526,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*0.06",
+     "defaultQuantity": 3.6,
+     "breakdown": "Viga de fundación 20×30: volumen H21 = P*0.06",
+     "unit": "m3",
+     "designUnitPriceSCZ": 1530.65
+    },
+    {
+     "sortOrder": 10,
+     "phaseId": 3,
+     "activityId": 523,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "(P*0.06)*100",
+     "defaultQuantity": 360.0,
+     "breakdown": "Viga de fundación 20×30: acero = V × 100 kg/m3 (cuantía típica)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 14.37
+    },
+    {
+     "sortOrder": 11,
+     "phaseId": 3,
+     "activityId": 524,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*0.6",
+     "defaultQuantity": 36.0,
+     "breakdown": "Viga de fundación 20×30: encofrado = 2 caras × 0.30 × P",
+     "unit": "m2",
+     "designUnitPriceSCZ": 97.91
+    },
+    {
+     "sortOrder": 12,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "F_TORRE_KG",
+     "missingName": "ESTRUCTURA METÁLICA DE TORRE/PÓRTICO (TUBULAR 100x100 Y PERFILES), CON ANTICORROSIVO Y ESMALTE",
+     "quantityFormula": "KG",
+     "defaultQuantity": 5273.394,
+     "breakdown": "Pórticos y correas metálicas = KG (proxy F_TORRE_KG)",
+     "unit": "kg",
+     "designUnitPriceSCZ": 32.39
+    },
+    {
+     "sortOrder": 13,
+     "phaseId": 3,
+     "activityId": 542,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "Acub",
+     "defaultQuantity": 229.278,
+     "breakdown": "Cubierta de calamina sobre costaneras",
+     "unit": "m2",
+     "designUnitPriceSCZ": 270.62
+    },
+    {
+     "sortOrder": 14,
+     "phaseId": 3,
+     "activityId": 529,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*2.5-4*2.5-1.9",
+     "defaultQuantity": 138.1,
+     "breakdown": "Muro de bloque h=2.5 − portón − puerta",
+     "unit": "m2",
+     "designUnitPriceSCZ": 148.96
+    },
+    {
+     "sortOrder": 15,
+     "phaseId": 3,
+     "activityId": 542,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "P*(HG-2.5)+WG*1.5",
+     "defaultQuantity": 165.0,
+     "breakdown": "Cierre lateral de calamina (proxy 542) + tímpanos",
+     "unit": "m2",
+     "designUnitPriceSCZ": 270.62
+    },
+    {
+     "sortOrder": 16,
+     "phaseId": 3,
+     "activityId": 187,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "2*LG",
+     "defaultQuantity": 40,
+     "breakdown": "Canaletas",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 17,
+     "phaseId": 3,
+     "activityId": 186,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "4*HG",
+     "defaultQuantity": 20,
+     "breakdown": "Bajantes",
+     "unit": "ml",
+     "designUnitPriceSCZ": 165.18
+    },
+    {
+     "sortOrder": 18,
+     "phaseId": 2,
+     "activityId": 521,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A*0.2",
+     "defaultQuantity": 40.0,
+     "breakdown": "Relleno compactado",
+     "unit": "m3",
+     "designUnitPriceSCZ": 516.6
+    },
+    {
+     "sortOrder": 19,
+     "phaseId": 3,
+     "activityId": 217,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 200,
+     "breakdown": "Piso de HoAo e=10 (proxy industrial)",
+     "unit": "m2",
+     "designUnitPriceSCZ": 261
+    },
+    {
+     "sortOrder": 20,
+     "phaseId": 3,
+     "activityId": null,
+     "missingKey": "C35",
+     "missingName": "PORTÓN METÁLICO DE TUBO CUADRADO Y PLANCHA 1/16\" CON PINTURA",
+     "quantityFormula": "4*4",
+     "defaultQuantity": 16,
+     "breakdown": "Portón 4×4",
+     "unit": "m2",
+     "designUnitPriceSCZ": 1084.5
+    },
+    {
+     "sortOrder": 21,
+     "phaseId": 3,
+     "activityId": 133,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Puerta peatonal",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1656.91
+    },
+    {
+     "sortOrder": 22,
+     "phaseId": 6,
+     "activityId": 241,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Acometida",
+     "unit": "UND",
+     "designUnitPriceSCZ": 752.48
+    },
+    {
+     "sortOrder": 23,
+     "phaseId": 6,
+     "activityId": 264,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Pilastra",
+     "unit": "UND",
+     "designUnitPriceSCZ": 1176.45
+    },
+    {
+     "sortOrder": 24,
+     "phaseId": 6,
+     "activityId": 260,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Medidor",
+     "unit": "UND",
+     "designUnitPriceSCZ": 903.07
+    },
+    {
+     "sortOrder": 25,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "C36",
+     "missingName": "TABLERO DE DISTRIBUCIÓN MONOFÁSICO 12 POLOS CON DIFERENCIAL Y TÉRMICOS",
+     "quantityFormula": "1",
+     "defaultQuantity": 1,
+     "breakdown": "Tablero",
+     "unit": "pza",
+     "designUnitPriceSCZ": 1029.51
+    },
+    {
+     "sortOrder": 26,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_HIGHBAY",
+     "missingName": "LUMINARIA LED INDUSTRIAL (HIGH-BAY) 100 W CON CIRCUITO",
+     "quantityFormula": "ceil(A/25)",
+     "defaultQuantity": 8,
+     "breakdown": "Luminarias high-bay = 1 por 25 m2",
+     "unit": "pza",
+     "designUnitPriceSCZ": 976.7
+    },
+    {
+     "sortOrder": 27,
+     "phaseId": 6,
+     "activityId": null,
+     "missingKey": "F_TOMA",
+     "missingName": "PUNTO DE TOMACORRIENTE DOBLE CON TIERRA (THW 2.5 MM2 EN CONDUIT 3/4\", ≈8 M)",
+     "quantityFormula": "4",
+     "defaultQuantity": 4,
+     "breakdown": "Tomacorrientes",
+     "unit": "pto",
+     "designUnitPriceSCZ": 322.11
+    },
+    {
+     "sortOrder": 28,
+     "phaseId": 1,
+     "activityId": 519,
+     "missingKey": null,
+     "missingName": null,
+     "quantityFormula": "A",
+     "defaultQuantity": 200,
+     "breakdown": "Limpieza final",
+     "unit": "m2",
+     "designUnitPriceSCZ": 5.65
+    }
+   ]
+  }
+ ]
+}

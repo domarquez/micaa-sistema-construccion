@@ -28,6 +28,7 @@ import {
   Upload,
   Mail,
   Shield,
+  LayoutTemplate,
 } from "lucide-react";
 
 const menuItems = [
@@ -50,6 +51,11 @@ const menuItems = [
     title: "Presupuestos",
     url: "/budgets",
     icon: Calculator,
+  },
+  {
+    title: "Desde plantilla",
+    url: "/plantillas",
+    icon: LayoutTemplate,
   },
   {
     title: "Marketplace",

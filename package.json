@@ -10,6 +10,8 @@
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "test:apu": "tsx scripts/test-apu-math.ts",
+    "test:templates": "tsx scripts/test-project-templates.ts",
+    "seed:templates": "tsx scripts/seed-project-templates.ts",
     "verify:apu-6h": "tsx scripts/verify-apu-muro-6h.ts",
     "test:wa-auth": "tsx scripts/test-wa-auth.ts"
   },

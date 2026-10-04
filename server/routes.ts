@@ -9,6 +9,7 @@ import { storage as dbStorage } from './storage';
 import { getPublicMaterialPrice } from './material-price';
 import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
 import { registerApuRoutes } from './apu-routes';
+import { registerProjectTemplateRoutes } from './project-templates';
 import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal } from './apu-live';
 import { registerWaAuthRoutes } from './wa-auth/routes';
 import { dbOtpStore, dbUserStore, dbSessionStore } from './wa-auth/db-stores';
@@ -3136,6 +3137,7 @@ export async function registerRoutes(app: any) {
 
   // APU en vivo + overrides de precio por proyecto / ítem (server/apu-routes.ts)
   registerApuRoutes(app, requireAuth as any);
+  registerProjectTemplateRoutes(app, requireAuth as any);
 
   // BUDGETS ENDPOINTS
   
