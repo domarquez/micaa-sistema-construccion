@@ -249,6 +249,34 @@ export const activityCompositions = pgTable("activity_compositions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+/**
+ * Overrides de precio por proyecto / ítem para el APU en vivo.
+ * Tabla NUEVA (aditiva) — aplicar migrations/0001_apu_live_overrides.sql en Neon
+ * (NO usar db:push). budget_item_id NULL = aplica a todo el proyecto.
+ *
+ * Columnas aditivas que NO se declaran en los pgTable existentes (para que las
+ * consultas actuales no fallen antes de aplicar la migración; el código las lee
+ * con SELECT * / las escribe solo si existen):
+ *   activity_compositions.waste_pct numeric NULL, activity_compositions.source_ref text NULL,
+ *   budget_items.apu_snapshot jsonb NULL, budget_items.apu_computed_at timestamp NULL.
+ */
+export const projectPriceOverrides = pgTable("project_price_overrides", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+  budgetItemId: integer("budget_item_id").references(() => budgetItems.id, { onDelete: "cascade" }),
+  inputType: text("input_type").notNull(), // 'material' | 'labor' | 'equipment'
+  inputId: integer("input_id").notNull(), // materials.id | labor_categories.id | tools.id
+  source: text("source").notNull(), // 'base' | 'quote' | 'market' | 'manual'
+  quoteId: integer("quote_id").references(() => userMaterialPrices.id, { onDelete: "set null" }),
+  supplierPriceId: integer("supplier_price_id").references(() => materialSupplierPrices.id, { onDelete: "set null" }),
+  manualPrice: decimal("manual_price", { precision: 12, scale: 4 }),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type ProjectPriceOverride = typeof projectPriceOverrides.$inferSelect;
+
 export const priceSettings = pgTable("price_settings", {
   id: serial("id").primaryKey(),
   usdExchangeRate: decimal("usd_exchange_rate", { precision: 10, scale: 4 }).notNull().default("6.96"),

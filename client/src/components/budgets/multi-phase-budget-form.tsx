@@ -36,7 +36,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Plus, Trash2, Building, FileText } from "lucide-react";
+import { Plus, Trash2, Building, FileText, Calculator } from "lucide-react";
+import BudgetItemApuDialog from "@/components/budgets/budget-item-apu-dialog";
 
 import type { Project, ConstructionPhase, ActivityWithPhase, BudgetWithProject } from "@shared/schema";
 import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
@@ -60,11 +61,15 @@ type ProjectFormData = z.infer<typeof projectFormSchema>;
 
 interface BudgetItemData {
   id: string;
+  /** budget_items.id cuando el ítem ya existe en el servidor */
+  dbId?: number;
   activityId: number;
   activity?: ActivityWithPhase;
   quantity: number;
   unitPrice: number;
   subtotal: number;
+  /** true si el usuario escribió el precio unitario a mano (el servidor no lo recalcula) */
+  priceManual?: boolean;
 }
 
 interface PhaseData {
@@ -74,22 +79,8 @@ interface PhaseData {
   total: number;
 }
 
-const cityFactors: Record<string, number> = {
-  "La Paz": 1.175,
-  "Santa Cruz": 1.0,
-  "Cochabamba": 0.955,
-  "Potosí": 1.2425,
-  "Oruro": 1.1,
-  "Sucre": 1.05,
-  "Tarija": 0.98,
-  "Trinidad": 1.08,
-  "Cobija": 1.15,
-};
-
-const applyGeographicFactor = (basePrice: number, city: string | null | undefined): number => {
-  const factor = cityFactors[city || 'Santa Cruz'] || 1.0;
-  return basePrice * factor;
-};
+// El precio unitario lo calcula el servidor (APU en vivo con factor de ciudad de
+// city_price_factors y overrides del proyecto). Ya no hay factores hardcodeados aquí.
 
 interface MultiphaseBudgetFormProps {
   budget?: BudgetWithProject | null;
@@ -103,6 +94,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   const [currentProject, setCurrentProject] = useState<Project | null>(budget?.project || null);
   const [phases, setPhases] = useState<PhaseData[]>([]);
   const [selectedPhases, setSelectedPhases] = useState<number[]>([]);
+  const [apuTarget, setApuTarget] = useState<{ phaseId: number; localId: string; dbId: number } | null>(null);
 
   const isEditing = !!budget;
 
@@ -182,6 +174,8 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         
         phaseGroups[item.phaseId].push({
           id: item.id.toString(),
+          dbId: item.id,
+          priceManual: false,
           activityId: item.activityId,
           activity,
           quantity: parseFloat(item.quantity),
@@ -421,7 +415,9 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
               phaseId: phaseData.phaseId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
-              subtotal: item.subtotal
+              subtotal: item.subtotal,
+              // Copia fiel: no recalcular precios al duplicar
+              manualUnitPrice: true
             });
           }
         }
@@ -528,14 +524,20 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         budgetToUse = await budgetResponse.json();
         console.log("Presupuesto actualizado:", budgetToUse);
 
-        // Eliminar elementos existentes del presupuesto
-        console.log("Eliminando elementos existentes del presupuesto");
-        const deleteResponse = await apiRequest("DELETE", `/api/budgets/${budget.id}/items`);
-        if (!deleteResponse.ok) {
-          console.warn("Error eliminando items existentes, continuando...");
-        } else {
-          const deleteResult = await deleteResponse.json();
-          console.log("Elementos eliminados:", deleteResult.deletedCount);
+        // Ya NO se borran todos los ítems y se recrean: se actualizan en su lugar
+        // (PUT), se crean los nuevos (POST) y se eliminan los quitados (DELETE).
+        // Así se conservan los ajustes de APU por ítem (project_price_overrides).
+        const keptIds = new Set<number>();
+        for (const phaseData of phases) {
+          for (const item of phaseData.items) {
+            if (item.dbId && item.activityId > 0 && item.quantity > 0) keptIds.add(item.dbId);
+          }
+        }
+        const originalItems: any[] = (budgetData as any)?.items || [];
+        for (const orig of originalItems) {
+          if (!keptIds.has(orig.id)) {
+            await apiRequest("DELETE", `/api/budget-items/${orig.id}`);
+          }
         }
         
       } else {
@@ -558,10 +560,21 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         console.log("Presupuesto creado:", budgetToUse);
       }
 
-      // Crear los nuevos elementos del presupuesto
+      // Crear / actualizar los elementos del presupuesto
       let itemsCreated = 0;
       for (const phaseData of phases) {
         for (const item of phaseData.items) {
+          if (isEditing && item.dbId && item.activityId > 0 && item.quantity > 0) {
+            await apiRequest("PUT", `/api/budget-items/${item.dbId}`, {
+              activityId: item.activityId,
+              phaseId: phaseData.phaseId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              manualUnitPrice: !!item.priceManual
+            });
+            itemsCreated++;
+            continue;
+          }
           if (item.activityId > 0 && item.quantity > 0) {
             console.log("Creando item:", {
               budgetId: budgetToUse.id,
@@ -578,7 +591,9 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
               phaseId: phaseData.phaseId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
-              subtotal: item.subtotal
+              subtotal: item.subtotal,
+              // El servidor calcula el P.U. con el APU en vivo salvo precio manual
+              manualUnitPrice: !!item.priceManual
             });
             
             if (!itemResponse.ok) {
@@ -684,6 +699,38 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     }));
   };
 
+  /** Actualiza el P.U. de un ítem (setState funcional: seguro tras un await). */
+  const applyItemPrice = (phaseId: number, itemId: string, unitPrice: number, opts: { activityId?: number; manual?: boolean } = {}) => {
+    setPhases((prev) => prev.map((p) => {
+      if (p.phaseId !== phaseId) return p;
+      const items = p.items.map((it) => {
+        if (it.id !== itemId) return it;
+        if (opts.activityId != null && it.activityId !== opts.activityId) return it; // cambió mientras cargaba
+        if (opts.activityId != null && it.priceManual) return it; // el usuario ya escribió un precio
+        const up = Math.round(unitPrice * 100) / 100;
+        return { ...it, unitPrice: up, subtotal: it.quantity * up, priceManual: opts.manual ?? it.priceManual };
+      });
+      return { ...p, items, total: items.reduce((s, i) => s + i.subtotal, 0) };
+    }));
+  };
+
+  /** Precio del servidor: APU en vivo (proyecto → overrides + factor de ciudad). */
+  const fetchLivePrice = async (phaseId: number, itemId: string, activityId: number) => {
+    try {
+      const city = form.getValues('city') || currentProject?.city || 'Santa Cruz';
+      const url = !isAnonymous && currentProject?.id
+        ? `/api/projects/${currentProject.id}/activities/${activityId}/apu`
+        : `/api/activities/${activityId}/apu-calculation?ciudad=${encodeURIComponent(city)}`;
+      const res = await apiRequest('GET', url);
+      const apu = await res.json();
+      if (apu && Array.isArray(apu.rows) && apu.rows.length > 0 && apu.totalUnitPrice > 0) {
+        applyItemPrice(phaseId, itemId, Number(apu.totalUnitPrice), { activityId });
+      }
+    } catch (e) {
+      console.warn('No se pudo obtener el APU en vivo; se mantiene el precio de referencia', e);
+    }
+  };
+
   const updateItemInPhase = (phaseId: number, itemId: string, field: keyof BudgetItemData, value: any) => {
     setPhases(phases.map(p => {
       if (p.phaseId === phaseId) {
@@ -694,15 +741,13 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
             if (field === 'activityId') {
               const activity = allActivities?.find((a: any) => a.id === value);
               updatedItem.activity = activity;
-              if (activity && activity.unitPrice) {
-                const cityValue = form.watch('city');
-                const adjustedPrice = applyGeographicFactor(
-                  Number(activity.unitPrice), 
-                  cityValue
-                );
-                updatedItem.unitPrice = adjustedPrice;
-                console.log('Precio aplicado automáticamente:', adjustedPrice, 'para actividad:', activity.name);
-              }
+              updatedItem.priceManual = false;
+              // Provisional hasta que llegue el APU en vivo del servidor
+              updatedItem.unitPrice = activity?.unitPrice ? Number(activity.unitPrice) : 0;
+              if (activity) fetchLivePrice(phaseId, itemId, activity.id);
+            }
+            if (field === 'unitPrice') {
+              updatedItem.priceManual = true;
             }
             
             // Siempre recalcular subtotal
@@ -954,6 +999,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                             {/* Elementos de la fase */}
                             {phaseData.items.map((item, index) => (
                               <div key={item.id} className="grid grid-cols-12 gap-2 items-center bg-gray-50 p-3 rounded-lg">
+                                {/* fila del ítem */}
                                 <div className="col-span-4">
                                   <select
                                     value={item.activityId}
@@ -1023,6 +1069,24 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                                     </Button>
                                   )}
                                 </div>
+                                {item.activityId > 0 && !isAnonymous && (
+                                  <div className="col-span-12 flex items-center gap-2 text-xs">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="link"
+                                      className="h-auto p-0 text-xs"
+                                      disabled={!item.dbId}
+                                      title={item.dbId ? "Ver el análisis de precio unitario y elegir precios por insumo" : "Guarda el presupuesto para ajustar el APU de este ítem"}
+                                      onClick={() => item.dbId && setApuTarget({ phaseId: phaseData.phaseId, localId: item.id, dbId: item.dbId })}
+                                    >
+                                      <Calculator className="w-3.5 h-3.5 mr-1" />
+                                      Ver / ajustar APU
+                                    </Button>
+                                    {!item.dbId && <span className="text-muted-foreground">(guarda el presupuesto para ajustarlo)</span>}
+                                    {item.priceManual && <Badge variant="outline" className="text-[10px]">P.U. manual</Badge>}
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -1035,6 +1099,15 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
             </div>
           )}
         </div>
+
+        {apuTarget && (
+          <BudgetItemApuDialog
+            open={!!apuTarget}
+            budgetItemId={apuTarget.dbId}
+            onClose={() => setApuTarget(null)}
+            onSaved={(saved) => applyItemPrice(apuTarget.phaseId, apuTarget.localId, saved.unitPrice, { manual: false })}
+          />
+        )}
 
         {/* Footer */}
         <Separator />

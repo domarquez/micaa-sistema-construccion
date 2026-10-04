@@ -105,7 +105,7 @@ function cityKeys(ciudad: string): string[] {
   return [key];
 }
 
-function citiesMatch(a?: string | null, b?: string | null): boolean {
+export function citiesMatch(a?: string | null, b?: string | null): boolean {
   if (!a || !b) return false;
   const A = new Set(cityKeys(a));
   return cityKeys(b).some((k) => A.has(k));
@@ -134,6 +134,38 @@ async function lookupMaterialsFactor(ciudad: string | null | undefined): Promise
     cityFactor: safe,
     factorCity: hit.city,
     materialsFactor: safe,
+  };
+}
+
+/**
+ * Factores de ciudad completos (materiales / mano de obra / equipo) desde
+ * city_price_factors, con los mismos alias que getPublicMaterialPrice.
+ * Sin ciudad o sin fila → 1 (Base MICAA está anclada a SCZ).
+ */
+export async function getCityFactors(ciudad: string | null | undefined): Promise<{
+  factorCity: string | null;
+  materialsFactor: number;
+  laborFactor: number;
+  equipmentFactor: number;
+}> {
+  const none = { factorCity: null, materialsFactor: 1, laborFactor: 1, equipmentFactor: 1 };
+  if (!ciudad) return none;
+  const rows = await db
+    .select()
+    .from(cityPriceFactors)
+    .where(eq(cityPriceFactors.isActive, true));
+  const keys = new Set(cityKeys(ciudad));
+  const hit = rows.find((r) => keys.has(normalizeCityKey(r.city)));
+  if (!hit) return none;
+  const safe = (v: unknown) => {
+    const n = num(v, 1);
+    return n > 0 ? n : 1;
+  };
+  return {
+    factorCity: hit.city,
+    materialsFactor: safe(hit.materialsFactor),
+    laborFactor: safe(hit.laborFactor),
+    equipmentFactor: safe(hit.equipmentFactor),
   };
 }
 
@@ -336,6 +368,7 @@ export async function getPublicMaterialPrice(
       city: row.ump.city || row.user?.city || null,
       public: true,
       userId: row.ump.userId,
+      quoteId: row.ump.id,
       provenanceName: provenanceName || label,
       supplierPhone: row.ump.supplierPhone || null,
       provenanceDate: toIsoDate(row.ump.updatedAt || row.ump.createdAt),
@@ -389,6 +422,7 @@ export async function getPublicMaterialPrice(
       ageDays,
       city: row.supplier.city,
       supplierId: row.supplier.id,
+      supplierPriceId: row.msp.id,
       link,
       linkType,
       linkUnlocked,

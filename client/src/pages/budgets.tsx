@@ -247,6 +247,97 @@ export default function Budgets() {
     }
   };
 
+  // Imprime el desglose real del APU (insumos + cargas + GG/utilidad/IT). Devuelve la nueva Y.
+  const printApuBreakdown = (
+    doc: any,
+    apu: any,
+    item: any,
+    startY: number,
+    margin: number,
+    pageWidth: number,
+    checkNewPage: (space?: number) => boolean,
+  ): number => {
+    let y = startY;
+    const right = pageWidth - margin;
+    const colUnit = margin + 112;
+    const colQty = margin + 140;
+    const colPu = margin + 160;
+    const fmt = (n: number, d = 2) => (Number.isFinite(n) ? n : 0).toLocaleString('es-BO', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const ensure = (space = 6) => { if (checkNewPage(space)) y = 20; };
+    const trunc = (t: string, max = 62) => (t && t.length > max ? t.slice(0, max - 1) + '…' : t || '');
+
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    ensure(8);
+    doc.text('Insumo', margin + 2, y);
+    doc.text('Und', colUnit, y);
+    doc.text('Cant.', colQty, y, { align: 'right' });
+    doc.text('P.U. (Bs)', colPu + 12, y, { align: 'right' });
+    doc.text('Parcial (Bs)', right, y, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    y += 4;
+
+    const sections: Array<[string, string, number]> = [
+      ['material', 'MATERIALES', apu.materialsTotal],
+      ['labor', 'MANO DE OBRA', apu.laborTotal],
+      ['equipment', 'EQUIPO Y MAQUINARIA', apu.equipmentTotal],
+    ];
+    for (const [type, title, total] of sections) {
+      const rows = (apu.rows || []).filter((r: any) => r.inputType === type);
+      if (rows.length === 0) continue;
+      ensure(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text(title, margin + 2, y);
+      doc.setFont('helvetica', 'normal');
+      y += 3.5;
+      for (const r of rows) {
+        ensure(5);
+        const tag = r.source && r.source !== 'base' ? ` [${r.sourceLabel || r.source}]` : '';
+        doc.text(trunc(`${r.name}${tag}`), margin + 4, y);
+        doc.text(String(r.unit || ''), colUnit, y);
+        doc.text(fmt(r.effectiveQuantity ?? r.quantity, 4), colQty, y, { align: 'right' });
+        doc.text(fmt(r.unitPrice), colPu + 12, y, { align: 'right' });
+        doc.text(fmt(r.subtotal), right, y, { align: 'right' });
+        y += 3.5;
+      }
+      ensure(5);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Total ${title.toLowerCase()}`, colQty, y, { align: 'right' });
+      doc.text(fmt(total), right, y, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      y += 4;
+    }
+
+    const p = apu.percentages || {};
+    const lines: Array<[string, number, boolean?]> = [
+      [`Cargas sociales (${fmt(p.socialCharges)}% de M.O.)`, apu.laborCharges],
+      [`IVA M.O. (${fmt(p.laborIva)}%)`, apu.laborIVA],
+      [`Herramientas menores (${fmt(p.minorTools)}% de M.O.)`, apu.tools],
+      ['COSTO DIRECTO', apu.directCost, true],
+      [`Gastos generales (${fmt(p.administrative)}%)`, apu.administrativeCost],
+      [`Utilidad (${fmt(p.utility)}%)`, apu.utilityCost],
+      [`IT (${fmt(p.tax)}%)`, apu.taxCost],
+      [`PRECIO UNITARIO APU (Bs/${apu.unit || item.activity?.unit || 'und'})`, apu.totalUnitPrice, true],
+    ];
+    for (const [label, value, bold] of lines) {
+      ensure(5);
+      doc.setFont('helvetica', bold ? 'bold' : 'normal');
+      doc.text(label, colQty + 22, y, { align: 'right' });
+      doc.text(fmt(value), right, y, { align: 'right' });
+      y += 3.5;
+    }
+    doc.setFont('helvetica', 'normal');
+    const stored = parseFloat(item.unitPrice || 0);
+    if (Number.isFinite(apu.totalUnitPrice) && Math.abs(stored - apu.totalUnitPrice) > 0.005) {
+      ensure(5);
+      doc.setFontSize(7);
+      doc.text(`Nota: el P.U. guardado del ítem (Bs ${fmt(stored)}) difiere del APU en vivo; actualícelo desde "Ver / ajustar APU".`, margin + 2, y);
+      y += 3.5;
+    }
+    doc.setFontSize(9);
+    return y + 2;
+  };
+
   // Función para generar APU detallado
   const generateDetailedAPU = async (budget: BudgetWithProject, budgetDetails: any, token: string | null) => {
     const { default: jsPDF } = await import('jspdf');
@@ -338,49 +429,33 @@ export default function Budgets() {
 
         totalGeneral += parseFloat(item.subtotal || 0);
 
-        // Obtener APU de la actividad si existe y tenemos token
+        // APU real del ítem (en vivo, con overrides del proyecto/ítem). Fallback: APU de la actividad.
         if (item.activity?.id && token) {
           try {
-            const apuResponse = await fetch(`/api/activities/${item.activity.id}/apu-calculation`, {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            });
-
-            if (apuResponse.ok) {
-              const apuData = await apuResponse.json();
-            
-            // Título APU uniforme
-            doc.setFontSize(9);
-            doc.text('APU:', margin, yPosition);
-            yPosition += 4;
-
-            // APU simplificado y uniforme
-            doc.setFontSize(9);
-            let apuText = '';
-            if (apuData.breakdown?.materials?.length > 0) {
-              apuText += `Mat: ${(apuData.totals?.materials || 0).toFixed(2)} `;
+            const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+            let apuData: any = null;
+            const itemRes = await fetch(`/api/budget-items/${item.id}/apu`, { headers });
+            if (itemRes.ok) {
+              apuData = (await itemRes.json()).apu;
+            } else {
+              const city = encodeURIComponent(budget.project?.city || 'Santa Cruz');
+              const actRes = await fetch(`/api/activities/${item.activity.id}/apu-calculation?ciudad=${city}`, { headers });
+              if (actRes.ok) apuData = await actRes.json();
             }
-            if (apuData.breakdown?.labor?.length > 0) {
-              apuText += `M.O: ${(apuData.totals?.labor || 0).toFixed(2)} `;
+            if (apuData && Array.isArray(apuData.rows)) {
+              yPosition = printApuBreakdown(doc, apuData, item, yPosition, margin, pageWidth, checkNewPage);
+            } else {
+              doc.setFontSize(8);
+              doc.text('APU no disponible para esta actividad', margin, yPosition);
+              yPosition += 6;
             }
-            if (apuData.breakdown?.equipment?.length > 0) {
-              apuText += `Her: ${(apuData.totals?.equipment || 0).toFixed(2)} `;
-            }
-            apuText += `= Bs ${(apuData.totalUnitPrice || 0).toFixed(2)}`;
-            doc.text(apuText, margin + 5, yPosition);
-            yPosition += 6;
-
-
+          } catch (error) {
+            console.log(`Error obteniendo APU para actividad ${item.activity.id}:`, error);
+            doc.setFontSize(8);
+            doc.text('APU no disponible para esta actividad', margin, yPosition);
+            yPosition += 8;
           }
-        } catch (error) {
-          console.log(`Error obteniendo APU para actividad ${item.activity.id}:`, error);
-          doc.setFontSize(8);
-          doc.text('APU no disponible para esta actividad', margin, yPosition);
-          yPosition += 8;
         }
-      }
 
         // Separador entre items más compacto
         yPosition += 2;
@@ -990,7 +1065,7 @@ export default function Budgets() {
             setShowForm(false);
             setEditingBudget(null);
           }}
-          editingBudget={editingBudget}
+          budget={editingBudget}
         />
       )}
     </div>
