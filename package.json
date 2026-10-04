@@ -10,7 +10,8 @@
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "test:apu": "tsx scripts/test-apu-math.ts",
-    "verify:apu-6h": "tsx scripts/verify-apu-muro-6h.ts"
+    "verify:apu-6h": "tsx scripts/verify-apu-muro-6h.ts",
+    "test:wa-auth": "tsx scripts/test-wa-auth.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",

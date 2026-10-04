@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Settings, Shield } from "lucide-react";
 import ChangePasswordForm from "@/components/ChangePasswordForm";
+import { ProfileNameCard, LinkWhatsAppCard, MyDevicesCard } from "@/components/WhatsAppAndDevices";
 
 export default function AccountSettings() {
   return (
@@ -31,19 +32,8 @@ export default function AccountSettings() {
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6 mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Información Personal</CardTitle>
-              <CardDescription>
-                Actualiza tu información de perfil
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">
-                Funcionalidad de edición de perfil próximamente disponible.
-              </p>
-            </CardContent>
-          </Card>
+          <ProfileNameCard />
+          <LinkWhatsAppCard />
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6 mt-6">
@@ -52,19 +42,8 @@ export default function AccountSettings() {
               <ChangePasswordForm />
             </div>
             
-            <Card>
-              <CardHeader>
-                <CardTitle>Sesiones Activas</CardTitle>
-                <CardDescription>
-                  Gestiona tus sesiones y dispositivos conectados
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Funcionalidad de gestión de sesiones próximamente disponible.
-                </p>
-              </CardContent>
-            </Card>
+            <LinkWhatsAppCard />
+            <MyDevicesCard />
           </div>
         </TabsContent>
 

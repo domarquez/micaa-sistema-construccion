@@ -10,6 +10,8 @@ import { getPublicMaterialPrice } from './material-price';
 import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
 import { registerApuRoutes } from './apu-routes';
 import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal } from './apu-live';
+import { registerWaAuthRoutes } from './wa-auth/routes';
+import { dbOtpStore, dbUserStore, dbSessionStore } from './wa-auth/db-stores';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -66,6 +68,9 @@ const requireAuth = async (req: AuthRequest, res: Response, next: NextFunction) 
 };
 
 export async function registerRoutes(app: any) {
+  // Login por WhatsApp + dispositivos recordados. Va primero: instala el puente de sesión (cookie -> Bearer) en /api.
+  const waAuth = registerWaAuthRoutes(app, { otp: dbOtpStore, users: dbUserStore, sessions: dbSessionStore });
+
   // WhatsApp ferretería price ingest (API key, no JWT) — register early
   app.post('/api/ingest/whatsapp-price', handleWhatsappPriceIngest);
 
@@ -1473,6 +1478,18 @@ export async function registerRoutes(app: any) {
       const isValidPassword = await bcrypt.default.compare(password, user[0].password);
       
       if (isValidPassword) {
+        // Dispositivo recordado (1 año, cookie httpOnly). Si la tabla user_sessions aún no existe, sigue el JWT de siempre.
+        try {
+          const { token: sessionToken } = await waAuth.sessions.start(req, res, user[0] as any, 'password');
+          await dbUserStore.touchLastLogin(user[0].id);
+          return res.json({
+            success: true,
+            user: { id: user[0].id, username: user[0].username, email: user[0].email, role: user[0].role },
+            token: sessionToken,
+          });
+        } catch (sessionError) {
+          console.warn("Login: sesión de dispositivo no disponible, usando JWT legacy:", (sessionError as any)?.message);
+        }
         // Generar token JWT real
         const jwt = await import('jsonwebtoken');
         const token = jwt.default.sign(
@@ -2001,7 +2018,10 @@ export async function registerRoutes(app: any) {
         role: userData.role,
         userType: userData.userType,
         city: userData.city,
-        country: userData.country
+        country: userData.country,
+        phone: userData.phone ?? null,
+        // JWT nuevo emitido desde la cookie de dispositivo recordado (el cliente lo guarda en localStorage)
+        ...(res.locals?.micaaToken ? { token: res.locals.micaaToken } : {}),
       });
     } catch (error) {
       console.error("Auth verification error:", error);

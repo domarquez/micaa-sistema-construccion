@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Construction, ArrowLeft, Mail, Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import WhatsAppCodeFlow from "@/components/WhatsAppCodeFlow";
 
 type RecoveryStep = 'email' | 'verify' | 'newPassword';
 
@@ -20,6 +21,7 @@ export default function Login() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [isRecoveryLoading, setIsRecoveryLoading] = useState(false);
+  const [showPasswordLogin, setShowPasswordLogin] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -195,6 +197,36 @@ export default function Login() {
         <CardContent className="p-2 sm:p-4 md:p-6">
           {!showPasswordRecovery ? (
             <>
+              {/* Opción principal: WhatsApp (sin contraseña). Este dispositivo queda recordado 1 año. */}
+              <div className="mb-3 sm:mb-4">
+                <p className="text-center text-xs sm:text-sm font-medium mb-2">Entra con tu WhatsApp</p>
+                <WhatsAppCodeFlow
+                  mode="login"
+                  onSuccess={(data) => {
+                    localStorage.setItem('auth_token', data.token);
+                    window.location.href = '/';
+                  }}
+                />
+              </div>
+
+              <div className="relative my-3 sm:my-4">
+                <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                <div className="relative flex justify-center text-[10px] sm:text-xs uppercase">
+                  <span className="bg-white px-2 text-gray-500">o</span>
+                </div>
+              </div>
+
+              {!showPasswordLogin ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordLogin(true)}
+                  className="w-full text-center text-[10px] sm:text-xs md:text-sm text-gray-600 hover:underline"
+                  data-testid="button-show-password-login"
+                >
+                  Entrar con usuario y contraseña
+                </button>
+              ) : (
+              <>
               <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 md:space-y-4">
                 <div className="space-y-1 sm:space-y-2">
                   <Label htmlFor="username" className="text-xs sm:text-sm">Usuario</Label>
@@ -242,12 +274,14 @@ export default function Login() {
                   ¿Olvidaste tu contraseña?
                 </button>
               </div>
+              </>
+              )}
 
               <div className="mt-3 sm:mt-4 md:mt-6 text-center">
                 <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">
-                  ¿No tienes cuenta?{" "}
+                  ¿No tienes cuenta? Entra con WhatsApp y se crea sola.{" "}
                   <Link href="/register" className="text-primary hover:underline font-medium">
-                    Regístrate aquí
+                    Registro con correo
                   </Link>
                 </p>
               </div>
