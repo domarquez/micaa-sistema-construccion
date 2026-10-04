@@ -31,6 +31,41 @@ export const phoneVerificationCodes = pgTable("phone_verification_codes", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Login por WhatsApp (OTP). Migración: migrations/0002_wa_otp_login.sql (solo aditiva, NO db:push)
+export const authOtpCodes = pgTable("auth_otp_codes", {
+  id: serial("id").primaryKey(),
+  phone: text("phone").notNull(), // E.164
+  codeHash: text("code_hash").notNull(), // HMAC-SHA256, nunca el código en claro
+  purpose: text("purpose").notNull().default("login"), // 'login' | 'link'
+  channel: text("channel").notNull().default("outbound"), // 'outbound' (Enviarme el código) | 'inbound' (Abrir WhatsApp)
+  userId: integer("user_id"),
+  requestIp: text("request_ip"),
+  attempts: integer("attempts").notNull().default(0),
+  maxAttempts: integer("max_attempts").notNull().default(5),
+  sendStatus: text("send_status").notNull().default("pending"), // 'pending' | 'sent' | 'failed'
+  providerMessageId: text("provider_message_id"),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+export type AuthOtpCode = typeof authOtpCodes.$inferSelect;
+
+// Dispositivos recordados (sesión de 1 año, deslizante, cookie httpOnly)
+export const userSessions = pgTable("user_sessions", {
+  id: text("id").primaryKey(), // uuid
+  userId: integer("user_id").notNull(),
+  tokenHash: text("token_hash").notNull().unique(), // sha256 del token de la cookie
+  deviceName: text("device_name"),
+  userAgent: text("user_agent"),
+  ip: text("ip"),
+  authMethod: text("auth_method").notNull().default("whatsapp"), // 'whatsapp' | 'password'
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+});
+export type UserSession = typeof userSessions.$inferSelect;
+
 export const insertPhoneVerificationCodeSchema = createInsertSchema(phoneVerificationCodes).omit({ id: true });
 export type PhoneVerificationCode = typeof phoneVerificationCodes.$inferSelect;
 export type InsertPhoneVerificationCode = z.infer<typeof insertPhoneVerificationCodeSchema>;

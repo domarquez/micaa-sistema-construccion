@@ -1,0 +1,48 @@
+--- a/index.tsx
++++ b/index.tsx
+@@ -794,6 +794,33 @@
+   return null;
+ }
+ 
++/** MICAA login por WhatsApp: la instancia tiene un solo webhook (este bridge), así que reenviamos a MICAA
++ *  únicamente los mensajes directos que piden el código. Env: MICAA_LOGIN_WEBHOOK_URL
++ *  (p.ej. https://<micaa>/api/webhooks/evolution?token=<MICAA_WA_WEBHOOK_TOKEN>). Sin env -> no hace nada. */
++const MICAA_LOGIN_RE = /quiero\s+(mi\s+|el\s+|un\s+)?c[oó]digo\s+(de\s+)?micaa/i;
++async function forwardMicaaLogin(payload: any) {
++  const target = Bun.env.MICAA_LOGIN_WEBHOOK_URL;
++  if (!target) return;
++  const msgs = pickMessages(payload).filter((m) => {
++    const key = m?.key || {};
++    const jid = String(key.remoteJid || "");
++    if (key.fromMe === true || /@g\.us$|@newsletter$|@broadcast$/.test(jid)) return false;
++    return MICAA_LOGIN_RE.test(extractText(m?.message) || "");
++  });
++  if (!msgs.length) return;
++  try {
++    await fetch(target, {
++      method: "POST",
++      headers: { "Content-Type": "application/json" },
++      body: JSON.stringify({ event: "messages.upsert", instance: payload?.instance, data: msgs.length === 1 ? msgs[0] : { messages: msgs } }),
++      signal: AbortSignal.timeout(8000),
++    });
++    bump("micaa_login_forwarded");
++  } catch (e) {
++    console.error("micaa login forward failed", e instanceof Error ? e.message : e);
++  }
++}
++
+ export async function handleEvolution(
+   payload: any,
+   opts: { dryRun?: boolean; stations?: Station[]; post?: (id: number, kind: Kind, label: string, liters?: number, message?: string) => Promise<{ status: number; body: string; name: string; liters?: number }> } = {},
+@@ -1059,6 +1086,11 @@
+         return Response.json({ ok: true, dryRun: true, text, ...cls, station: station ? { id: station.id, name: station.name } : null, sendLiters: SEND_LITERS });
+       }
+       const isDry = url.pathname === "/dry-run" || url.searchParams.get("dryRun") === "1";
++      if (req.method === "POST" && !isDry && url.pathname === "/webhook") {
++        // MICAA login: reenvía SOLO chats 1:1 con "Quiero mi código MICAA" (no toca la lógica de gasolina)
++        const clone = req.clone();
++        clone.json().then(forwardMicaaLogin).catch(() => {});
++      }
+       if (req.method === "POST" && (url.pathname === "/" || url.pathname === "/webhook" || url.pathname === "/evolution" || url.pathname === "/dry-run")) {
+         try {
+           const payload = await req.json();

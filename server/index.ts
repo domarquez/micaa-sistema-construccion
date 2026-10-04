@@ -5,6 +5,8 @@ import cron from "node-cron";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+// Railway pone un proxy delante: req.ip = IP real del cliente (límites por IP del login por WhatsApp)
+app.set("trust proxy", 1);
 const server = createServer(app);
 
 app.use(express.json());

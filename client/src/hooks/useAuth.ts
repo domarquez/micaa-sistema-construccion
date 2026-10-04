@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import { hasSessionHint, serverLogout } from "@/lib/session";
 
 interface User {
   id: number;
@@ -11,6 +13,9 @@ interface User {
   isActive: boolean;
   createdAt: string;
   lastLogin?: string;
+  phone?: string | null;
+  /** JWT renovado desde la cookie de dispositivo recordado */
+  token?: string;
 }
 
 interface AuthResponse {
@@ -20,10 +25,12 @@ interface AuthResponse {
 
 export function useAuth() {
   const token = localStorage.getItem('auth_token');
+  // Dispositivo recordado: aunque no haya token en localStorage, la cookie httpOnly puede abrir sesión.
+  const canAuth = !!token || hasSessionHint();
 
   const { data: user, isLoading, error } = useQuery<User>({
     queryKey: ["/api/auth/me"],
-    enabled: !!token,
+    enabled: canAuth,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
@@ -31,7 +38,13 @@ export function useAuth() {
 
   });
   
-  const isAnonymous = !token;
+  useEffect(() => {
+    if (user?.token && user.token !== localStorage.getItem('auth_token')) {
+      localStorage.setItem('auth_token', user.token);
+    }
+  }, [user?.token]);
+
+  const isAnonymous = !token && !user;
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }): Promise<AuthResponse> => {
@@ -85,7 +98,8 @@ export function useAuth() {
     },
   });
 
-  const logout = () => {
+  const logout = async () => {
+    await serverLogout();
     localStorage.removeItem('auth_token');
     queryClient.setQueryData(["/api/auth/me"], null);
     queryClient.clear();
@@ -97,7 +111,7 @@ export function useAuth() {
 
   return {
     user,
-    isLoading: isLoading && !!token,
+    isLoading: isLoading && canAuth,
     isAuthenticated,
     isAnonymous,
     isAdmin,
