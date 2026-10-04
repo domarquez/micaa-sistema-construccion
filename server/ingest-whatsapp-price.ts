@@ -5,7 +5,7 @@
  */
 import { Request, Response } from "express";
 import { createHash, randomBytes } from "crypto";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull, sql, type SQL } from "drizzle-orm";
 import { db } from "./db";
 import {
   users,
@@ -653,6 +653,43 @@ async function replayOrConflict(
   };
 }
 
+/** Digits only (e.g. "+591 773-10484" -> "59177310484"); null when empty. */
+export function normalizePhone(raw: string | null | undefined): string | null {
+  if (raw == null) return null;
+  const d = String(raw).replace(/\D+/g, "");
+  return d ? d : null;
+}
+
+/** Case/space-insensitive supplier name key (mirrors the SQL lower+trim+collapse); null when empty. */
+export function normalizeSupplierName(raw: string | null | undefined): string | null {
+  if (raw == null) return null;
+  const k = String(raw).normalize("NFC").toLowerCase().replace(/\s+/g, " ").trim();
+  return k ? k : null;
+}
+
+/**
+ * SQL condition selecting the existing quote row of THIS item's supplier.
+ * - phone given: same supplier_phone, or a legacy row without phone but same supplier_name
+ * - only name given: same supplier_name (normalized)
+ * - neither: only rows that also have no supplier identity (anonymous slot)
+ */
+export function supplierMatchCondition(item: { supplierName?: string; phone?: string }): SQL {
+  const phone = normalizePhone(item.phone);
+  const name = normalizeSupplierName(item.supplierName);
+  const nameEq = name
+    ? sql`lower(regexp_replace(trim(${userMaterialPrices.supplierName}), '\\s+', ' ', 'g')) = ${name}`
+    : undefined;
+  const phoneEq = phone
+    ? sql`regexp_replace(coalesce(${userMaterialPrices.supplierPhone}, ''), '\\D', '', 'g') = ${phone}`
+    : undefined;
+  if (phoneEq && nameEq) {
+    return sql`(${phoneEq} OR (${userMaterialPrices.supplierPhone} IS NULL AND ${nameEq}))`;
+  }
+  if (phoneEq) return phoneEq;
+  if (nameEq) return nameEq;
+  return and(isNull(userMaterialPrices.supplierName), isNull(userMaterialPrices.supplierPhone))!;
+}
+
 async function persistQuote(
   systemUserId: number,
   item: ParsedItem,
@@ -666,6 +703,8 @@ async function persistQuote(
   const reason = buildReason(item);
   const hash = payloadHash(item);
 
+  // Upsert slot = (system user, materialId, city, SUPPLIER). Never just materialId+city:
+  // each supplier keeps its own row, and a quote only updates that same supplier's row.
   const existing = await db
     .select()
     .from(userMaterialPrices)
@@ -674,8 +713,10 @@ async function persistQuote(
         eq(userMaterialPrices.userId, systemUserId),
         eq(userMaterialPrices.materialId, resolved.materialId),
         eq(userMaterialPrices.city, item.city),
+        supplierMatchCondition(item),
       ),
     )
+    .orderBy(userMaterialPrices.id)
     .limit(1);
 
   let quoteId: number;
@@ -696,8 +737,9 @@ async function persistQuote(
         customMaterialName: resolved.materialName,
         originalMaterialName: resolved.materialName,
         reason,
-        supplierName: item.supplierName ?? null,
-        supplierPhone: item.phone ?? null,
+        // Same supplier by construction; keep stored identity if this payload omits a field.
+        supplierName: item.supplierName ?? existing[0].supplierName ?? null,
+        supplierPhone: normalizePhone(item.phone) ?? existing[0].supplierPhone ?? null,
         isPublic: item.isPublic,
         updatedAt: new Date(),
         // Only overwrite quote weight when ingest sends weightKg|peso
@@ -719,7 +761,7 @@ async function persistQuote(
         unit: resolved.unit,
         reason,
         supplierName: item.supplierName ?? null,
-        supplierPhone: item.phone ?? null,
+        supplierPhone: normalizePhone(item.phone),
         weightKg: quoteWeightKg,
         city: item.city,
         isPublic: item.isPublic,
