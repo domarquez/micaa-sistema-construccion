@@ -316,6 +316,58 @@ async function test(name: string, fn: () => Promise<void>) {
     assert.equal(users.users.find((u) => u.id === 50)?.phoneVerified, true);
   });
 
+  // Bug 2026-10-04 (Diego): "Abrir WhatsApp" desde otro WhatsApp → el código queda para el remitente y el
+  // verify con el número escrito decía "incorrecto o vencido" aunque no pasaron 5 min.
+  const inbound = (from: string, text: string) => ({
+    event: "messages.upsert", instance: "precios-ferreterias",
+    data: { key: { remoteJid: `${from}@s.whatsapp.net`, fromMe: false, id: "M" + from }, message: { conversation: text }, messageTimestamp: Math.floor(Date.now() / 1000) },
+  });
+
+  await test("bug OTP: código pedido por WhatsApp desde otro número → NO_ACTIVE_CODE explicativo (no 'vencido')", async () => {
+    advance(3600_000);
+    await call("POST", "/api/webhooks/evolution?token=hook-test-token", inbound("59177000222", "Quiero mi código MICAA"));
+    assert.equal(sent[sent.length - 1].to, "+59177000222");
+    const code = codeFromLastMessage();
+    advance(30_000); // 30 s: lejos de los 5 min
+    const v = await call("POST", "/api/auth/wa/verify", { phone: "77000333", code }, ip(30));
+    assert.equal(v.status, 400);
+    assert.equal(v.json.code, "NO_ACTIVE_CODE");
+    assert.match(v.json.message, /otro WhatsApp/);
+    // el código sigue vigente para el número que realmente escribió
+    assert.equal((await call("POST", "/api/auth/wa/verify", { phone: "77000222", code }, ip(30))).status, 200);
+  });
+
+  await test("ref de 'Abrir WhatsApp': remitente distinto → PHONE_MISMATCH y useSender entra con ese número", async () => {
+    advance(3600_000);
+    const st = await call("POST", "/api/auth/wa/start", {}, ip(31));
+    assert.equal(st.status, 200);
+    assert.match(st.json.ref, /^[A-Z2-9]{5}$/);
+    assert.ok(decodeURIComponent(st.json.waLink).includes(`(ref ${st.json.ref})`));
+    await call("POST", "/api/webhooks/evolution?token=hook-test-token", inbound("59177000444", st.json.requestText));
+    assert.equal(sent[sent.length - 1].to, "+59177000444");
+    const code = codeFromLastMessage();
+    const mis = await call("POST", "/api/auth/wa/verify", { phone: "77000555", code, ref: st.json.ref }, ip(31));
+    assert.equal(mis.status, 409);
+    assert.equal(mis.json.code, "PHONE_MISMATCH");
+    assert.equal(mis.json.senderMasked, "+591******44");
+    assert.ok(!JSON.stringify(mis.json).includes("77000444"), "no expone el número completo");
+    const ok = await call("POST", "/api/auth/wa/verify", { phone: "77000555", code, ref: st.json.ref, useSender: true }, ip(31));
+    assert.equal(ok.status, 200);
+    assert.equal(ok.json.user.phone, "+59177000444");
+  });
+
+  await test("ref: mismo número → entra normal; ref inventada no cambia nada; vigente a los 4:59", async () => {
+    advance(3600_000);
+    const st = await call("POST", "/api/auth/wa/start", {}, ip(32));
+    await call("POST", "/api/webhooks/evolution?token=hook-test-token", inbound("59177000666", `quiero mi codigo micaa ref ${st.json.ref.toLowerCase()}`));
+    const code = codeFromLastMessage();
+    advance(4 * 60_000 + 59_000);
+    const bad = await call("POST", "/api/auth/wa/verify", { phone: "77000999", code, ref: "ZZZZZ", useSender: true }, ip(32));
+    assert.equal(bad.status, 400, "ref desconocida: verifica contra el número escrito");
+    const ok = await call("POST", "/api/auth/wa/verify", { phone: "77000666", code, ref: st.json.ref }, ip(32));
+    assert.equal(ok.status, 200);
+  });
+
   await test("logs sin códigos", async () => {
     const codes = sent.map((s) => /(\d{6})/.exec(s.text)![1]);
     for (const l of logs) for (const c of codes) assert.ok(!l.includes(c), `log contiene código: ${l}`);

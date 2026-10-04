@@ -20,6 +20,7 @@ import { createOtpService, OTP_COOLDOWN_MS, OTP_TTL_MS } from "./otp";
 import { createSessionService, clearSessionCookies, clientIp, jwtSecret, parseCookies, sha256, SESSION_COOKIE, type SessionService } from "./sessions";
 import { e164ToDigits, maskPhone, normalizePhoneE164 } from "./phone";
 import { extractLoginRequests, LOGIN_REQUEST_TEXT, webhookTokenOk } from "./webhook";
+import { createMemoryRefStore, normalizeRef, type LoginRefStore } from "./login-refs";
 
 export interface WaAuthDeps {
   otp: OtpStore;
@@ -28,6 +29,7 @@ export interface WaAuthDeps {
   sender?: WaSender;
   now?: () => Date;
   log?: (m: string) => void;
+  refs?: LoginRefStore;
 }
 
 export function publicUser(u: AuthUser) {
@@ -39,7 +41,11 @@ export function publicUser(u: AuthUser) {
 }
 
 const INVALID_PHONE = { ok: false, code: "INVALID_PHONE", message: "Número no válido. Escribe tu número de WhatsApp (ej. 71234567 o +591 71234567)." };
-const INVALID_CODE = { ok: false, code: "INVALID_CODE", message: "Código incorrecto o vencido." };
+const INVALID_CODE = { ok: false, code: "INVALID_CODE", message: "Código incorrecto. Revisa los 6 dígitos." };
+const noActive = (phone: string) => ({
+  ok: false, code: "NO_ACTIVE_CODE",
+  message: `No hay un código vigente para ${maskPhone(phone)} (venció, ya se usó o se envió a otro número). Si escribiste a MICAA desde otro WhatsApp, usa ese número, o toca «Enviarme el código».`,
+});
 const TOO_MANY = { ok: false, code: "TOO_MANY_ATTEMPTS", message: "Demasiados intentos. Pide un código nuevo." };
 
 export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions: SessionService } {
@@ -47,6 +53,31 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
   const log = deps.log || ((m: string) => console.log(m));
   const otp = createOtpService({ store: deps.otp, sender, now: deps.now, log });
   const sessions = createSessionService({ sessions: deps.sessions, users: deps.users, now: deps.now });
+  const refs = deps.refs || createMemoryRefStore();
+  const nowFn = deps.now || (() => new Date());
+
+  /**
+   * Número contra el que se verifica. Con ref del flujo "Abrir WhatsApp", el webhook sabe desde qué número
+   * escribió el usuario: si pide useSender, se usa ese número; si no, se usa el escrito y, si no tiene código
+   * vigente pero el remitente es otro, se avisa (PHONE_MISMATCH) en vez de "incorrecto o vencido".
+   */
+  function verifyTarget(req: Request): { phone: string | null; sender: string | null } {
+    const ref = normalizeRef(req.body?.ref);
+    const sender = ref ? refs.senderOf(ref, nowFn()) : null;
+    if (sender && req.body?.useSender === true) return { phone: sender, sender };
+    return { phone: normalizePhoneE164(req.body?.phone), sender };
+  }
+  function verifyErrorResponse(res: Response, reason: string, phone: string, sender: string | null) {
+    if (reason === "too_many_attempts") return res.status(429).json(TOO_MANY);
+    if (reason === "no_active" && sender && sender !== phone) {
+      return res.status(409).json({
+        ok: false, code: "PHONE_MISMATCH", senderMasked: maskPhone(sender),
+        message: `El código se envió al WhatsApp desde el que escribiste (${maskPhone(sender)}), que no es el número del formulario (${maskPhone(phone)}).`,
+      });
+    }
+    if (reason === "no_active") return res.status(400).json(noActive(phone));
+    return res.status(400).json(INVALID_CODE);
+  }
 
   // Debe ir antes de cualquier ruta /api para que los handlers existentes vean el Bearer inyectado.
   app.use("/api", sessions.bridge);
@@ -108,6 +139,25 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
     });
   });
 
+  // Flujo "Abrir WhatsApp" con ref: el texto prellenado lleva la ref para saber desde qué número escribe.
+  const startHits = new Map<string, number[]>();
+  app.post("/api/auth/wa/start", async (req, res) => {
+    const ip = clientIp(req) || "?";
+    const t = Date.now();
+    const list = (startHits.get(ip) || []).filter((x) => t - x < 10 * 60_000);
+    list.push(t);
+    startHits.set(ip, list);
+    if (startHits.size > 10000) startHits.delete(startHits.keys().next().value!);
+    if (list.length > 30) return res.status(429).json({ ok: false, code: "RATE_LIMITED", message: "Demasiadas solicitudes." });
+    const enabled = sender.isConfigured();
+    const num = enabled ? await sender.getInstanceNumber() : null;
+    const digits = num ? e164ToDigits(num) : null;
+    if (!digits) return res.json({ ok: false, enabled, waLink: null });
+    const ref = refs.create(nowFn());
+    const text = `${LOGIN_REQUEST_TEXT} (ref ${ref})`;
+    res.json({ ok: true, enabled, ref, requestText: text, waLink: `https://wa.me/${digits}?text=${encodeURIComponent(text)}` });
+  });
+
   async function handleRequest(req: Request, res: Response, purpose: "login" | "link", userId: number | null) {
     const phone = normalizePhoneE164(req.body?.phone);
     if (!phone) return res.status(400).json(INVALID_PHONE);
@@ -128,11 +178,11 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
   app.post("/api/auth/wa/verify", async (req, res) => {
     try {
       if (!verifyRateOk(clientIp(req))) return res.status(429).json(TOO_MANY);
-      const phone = normalizePhoneE164(req.body?.phone);
+      const { phone, sender: refSender } = verifyTarget(req);
       const code = String(req.body?.code ?? "").replace(/\D/g, "");
       if (!phone) return res.status(400).json(INVALID_PHONE);
       const v = await otp.verify(phone, code);
-      if (!v.ok) return res.status(v.reason === "too_many_attempts" ? 429 : 400).json(v.reason === "too_many_attempts" ? TOO_MANY : INVALID_CODE);
+      if (!v.ok) return verifyErrorResponse(res, v.reason, phone, refSender);
 
       let user = await deps.users.findByPhone(phone);
       let isNewUser = false;
@@ -163,11 +213,11 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
     try {
       if (!verifyRateOk(clientIp(req))) return res.status(429).json(TOO_MANY);
       const me: AuthUser = (req as any).waUser;
-      const phone = normalizePhoneE164(req.body?.phone);
+      const { phone, sender: refSender } = verifyTarget(req);
       const code = String(req.body?.code ?? "").replace(/\D/g, "");
       if (!phone) return res.status(400).json(INVALID_PHONE);
       const v = await otp.verify(phone, code);
-      if (!v.ok) return res.status(v.reason === "too_many_attempts" ? 429 : 400).json(v.reason === "too_many_attempts" ? TOO_MANY : INVALID_CODE);
+      if (!v.ok) return verifyErrorResponse(res, v.reason, phone, refSender);
       // Aquí el usuario ya demostró que controla el número, así que sí podemos decir que está en uso.
       const r = await deps.users.setPhone(me.id, phone);
       if (r === "taken") return res.status(409).json({ ok: false, code: "PHONE_TAKEN", message: "Ese número ya está vinculado a otra cuenta MICAA." });
@@ -188,6 +238,7 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
       const results: string[] = [];
       for (const r of requests.slice(0, 5)) {
         // Mismos límites por número que el fallback (protege el número de bloqueos); sin IP (viene de Evolution).
+        if (r.ref) refs.bind(r.ref, r.phone, nowFn());
         const out = await otp.issue({ phone: r.phone, ip: null, purpose: "login", channel: "inbound" });
         results.push(out.ok ? "sent" : out.reason);
         if (!out.ok) log(`[wa-auth] inbound ${maskPhone(r.phone)} no enviado: ${out.reason}`);

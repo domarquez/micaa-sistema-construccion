@@ -50,11 +50,28 @@ import { useAuth } from "@/hooks/useAuth";
 import { useDisclosureLevel } from "@/hooks/useDisclosureLevel";
 import { DisclosureGate, WhatsAppSignupCta } from "@/components/DisclosureGate";
 import { featureForPath } from "@/lib/disclosure";
+import { MemberProjects, ProjectsPage, StartProjectCard } from "@/components/MemberProjects";
+
+/** Inicio: materiales siempre; con nivel ≥1 (WhatsApp verificado o admin) además "Empieza un proyecto" + mis proyectos. */
+function HomePage() {
+  const { can } = useDisclosureLevel();
+  return (
+    <>
+      <PriceHome afterSearch={can("projects") ? <StartProjectCard /> : undefined} />
+      {can("projects") && <MemberProjects limit={5} showCard={false} />}
+    </>
+  );
+}
+
+function ProjectsRoute() {
+  const { can } = useDisclosureLevel();
+  return can("projects") ? <ProjectsPage /> : <WhatsAppSignupCta />;
+}
 
 /** /inscribete: CTA de WhatsApp; si ya alcanzó el nivel 1, lo manda a su inicio con proyectos. */
 function InscribetePage() {
   const { nextStep } = useDisclosureLevel();
-  if (!nextStep) return <Redirect to="/dashboard" />;
+  if (!nextStep) return <Redirect to="/" />;
   return <WhatsAppSignupCta />;
 }
 
@@ -69,6 +86,8 @@ function usePriceSurface(path: string) {
     path === "/" ||
     path === "/lista" ||
     path === "/publicar-precio" ||
+    path === "/proyectos" ||
+    path === "/plantillas" ||
     path === "/materiales" ||
     path.startsWith("/materiales/")
   );
@@ -77,7 +96,13 @@ function usePriceSurface(path: string) {
 function PriceRoutes() {
   return (
     <Switch>
-      <Route path="/" component={PriceHome} />
+      <Route path="/" component={HomePage} />
+      <Route path="/proyectos" component={ProjectsRoute} />
+      <Route path="/plantillas">
+        <div className="mx-auto max-w-5xl px-4 py-6">
+          <DisclosureGate feature="templates"><ProjectTemplates /></DisclosureGate>
+        </div>
+      </Route>
       <Route path="/materiales" component={MaterialesPage} />
       <Route path="/materiales/:id" component={MaterialDetail} />
       <Route path="/lista" component={ListaPage} />
@@ -113,7 +138,7 @@ function AuthenticatedLayout() {
             <DisclosureGate feature={featureForPath(location)}>
             <Switch>
               <Route path="/inscribete" component={InscribetePage} />
-              <Route path="/" component={PriceHome} />
+              <Route path="/" component={HomePage} />
               <Route path="/dashboard" component={UnifiedHome} />
               <Route path="/materiales" component={MaterialesPage} />
               <Route path="/materiales/:id" component={MaterialDetail} />
