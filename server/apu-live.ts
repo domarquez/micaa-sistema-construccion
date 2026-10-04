@@ -144,6 +144,12 @@ export interface ComputeApuOptions {
   city?: string | null;
   /** Incluir la lista completa de cotizaciones por insumo. Default true. */
   includeOptions?: boolean;
+  /**
+   * Caché de precios de material compartida entre varias llamadas (p. ej. el preview de una plantilla calcula
+   * ~60 actividades que repiten cemento, arena, fierro…). Clave `${materialId}|${city}`. Guarda la promesa,
+   * así dos actividades concurrentes no consultan dos veces el mismo material. No cambia resultados.
+   */
+  materialCache?: Map<string, Promise<Awaited<ReturnType<typeof materialPriceOptions>>>>;
 }
 
 type CompRow = {
@@ -381,7 +387,19 @@ export async function computeActivityApu(
 
     if (inputType === "material" && c.material_id != null) {
       inputId = c.material_id;
-      if (!matCache.has(inputId)) matCache.set(inputId, await materialPriceOptions(inputId, city));
+      if (!matCache.has(inputId)) {
+        const shared = opts.materialCache;
+        const key = `${inputId}|${city}`;
+        let pr = shared?.get(key);
+        if (!pr) {
+          pr = materialPriceOptions(inputId, city);
+          if (shared) {
+            shared.set(key, pr);
+            pr.catch(() => shared.delete(key));
+          }
+        }
+        matCache.set(inputId, await pr);
+      }
       const m = matCache.get(inputId);
       if (m) {
         name = m.name;

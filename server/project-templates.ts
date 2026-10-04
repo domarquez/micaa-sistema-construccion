@@ -75,6 +75,9 @@ function lineInputs(items: Array<typeof projectTemplateItems.$inferSelect>): Tem
 
 // ---------- precios en vivo con caché corto por (actividad, ciudad) ----------
 const priceCache = new Map<string, { at: number; v: any }>();
+/** Actividades calculadas en paralelo en un preview. El pool de DB (server/db.ts) limita las consultas reales. */
+const PREVIEW_CONCURRENCY = Math.max(1, Number(process.env.TEMPLATE_PREVIEW_CONCURRENCY) || 6);
+
 async function livePrices(activityIds: number[], city: string) {
   const out = new Map<number, any>();
   const todo: number[] = [];
@@ -82,19 +85,24 @@ async function livePrices(activityIds: number[], city: string) {
     const c = priceCache.get(`${id}|${city}`);
     if (c && Date.now() - c.at < 5 * 60_000) out.set(id, c.v); else todo.push(id);
   }
-  // pool de DB pequeño (max 3): de a 3 en paralelo
-  for (let i = 0; i < todo.length; i += 3) {
-    await Promise.all(todo.slice(i, i + 3).map(async (id) => {
+  // Cola con N trabajadores (antes: lotes fijos de 3 que esperaban al más lento) + caché de materiales
+  // compartida entre actividades del mismo preview (cemento, arena, fierro… se consultan una sola vez).
+  const materialCache: NonNullable<Parameters<typeof computeActivityApu>[3]>["materialCache"] = new Map();
+  let next = 0;
+  const worker = async () => {
+    while (next < todo.length) {
+      const id = todo[next++];
       try {
-        const apu = await computeActivityApu(id, null, null, { city, includeOptions: false });
+        const apu = await computeActivityApu(id, null, null, { city, includeOptions: false, materialCache });
         const v = { unitPrice: apu.totalUnitPrice, name: apu.activityName, unit: apu.unit, apu };
         priceCache.set(`${id}|${city}`, { at: Date.now(), v });
         out.set(id, v);
       } catch (e: any) {
         out.set(id, { error: String(e?.message || e) });
       }
-    }));
-  }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(PREVIEW_CONCURRENCY, todo.length) }, worker));
   return out;
 }
 

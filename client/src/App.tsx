@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -47,6 +47,22 @@ import AppHeader from "@/components/layout/header";
 import { AppFooter } from "@/components/layout/app-footer";
 import { GuestHeader } from "@/components/guest-header";
 import { useAuth } from "@/hooks/useAuth";
+import { useDisclosureLevel } from "@/hooks/useDisclosureLevel";
+import { DisclosureGate, WhatsAppSignupCta } from "@/components/DisclosureGate";
+import { featureForPath } from "@/lib/disclosure";
+
+/** /inscribete: CTA de WhatsApp; si ya alcanzó el nivel 1, lo manda a su inicio con proyectos. */
+function InscribetePage() {
+  const { nextStep } = useDisclosureLevel();
+  if (!nextStep) return <Redirect to="/dashboard" />;
+  return <WhatsAppSignupCta />;
+}
+
+/** Visitante que entra por URL a una ruta de nivel superior: CTA en vez de 404. */
+function GuestFallback() {
+  const [location] = useLocation();
+  return featureForPath(location) ? <WhatsAppSignupCta /> : <NotFound />;
+}
 
 function usePriceSurface(path: string) {
   return (
@@ -68,7 +84,8 @@ function PriceRoutes() {
       <Route path="/publicar-precio" component={PublicarPrecioPage} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
-      <Route component={NotFound} />
+      <Route path="/inscribete" component={InscribetePage} />
+      <Route component={GuestFallback} />
     </Switch>
   );
 }
@@ -85,6 +102,7 @@ function GuestLayout() {
 }
 
 function AuthenticatedLayout() {
+  const [location] = useLocation();
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-surface">
@@ -92,7 +110,9 @@ function AuthenticatedLayout() {
         <div className="flex min-w-0 flex-1 flex-col">
           <AppHeader />
           <main className="flex-1 overflow-auto p-4 md:p-6">
+            <DisclosureGate feature={featureForPath(location)}>
             <Switch>
+              <Route path="/inscribete" component={InscribetePage} />
               <Route path="/" component={PriceHome} />
               <Route path="/dashboard" component={UnifiedHome} />
               <Route path="/materiales" component={MaterialesPage} />
@@ -134,6 +154,7 @@ function AuthenticatedLayout() {
               <Route path="/account-settings" component={AccountSettings} />
               <Route component={NotFound} />
             </Switch>
+            </DisclosureGate>
           </main>
           <AppFooter />
         </div>

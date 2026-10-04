@@ -1,3 +1,4 @@
+import { TemplateSuggestionCard } from "@/components/TemplateSuggestionCard";
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -678,6 +679,7 @@ export default function Budgets() {
 
   return (
     <div className="space-y-4 md:space-y-6">
+      <TemplateSuggestionCard />
       {/* Advertencia para usuarios anónimos */}
       {isAnonymous && (
         <AnonymousBudgetWarning />

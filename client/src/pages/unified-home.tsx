@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { TemplateSuggestionCard } from "@/components/TemplateSuggestionCard";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -501,6 +502,8 @@ export default function UnifiedHome() {
           </Link>
         </div>
       </div>
+
+      <TemplateSuggestionCard />
 
       {/* News Rotator */}
       <StaticNewsRotator />

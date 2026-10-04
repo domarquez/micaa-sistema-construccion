@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus, Menu, X, Package, Store, Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useDisclosureLevel } from "@/hooks/useDisclosureLevel";
 import { ContactForm } from "@/components/contact-form";
 import { MicaaLogo } from "@/components/micaa-logo";
 import { NotificationsPanel, NotificationsBadge } from "@/components/notifications-panel";
@@ -21,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function AppHeader() {
   const { user, logout, isAnonymous } = useAuth();
+  const { can, nextStep } = useDisclosureLevel();
   const { toggleSidebar } = useSidebar();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -283,6 +285,8 @@ export default function AppHeader() {
                 </div>
               </div>
 
+              {can("catalog") ? (
+              <>
               <div className="grid grid-cols-2 gap-3">
                 <div 
                   className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
@@ -328,6 +332,18 @@ export default function AppHeader() {
                   <span>Herramientas</span>
                 </div>
               </div>
+              </>
+              ) : nextStep ? (
+                <div
+                  className="flex items-center justify-center rounded bg-green-50 px-2 py-2 text-sm font-medium text-green-700 cursor-pointer"
+                  onClick={() => {
+                    window.location.href = nextStep === "login" ? "/login" : "/inscribete";
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  Inscríbete con WhatsApp
+                </div>
+              ) : null}
 
               {/* Logout for authenticated users */}
               {!isAnonymous && (

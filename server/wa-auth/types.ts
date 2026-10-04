@@ -42,6 +42,8 @@ export interface AuthUser {
   firstName?: string | null;
   lastName?: string | null;
   phone?: string | null;
+  /** true cuando el número se verificó con un código de WhatsApp (nivel 1 de divulgación progresiva) */
+  phoneVerified?: boolean | null;
   isActive: boolean;
   city?: string | null;
   country?: string | null;

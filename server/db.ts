@@ -15,7 +15,8 @@ if (!process.env.DATABASE_URL) {
 // Configuración optimizada para Replit
 const poolConfig = {
   connectionString: process.env.DATABASE_URL,
-  max: 3, // Reduced for Replit resources
+  // Default 3 (histórico). Con el endpoint -pooler de Neon se puede subir vía DB_POOL_MAX (p. ej. 8).
+  max: Math.max(1, Number(process.env.DB_POOL_MAX) || 3),
   idleTimeoutMillis: 20000,
   connectionTimeoutMillis: 5000,
 };

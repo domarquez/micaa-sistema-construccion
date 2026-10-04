@@ -56,7 +56,7 @@ export function createMemoryUserStore(seed: AuthUser[] = []): UserStore & { user
     async findByPhone(phone) { return users.find((u) => u.phone === phone) || null; },
     async createForPhone(phone) {
       const id = ++seq;
-      const u: AuthUser = { id, username: `wa_${id}`, email: `wa_${id}@wa.micaa.invalid`, role: "user", userType: "architect", phone, isActive: true };
+      const u: AuthUser = { id, username: `wa_${id}`, email: `wa_${id}@wa.micaa.invalid`, role: "user", userType: "architect", phone, phoneVerified: true, isActive: true };
       users.push(u);
       return u;
     },
@@ -64,7 +64,7 @@ export function createMemoryUserStore(seed: AuthUser[] = []): UserStore & { user
       const other = users.find((u) => u.phone === phone && u.id !== userId);
       if (other) return "taken";
       const u = users.find((x) => x.id === userId);
-      if (u) u.phone = phone;
+      if (u) { u.phone = phone; u.phoneVerified = true; }
       return "ok";
     },
     async touchLastLogin() {},

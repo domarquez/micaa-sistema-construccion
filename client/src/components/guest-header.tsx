@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
+import { useDisclosureLevel } from "@/hooks/useDisclosureLevel";
+import { WhatsAppSignupCta } from "@/components/DisclosureGate";
 import { loadLista } from "@/lib/lista";
 import { CITY_LIST, getCity, setCity, type MicaaCity } from "@/lib/city";
 import { useEffect, useState } from "react";
@@ -13,7 +14,7 @@ const links = [
 
 export function GuestHeader() {
   const [location] = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { can } = useDisclosureLevel();
   const [count, setCount] = useState(0);
   const [city, setCityState] = useState<MicaaCity>(() =>
     typeof window !== "undefined" ? getCity() : "Santa Cruz",
@@ -86,14 +87,12 @@ export function GuestHeader() {
             ))}
           </select>
         </label>
-        {isAuthenticated ? (
+        {can("projects") ? (
           <Link href="/dashboard" className="whitespace-nowrap text-[var(--micaa-accent)]">
-            Más herramientas
+            Proyectos
           </Link>
         ) : (
-          <Link href="/login" className="whitespace-nowrap text-[var(--micaa-accent)]">
-            Entrar
-          </Link>
+          <WhatsAppSignupCta compact />
         )}
       </div>
     </header>

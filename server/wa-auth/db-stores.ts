@@ -61,7 +61,7 @@ export const dbOtpStore: OtpStore = {
 
 const toUser = (u: any): AuthUser => ({
   id: u.id, username: u.username, email: u.email, role: u.role, userType: u.userType,
-  firstName: u.firstName, lastName: u.lastName, phone: u.phone, isActive: u.isActive,
+  firstName: u.firstName, lastName: u.lastName, phone: u.phone, phoneVerified: !!u.phoneVerified, isActive: u.isActive,
   city: u.city, country: u.country,
 });
 
