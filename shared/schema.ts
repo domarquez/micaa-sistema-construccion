@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, decimal, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, decimal, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -276,6 +276,63 @@ export const projectPriceOverrides = pgTable("project_price_overrides", {
 });
 
 export type ProjectPriceOverride = typeof projectPriceOverrides.$inferSelect;
+
+/**
+ * Plantillas de proyecto predeterminadas (tablas NUEVAS, aditivas): aplicar
+ * migrations/0003_project_templates.sql en Neon (NO usar db:push).
+ * Columnas aditivas NO declaradas en `projects` (para no romper los SELECT actuales
+ * antes de la migración): projects.template_id integer NULL, projects.template_params jsonb NULL.
+ * El código las escribe solo si existen (ver server/project-templates.ts).
+ */
+export const projectTemplates = pgTable("project_templates", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  category: text("category").notNull(),
+  description: text("description"),
+  coverImageUrl: text("cover_image_url"),
+  unitRef: text("unit_ref").notNull().default("m2"),
+  refQuantityFormula: text("ref_quantity_formula").notNull().default("1"),
+  paramsSchema: jsonb("params_schema").notNull().default({}),
+  derived: jsonb("derived").notNull().default([]),
+  defaultCity: text("default_city").notNull().default("Santa Cruz"),
+  isPremium: boolean("is_premium").notNull().default(false),
+  priceBs: decimal("price_bs", { precision: 10, scale: 2 }),
+  isActive: boolean("is_active").notNull().default(false),
+  inactiveReason: text("inactive_reason"),
+  version: integer("version").notNull().default(1),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const projectTemplateItems = pgTable("project_template_items", {
+  id: serial("id").primaryKey(),
+  templateId: integer("template_id").notNull().references(() => projectTemplates.id, { onDelete: "cascade" }),
+  phaseId: integer("phase_id").notNull().references(() => constructionPhases.id),
+  activityId: integer("activity_id").references(() => activities.id),
+  missingKey: text("missing_key"),
+  missingName: text("missing_name"),
+  quantityFormula: text("quantity_formula").notNull(),
+  defaultQuantity: decimal("default_quantity", { precision: 12, scale: 3 }).notNull().default("0"),
+  breakdown: text("breakdown"),
+  isOptional: boolean("is_optional").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const userTemplateEntitlements = pgTable("user_template_entitlements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  templateId: integer("template_id").references(() => projectTemplates.id, { onDelete: "cascade" }),
+  source: text("source").notNull().default("purchase"), // purchase | plan | promo | admin
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type ProjectTemplate = typeof projectTemplates.$inferSelect;
+export type ProjectTemplateItem = typeof projectTemplateItems.$inferSelect;
+export type UserTemplateEntitlement = typeof userTemplateEntitlements.$inferSelect;
 
 export const priceSettings = pgTable("price_settings", {
   id: serial("id").primaryKey(),

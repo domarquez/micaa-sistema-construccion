@@ -39,6 +39,7 @@ import Marketplace from "@/pages/marketplace";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import CustomActivities from "@/pages/custom-activities";
+import ProjectTemplates from "@/pages/project-templates";
 import AccountSettings from "@/pages/account-settings";
 import NotFound from "@/pages/not-found";
 import AppSidebar from "@/components/layout/sidebar-simple";
@@ -106,6 +107,7 @@ function AuthenticatedLayout() {
               <Route path="/labor" component={Labor} />
               <Route path="/budgets" component={Budgets} />
               <Route path="/budgets/new" component={Budgets} />
+              <Route path="/plantillas" component={ProjectTemplates} />
               <Route path="/budgets/:id" component={BudgetDetails} />
               <Route path="/price-settings" component={PriceSettings} />
               <Route path="/apu-import" component={APUImport} />
