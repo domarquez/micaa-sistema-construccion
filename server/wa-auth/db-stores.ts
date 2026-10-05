@@ -94,13 +94,23 @@ export const dbUserStore: UserStore = {
     } catch (e: any) {
       // Carrera: otra petición creó la cuenta para el mismo número (índice único users_phone_unique)
       const existing = await dbUserStore.findByPhone(phone);
-      if (existing) return existing;
+      if (existing?.phoneVerified) return existing;
+      if (existing && !existing.phoneVerified) {
+        await dbUserStore.clearUnverifiedPhone(phone);
+        return dbUserStore.createForPhone(phone);
+      }
       throw e;
     }
   },
   async setPhone(userId, phone) {
     const other = await dbUserStore.findByPhone(phone);
-    if (other && other.id !== userId) return "taken";
+    if (other && other.id !== userId) {
+      if (!other.phoneVerified) {
+        await dbUserStore.clearUnverifiedPhone(phone);
+      } else {
+        return "taken";
+      }
+    }
     try {
       await db.update(users).set({ phone, phoneVerified: true }).where(eq(users.id, userId));
       return "ok";
@@ -108,6 +118,12 @@ export const dbUserStore: UserStore = {
       if (String(e?.code) === "23505") return "taken";
       throw e;
     }
+  },
+  async clearUnverifiedPhone(phone) {
+    const r = await db.update(users).set({ phone: null, phoneVerified: false })
+      .where(and(eq(users.phone, phone), eq(users.phoneVerified, false)))
+      .returning({ id: users.id });
+    return r.length > 0;
   },
   async touchLastLogin(userId) {
     await db.update(users).set({ lastLogin: new Date() }).where(eq(users.id, userId));

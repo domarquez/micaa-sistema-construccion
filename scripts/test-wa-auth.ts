@@ -134,7 +134,7 @@ async function test(name: string, fn: () => Promise<void>) {
     assert.equal(r.json.code, "INVALID_CODE");
   });
 
-  await test("verify correcto: crea cuenta, emite JWT + cookie httpOnly 1 año", async () => {
+  await test("verify correcto: crea cuenta, emite JWT + cookie httpOnly 30 días", async () => {
     const r = await call("POST", "/api/auth/wa/verify", { phone: "+591 71234567", code: codeFromLastMessage() }, { ...ip(1), "User-Agent": "Mozilla/5.0 (Linux; Android 14) Chrome/120.0" });
     assert.equal(r.status, 200);
     assert.equal(r.json.isNewUser, true);
@@ -143,7 +143,7 @@ async function test(name: string, fn: () => Promise<void>) {
     const sc = r.setCookie.find((c: string) => c.startsWith("micaa_session="))!;
     assert.ok(sc, "cookie de sesión");
     assert.match(sc, /HttpOnly/i);
-    assert.match(sc, /Max-Age=31536000/);
+    assert.match(sc, /Max-Age=2592000/); // 30 días
     assert.match(sc, /SameSite=Lax/i);
     cookie = sc.split(";")[0];
     token = r.json.token;
@@ -305,15 +305,32 @@ async function test(name: string, fn: () => Promise<void>) {
     assert.equal(a.json.message, b.json.message);
   });
 
-  await test("login por WhatsApp de cuenta existente con teléfono sin verificar → queda verificado", async () => {
+  await test("hueco registro: número ajeno sin verificar NO captura al dueño real por WhatsApp", async () => {
+    // Simula registro clásico viejo / squat: cuenta 50 tiene el teléfono escrito pero phone_verified=false.
     advance(3600_000);
     const q = await call("POST", "/api/auth/wa/request", { phone: "76666666" }, ip(20));
     assert.equal(q.status, 200);
     const v = await call("POST", "/api/auth/wa/verify", { phone: "76666666", code: codeFromLastMessage() }, ip(20));
     assert.equal(v.status, 200);
-    assert.equal(v.json.user.id, 50);
+    assert.notEqual(v.json.user.id, 50, "no debe entrar a la cuenta que solo escribió el número");
+    assert.equal(v.json.isNewUser, true);
     assert.equal(v.json.user.phoneVerified, true);
-    assert.equal(users.users.find((u) => u.id === 50)?.phoneVerified, true);
+    assert.equal(v.json.user.phone, "+59176666666");
+    const legacy = users.users.find((u) => u.id === 50)!;
+    assert.equal(legacy.phone, null, "se liberó el reclamo no verificado");
+    assert.equal(legacy.phoneVerified, false);
+  });
+
+  await test("cuenta con teléfono YA verificado sí entra a la misma cuenta", async () => {
+    advance(3600_000);
+    // user id creado en el test anterior para +59176666666
+    const owner = users.users.find((u) => u.phone === "+59176666666" && u.phoneVerified)!;
+    assert.ok(owner);
+    await call("POST", "/api/auth/wa/request", { phone: "76666666" }, ip(21));
+    const v = await call("POST", "/api/auth/wa/verify", { phone: "76666666", code: codeFromLastMessage() }, ip(21));
+    assert.equal(v.status, 200);
+    assert.equal(v.json.user.id, owner.id);
+    assert.equal(v.json.isNewUser, false);
   });
 
   // Bug 2026-10-04 (Diego): "Abrir WhatsApp" desde otro WhatsApp → el código queda para el remitente y el
