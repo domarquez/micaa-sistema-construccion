@@ -1,5 +1,8 @@
 /**
- * Dispositivos recordados: sesión de 1 año con renovación deslizante y cookie httpOnly persistente.
+ * Dispositivos recordados: sesión de 30 días con renovación deslizante y cookie httpOnly persistente.
+ *
+ * Decisión (2026-10): se acortó de 365 → 30 días. Sigue renovándose con el uso (slide cada hora).
+ * Ver docs/wa-login/README.md.
  *
  * Integración con el mecanismo actual (JWT Bearer en localStorage, verificado en muchos handlers):
  * `sessionBridge` corre antes de las rutas /api y
@@ -17,7 +20,9 @@ import type { AuthUser, SessionRow, SessionStore, UserStore } from "./types";
 export const SESSION_COOKIE = "micaa_session";
 /** Cookie NO httpOnly, sin secretos: solo le dice al frontend que vale la pena llamar /api/auth/me. */
 export const HINT_COOKIE = "micaa_has_session";
-export const SESSION_TTL_MS = 365 * 24 * 3600_000;
+/** Días de vida de la sesión de dispositivo (renovación deslizante). Documentado en el PR y docs/wa-login. */
+export const SESSION_TTL_DAYS = 30;
+export const SESSION_TTL_MS = SESSION_TTL_DAYS * 24 * 3600_000;
 export const SLIDE_EVERY_MS = 3600_000;
 const STATUS_CACHE_MS = 30_000;
 

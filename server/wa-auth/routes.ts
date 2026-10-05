@@ -184,15 +184,20 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
       const v = await otp.verify(phone, code);
       if (!v.ok) return verifyErrorResponse(res, v.reason, phone, refSender);
 
+      // Solo una cuenta con phone_verified=true es dueña del número.
+      // Un registro clásico que escribió el número sin OTP (phone_verified=false) NO debe
+      // capturar al dueño real cuando entra por WhatsApp: se libera el reclamo y se crea cuenta nueva.
       let user = await deps.users.findByPhone(phone);
       let isNewUser = false;
+      if (user && !user.phoneVerified) {
+        await deps.users.clearUnverifiedPhone(phone);
+        log(`[wa-auth] liberado reclamo no verificado phone=${maskPhone(phone)} user=${user.id}`);
+        user = null;
+      }
       if (!user) {
         user = await deps.users.createForPhone(phone);
         isNewUser = true;
         log(`[wa-auth] cuenta creada user=${user.id} phone=${maskPhone(phone)}`);
-      } else if (!user.phoneVerified) {
-        // Cuenta existente con ese número (p. ej. registro antiguo): el código acaba de probar que el número es suyo.
-        if ((await deps.users.setPhone(user.id, phone)) === "ok") user = { ...user, phoneVerified: true };
       }
       if (!user.isActive) return res.status(403).json({ ok: false, message: "Cuenta desactivada. Contacta al administrador." });
       await deps.users.touchLastLogin(user.id);

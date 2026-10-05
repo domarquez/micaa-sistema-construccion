@@ -62,10 +62,24 @@ export function createMemoryUserStore(seed: AuthUser[] = []): UserStore & { user
     },
     async setPhone(userId, phone) {
       const other = users.find((u) => u.phone === phone && u.id !== userId);
-      if (other) return "taken";
+      if (other) {
+        if (!other.phoneVerified) {
+          other.phone = null;
+          other.phoneVerified = false;
+        } else {
+          return "taken";
+        }
+      }
       const u = users.find((x) => x.id === userId);
       if (u) { u.phone = phone; u.phoneVerified = true; }
       return "ok";
+    },
+    async clearUnverifiedPhone(phone) {
+      const u = users.find((x) => x.phone === phone && !x.phoneVerified);
+      if (!u) return false;
+      u.phone = null;
+      u.phoneVerified = false;
+      return true;
     },
     async touchLastLogin() {},
     async updateName(userId, firstName, lastName) {

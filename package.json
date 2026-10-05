@@ -14,7 +14,8 @@
     "test:disclosure": "tsx scripts/test-disclosure.ts",
     "seed:templates": "tsx scripts/seed-project-templates.ts",
     "verify:apu-6h": "tsx scripts/verify-apu-muro-6h.ts",
-    "test:wa-auth": "tsx scripts/test-wa-auth.ts"
+    "test:wa-auth": "tsx scripts/test-wa-auth.ts",
+    "test:register-security": "tsx scripts/test-register-security.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",

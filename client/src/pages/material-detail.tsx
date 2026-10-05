@@ -163,7 +163,7 @@ export default function MaterialDetail() {
   }
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8">
+    <div className="mx-auto max-w-xl overflow-x-hidden px-4 py-8">
       <Link href="/materiales" className="text-[12px] text-[var(--micaa-muted)] hover:text-[var(--micaa-fg)]">
         ← Materiales
       </Link>
@@ -201,16 +201,17 @@ export default function MaterialDetail() {
                 onChange={() => setSelected(i)}
               />
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-3">
+                {/* En ~390px apilar etiqueta + precio para que no se aplasten */}
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2 text-[14px] text-[var(--micaa-fg)]">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[14px] text-[var(--micaa-fg)]">
                       {fresh && (
                         <span
-                          className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--micaa-ok)]"
+                          className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--micaa-ok)]"
                           title="Reciente"
                         />
                       )}
-                      <span className="truncate">{q.label}</span>
+                      <span className="break-words">{q.label}</span>
                       {(q.kind === "base" || q.estimated || q.source === "market") && (
                         <span className="text-[12px] text-[var(--micaa-muted)]">estimada</span>
                       )}
@@ -219,7 +220,7 @@ export default function MaterialDetail() {
                       {[q.city, ageLabel(q.ageDays)].filter(Boolean).join(" · ")}
                     </div>
                     {procedencia && (
-                      <div className="mt-0.5 text-[12px] text-[var(--micaa-muted)]">
+                      <div className="mt-0.5 break-words text-[12px] text-[var(--micaa-muted)]">
                         {procedencia}
                         {showLink && (
                           <>
@@ -242,8 +243,8 @@ export default function MaterialDetail() {
                       </div>
                     )}
                   </div>
-                  <div className="shrink-0 text-right">
-                    <div className="text-[20px] font-medium tabular-nums">
+                  <div className="shrink-0 sm:text-right">
+                    <div className="text-[18px] font-medium tabular-nums sm:text-[20px]">
                       {formatBs(q.price)}
                     </div>
                     {(q.weightKg ?? data.weightKg) != null &&
@@ -266,19 +267,23 @@ export default function MaterialDetail() {
         })}
       </div>
 
-      <div className="mt-6 flex items-center gap-3">
-        <input
-          type="number"
-          min={0.01}
-          step="any"
-          value={qty}
-          onChange={(e) => setQty(parseFloat(e.target.value) || 1)}
-          className="h-10 w-20 rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
-        />
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <label className="flex items-center gap-2 sm:contents">
+          <span className="text-[12px] text-[var(--micaa-muted)] sm:sr-only">Cantidad</span>
+          <input
+            type="number"
+            min={0.01}
+            step="any"
+            value={qty}
+            onChange={(e) => setQty(parseFloat(e.target.value) || 1)}
+            aria-label="Cantidad"
+            className="h-11 w-full max-w-[7rem] shrink-0 rounded-lg border border-[var(--micaa-line)] px-3 text-[14px] sm:h-10 sm:w-20 sm:max-w-none"
+          />
+        </label>
         <button
           type="button"
           onClick={add}
-          className="h-10 flex-1 rounded-lg bg-[var(--micaa-accent)] px-4 text-[14px] font-medium text-[var(--micaa-accent-fg)]"
+          className="h-11 w-full shrink-0 whitespace-nowrap rounded-lg bg-[var(--micaa-accent)] px-4 text-[14px] font-medium text-[var(--micaa-accent-fg)] sm:h-10 sm:min-w-0 sm:flex-1"
         >
           Agregar a la lista
         </button>

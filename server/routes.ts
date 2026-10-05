@@ -1880,14 +1880,18 @@ export async function registerRoutes(app: any) {
       const bcrypt = await import('bcryptjs');
       const hashedPassword = await bcrypt.default.hash(password, 10);
 
+      // SECURITY: no guardar ni marcar phone_verified por solo escribir un número.
+      // El teléfono solo se vincula (y verifica) vía WhatsApp OTP (/api/auth/wa/*).
+      // Guardar un phone aquí permitiría squatting del índice único y que el dueño real
+      // cayera en la cuenta del atacante al entrar por WhatsApp.
       const newUser = await db.insert(users).values({
         username,
-        email: email || `${phone}@whatsapp.micaaa.top`,
+        email: email || `${username}@users.micaa.invalid`,
         password: hashedPassword,
         firstName,
         lastName,
-        phone,
-        phoneVerified: !!phone,
+        phone: null,
+        phoneVerified: false,
         role: userType === 'supplier' ? 'supplier' : 'user'
       }).returning();
 
@@ -1899,11 +1903,6 @@ export async function registerRoutes(app: any) {
           businessType: 'construction',
           isActive: true
         });
-      }
-
-      // Send welcome message via WhatsApp
-      if (phone && whatsappService.isConfigured()) {
-        await whatsappService.sendWelcomeMessage(phone, firstName || username);
       }
 
       res.json({
