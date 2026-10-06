@@ -1,4 +1,5 @@
 import { useParams } from "wouter";
+import { getQueryFn } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -319,6 +320,8 @@ export default function BudgetDetails() {
 
   const { data: budget, isLoading: budgetLoading } = useQuery<BudgetWithProject>({
     queryKey: isAnonymous ? [`/api/anonymous/budgets/${budgetId}`] : [`/api/budgets/${budgetId}`],
+    // OJO: pasar `queryFn: undefined` anula el queryFn por defecto del QueryClient (React Query v5 hace spread)
+    // y la consulta falla con "Missing queryFn" → "Presupuesto no encontrado". Con sesión se usa getQueryFn.
     queryFn: isAnonymous ? () => {
       // Para usuarios anónimos, cargar desde sessionStorage
       const anonymousBudgets = JSON.parse(sessionStorage.getItem('anonymousBudgets') || '[]');
@@ -332,7 +335,7 @@ export default function BudgetDetails() {
       
       // Normalizar al formato BudgetWithProject
       return normalizeAnonymousBudget(foundBudget);
-    } : undefined,
+    } : getQueryFn({ on401: "returnNull" }),
     enabled: !!budgetId,
   });
 

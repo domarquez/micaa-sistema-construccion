@@ -41,7 +41,7 @@ import {
   Lock,
   UserPlus
 } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
 import MultiphaseBudgetForm from "@/components/budgets/multi-phase-budget-form";
 import type { BudgetWithProject } from "@shared/schema";
@@ -65,6 +65,8 @@ export default function Budgets() {
 
   const { data: budgets, isLoading: budgetsLoading } = useQuery<BudgetWithProject[]>({
     queryKey: isAnonymous ? ["/api/anonymous/budgets"] : ["/api/budgets"],
+    // OJO: pasar `queryFn: undefined` anula el queryFn por defecto del QueryClient (React Query v5 hace spread)
+    // y la consulta falla con "Missing queryFn" → "Presupuesto no encontrado". Con sesión se usa getQueryFn.
     queryFn: isAnonymous ? () => {
       // Para usuarios anónimos, cargar presupuestos desde sessionStorage
       const anonymousBudgets = JSON.parse(sessionStorage.getItem('anonymousBudgets') || '[]');
@@ -90,7 +92,7 @@ export default function Budgets() {
           userId: 0
         }
       }));
-    } : undefined,
+    } : getQueryFn({ on401: "returnNull" }),
     enabled: true, // Always enabled for both cases
     staleTime: isAnonymous ? 0 : 2 * 60 * 1000, // No cache for anonymous
     refetchOnWindowFocus: false,
