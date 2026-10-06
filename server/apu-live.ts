@@ -75,7 +75,9 @@ export async function getOptionalColumns(): Promise<Set<string>> {
     WHERE table_schema = current_schema()
       AND ((table_name = 'budget_items' AND column_name IN ('apu_snapshot','apu_computed_at'))
         OR (table_name = 'activity_compositions' AND column_name IN ('waste_pct','source_ref'))
-        OR (table_name = 'project_price_overrides' AND column_name = 'id'))
+        OR (table_name = 'project_price_overrides' AND column_name = 'id')
+        OR (table_name = 'projects' AND column_name = 'extra_km')
+        OR (table_name = 'budgets' AND column_name = 'transport_cost'))
   `);
   const cols = new Set<string>(rowsOf(r).map((x: any) => String(x.c)));
   colCache = { at: Date.now(), cols };
@@ -617,11 +619,25 @@ export async function clearBudgetItemSnapshot(itemId: number): Promise<void> {
   }
 }
 
+/**
+ * budgets.total = Σ ítems + línea "Transporte y movilización" (server/transport.ts, migración 0005).
+ * El transporte se recalcula aquí para que cualquier cambio de ítems lo mantenga al día.
+ */
 export async function recomputeBudgetTotal(budgetId: number): Promise<number> {
   const r = rowsOf(
     await db.execute(sql`SELECT COALESCE(SUM(subtotal), 0) AS t FROM budget_items WHERE budget_id = ${budgetId}`),
   );
-  const total = round2(num(r[0]?.t));
+  let transport = 0;
+  const cols = await getOptionalColumns();
+  if (cols.has("budgets.transport_cost") && cols.has("projects.extra_km")) {
+    try {
+      const { storeBudgetTransport } = await import("./transport");
+      transport = await storeBudgetTransport(budgetId);
+    } catch (e) {
+      console.warn("Transporte no calculado para presupuesto", budgetId, (e as any)?.message);
+    }
+  }
+  const total = round2(num(r[0]?.t) + transport);
   await db.update(budgets).set({ total: String(total), updatedAt: new Date() }).where(eq(budgets.id, budgetId));
   return total;
 }

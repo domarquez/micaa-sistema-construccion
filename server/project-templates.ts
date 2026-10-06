@@ -212,7 +212,18 @@ export function registerProjectTemplateRoutes(app: any, requireAuth: Mw) {
         await tx.update(budgets).set({ total: String(tot), updatedAt: new Date() }).where(eq(budgets.id, budget.id));
         return { projectId: project.id, budgetId: budget.id, items: n, total: Number(tot) };
       });
-      res.status(201).json({ ...result, city, refQuantity: pv.refQuantity, costPerRefUnit: pv.costPerRefUnit });
+      // Transporte por distancia: si vino dirección, geocodifica y suma la línea al total
+      let transport: any = null;
+      if (req.body?.location) {
+        const { afterProjectSaved } = await import("./transport");
+        const located = await afterProjectSaved(result.projectId, null);
+        if (located) {
+          const { recomputeBudgetTotal } = await import("./apu-live");
+          result.total = await recomputeBudgetTotal(result.budgetId);
+          transport = { ...located.status, project: located.project };
+        }
+      }
+      res.status(201).json({ ...result, city, refQuantity: pv.refQuantity, costPerRefUnit: pv.costPerRefUnit, transport });
     } catch (e) {
       if (e instanceof FormulaError) return res.status(400).json({ message: e.message });
       console.error("Template instantiate error:", e);

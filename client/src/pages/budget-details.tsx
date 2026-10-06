@@ -9,6 +9,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { groupBudgetItemsByPhase, type PhaseLike } from "@/lib/budget-phase-groups";
 import type { BudgetWithProject, BudgetItemWithActivity } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
+import { BASE_PRICE_NOTE, TRANSPORT_LINE_LABEL, budgetTransport, transportDetail, transportOrigin, writePdfTotals } from "@/lib/transport-summary";
 
 // Helper para normalizar presupuestos temporales al formato BudgetWithProject
 function normalizeAnonymousBudget(foundBudget: any): BudgetWithProject {
@@ -23,6 +24,8 @@ function normalizeAnonymousBudget(foundBudget: any): BudgetWithProject {
     phaseId: primaryPhase?.id || null,
     total: foundBudget.total || 0,
     status: foundBudget.status || 'active',
+    transportCost: null,
+    transportSnapshot: null,
     createdAt: foundBudget.createdAt || new Date().toISOString(),
     updatedAt: foundBudget.updatedAt || new Date().toISOString(),
     project: foundBudget.project || {
@@ -73,10 +76,10 @@ export default function BudgetDetails() {
 
       // Encabezado empresarial
       doc.setFontSize(18);
-      doc.text('MICA', margin, yPosition);
+      doc.text('MICAA', margin, yPosition);
       doc.setFontSize(10);
       doc.text('Sistema Integral de Construccion y Arquitectura', margin, yPosition + 8);
-      doc.text('La Paz, Bolivia | contacto@mica.bo | +591 70000000', margin, yPosition + 16);
+      doc.text('Bolivia | micaa.site', margin, yPosition + 16);
       yPosition += 30;
 
       // Título del documento
@@ -273,38 +276,27 @@ export default function BudgetDetails() {
         yPosition += 5;
       }
 
-      // Resumen financiero
+      // Resumen financiero (sin IVA 13% aparte: los P.U. ya incluyen IVA de M.O. e IT)
       yPosition += 10;
+      if (yPosition > 240) { doc.addPage(); yPosition = 30; }
       doc.setFontSize(11);
       doc.text('RESUMEN FINANCIERO', margin, yPosition);
       yPosition += 10;
-
-      doc.setFontSize(9);
-      doc.text('Subtotal de actividades:', margin + 20, yPosition);
-      doc.text(`Bs ${totalGeneral.toFixed(2)}`, margin + 140, yPosition);
-      yPosition += 6;
-
-      // Calcular IVA
-      const iva = totalGeneral * 0.13;
-      const totalConIva = totalGeneral + iva;
-
-      doc.text('IVA (13%):', margin + 20, yPosition);
-      doc.text(`Bs ${iva.toFixed(2)}`, margin + 140, yPosition);
-      yPosition += 8;
-
-      // Línea final
-      doc.line(margin + 120, yPosition, pageWidth - margin, yPosition);
-      yPosition += 5;
-
-      doc.setFontSize(12);
-      doc.text('TOTAL GENERAL:', margin + 20, yPosition);
-      doc.text(`Bs ${totalConIva.toFixed(2)}`, margin + 140, yPosition);
-      yPosition += 15;
+      yPosition = writePdfTotals(doc, {
+        itemsTotal: totalGeneral,
+        budget,
+        y: yPosition,
+        margin,
+        pageWidth,
+        checkNewPage: (space = 30) => {
+          if (yPosition + space > 280) { doc.addPage(); return true; }
+          return false;
+        },
+      });
+      yPosition += 4;
 
       // Información adicional
       doc.setFontSize(8);
-      doc.text('* Los precios incluyen materiales, mano de obra y gastos generales', margin, yPosition);
-      yPosition += 5;
       doc.text('* Validez de la oferta: 30 dias calendario', margin, yPosition);
       yPosition += 5;
       doc.text('* Moneda: Bolivianos (Bs)', margin, yPosition);
@@ -312,8 +304,8 @@ export default function BudgetDetails() {
 
       // Pie de página profesional
       doc.setFontSize(7);
-      doc.text('Este presupuesto ha sido elaborado con MICA - Sistema Integral de Construccion', pageWidth / 2, yPosition, { align: 'center' });
-      doc.text('www.mica.bo | contacto@mica.bo | La Paz, Bolivia', pageWidth / 2, yPosition + 5, { align: 'center' });
+      doc.text('Este presupuesto ha sido elaborado con MICAA - Sistema Integral de Construccion', pageWidth / 2, yPosition, { align: 'center' });
+      doc.text('micaa.site | Bolivia', pageWidth / 2, yPosition + 5, { align: 'center' });
 
       // Descargar
       const projectName = budget.project?.name?.replace(/[^a-zA-Z0-9\s]/g, '') || 'proyecto';
@@ -432,6 +424,7 @@ export default function BudgetDetails() {
   }
 
   const totalItems = budgetItems?.reduce((sum, item) => sum + Number(item.subtotal), 0) || 0;
+  const { cost: transportCost, snapshot: transportSnap } = budgetTransport(budget);
 
   return (
     <div className="space-y-6">
@@ -535,11 +528,21 @@ export default function BudgetDetails() {
                 {formatCurrency(budget.total)}
               </p>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">Items Calculados</p>
-              <p className="text-xl font-semibold text-on-surface">
-                {formatCurrency(totalItems)}
-              </p>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between gap-2">
+                <span className="text-gray-600">Subtotal actividades</span>
+                <span className="font-semibold">{formatCurrency(totalItems)}</span>
+              </div>
+              {transportCost > 0 && (
+                <div className="flex justify-between gap-2" title={transportDetail(transportSnap)}>
+                  <span className="text-gray-600">{TRANSPORT_LINE_LABEL}</span>
+                  <span className="font-semibold">{formatCurrency(transportCost)}</span>
+                </div>
+              )}
+              {transportCost > 0 && (
+                <p className="text-[11px] text-gray-500">{transportOrigin(transportSnap)} · {transportDetail(transportSnap)} · incluye GG, utilidad e IT</p>
+              )}
+              <p className="text-[11px] text-gray-400">{BASE_PRICE_NOTE}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Fase de Construcción</p>

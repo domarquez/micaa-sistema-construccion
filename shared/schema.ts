@@ -269,6 +269,17 @@ export const projects = pgTable("projects", {
   socialChargesPercentage: decimal("social_charges_percentage", { precision: 5, scale: 2 }).notNull().default("71.18"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  // migración 0005 (aditiva): ubicación + distancia para "Transporte y movilización" (shared/transport.ts)
+  latitude: decimal("latitude", { precision: 9, scale: 6 }),
+  longitude: decimal("longitude", { precision: 9, scale: 6 }),
+  distanceKm: decimal("distance_km", { precision: 7, scale: 2 }),
+  extraKm: decimal("extra_km", { precision: 7, scale: 2 }),
+  transportMethod: text("transport_method"), // osrm | straight_x1.3 | preset | manual | none
+  transportZone: text("transport_zone"),
+  geoSource: text("geo_source"), // nominatim | pin
+  geocodedAddress: text("geocoded_address"),
+  geocodedQuery: text("geocoded_query"),
+  transportUpdatedAt: timestamp("transport_updated_at"),
 });
 
 export const budgets = pgTable("budgets", {
@@ -279,6 +290,9 @@ export const budgets = pgTable("budgets", {
   status: text("status").notNull().default('draft'), // draft, active, completed
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  // migración 0005 (aditiva): línea "Transporte y movilización" (incluida en total)
+  transportCost: decimal("transport_cost", { precision: 12, scale: 2 }),
+  transportSnapshot: jsonb("transport_snapshot"),
 });
 
 export const budgetItems = pgTable("budget_items", {
