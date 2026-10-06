@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -40,6 +40,7 @@ import { Plus, Trash2, Building, FileText, Calculator } from "lucide-react";
 import BudgetItemApuDialog from "@/components/budgets/budget-item-apu-dialog";
 import ActivitySearchPicker from "@/components/budgets/activity-search-picker";
 import ProjectTransportCard, { transportSummaryText } from "@/components/budgets/project-transport-card";
+import { buildEditorPhases, editorPhaseRank, removeEditorItem, shouldHydrateEditor } from "@/lib/budget-editor-phases";
 
 import type { Project, ConstructionPhase, ActivityWithPhase, BudgetWithProject } from "@shared/schema";
 import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
@@ -148,116 +149,58 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     queryKey: ["/api/activities", { all: 1 }],
   });
   
-  const allActivities = (activitiesResponse?.activities || []).filter((a: any) => a.isOriginal !== false);
+  // Memo: referencia estable (antes un arreglo nuevo en cada render re-disparaba la carga del presupuesto).
+  const allActivities = useMemo(
+    () => (activitiesResponse?.activities || []).filter((a: any) => a.isOriginal !== false),
+    [activitiesResponse],
+  );
 
   // Orden constructivo: /api/construction-phases ya viene ordenado por sort_order (solo fases activas).
-  const phaseRank = (phaseId: number, phase?: any) => {
-    const idx = constructionPhases?.findIndex(p => p.id === phaseId) ?? -1;
-    return idx >= 0 ? idx : 1000 + Number(phase?.sortOrder ?? phaseId);
-  };
+  const phaseRank = (phaseId: number, phase?: any) => editorPhaseRank(constructionPhases, phaseId, phase);
   const byPhaseOrder = (a: PhaseData, b: PhaseData) => phaseRank(a.phaseId, a.phase) - phaseRank(b.phaseId, b.phase);
   const [showPhaseButtons, setShowPhaseButtons] = useState(false);
 
   // Cargar elementos del presupuesto si estamos editando  
-  const { data: budgetData } = useQuery({
+  const { data: budgetData, isFetching: budgetFetching } = useQuery({
     queryKey: [`/api/budgets/${budget?.id}`],
     enabled: !!budget?.id,
+    refetchOnMount: 'always', // se carga una sola vez: que sea la versión actual, no la de caché
   });
 
-  // Cargar datos existentes al editar
+  // Cargar datos existentes al editar: UNA vez por presupuesto (si no, cada edición se pisaba con los datos del servidor)
+  const hydratedBudgetId = useRef<number | null>(null);
   useEffect(() => {
-    console.log('🔍 Cargando datos para edición:', { 
-      budget: !!budget, 
-      budgetData: !!budgetData,
-      allActivities: allActivities?.length,
-      constructionPhases: constructionPhases?.length
-    });
+    const ready = !budgetFetching && !!budgetData && !!constructionPhases && typeof budgetData === 'object' &&
+      'project' in (budgetData as any) && 'items' in (budgetData as any);
+    if (!shouldHydrateEditor(hydratedBudgetId.current, budget?.id, ready)) return;
+    hydratedBudgetId.current = budget!.id;
 
-    if (budget && budgetData && allActivities && constructionPhases && 
-        typeof budgetData === 'object' && 'project' in budgetData && 'items' in budgetData) {
-      
-      console.log('📊 Datos del presupuesto:', budgetData);
-      setCurrentProject(budgetData.project as any);
-      
-      // Organizar elementos por fases
-      const phaseGroups: Record<number, BudgetItemData[]> = {};
-      
-      (budgetData.items as any[]).forEach((item: any) => {
-        // Agrupar por la fase de la ACTIVIDAD (igual que el PDF y el detalle); el phase_id
-        // guardado en budget_items se conserva intacto (storedPhaseId) al actualizar.
-        const groupPhaseId: number | undefined = item.activity?.phaseId ?? item.phaseId ?? undefined;
-        if (!groupPhaseId) return;
-        
-        if (!phaseGroups[groupPhaseId]) {
-          phaseGroups[groupPhaseId] = [];
-        }
-        
-        // For custom activities, use the activity data from the backend response
-        // For system activities, find them in allActivities
-        let activity = allActivities.find(a => a.id === item.activityId);
-        
-        // If not found in allActivities (like bridge activities), use the activity data from the item
-        if (!activity && item.activity) {
-          activity = {
-            id: item.activity.id,
-            name: item.activity.name,
-            unit: item.activity.unit,
-            phaseId: groupPhaseId
-          } as any;
-        }
-        
-        phaseGroups[groupPhaseId].push({
-          id: item.id.toString(),
-          dbId: item.id,
-          storedPhaseId: item.phaseId ?? null,
-          priceManual: false,
-          activityId: item.activityId,
-          activity,
-          quantity: parseFloat(item.quantity),
-          unitPrice: parseFloat(item.unitPrice),
-          subtotal: parseFloat(item.subtotal),
-        });
+    setCurrentProject((budgetData as any).project);
+    // Agrupar por la fase de la ACTIVIDAD (igual que el PDF y el detalle); el phase_id guardado se conserva (storedPhaseId).
+    const loadedPhases = buildEditorPhases((budgetData as any).items, allActivities, constructionPhases) as PhaseData[];
+    setPhases(loadedPhases);
+    setSelectedPhases(loadedPhases.map(p => p.phaseId));
+
+    // Actualizar el formulario con los datos del proyecto
+    const project = (budgetData as any).project;
+    if (project) {
+      form.reset({
+        name: project.name || "",
+        client: project.client || "",
+        location: project.location || "",
+        city: project.city || "",
+        country: project.country || "Bolivia",
+        startDate: project.startDate
+          ? new Date(project.startDate).toISOString().split('T')[0]
+          : "",
+        equipmentPercentage: project.equipmentPercentage?.toString() || "5.00",
+        administrativePercentage: project.administrativePercentage?.toString() || "8.00",
+        utilityPercentage: project.utilityPercentage?.toString() || "15.00",
+        taxPercentage: project.taxPercentage?.toString() || "3.09",
+        socialChargesPercentage: project.socialChargesPercentage?.toString() || "71.18",
       });
-      
-      // Crear estructura de fases
-      const loadedPhases: PhaseData[] = Object.entries(phaseGroups).map(([phaseId, items]) => {
-        const phase = constructionPhases.find(p => p.id === parseInt(phaseId)) ?? (items[0]?.activity as any)?.phase;
-        const total = items.reduce((sum, item) => sum + item.subtotal, 0);
-        
-        return {
-          phaseId: parseInt(phaseId),
-          phase,
-          items,
-          total,
-        };
-      }).sort(byPhaseOrder);
-      
-      console.log('📋 Fases cargadas:', loadedPhases);
-      setPhases(loadedPhases);
-      setSelectedPhases(loadedPhases.map(p => p.phaseId));
-      
-      // Actualizar el formulario con los datos del proyecto
-      if (budgetData.project) {
-        const project = budgetData.project as any;
-        form.reset({
-          name: project.name || "",
-          client: project.client || "",
-          location: project.location || "",
-          city: project.city || "",
-          country: project.country || "Bolivia",
-          startDate: project.startDate 
-            ? new Date(project.startDate).toISOString().split('T')[0]
-            : "",
-          equipmentPercentage: project.equipmentPercentage?.toString() || "5.00",
-          administrativePercentage: project.administrativePercentage?.toString() || "8.00",
-          utilityPercentage: project.utilityPercentage?.toString() || "15.00",
-          taxPercentage: project.taxPercentage?.toString() || "3.09",
-          socialChargesPercentage: project.socialChargesPercentage?.toString() || "71.18",
-        });
-        console.log('📝 Formulario actualizado con datos del proyecto');
-      }
     }
-  }, [budget, budgetData, allActivities, constructionPhases, form]);
+  }, [budget, budgetData, budgetFetching, allActivities, constructionPhases, form]);
 
   // Crear proyecto nuevo
   const createProjectMutation = useMutation({
@@ -757,14 +700,9 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   };
 
   const removeItemFromPhase = (phaseId: number, itemId: string) => {
-    setPhases(phases.map(p => {
-      if (p.phaseId === phaseId) {
-        const newItems = p.items.filter(item => item.id !== itemId);
-        const total = newItems.reduce((sum, item) => sum + item.subtotal, 0);
-        return { ...p, items: newItems, total };
-      }
-      return p;
-    }));
+    const next = removeEditorItem(phases, phaseId, itemId);
+    setPhases(next);
+    if (!next.some(p => p.phaseId === phaseId)) setSelectedPhases(selectedPhases.filter(id => id !== phaseId));
   };
 
   /** Actualiza el P.U. de un ítem (setState funcional: seguro tras un await). */
@@ -1135,12 +1073,13 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                                   >
                                     <Plus className="w-4 h-4" />
                                   </Button>
-                                  {phaseData.items.length > 1 && (
+                                  {(phaseData.items.length > 1 || item.activityId > 0) && (
                                     <Button
                                       size="sm"
                                       variant="outline"
                                       onClick={() => removeItemFromPhase(phaseData.phaseId, item.id)}
                                       className="text-red-500"
+                                      title="Quitar ítem"
                                     >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
