@@ -59,4 +59,9 @@ t("multi-token = AND", () => {
   assert.equal(buildSearchGroups("muro de ladrillo hueco").length, 3);
   assert.ok(!matchesSearch(N.cp, "contrapiso ladrillo"));
 });
+t("palabras cortas = inicio de palabra (gas ≠ vigas/omegas)", () => {
+  assert.ok(matchesSearch("PUNTO DE GAS NATURAL DOMICILIARIO", "gas"));
+  assert.ok(!matchesSearch("VIGAS DE H°A°", "gas"));
+  assert.ok(!matchesSearch("CIELO SOBRE OMEGAS GALVANIZADAS", "gas"));
+});
 console.log(`\n${n} tests OK`);

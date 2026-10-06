@@ -13,7 +13,7 @@ import { registerProjectTemplateRoutes } from './project-templates';
 import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal } from './apu-live';
 import { registerWaAuthRoutes } from './wa-auth/routes';
 import { dbOtpStore, dbUserStore, dbSessionStore } from './wa-auth/db-stores';
-import { listActivities, getMostUsedActivities } from './activities-catalog';
+import { listActivities, getMostUsedActivities, getActivityCatalogTree, listPhases } from './activities-catalog';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -321,6 +321,17 @@ export async function registerRoutes(app: any) {
     }
   });
 
+  // Árbol del catálogo: fases activas en orden › familias › variantes (subfamilias) › actividades activas y públicas
+  router.get('/activities/catalog', async (_req: Request, res: Response) => {
+    try {
+      res.set('Cache-Control', 'public, max-age=300');
+      res.json({ phases: await getActivityCatalogTree() });
+    } catch (error) {
+      console.error('Activity catalog error:', error);
+      res.status(500).json({ error: 'Failed to fetch activity catalog' });
+    }
+  });
+
   // Listado / búsqueda (sin mayúsculas ni acentos, multi-palabra con sinónimos), ordenado por fase y nombre.
   // ?all=1 devuelve el catálogo completo (editor de presupuestos); por defecto limit=100.
   router.get('/activities', async (req: Request, res: Response) => {
@@ -339,7 +350,7 @@ export async function registerRoutes(app: any) {
 
       const q = req.query;
       const result = await listActivities({
-        search: q.search, phase: q.phase, phaseId: q.phaseId, limit: q.limit,
+        search: q.search, phase: q.phase, phaseId: q.phaseId, family: q.family, limit: q.limit,
         offset: q.offset, page: q.page, all: q.all, userId,
       });
       let activitiesWithPhases: any[] = result.rows;
@@ -377,7 +388,8 @@ export async function registerRoutes(app: any) {
           const hasCustom = userCustomActivities.some(custom => custom.originalActivityId === activity.id);
           mergedActivities.push({ ...activity, hasCustomActivity: hasCustom });
           const customActivity = customActivitiesFormatted.find(custom => custom.originalActivityId === activity.id);
-          if (customActivity) mergedActivities.push(customActivity);
+          // La copia del usuario se ubica en la fase ACTUAL de su original (las fases antiguas están desactivadas).
+          if (customActivity) mergedActivities.push({ ...customActivity, phaseId: activity.phaseId, phase: activity.phase, family: activity.family });
         }
         activitiesWithPhases = mergedActivities;
       }
@@ -885,8 +897,9 @@ export async function registerRoutes(app: any) {
   // Construction phases
   router.get('/construction-phases', async (req, res) => {
     try {
-      const phases = await db.select().from(constructionPhases).orderBy(asc(constructionPhases.id));
-      res.json(phases);
+      // Solo fases activas, en orden constructivo (?includeInactive=1 → todas, p. ej. para nombrar fases antiguas)
+      const includeInactive = req.query.includeInactive === '1' || req.query.includeInactive === 'true';
+      res.json(await listPhases(includeInactive));
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch construction phases' });
     }

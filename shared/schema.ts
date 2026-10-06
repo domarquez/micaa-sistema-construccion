@@ -74,6 +74,23 @@ export const constructionPhases = pgTable("construction_phases", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
+  // migración 0004 (aditiva): orden constructivo y estado (las fases antiguas se desactivan, no se borran)
+  slug: text("slug"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+});
+
+// Familias de actividades por fase (migración 0004). parent_id = subfamilia (variantes: «Ver variantes»).
+export const activityFamilies = pgTable("activity_families", {
+  id: serial("id").primaryKey(),
+  phaseId: integer("phase_id").notNull().references(() => constructionPhases.id),
+  parentId: integer("parent_id"),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const materialCategories = pgTable("material_categories", {
@@ -94,6 +111,12 @@ export const activities = pgTable("activities", {
   isPublic: boolean("is_public").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  // migración 0004 (aditiva)
+  familyId: integer("family_id"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  synonyms: text("synonyms"),
+  isActive: boolean("is_active").notNull().default(true),
+  replacedById: integer("replaced_by_id"),
 });
 
 export const materials = pgTable("materials", {
@@ -848,8 +871,11 @@ export type MaterialWithCategory = Material & {
   category: MaterialCategory;
 };
 
+export type ActivityFamily = typeof activityFamilies.$inferSelect;
+
 export type ActivityWithPhase = Activity & {
   phase: ConstructionPhase;
+  family?: { id: number; name: string; parentId: number | null; parentName: string | null } | null;
 };
 
 export type BudgetWithProject = Budget & {
