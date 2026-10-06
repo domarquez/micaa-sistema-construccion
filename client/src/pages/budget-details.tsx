@@ -162,115 +162,35 @@ export default function BudgetDetails() {
         doc.text(subtotal.toFixed(2), margin + 170, yPosition);
         yPosition += 12;
 
-        // Obtener composición de la actividad
+        // Composición real del precio unitario (APU en vivo del ítem). Antes se pedía
+        // /api/activities/:id/composition (no existe) y se imprimía un "ANALISIS ESTIMADO 60/25/15" ficticio.
         try {
-          const response = await fetch(`/api/activities/${item.activity?.id}/composition`);
-          if (response.ok) {
-            const composition = await response.json();
-            
+          const token = localStorage.getItem('auth_token');
+          const response = item.id && token
+            ? await fetch(`/api/budget-items/${item.id}/apu`, { headers: { Authorization: `Bearer ${token}` } })
+            : null;
+          const apu = response && response.ok ? (await response.json())?.apu : null;
+          if (apu && Number(apu.totalUnitPrice) > 0) {
+            const f2 = (n: any) => (Number(n) || 0).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const lines: Array<[string, any]> = [
+              ['Materiales', apu.materialsTotal],
+              ['Mano de obra (con cargas sociales e IVA M.O.)', apu.laborFinal],
+              ['Equipo y herramientas menores', apu.equipmentWithTools],
+              ['Gastos generales, utilidad e IT', (Number(apu.administrativeCost) || 0) + (Number(apu.utilityCost) || 0) + (Number(apu.taxCost) || 0)],
+            ];
             doc.setFontSize(7);
-            doc.text('    COMPOSICION DE PRECIO UNITARIO:', margin + 20, yPosition);
-            yPosition += 5;
-            
-            // Mostrar materiales
-            if (composition.materials && composition.materials.length > 0) {
-              doc.text('    • MATERIALES:', margin + 25, yPosition);
+            doc.text('    COMPOSICION DEL PRECIO UNITARIO (Bs/' + (item.activity?.unit || 'und') + '):', margin + 20, yPosition);
+            yPosition += 4;
+            for (const [label, val] of lines) {
+              if (yPosition > 270) { doc.addPage(); yPosition = 30; }
+              doc.text(`    • ${label}`, margin + 25, yPosition);
+              doc.text(`Bs ${f2(val)}`, margin + 145, yPosition);
               yPosition += 4;
-              
-              composition.materials.forEach((material: any) => {
-                // Verificar si necesitamos nueva página
-                if (yPosition > 270) {
-                  doc.addPage();
-                  yPosition = 30;
-                }
-                
-                const materialCost = material.quantity * material.unitPrice;
-                const matDesc = material.description.length > 40 ? 
-                  material.description.substring(0, 40) + '...' : material.description;
-                doc.text(`      - ${matDesc}`, margin + 30, yPosition);
-                doc.text(`${material.quantity} ${material.unit}`, margin + 100, yPosition);
-                doc.text(`Bs ${materialCost.toFixed(2)}`, margin + 145, yPosition);
-                yPosition += 4;
-              });
             }
-            
-            // Mostrar mano de obra
-            if (composition.labor && composition.labor.length > 0) {
-              yPosition += 2;
-              doc.text('    • MANO DE OBRA:', margin + 25, yPosition);
-              yPosition += 4;
-              
-              composition.labor.forEach((labor: any) => {
-                // Verificar si necesitamos nueva página
-                if (yPosition > 270) {
-                  doc.addPage();
-                  yPosition = 30;
-                }
-                
-                const laborCost = labor.quantity * labor.unitPrice;
-                const labDesc = labor.description.length > 40 ? 
-                  labor.description.substring(0, 40) + '...' : labor.description;
-                doc.text(`      - ${labDesc}`, margin + 30, yPosition);
-                doc.text(`${labor.quantity} ${labor.unit}`, margin + 100, yPosition);
-                doc.text(`Bs ${laborCost.toFixed(2)}`, margin + 145, yPosition);
-                yPosition += 4;
-              });
-            }
-            
-            // Mostrar herramientas
-            if (composition.tools && composition.tools.length > 0) {
-              yPosition += 2;
-              doc.text('    • HERRAMIENTAS Y EQUIPOS:', margin + 25, yPosition);
-              yPosition += 4;
-              
-              composition.tools.forEach((tool: any) => {
-                // Verificar si necesitamos nueva página
-                if (yPosition > 270) {
-                  doc.addPage();
-                  yPosition = 30;
-                }
-                
-                const toolCost = tool.quantity * tool.unitPrice;
-                const toolDesc = tool.description.length > 40 ? 
-                  tool.description.substring(0, 40) + '...' : tool.description;
-                doc.text(`      - ${toolDesc}`, margin + 30, yPosition);
-                doc.text(`${tool.quantity} ${tool.unit}`, margin + 100, yPosition);
-                doc.text(`Bs ${toolCost.toFixed(2)}`, margin + 145, yPosition);
-                yPosition += 4;
-              });
-            }
-          } else {
-            // Análisis estimado si no hay composición
-            doc.setFontSize(7);
-            doc.text('    ANALISIS ESTIMADO:', margin + 20, yPosition);
-            yPosition += 4;
-            doc.text('    • Materiales: 60%', margin + 25, yPosition);
-            doc.text(`Bs ${(unitPrice * 0.6).toFixed(2)}`, margin + 145, yPosition);
-            yPosition += 4;
-            doc.text('    • Mano de obra: 25%', margin + 25, yPosition);
-            doc.text(`Bs ${(unitPrice * 0.25).toFixed(2)}`, margin + 145, yPosition);
-            yPosition += 4;
-            doc.text('    • Equipos: 15%', margin + 25, yPosition);
-            doc.text(`Bs ${(unitPrice * 0.15).toFixed(2)}`, margin + 145, yPosition);
-            yPosition += 4;
           }
         } catch (error) {
-          console.error('Error obteniendo composición:', error);
-          // Análisis estimado en caso de error
-          doc.setFontSize(7);
-          doc.text('    ANALISIS ESTIMADO:', margin + 20, yPosition);
-          yPosition += 4;
-          doc.text('    • Materiales: 60%', margin + 25, yPosition);
-          doc.text(`Bs ${(unitPrice * 0.6).toFixed(2)}`, margin + 145, yPosition);
-          yPosition += 4;
-          doc.text('    • Mano de obra: 25%', margin + 25, yPosition);
-          doc.text(`Bs ${(unitPrice * 0.25).toFixed(2)}`, margin + 145, yPosition);
-          yPosition += 4;
-          doc.text('    • Equipos: 15%', margin + 25, yPosition);
-          doc.text(`Bs ${(unitPrice * 0.15).toFixed(2)}`, margin + 145, yPosition);
-          yPosition += 4;
+          console.error('Error obteniendo APU del ítem:', error);
         }
-        
         yPosition += 4;
         // Línea separadora entre items
         doc.line(margin, yPosition, pageWidth - margin, yPosition);
@@ -622,11 +542,23 @@ export default function BudgetDetails() {
               ))}
               <div className="border-t pt-4 bg-gray-50 p-4 rounded-lg">
                 <div className="flex justify-between items-center">
-                  <p className="text-lg font-semibold">Total del Presupuesto:</p>
+                  <p className="text-lg font-semibold">{transportCost > 0 ? "Subtotal actividades:" : "Total del Presupuesto:"}</p>
                   <p className="text-xl font-bold text-primary">
                     {formatCurrency(totalItems)}
                   </p>
                 </div>
+                {transportCost > 0 && (
+                  <>
+                    <div className="flex justify-between items-center mt-1 text-sm">
+                      <p className="text-gray-700">{TRANSPORT_LINE_LABEL}</p>
+                      <p className="font-semibold">{formatCurrency(transportCost)}</p>
+                    </div>
+                    <div className="flex justify-between items-center mt-2 border-t pt-2">
+                      <p className="text-lg font-semibold">Total del Presupuesto:</p>
+                      <p className="text-xl font-bold text-primary">{formatCurrency(totalItems + transportCost)}</p>
+                    </div>
+                  </>
+                )}
                 <p className="text-sm text-gray-600 mt-2">
                   Vista de solo lectura. Para cambiar cantidades o precios usa «Editar» en la lista de proyectos.
                 </p>

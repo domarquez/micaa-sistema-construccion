@@ -42,8 +42,8 @@ export const TRANSPORT_LINE_LABEL = "Transporte y movilización";
 export type TransportMethod = "osrm" | "straight_x1.3" | "preset" | "manual" | "none";
 
 export const TRANSPORT_METHOD_LABELS: Record<TransportMethod, string> = {
-  osrm: "distancia por calle (OSRM)",
-  "straight_x1.3": "línea recta × 1.3 (estimada)",
+  osrm: "por calle, OSRM",
+  "straight_x1.3": "línea recta × 1,3, estimada",
   preset: "zona elegida",
   manual: "km ingresados a mano",
   none: "sin ubicación (sin recargo)",
@@ -291,6 +291,6 @@ export interface TransportSnapshot extends TransportResult {
 export function describeTransport(s: Pick<TransportResult, "extraKm" | "materialsPct" | "workerDays" | "laborPerDay">): string {
   const parts = [`${s.extraKm.toLocaleString("es-BO")} km más allá del km cero`];
   if (s.materialsPct > 0) parts.push(`materiales +${s.materialsPct.toLocaleString("es-BO", { maximumFractionDigits: 2 })} %`);
-  if (s.laborPerDay > 0) parts.push(`${s.workerDays.toLocaleString("es-BO")} jornales × Bs ${s.laborPerDay.toFixed(2)}`);
+  if (s.laborPerDay > 0) parts.push(`${s.workerDays.toLocaleString("es-BO")} jornales × Bs ${s.laborPerDay.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
   return parts.join(" · ");
 }
