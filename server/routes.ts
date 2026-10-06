@@ -13,6 +13,7 @@ import { registerProjectTemplateRoutes } from './project-templates';
 import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal } from './apu-live';
 import { registerWaAuthRoutes } from './wa-auth/routes';
 import { dbOtpStore, dbUserStore, dbSessionStore } from './wa-auth/db-stores';
+import { listActivities, getMostUsedActivities } from './activities-catalog';
 
 // Custom JWT payload interface
 interface CustomJwtPayload extends JwtPayload {
@@ -310,75 +311,43 @@ export async function registerRoutes(app: any) {
   });
 
   // Activities routes with phase information
+  // "Más usadas" (presupuestos + plantillas, con lista curada de respaldo) — server/activities-catalog.ts
+  router.get('/activities/most-used', async (req: Request, res: Response) => {
+    try {
+      res.json({ activities: await getMostUsedActivities(req.query.limit) });
+    } catch (error) {
+      console.error('Most-used activities error:', error);
+      res.status(500).json({ error: 'Failed to fetch most-used activities' });
+    }
+  });
+
+  // Listado / búsqueda (sin mayúsculas ni acentos, multi-palabra con sinónimos), ordenado por fase y nombre.
+  // ?all=1 devuelve el catálogo completo (editor de presupuestos); por defecto limit=100.
   router.get('/activities', async (req: Request, res: Response) => {
     try {
-      const { search, phase, limit = '100', offset = '0' } = req.query;
-      
       // Try to get user ID from auth token (optional)
-      let userId = null;
+      let userId: number | null = null;
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
         try {
-          const token = authHeader.substring(7);
-          const decoded = jwt.verify(token, getJwtSecret()) as any;
-          userId = decoded.userId;
-          console.log('🔍 Activities request with user ID:', userId);
+          const decoded = jwt.verify(authHeader.substring(7), getJwtSecret()) as any;
+          userId = decoded.userId ?? null;
         } catch (error) {
-          console.log('⚠️ Activities request without valid auth');
+          // token inválido: se responde como anónimo
         }
       }
-      
-      // Build where conditions
-      let whereConditions = [];
-      
-      if (search && typeof search === 'string') {
-        whereConditions.push(like(activities.name, `%${search}%`));
-      }
-      
-      if (phase && typeof phase === 'string') {
-        whereConditions.push(eq(activities.phaseId, parseInt(phase)));
-      }
-      
-      // Build activities query
-      let activitiesData;
-      if (whereConditions.length > 0) {
-        const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
-        activitiesData = await db.select().from(activities).where(whereClause)
-          .limit(parseInt(limit as string))
-          .offset(parseInt(offset as string));
-      } else {
-        activitiesData = await db.select().from(activities)
-          .limit(parseInt(limit as string))
-          .offset(parseInt(offset as string));
-      }
-      
-      // Get total count for pagination
-      let totalCountResult;
-      if (whereConditions.length > 0) {
-        const whereClause = whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions);
-        totalCountResult = await db.select({ count: sql`count(*)`.as('count') }).from(activities).where(whereClause);
-      } else {
-        totalCountResult = await db.select({ count: sql`count(*)`.as('count') }).from(activities);
-      }
-      
-      const totalCount = Number(totalCountResult[0]?.count) || 0;
-      
-      // Get all phases
-      const phases = await db.select().from(constructionPhases);
-      
-      // Combine activities with phase information
-      let activitiesWithPhases = activitiesData.map(activity => {
-        const phase = phases.find(p => p.id === activity.phaseId);
-        return {
-          ...activity,
-          phase: phase || { id: 0, name: 'Sin Fase', description: '' },
-          isOriginal: true,
-          hasCustomActivity: false
-        };
-      });
 
-      // If user is authenticated, get their custom activities and merge them
-      if (userId) {
+      const q = req.query;
+      const result = await listActivities({
+        search: q.search, phase: q.phase, phaseId: q.phaseId, limit: q.limit,
+        offset: q.offset, page: q.page, all: q.all, userId,
+      });
+      let activitiesWithPhases: any[] = result.rows;
+
+      // Copias personalizadas del usuario (user_activities) se muestran justo después de su original.
+      // No se incluyen con ?all=1 (editor): su id (+10000) no existe en activities y rompería budget_items.
+      const isAll = q.all === '1' || q.all === 'true';
+      if (userId && !isAll) {
         const userCustomActivities = await db.select({
           id: userActivities.id,
           originalActivityId: userActivities.originalActivityId,
@@ -390,53 +359,36 @@ export async function registerRoutes(app: any) {
           .from(userActivities)
           .where(eq(userActivities.userId, userId));
 
-        console.log(`🔧 Found ${userCustomActivities.length} custom activities for user ${userId}`);
+        const customActivitiesFormatted = userCustomActivities.map(customActivity => ({
+          id: customActivity.id + 10000, // Use a different ID range to avoid conflicts
+          phaseId: customActivity.phaseId,
+          name: customActivity.customActivityName,
+          unit: customActivity.unit,
+          description: customActivity.description,
+          unitPrice: "0",
+          phase: result.phases.find(p => p.id === customActivity.phaseId) || { id: 0, name: 'Sin Fase', description: '' },
+          isOriginal: false,
+          hasCustomActivity: true,
+          originalActivityId: customActivity.originalActivityId
+        }));
 
-        // Add custom activities to the results
-        const customActivitiesFormatted = userCustomActivities.map(customActivity => {
-          const phase = phases.find(p => p.id === customActivity.phaseId);
-          return {
-            id: customActivity.id + 10000, // Use a different ID range to avoid conflicts
-            phaseId: customActivity.phaseId,
-            name: customActivity.customActivityName,
-            unit: customActivity.unit,
-            description: customActivity.description,
-            unitPrice: "0",
-            phase: phase || { id: 0, name: 'Sin Fase', description: '' },
-            isOriginal: false,
-            hasCustomActivity: true,
-            originalActivityId: customActivity.originalActivityId
-          };
-        });
-
-        // Mark original activities that have custom versions
-        activitiesWithPhases = activitiesWithPhases.map(activity => {
-          const hasCustom = userCustomActivities.some(custom => custom.originalActivityId === activity.id);
-          return {
-            ...activity,
-            hasCustomActivity: hasCustom
-          };
-        });
-
-        // Insert custom activities right after their originals
-        const mergedActivities = [];
+        const mergedActivities: any[] = [];
         for (const activity of activitiesWithPhases) {
-          mergedActivities.push(activity);
-          // Find if there's a custom version of this activity
+          const hasCustom = userCustomActivities.some(custom => custom.originalActivityId === activity.id);
+          mergedActivities.push({ ...activity, hasCustomActivity: hasCustom });
           const customActivity = customActivitiesFormatted.find(custom => custom.originalActivityId === activity.id);
-          if (customActivity) {
-            mergedActivities.push(customActivity);
-          }
+          if (customActivity) mergedActivities.push(customActivity);
         }
         activitiesWithPhases = mergedActivities;
       }
-      
+
       res.json({
         activities: activitiesWithPhases,
-        totalCount: totalCount,
-        currentPage: Math.floor(parseInt(offset as string) / parseInt(limit as string)) + 1,
-        totalPages: Math.ceil(totalCount / parseInt(limit as string)),
-        limit: parseInt(limit as string)
+        totalCount: result.totalCount,
+        currentPage: result.currentPage,
+        totalPages: result.totalPages,
+        limit: result.limit,
+        offset: result.offset,
       });
     } catch (error) {
       console.error('Activities fetch error:', error);

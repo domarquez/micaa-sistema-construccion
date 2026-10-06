@@ -46,9 +46,9 @@ export default function AdminActivities() {
 
   // Fetch activities
   const { data: activitiesResponse, isLoading: activitiesLoading } = useQuery({
-    queryKey: ["/api/activities", { limit: 500 }], // Get all activities for admin
+    queryKey: ["/api/activities", { all: 1 }], // Catálogo completo para admin
     queryFn: async () => {
-      const response = await fetch("/api/activities?limit=500");
+      const response = await fetch("/api/activities?all=1");
       if (!response.ok) throw new Error('Failed to fetch activities');
       return response.json();
     },

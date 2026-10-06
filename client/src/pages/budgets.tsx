@@ -385,17 +385,20 @@ export default function Budgets() {
     let totalGeneral = 0;
 
     // Agrupar items por fase
-    const itemsByPhase = budgetDetails.items.reduce((acc: any, item: any) => {
-      const phaseName = item.activity?.phase?.name || 'Sin Fase';
-      if (!acc[phaseName]) {
-        acc[phaseName] = [];
-      }
-      acc[phaseName].push(item);
-      return acc;
-    }, {});
+    // Agrupar por la fase de la ACTIVIDAD (igual que el editor) y en orden de fase
+    const phaseGroups = new Map<number, { name: string; items: any[] }>();
+    for (const item of budgetDetails.items as any[]) {
+      const pid = Number(item.activity?.phase?.id ?? item.activity?.phaseId ?? 0);
+      const name = item.activity?.phase?.name || 'Sin Fase';
+      if (!phaseGroups.has(pid)) phaseGroups.set(pid, { name, items: [] });
+      phaseGroups.get(pid)!.items.push(item);
+    }
+    const orderedPhaseGroups = Array.from(phaseGroups.entries())
+      .sort((a, b) => (a[0] || 9999) - (b[0] || 9999))
+      .map(([, g]) => [g.name, g.items] as const);
 
     // Procesar cada fase y sus items
-    for (const [phaseName, phaseItems] of Object.entries(itemsByPhase)) {
+    for (const [phaseName, phaseItems] of orderedPhaseGroups) {
       checkNewPage(40);
       
       // Título de la fase uniforme
