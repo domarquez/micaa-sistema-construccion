@@ -105,7 +105,7 @@ export default function Activities() {
             </div>
 
             <p className="text-xs text-orange-600 mt-4">
-              ✓ Registro 100% gratuito • ✓ +2,000 actividades • ✓ Personalización ilimitada
+              ✓ Registro 100% gratuito • ✓ +500 actividades • ✓ Personalización ilimitada
             </p>
           </CardContent>
         </Card>
@@ -118,6 +118,7 @@ export default function Activities() {
       search: searchTerm, 
       phase: selectedPhase, 
       page: currentPage,
+      offset: (currentPage - 1) * limit, // el servidor pagina por offset (antes siempre mostraba la página 1)
       limit: limit,
       withCompositions: true 
     }],
@@ -248,7 +249,7 @@ export default function Activities() {
               </span>
             )}
           </div>
-          <Select value={limit.toString()} onValueChange={(value) => setLimit(parseInt(value))}>
+          <Select value={limit.toString()} onValueChange={(value) => { setLimit(parseInt(value)); setCurrentPage(1); }}>
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>

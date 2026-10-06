@@ -38,6 +38,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Plus, Trash2, Building, FileText, Calculator } from "lucide-react";
 import BudgetItemApuDialog from "@/components/budgets/budget-item-apu-dialog";
+import ActivitySearchPicker from "@/components/budgets/activity-search-picker";
 
 import type { Project, ConstructionPhase, ActivityWithPhase, BudgetWithProject } from "@shared/schema";
 import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
@@ -70,6 +71,8 @@ interface BudgetItemData {
   subtotal: number;
   /** true si el usuario escribió el precio unitario a mano (el servidor no lo recalcula) */
   priceManual?: boolean;
+  /** budget_items.phase_id guardado: se respeta al actualizar (la agrupación visual usa la fase de la actividad) */
+  storedPhaseId?: number | null;
 }
 
 interface PhaseData {
@@ -95,6 +98,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   const [phases, setPhases] = useState<PhaseData[]>([]);
   const [selectedPhases, setSelectedPhases] = useState<number[]>([]);
   const [apuTarget, setApuTarget] = useState<{ phaseId: number; localId: string; dbId: number } | null>(null);
+  const [openPhases, setOpenPhases] = useState<string[]>([]);
 
   const isEditing = !!budget;
 
@@ -121,11 +125,12 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     queryKey: ["/api/construction-phases"],
   });
 
+  // Catálogo COMPLETO (all=1), ordenado por fase y nombre. Antes llegaban solo 100 de ~520.
   const { data: activitiesResponse } = useQuery<{activities: ActivityWithPhase[]}>({
-    queryKey: ["/api/activities"],
+    queryKey: ["/api/activities", { all: 1 }],
   });
   
-  const allActivities = activitiesResponse?.activities || [];
+  const allActivities = (activitiesResponse?.activities || []).filter((a: any) => a.isOriginal !== false);
 
   // Cargar elementos del presupuesto si estamos editando  
   const { data: budgetData } = useQuery({
@@ -152,10 +157,13 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       const phaseGroups: Record<number, BudgetItemData[]> = {};
       
       (budgetData.items as any[]).forEach((item: any) => {
-        if (!item.phaseId) return;
+        // Agrupar por la fase de la ACTIVIDAD (igual que el PDF y el detalle); el phase_id
+        // guardado en budget_items se conserva intacto (storedPhaseId) al actualizar.
+        const groupPhaseId: number | undefined = item.activity?.phaseId ?? item.phaseId ?? undefined;
+        if (!groupPhaseId) return;
         
-        if (!phaseGroups[item.phaseId]) {
-          phaseGroups[item.phaseId] = [];
+        if (!phaseGroups[groupPhaseId]) {
+          phaseGroups[groupPhaseId] = [];
         }
         
         // For custom activities, use the activity data from the backend response
@@ -168,13 +176,14 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
             id: item.activity.id,
             name: item.activity.name,
             unit: item.activity.unit,
-            phaseId: item.phaseId
+            phaseId: groupPhaseId
           } as any;
         }
         
-        phaseGroups[item.phaseId].push({
+        phaseGroups[groupPhaseId].push({
           id: item.id.toString(),
           dbId: item.id,
+          storedPhaseId: item.phaseId ?? null,
           priceManual: false,
           activityId: item.activityId,
           activity,
@@ -195,7 +204,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           items,
           total,
         };
-      });
+      }).sort((a, b) => a.phaseId - b.phaseId);
       
       console.log('📋 Fases cargadas:', loadedPhases);
       setPhases(loadedPhases);
@@ -567,7 +576,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           if (isEditing && item.dbId && item.activityId > 0 && item.quantity > 0) {
             await apiRequest("PUT", `/api/budget-items/${item.dbId}`, {
               activityId: item.activityId,
-              phaseId: phaseData.phaseId,
+              phaseId: item.storedPhaseId ?? phaseData.phaseId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
               manualUnitPrice: !!item.priceManual
@@ -654,8 +663,41 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       total: 0
     };
 
-    setPhases([...phases, newPhaseData]);
+    setPhases([...phases, newPhaseData].sort((a, b) => a.phaseId - b.phaseId));
     setSelectedPhases([...selectedPhases, phaseId]);
+    setOpenPhases((prev) => (prev.includes(String(phaseId)) ? prev : [...prev, String(phaseId)]));
+  };
+
+  /** Agrega una actividad elegida en el buscador global: va a SU fase (se crea si falta). */
+  const addActivityFromSearch = (activity: ActivityWithPhase) => {
+    const phaseId = activity.phaseId;
+    const phase = constructionPhases?.find(p => p.id === phaseId) || (activity as any).phase;
+    const itemId = `${Date.now()}-${activity.id}`;
+    const provisional = activity.unitPrice ? Number(activity.unitPrice) : 0;
+    const newItem: BudgetItemData = {
+      id: itemId,
+      activityId: activity.id,
+      activity,
+      quantity: 1,
+      unitPrice: provisional,
+      subtotal: provisional,
+      priceManual: false,
+    };
+    setPhases((prev) => {
+      const exists = prev.some(p => p.phaseId === phaseId);
+      const next = exists
+        ? prev.map(p => {
+            if (p.phaseId !== phaseId) return p;
+            const items = [...p.items.filter(i => i.activityId > 0), newItem]; // quita filas vacías
+            return { ...p, items, total: items.reduce((sum, i) => sum + i.subtotal, 0) };
+          })
+        : [...prev, { phaseId, phase, items: [newItem], total: newItem.subtotal }];
+      return next.sort((a, b) => a.phaseId - b.phaseId);
+    });
+    setSelectedPhases((prev) => (prev.includes(phaseId) ? prev : [...prev, phaseId]));
+    setOpenPhases((prev) => (prev.includes(String(phaseId)) ? prev : [...prev, String(phaseId)]));
+    fetchLivePrice(phaseId, itemId, activity.id);
+    toast({ title: "Actividad agregada", description: `${activity.name} → ${phase?.name ?? "su fase"}` });
   };
 
   const removePhase = (phaseId: number) => {
@@ -940,10 +982,14 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                     </Badge>
                   </CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
-                    Selecciona las fases que incluirá este presupuesto.
+                    Busca una actividad (se ubica sola en su fase) o agrega fases manualmente.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
+                  <div className="mb-4">
+                    <ActivitySearchPicker phases={constructionPhases} onPick={addActivityFromSearch} />
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-2">O agrega una fase completa:</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
                     {constructionPhases?.map((phase) => (
                       <Button
@@ -963,7 +1009,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
               {/* Fases del Presupuesto */}
               {phases.length > 0 && (
-                <Accordion type="multiple" className="space-y-4">
+                <Accordion type="multiple" value={openPhases} onValueChange={setOpenPhases} className="space-y-4">
                   {phases.map((phaseData) => (
                     <AccordionItem key={phaseData.phaseId} value={phaseData.phaseId.toString()}>
                       <Card>
