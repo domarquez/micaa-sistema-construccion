@@ -10,6 +10,7 @@ import { getPublicMaterialPrice } from './material-price';
 import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
 import { registerApuRoutes } from './apu-routes';
 import { registerProjectTemplateRoutes } from './project-templates';
+import { registerTransportRoutes, afterProjectSaved, stripTransportFields } from './transport';
 import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal } from './apu-live';
 import { registerWaAuthRoutes } from './wa-auth/routes';
 import { dbOtpStore, dbUserStore, dbSessionStore } from './wa-auth/db-stores';
@@ -2146,7 +2147,7 @@ export async function registerRoutes(app: any) {
     try {
       console.log("Datos recibidos para crear proyecto:", req.body);
       
-      const { startDate, ...otherData } = req.body;
+      const { startDate, ...otherData } = stripTransportFields(req.body);
       const projectData = {
         ...otherData,
         userId: req.user.id,
@@ -2158,8 +2159,10 @@ export async function registerRoutes(app: any) {
       // Insertar proyecto directamente en base de datos
       const [project] = await db.insert(projects).values(projectData).returning();
       
-      console.log("Proyecto creado exitosamente:", project);
-      res.status(201).json(project);
+      // Transporte por distancia: geocodifica la dirección (Nominatim + OSRM) → extra_km
+      const located = await afterProjectSaved(project.id, req.body?.transport ?? null);
+      console.log("Proyecto creado exitosamente:", project.id, located?.status);
+      res.status(201).json(located ? { ...project, ...located.project, transportStatus: located.status } : project);
     } catch (error) {
       console.error("Error creating project:", error);
       res.status(500).json({ message: "Failed to create project" });
@@ -2199,7 +2202,7 @@ export async function registerRoutes(app: any) {
         return res.status(404).json({ message: "Proyecto no encontrado o sin permisos" });
       }
       
-      const { startDate, ...otherData } = req.body;
+      const { startDate, ...otherData } = stripTransportFields(req.body);
       const updateData = {
         ...otherData,
         startDate: startDate ? new Date(startDate) : null,
@@ -2213,8 +2216,10 @@ export async function registerRoutes(app: any) {
         .where(eq(projects.id, projectId))
         .returning();
       
-      console.log("Proyecto actualizado exitosamente:", updatedProject);
-      res.json(updatedProject);
+      // Si cambió la dirección/ciudad: re-geocodifica y recalcula transporte de sus presupuestos
+      const located = await afterProjectSaved(projectId, req.body?.transport ?? null);
+      console.log("Proyecto actualizado exitosamente:", projectId, located?.status);
+      res.json(located ? { ...updatedProject, ...located.project, transportStatus: located.status } : updatedProject);
     } catch (error) {
       console.error("Error updating project:", error);
       res.status(500).json({ message: "Failed to update project" });
@@ -2739,6 +2744,10 @@ export async function registerRoutes(app: any) {
 
   app.post("/api/admin/bulk-price-update", requireAdmin, async (req, res) => {
     try {
+      // DESHABILITADO (2026-10-06): multiplicaba materials.price de filas existentes (destructivo,
+      // acumulativo y fuera de la base MICAA curada). Usar rebase TC/UFV (shared/pricing.ts) o
+      // edición puntual por material. Ver PR "transporte por distancia".
+      return res.status(410).json({ message: "Ajuste masivo de precios deshabilitado: ya no se reescribe materials.price. Usa el rebase TC/UFV o edita materiales puntualmente." });
       const { adjustmentFactor, categoryId } = req.body;
       
       if (!adjustmentFactor || adjustmentFactor <= 0) {
@@ -2838,6 +2847,10 @@ export async function registerRoutes(app: any) {
   // Apply global price adjustment to all materials
   app.post("/api/apply-price-adjustment", requireAdmin, async (req: any, res) => {
     try {
+      // DESHABILITADO (2026-10-06): reescribía materials.price × factor en TODAS las filas
+      // (ya se aplicó ×1.30 una vez en 2025-08). La base MICAA se deriva de rebased_price/rebase
+      // TC-UFV; multiplicar rebased_price también destruiría la curación. Se devuelve 410.
+      return res.status(410).json({ message: "Ajuste global deshabilitado: reescribía materials.price de todos los materiales. La base MICAA se ajusta por rebase TC/UFV (shared/pricing.ts)." });
       const { factor, updatedBy } = req.body;
       
       console.log("=== APPLYING GLOBAL PRICE ADJUSTMENT ===");
@@ -3104,6 +3117,8 @@ export async function registerRoutes(app: any) {
   // APU en vivo + overrides de precio por proyecto / ítem (server/apu-routes.ts)
   registerApuRoutes(app, requireAuth as any);
   registerProjectTemplateRoutes(app, requireAuth as any);
+  // Transporte y movilización por distancia (server/transport.ts)
+  registerTransportRoutes(app, requireAuth as any);
 
   // BUDGETS ENDPOINTS
   
@@ -3239,7 +3254,12 @@ export async function registerRoutes(app: any) {
         return res.status(404).json({ message: "Presupuesto no encontrado" });
       }
 
-      const updatedBudget = await dbStorage.updateBudget(budgetId, updateData);
+      const { transportCost: _tc, transportSnapshot: _ts, ...safeUpdate } = updateData || {};
+      await dbStorage.updateBudget(budgetId, safeUpdate);
+      // total = Σ ítems + transporte (servidor); el total enviado por el cliente es solo provisional
+      const [{ n }] = (await db.execute(sql`SELECT count(*)::int AS n FROM budget_items WHERE budget_id = ${budgetId}`) as any).rows;
+      if (n > 0) await recomputeBudgetTotal(budgetId);
+      const [updatedBudget] = await db.select().from(budgets).where(eq(budgets.id, budgetId)).limit(1);
       res.json(updatedBudget);
     } catch (error) {
       console.error("Error updating budget:", error);

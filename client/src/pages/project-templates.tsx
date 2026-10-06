@@ -91,6 +91,7 @@ function TemplateConfigurator({ tpl, onBack }: { tpl: TemplateSummary; onBack: (
   const [params, setParams] = useState<Record<string, string>>(defaults);
   const [city, setCity] = useState("Santa Cruz");
   const [name, setName] = useState(tpl.name);
+  const [address, setAddress] = useState("");
   const [preview, setPreview] = useState<Preview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -124,9 +125,11 @@ function TemplateConfigurator({ tpl, onBack }: { tpl: TemplateSummary; onBack: (
   const create = async () => {
     setCreating(true);
     try {
-      const res = await apiRequest("POST", `/api/project-templates/${tpl.slug}/instantiate`, { params: numericParams(), city, name });
+      const res = await apiRequest("POST", `/api/project-templates/${tpl.slug}/instantiate`, { params: numericParams(), city, name, ...(address.trim() ? { location: address.trim() } : {}) });
       const r = await res.json();
-      toast({ title: "Proyecto creado", description: `${r.items} actividades · ${bs(r.total)}` });
+      const tr = r.transport?.project;
+      const km = tr && Number(tr.extraKm) > 0 ? ` · transporte: ${Number(tr.extraKm).toLocaleString("es-BO")} km extra` : "";
+      toast({ title: "Proyecto creado", description: `${r.items} actividades · ${bs(r.total)}${km}` });
       setLocation(`/budgets/${r.budgetId}`);
     } catch (e) {
       toast({ title: "No se pudo crear el proyecto", description: errMsg(e), variant: "destructive" });
@@ -179,6 +182,11 @@ function TemplateConfigurator({ tpl, onBack }: { tpl: TemplateSummary; onBack: (
             <div className="space-y-1">
               <Label htmlFor="tpl-name">Nombre del proyecto</Label>
               <Input id="tpl-name" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="tpl-address">Dirección de la obra <span className="font-normal text-muted-foreground">(opcional)</span></Label>
+              <Input id="tpl-address" value={address} placeholder="Barrio, avenida o localidad (Warnes, Cotoca…)" onChange={(e) => setAddress(e.target.value)} />
+              <p className="text-[11px] text-muted-foreground">Precios base puestos en obra (km cero urbano). Fuera de esa zona se suma «Transporte y movilización».</p>
             </div>
             <Button className="w-full" onClick={create} disabled={creating || invalid || !preview || preview.missingCount > 0 || !!error}>
               {creating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} Crear proyecto

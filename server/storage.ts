@@ -814,6 +814,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async applyGlobalPriceAdjustment(factor: number, updatedBy: string): Promise<{ affectedMaterials: number }> {
+    // DESHABILITADO (2026-10-06): reescribía materials.price de todas las filas. Ver /api/apply-price-adjustment.
+    throw new Error("Ajuste global de precios deshabilitado (no se reescribe materials.price)");
     // Update all material prices by the factor
     const result = await db
       .update(materials)

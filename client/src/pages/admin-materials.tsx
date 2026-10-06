@@ -194,10 +194,11 @@ export default function AdminMaterials() {
           <CardTitle>Ajustes Globales</CardTitle>
         </CardHeader>
         <CardContent>
+          <p className="text-xs text-amber-700 mb-3">Deshabilitado: el ajuste global sobrescribía materials.price (y se acumulaba, p. ej. ×1,30 ya aplicado en ago-2025). Los precios base se actualizan con el rebase TC/UFV; para corregir un material usa su edición individual.</p>
           <div className="flex gap-4">
             <Button
               onClick={() => handleGlobalAdjustment(1.1)}
-              disabled={globalAdjustmentMutation.isPending}
+              disabled
               variant="outline"
             >
               {globalAdjustmentMutation.isPending && <RefreshCw className="h-4 w-4 mr-2 animate-spin" />}
@@ -205,7 +206,7 @@ export default function AdminMaterials() {
             </Button>
             <Button
               onClick={() => handleGlobalAdjustment(0.9)}
-              disabled={globalAdjustmentMutation.isPending}
+              disabled
               variant="outline"
             >
               {globalAdjustmentMutation.isPending && <RefreshCw className="h-4 w-4 mr-2 animate-spin" />}
@@ -213,7 +214,7 @@ export default function AdminMaterials() {
             </Button>
             <Button
               onClick={() => handleGlobalAdjustment(1.05)}
-              disabled={globalAdjustmentMutation.isPending}
+              disabled
               variant="outline"
             >
               {globalAdjustmentMutation.isPending && <RefreshCw className="h-4 w-4 mr-2 animate-spin" />}

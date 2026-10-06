@@ -317,25 +317,26 @@ export default function AdminMaterialsCRUD() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <p className="text-xs text-amber-700 mb-3 w-full">Deshabilitado: el ajuste global sobrescribía materials.price (y se acumulaba, p. ej. ×1,30 ya aplicado en ago-2025). Los precios base se actualizan con el rebase TC/UFV; para corregir un material usa su edición individual.</p>
           <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={() => handleBulkUpdate(1.1)}
-              disabled={bulkUpdateMutation.isPending}
+              disabled
             >
               +10% Precios
             </Button>
             <Button
               variant="outline"
               onClick={() => handleBulkUpdate(0.9)}
-              disabled={bulkUpdateMutation.isPending}
+              disabled
             >
               -10% Precios
             </Button>
             <Button
               variant="outline"
               onClick={() => handleBulkUpdate(1.05)}
-              disabled={bulkUpdateMutation.isPending}
+              disabled
             >
               +5% Precios
             </Button>

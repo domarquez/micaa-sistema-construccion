@@ -39,6 +39,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Plus, Trash2, Building, FileText, Calculator } from "lucide-react";
 import BudgetItemApuDialog from "@/components/budgets/budget-item-apu-dialog";
 import ActivitySearchPicker from "@/components/budgets/activity-search-picker";
+import ProjectTransportCard, { transportSummaryText } from "@/components/budgets/project-transport-card";
 
 import type { Project, ConstructionPhase, ActivityWithPhase, BudgetWithProject } from "@shared/schema";
 import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
@@ -124,6 +125,23 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   const { data: constructionPhases } = useQuery<ConstructionPhase[]>({
     queryKey: ["/api/construction-phases"],
   });
+
+  // Factores reales de city_price_factors (antes: % hardcodeados que no coincidían)
+  const { data: cityFactors } = useQuery<Array<{ city: string; materialsFactor: string; laborFactor: string }>>({
+    queryKey: ["/api/city-factors"],
+    staleTime: 3600_000,
+  });
+  const cityLabel = (city: string) => {
+    const f = cityFactors?.find((c) => c.city === city);
+    if (!f) return city;
+    const pct = (v: string) => {
+      const n = Math.round((Number(v) - 1) * 1000) / 10;
+      return n === 0 ? "base" : `${n > 0 ? "+" : ""}${n.toLocaleString("es-BO")} %`;
+    };
+    const m = pct(f.materialsFactor);
+    const l = pct(f.laborFactor);
+    return m === "base" && l === "base" ? `${city} (base)` : `${city} (mat. ${m} · M.O. ${l})`;
+  };
 
   // Catálogo COMPLETO (all=1), ordenado por fase y nombre. Antes llegaban solo 100 de ~520.
   const { data: activitiesResponse } = useQuery<{activities: ActivityWithPhase[]}>({
@@ -296,7 +314,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       
       toast({
         title: "Proyecto creado exitosamente",
-        description: "Ahora puedes agregar fases al presupuesto",
+        description: project?.location ? `📍 ${transportSummaryText(project)}` : "Ahora puedes agregar fases al presupuesto",
       });
       
       // Reiniciar el formulario
@@ -894,10 +912,11 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                       name="location"
                       render={({ field }) => (
                         <FormItem className="w-full">
-                          <FormLabel className="text-sm font-medium">Ubicación</FormLabel>
+                          <FormLabel className="text-sm font-medium">Dirección de la obra <span className="font-normal text-muted-foreground">(opcional)</span></FormLabel>
                           <FormControl>
-                            <Input placeholder="Dirección o zona" {...field} className="text-sm w-full" />
+                            <Input placeholder="Ej: Av. Banzer 7º anillo, barrio o localidad (Warnes, Cotoca…)" {...field} className="text-sm w-full" />
                           </FormControl>
+                          <p className="text-[11px] text-muted-foreground">Precios base puestos en obra (km cero urbano). Si la obra queda lejos, se suma «Transporte y movilización».</p>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -914,15 +933,9 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                               className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
                             >
                               <option value="">Seleccionar ciudad...</option>
-                              <option value="La Paz">La Paz (+17.5%)</option>
-                              <option value="Santa Cruz">Santa Cruz (Base)</option>
-                              <option value="Cochabamba">Cochabamba (-4.5%)</option>
-                              <option value="Potosí">Potosí (+24.25%)</option>
-                              <option value="Oruro">Oruro (+10%)</option>
-                              <option value="Sucre">Sucre (+5%)</option>
-                              <option value="Tarija">Tarija (-2%)</option>
-                              <option value="Trinidad">Trinidad (+8%)</option>
-                              <option value="Cobija">Cobija (+15%)</option>
+                              {["La Paz", "Santa Cruz", "Cochabamba", "Potosí", "Oruro", "Sucre", "Tarija", "Trinidad", "Cobija"].map((c) => (
+                                <option key={c} value={c}>{cityLabel(c)}</option>
+                              ))}
                             </select>
                           </FormControl>
                           <FormMessage />
@@ -992,6 +1005,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                   <CardDescription className="text-xs sm:text-sm">
                     Busca una actividad (se ubica sola en su fase) o agrega fases manualmente.
                   </CardDescription>
+                  {!isAnonymous && <ProjectTransportCard project={currentProject} onProjectChange={setCurrentProject} compact />}
                 </CardHeader>
                 <CardContent>
                   <div className="mb-4">

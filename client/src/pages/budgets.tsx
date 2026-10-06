@@ -1,4 +1,5 @@
 import { TemplateSuggestionCard } from "@/components/TemplateSuggestionCard";
+import { writePdfTotals, budgetTransport } from "@/lib/transport-summary";
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -492,11 +493,9 @@ export default function Budgets() {
     doc.line(margin, yPosition, pageWidth - margin, yPosition);
     yPosition += 6;
     
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`TOTAL GENERAL: Bs ${totalGeneral.toFixed(2)}`, pageWidth / 2, yPosition, { align: 'center' });
-    doc.setFont('helvetica', 'normal');
-    yPosition += 15;
+    // Subtotal + "Transporte y movilización" (si la obra está fuera del km cero) + TOTAL GENERAL
+    yPosition = writePdfTotals(doc, { itemsTotal: totalGeneral, budget: budgetDetails, y: yPosition, margin, pageWidth, checkNewPage });
+    yPosition += 6;
 
     // Nota legal compacta
     doc.setFontSize(7);
@@ -615,10 +614,12 @@ export default function Budgets() {
     doc.setFontSize(14);
     doc.text('RESUMEN FINANCIERO:', margin, yPosition);
     yPosition += 10;
-    doc.setFontSize(12);
-    doc.text('TOTAL GENERAL:', margin, yPosition);
-    doc.text(`Bs ${parseFloat(budget.total).toFixed(2)}`, margin + 120, yPosition);
-    yPosition += 15;
+    {
+      const { cost } = budgetTransport(budget);
+      const itemsTotal = Math.max(0, parseFloat(String(budget.total || 0)) - cost);
+      yPosition = writePdfTotals(doc, { itemsTotal, budget, y: yPosition, margin, pageWidth, checkNewPage });
+      yPosition += 8;
+    }
 
     // Información adicional si está disponible
     if (budget.project?.equipmentPercentage) {

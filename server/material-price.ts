@@ -147,8 +147,10 @@ export async function getCityFactors(ciudad: string | null | undefined): Promise
   materialsFactor: number;
   laborFactor: number;
   equipmentFactor: number;
+  /** city_price_factors.transport_factor (multiplica el recargo de transporte por distancia). */
+  transportFactor: number;
 }> {
-  const none = { factorCity: null, materialsFactor: 1, laborFactor: 1, equipmentFactor: 1 };
+  const none = { factorCity: null, materialsFactor: 1, laborFactor: 1, equipmentFactor: 1, transportFactor: 1 };
   if (!ciudad) return none;
   const rows = await db
     .select()
@@ -166,6 +168,7 @@ export async function getCityFactors(ciudad: string | null | undefined): Promise
     materialsFactor: safe(hit.materialsFactor),
     laborFactor: safe(hit.laborFactor),
     equipmentFactor: safe(hit.equipmentFactor),
+    transportFactor: safe(hit.transportFactor),
   };
 }
 

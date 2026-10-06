@@ -265,14 +265,15 @@ export default function PriceSettingsPage() {
 
             <Button 
               onClick={handleApplyGlobalAdjustment}
-              disabled={applyAdjustmentMutation.isPending || !globalFactor}
+              disabled /* deshabilitado: ver nota (sobrescribía materials.price) */
               variant="destructive"
               className="bg-orange-600 hover:bg-orange-700"
             >
-              {applyAdjustmentMutation.isPending ? 'Aplicando...' : 'Aplicar Ajuste Global'}
+              Ajuste global deshabilitado
             </Button>
           </div>
 
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">Deshabilitado: el ajuste global sobrescribía materials.price (y se acumulaba, p. ej. ×1,30 ya aplicado en ago-2025). Los precios base se actualizan con el rebase TC/UFV; para corregir un material usa su edición individual.</p>
           <div className="text-xs text-gray-600">
             Ejemplos de uso:
             <ul className="list-disc list-inside mt-1 space-y-1">
