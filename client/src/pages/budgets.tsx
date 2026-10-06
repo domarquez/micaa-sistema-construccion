@@ -386,15 +386,17 @@ export default function Budgets() {
 
     // Agrupar items por fase
     // Agrupar por la fase de la ACTIVIDAD (igual que el editor) y en orden de fase
-    const phaseGroups = new Map<number, { name: string; items: any[] }>();
+    // (orden constructivo: construction_phases.sort_order de la fase ACTUAL de la actividad)
+    const phaseGroups = new Map<number, { name: string; sort: number; items: any[] }>();
     for (const item of budgetDetails.items as any[]) {
       const pid = Number(item.activity?.phase?.id ?? item.activity?.phaseId ?? 0);
       const name = item.activity?.phase?.name || 'Sin Fase';
-      if (!phaseGroups.has(pid)) phaseGroups.set(pid, { name, items: [] });
+      const sort = Number(item.activity?.phase?.sortOrder ?? 0) || 100000 + (pid || 9999);
+      if (!phaseGroups.has(pid)) phaseGroups.set(pid, { name, sort, items: [] });
       phaseGroups.get(pid)!.items.push(item);
     }
     const orderedPhaseGroups = Array.from(phaseGroups.entries())
-      .sort((a, b) => (a[0] || 9999) - (b[0] || 9999))
+      .sort((a, b) => a[1].sort - b[1].sort || a[0] - b[0])
       .map(([, g]) => [g.name, g.items] as const);
 
     // Procesar cada fase y sus items

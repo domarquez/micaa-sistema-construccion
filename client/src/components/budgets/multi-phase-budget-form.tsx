@@ -132,6 +132,14 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   
   const allActivities = (activitiesResponse?.activities || []).filter((a: any) => a.isOriginal !== false);
 
+  // Orden constructivo: /api/construction-phases ya viene ordenado por sort_order (solo fases activas).
+  const phaseRank = (phaseId: number, phase?: any) => {
+    const idx = constructionPhases?.findIndex(p => p.id === phaseId) ?? -1;
+    return idx >= 0 ? idx : 1000 + Number(phase?.sortOrder ?? phaseId);
+  };
+  const byPhaseOrder = (a: PhaseData, b: PhaseData) => phaseRank(a.phaseId, a.phase) - phaseRank(b.phaseId, b.phase);
+  const [showPhaseButtons, setShowPhaseButtons] = useState(false);
+
   // Cargar elementos del presupuesto si estamos editando  
   const { data: budgetData } = useQuery({
     queryKey: [`/api/budgets/${budget?.id}`],
@@ -195,7 +203,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       
       // Crear estructura de fases
       const loadedPhases: PhaseData[] = Object.entries(phaseGroups).map(([phaseId, items]) => {
-        const phase = constructionPhases.find(p => p.id === parseInt(phaseId));
+        const phase = constructionPhases.find(p => p.id === parseInt(phaseId)) ?? (items[0]?.activity as any)?.phase;
         const total = items.reduce((sum, item) => sum + item.subtotal, 0);
         
         return {
@@ -204,7 +212,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           items,
           total,
         };
-      }).sort((a, b) => a.phaseId - b.phaseId);
+      }).sort(byPhaseOrder);
       
       console.log('📋 Fases cargadas:', loadedPhases);
       setPhases(loadedPhases);
@@ -663,7 +671,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       total: 0
     };
 
-    setPhases([...phases, newPhaseData].sort((a, b) => a.phaseId - b.phaseId));
+    setPhases([...phases, newPhaseData].sort(byPhaseOrder));
     setSelectedPhases([...selectedPhases, phaseId]);
     setOpenPhases((prev) => (prev.includes(String(phaseId)) ? prev : [...prev, String(phaseId)]));
   };
@@ -692,7 +700,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
             return { ...p, items, total: items.reduce((sum, i) => sum + i.subtotal, 0) };
           })
         : [...prev, { phaseId, phase, items: [newItem], total: newItem.subtotal }];
-      return next.sort((a, b) => a.phaseId - b.phaseId);
+      return next.sort(byPhaseOrder);
     });
     setSelectedPhases((prev) => (prev.includes(phaseId) ? prev : [...prev, phaseId]));
     setOpenPhases((prev) => (prev.includes(String(phaseId)) ? prev : [...prev, String(phaseId)]));
@@ -989,7 +997,15 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                   <div className="mb-4">
                     <ActivitySearchPicker phases={constructionPhases} onPick={addActivityFromSearch} />
                   </div>
-                  <p className="text-xs text-muted-foreground mb-2">O agrega una fase completa:</p>
+                  <button
+                    type="button"
+                    className="text-[11px] text-muted-foreground hover:text-foreground mb-2"
+                    onClick={() => setShowPhaseButtons((v) => !v)}
+                    aria-expanded={showPhaseButtons}
+                  >
+                    {showPhaseButtons ? "Ocultar fases vacías" : "Avanzado: agregar una fase vacía"}
+                  </button>
+                  {showPhaseButtons && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
                     {constructionPhases?.map((phase) => (
                       <Button
@@ -1004,6 +1020,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                       </Button>
                     ))}
                   </div>
+                  )}
                 </CardContent>
               </Card>
 

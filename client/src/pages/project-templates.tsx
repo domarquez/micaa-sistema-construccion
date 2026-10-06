@@ -25,10 +25,7 @@ type PreviewLine = {
 };
 type Preview = { city: string; lines: PreviewLine[]; total: number; refQuantity: number; costPerRefUnit: number | null; missingCount: number; byPhase: Record<string, number> };
 
-const PHASES: Record<number, string> = {
-  1: "Trabajos preliminares", 2: "Movimiento de tierras", 3: "Obra gruesa", 4: "Obra fina", 5: "Instalaciones hidrosanitarias",
-  6: "Instalaciones eléctricas", 7: "Acabados", 8: "Jardines y exteriores", 9: "Vías y accesos",
-};
+type PhaseRow = { id: number; name: string; sortOrder: number; isActive: boolean };
 const CATEGORIES: Record<string, string> = {
   vivienda: "Vivienda", exteriores: "Exteriores", recreacion: "Recreación", remodelacion: "Remodelación",
   instalaciones: "Instalaciones", industrial: "Industrial", "movimiento-de-tierras": "Movimiento de tierras",
@@ -138,11 +135,15 @@ function TemplateConfigurator({ tpl, onBack }: { tpl: TemplateSummary; onBack: (
     }
   };
 
+  // Fases desde la BD (orden constructivo, migración 0004); incluye inactivas solo para nombrar líneas antiguas.
+  const { data: phaseRows } = useQuery<PhaseRow[]>({ queryKey: ["/api/construction-phases", { includeInactive: 1 }], staleTime: 10 * 60 * 1000 });
+  const phaseById = useMemo(() => new Map((phaseRows || []).map((p) => [p.id, p])), [phaseRows]);
   const phases = useMemo(() => {
     const g = new Map<number, PreviewLine[]>();
     for (const l of preview?.lines || []) g.set(l.phaseId, [...(g.get(l.phaseId) || []), l]);
-    return Array.from(g.entries()).sort((a, b) => a[0] - b[0]);
-  }, [preview]);
+    const rank = (id: number) => phaseById.get(id)?.sortOrder ?? 100000 + id;
+    return Array.from(g.entries()).sort((a, b) => rank(a[0]) - rank(b[0]));
+  }, [preview, phaseById]);
 
   return (
     <div className="space-y-6">
@@ -207,7 +208,7 @@ function TemplateConfigurator({ tpl, onBack }: { tpl: TemplateSummary; onBack: (
             {phases.map(([ph, lines]) => (
               <div key={ph} className="mb-4">
                 <div className="flex items-center justify-between border-b py-1 text-sm font-semibold">
-                  <span>{PHASES[ph] || `Fase ${ph}`}</span><span>{bs(preview?.byPhase?.[ph] ?? 0)}</span>
+                  <span>{phaseById.get(ph)?.name || `Fase ${ph}`}</span><span>{bs(preview?.byPhase?.[ph] ?? 0)}</span>
                 </div>
                 <Table>
                   <TableHeader>

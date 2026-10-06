@@ -83,7 +83,10 @@ export function buildSearchGroups(query: string): SearchGroup[] {
     }
     groups.push({
       token: tok,
-      alternatives: Array.from(alts).map((a) => (WORD_START_TOKENS.has(a.trim()) && !a.startsWith(" ") ? ` ${a}` : a)),
+      // Palabras cortas (≤3 letras, p. ej. «gas», «luz», «pvc») y tokens tipo 6h: inicio de palabra, para que
+      // «gas» no encuentre «vigas»/«omegas».
+      alternatives: Array.from(alts).map((a) =>
+        (WORD_START_TOKENS.has(a.trim()) || /^[a-z]{1,3}$/.test(a)) && !a.startsWith(" ") ? ` ${a}` : a),
     });
   }
   return groups;

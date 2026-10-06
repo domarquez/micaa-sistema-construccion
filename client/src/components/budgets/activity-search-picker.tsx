@@ -5,11 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Star, X, SlidersHorizontal } from "lucide-react";
 import type { ActivityWithPhase, ConstructionPhase } from "@shared/schema";
+import ActivityCatalogBrowser from "@/components/budgets/activity-catalog-browser";
 
 /**
  * Buscador de actividades en TODAS las fases (divulgación progresiva):
  *  1) Simple: caja de búsqueda + "Más usadas" (uso real en presupuestos/plantillas + lista curada).
- *  2) Avanzado (toggle): filtrar la búsqueda por una fase.
+ *  2) Debajo: explorar por fase › familia (variantes tras «Ver variantes»).
+ *  3) Avanzado (toggle): filtrar la búsqueda por una fase.
  * Al elegir, el formulario agrega la actividad en SU fase (la crea si no estaba).
  */
 interface Props {
@@ -87,7 +89,10 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
             >
               <div className="text-sm font-medium leading-snug break-words">{a.name}</div>
               <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-                <Badge variant="outline" className="text-[10px]">{a.phase?.name || "Sin fase"}</Badge>
+                <Badge variant="outline" className="text-[10px]">
+                  {a.phase?.name || "Sin fase"}
+                  {a.family ? ` › ${a.family.parentName ?? a.family.name}` : ""}
+                </Badge>
                 <span>{a.unit}</span>
                 <span>· ref. Bs {fmt(a.unitPrice)}</span>
               </div>
@@ -122,6 +127,8 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
           </div>
         )
       )}
+
+      {!searching && <ActivityCatalogBrowser onPick={pick} />}
 
       <div>
         <button
