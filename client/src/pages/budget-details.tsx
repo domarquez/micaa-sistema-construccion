@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Calendar, MapPin, User, FileText, Calculator, Download, Printer } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import ActivityBreakdown from "@/components/activity-breakdown";
+import { groupBudgetItemsByPhase, type PhaseLike } from "@/lib/budget-phase-groups";
 import type { BudgetWithProject, BudgetItemWithActivity } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -114,8 +114,8 @@ export default function BudgetDetails() {
       // Items del presupuesto con detalles
       let totalGeneral = 0;
       
-      for (let index = 0; index < budgetItems.length; index++) {
-        const item = budgetItems[index];
+      for (let index = 0; index < orderedItems.length; index++) {
+        const item = orderedItems[index];
         
         if (yPosition > 230) {
           doc.addPage();
@@ -344,9 +344,11 @@ export default function BudgetDetails() {
     enabled: !!budgetId,
   });
 
-  const { data: budgetItems, isLoading: itemsLoading } = useQuery<BudgetItemWithActivity[]>({
-    queryKey: isAnonymous ? [`/api/anonymous/budgets/${budgetId}/items`] : [`/api/budgets/${budgetId}/items`],
-    queryFn: isAnonymous ? () => {
+  // Usuarios con sesión: los ítems (con actividad y su fase actual) vienen en GET /api/budgets/:id.
+  // No existe GET /api/budgets/:id/items (devolvía el index.html del SPA y la vista quedaba vacía).
+  const { data: anonymousItems, isLoading: anonymousItemsLoading } = useQuery<BudgetItemWithActivity[]>({
+    queryKey: [`/api/anonymous/budgets/${budgetId}/items`],
+    queryFn: () => {
       // Para usuarios anónimos, cargar items desde sessionStorage
       const anonymousBudgets = JSON.parse(sessionStorage.getItem('anonymousBudgets') || '[]');
       const foundBudget = anonymousBudgets.find((b: any) => b.id === budgetId);
@@ -378,9 +380,22 @@ export default function BudgetDetails() {
       });
       
       return allItems;
-    } : undefined,
-    enabled: !!budgetId,
+    },
+    enabled: !!budgetId && isAnonymous,
   });
+
+  // Todas las fases (incluidas las inactivas 3/4/7/9) para nombrar/ordenar ítems guardados en fases antiguas.
+  const { data: allPhases } = useQuery<PhaseLike[]>({
+    queryKey: ["/api/construction-phases", { includeInactive: 1 }],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const budgetItems: BudgetItemWithActivity[] | undefined = isAnonymous
+    ? anonymousItems
+    : ((budget as any)?.items as BudgetItemWithActivity[] | undefined);
+  const itemsLoading = isAnonymous ? anonymousItemsLoading : budgetLoading;
+  const phaseGroups = groupBudgetItemsByPhase(budgetItems ?? [], Array.isArray(allPhases) ? allPhases : []);
+  const orderedItems = phaseGroups.flatMap((g) => g.items);
 
   if (budgetLoading) {
     return (
@@ -558,17 +573,46 @@ export default function BudgetDetails() {
                 </div>
               ))}
             </div>
-          ) : budgetItems && budgetItems.length > 0 ? (
-            <div className="space-y-4">
-              {budgetItems.map((item) => (
-                <ActivityBreakdown
-                  key={item.id}
-                  activityId={item.activity.id}
-                  activityName={item.activity.name}
-                  quantity={Number(item.quantity)}
-                  unitPrice={Number(item.unitPrice)}
-                  subtotal={Number(item.subtotal)}
-                />
+          ) : orderedItems.length > 0 ? (
+            <div className="space-y-6">
+              {phaseGroups.map((group) => (
+                <div key={group.phaseId} data-testid={`phase-group-${group.phaseId}`}>
+                  <div className="flex items-baseline justify-between border-b pb-2 mb-2">
+                    <h3 className="font-semibold text-on-surface">
+                      {group.name}
+                      {!group.isActive && (
+                        <span className="ml-2 text-xs font-normal text-gray-500">(fase anterior)</span>
+                      )}
+                    </h3>
+                    <span className="font-semibold tabular-nums">{formatCurrency(group.total)}</span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-xs text-gray-500">
+                          <th className="py-1 pr-2 font-medium">Actividad</th>
+                          <th className="py-1 px-2 font-medium">Und</th>
+                          <th className="py-1 px-2 font-medium text-right">Cantidad</th>
+                          <th className="py-1 px-2 font-medium text-right">P. unit.</th>
+                          <th className="py-1 pl-2 font-medium text-right">Subtotal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {group.items.map((item) => (
+                          <tr key={item.id} className="border-t border-gray-100">
+                            <td className="py-2 pr-2">{item.activity?.name || `Actividad #${item.activityId}`}</td>
+                            <td className="py-2 px-2 text-gray-600">{item.activity?.unit || "—"}</td>
+                            <td className="py-2 px-2 text-right tabular-nums">
+                              {Number(item.quantity).toLocaleString("es-BO", { maximumFractionDigits: 3 })}
+                            </td>
+                            <td className="py-2 px-2 text-right tabular-nums">{formatCurrency(Number(item.unitPrice))}</td>
+                            <td className="py-2 pl-2 text-right tabular-nums font-medium">{formatCurrency(Number(item.subtotal))}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               ))}
               <div className="border-t pt-4 bg-gray-50 p-4 rounded-lg">
                 <div className="flex justify-between items-center">
@@ -578,8 +622,7 @@ export default function BudgetDetails() {
                   </p>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">
-                  Haz clic en cada actividad para ver el desglose de materiales, mano de obra y equipos.
-                  Puedes editar precios de materiales para crear tu lista personalizada.
+                  Vista de solo lectura. Para cambiar cantidades o precios usa «Editar» en la lista de proyectos.
                 </p>
               </div>
             </div>
