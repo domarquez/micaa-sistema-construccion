@@ -8,7 +8,7 @@
    Si Evolution falla → `502 {code:"WA_SEND_FAILED"}`.
 3. **Verificar:** `POST /api/auth/wa/verify {phone, code}` → código HMAC-SHA256, vence en 5 min, 5 intentos.
    Si el número no tiene cuenta se crea (nombre opcional después en Perfil).
-   Emite JWT (mismo mecanismo, con `sid`) + cookie httpOnly `micaa_session` de **1 año, deslizante**.
+   Emite JWT (mismo mecanismo, con `sid`) + cookie httpOnly `micaa_session` de **30 días, deslizante** (antes 1 año; acortado 2026-10).
 
 Mensaje (único texto que se envía): `Tu código MICAA es 123456. Vence en 5 minutos. Si no lo pediste, ignóralo.`
 
@@ -16,7 +16,8 @@ Mensaje (único texto que se envía): `Tu código MICAA es 123456. Vence en 5 mi
 - Tabla `user_sessions`; la cookie guarda un token aleatorio, la DB solo su sha256.
 - `sessionBridge` (en `/api`) convierte cookie válida → `Authorization: Bearer <jwt con sid>` para que **todos los
   handlers existentes** funcionen sin cambios, y quita el Bearer si la sesión (`sid`) fue revocada.
-- Se renueva `expires_at` (+365 días) y la cookie como máximo una vez por hora de uso.
+- Se renueva `expires_at` (+30 días) y la cookie como máximo una vez por hora de uso.
+- Constante: `SESSION_TTL_DAYS = 30` en `server/wa-auth/sessions.ts`.
 - Perfil → Seguridad → **Mis dispositivos**: cerrar sesión en un dispositivo, en este o en todos.
 - El login con usuario/contraseña también crea un dispositivo recordado (si la tabla no existe aún, cae al JWT viejo de 24 h).
 
@@ -32,3 +33,7 @@ reenvía todo el tráfico de grupos a MICAA; verificar antes que convive con el 
 
 ## Pruebas
 `npm run test:wa-auth` (Evolution mockeado, stores en memoria; no envía WhatsApps ni toca la DB).
+
+## Teléfono y `phone_verified`
+- `/api/auth/register` **no** guarda ni verifica teléfono. Solo WhatsApp OTP (`/api/auth/wa/verify` o vincular) marca `phone_verified=true`.
+- Un reclamo no verificado (`phone` escrito sin OTP) se libera si el dueño real entra por WhatsApp, para que no caiga en la cuenta que squatteó el número.

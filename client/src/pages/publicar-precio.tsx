@@ -41,7 +41,7 @@ export default function PublicarPrecioPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      toast({ title: "Entrá para publicar", description: "Los invitados solo pueden mirar." });
+      toast({ title: "Entra para publicar", description: "Los invitados solo pueden mirar." });
       return;
     }
     if (!materialId || !price) {
@@ -93,7 +93,7 @@ export default function PublicarPrecioPage() {
       <div className="mx-auto max-w-xl px-4 py-10 text-center">
         <h1 className="text-[20px] font-semibold">Publicar precio</h1>
         <p className="mt-2 text-[14px] text-[var(--micaa-muted)]">
-          Los invitados solo miran. Entrá para cargar un precio de persona o ferretería.
+          Los invitados solo miran. Entra para cargar un precio de persona o ferretería.
         </p>
         <Link
           href="/login"

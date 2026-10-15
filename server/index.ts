@@ -80,6 +80,11 @@ app.use((req, res, next) => {
     throw err;
   });
 
+  // Rutas /api no registradas → 404 JSON (antes del SPA, que devolvería index.html 200).
+  app.use("/api", (_req: Request, res: Response) => {
+    res.status(404).json({ message: "No encontrado" });
+  });
+
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes

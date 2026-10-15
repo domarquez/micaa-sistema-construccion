@@ -168,7 +168,7 @@ export function MyDevicesCard() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2"><Smartphone className="w-5 h-5" /> Mis dispositivos</CardTitle>
-        <CardDescription>Cada dispositivo queda recordado 1 año desde su último uso. Solo se pide código en un dispositivo nuevo o si cierras su sesión.</CardDescription>
+        <CardDescription>Cada dispositivo queda recordado 30 días desde su último uso (se renueva al usarlo). Solo se pide código en un dispositivo nuevo o si cierras su sesión.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {devices === null ? (

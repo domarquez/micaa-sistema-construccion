@@ -5,8 +5,18 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
+import { shouldSpaFallback } from "./spa-fallback";
 
 const viteLogger = createLogger();
+
+function sendReal404(res: import("express").Response, reqPath: string) {
+  if (reqPath === "/api" || reqPath.startsWith("/api/")) {
+    return res.status(404).json({ message: "No encontrado" });
+  }
+  res.status(404).type("text/plain; charset=utf-8").send("No encontrado");
+}
+
+
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -43,6 +53,10 @@ export async function setupVite(app: Express, server: Server) {
   app.use(vite.middlewares);
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
+    const pathOnly = (req.path || url || "/").split("?")[0];
+    if (!shouldSpaFallback(pathOnly)) {
+      return sendReal404(res, pathOnly);
+    }
 
     try {
       const clientTemplate = path.resolve(
@@ -78,8 +92,12 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
+  // SPA: solo rutas de la app. /api huérfanas, /.git, /wp-admin → 404 real (no index.html 200).
+  app.use("*", (req, res) => {
+    const pathOnly = (req.path || req.originalUrl || "/").split("?")[0];
+    if (!shouldSpaFallback(pathOnly)) {
+      return sendReal404(res, pathOnly);
+    }
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }

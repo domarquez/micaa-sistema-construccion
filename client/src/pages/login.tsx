@@ -197,7 +197,7 @@ export default function Login() {
         <CardContent className="p-2 sm:p-4 md:p-6">
           {!showPasswordRecovery ? (
             <>
-              {/* Opción principal: WhatsApp (sin contraseña). Este dispositivo queda recordado 1 año. */}
+              {/* Opción principal: WhatsApp (sin contraseña). Dispositivo recordado 30 días (renovación deslizante). */}
               <div className="mb-3 sm:mb-4">
                 <p className="text-center text-xs sm:text-sm font-medium mb-2">Entra con tu WhatsApp</p>
                 <WhatsAppCodeFlow
@@ -220,10 +220,10 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPasswordLogin(true)}
-                  className="w-full text-center text-[10px] sm:text-xs md:text-sm text-gray-600 hover:underline"
+                  className="w-full text-center text-[10px] sm:text-xs text-gray-400 hover:text-gray-600 hover:underline"
                   data-testid="button-show-password-login"
                 >
-                  Entrar con usuario y contraseña
+                  Usar usuario y contraseña (cuenta antigua)
                 </button>
               ) : (
               <>

@@ -54,8 +54,13 @@ export interface UserStore {
   findByPhone(phone: string): Promise<AuthUser | null>;
   /** Crea cuenta mínima para un número (registro automático). */
   createForPhone(phone: string): Promise<AuthUser>;
-  /** Vincula número; 'taken' si pertenece a otra cuenta. */
+  /** Vincula número; 'taken' si pertenece a otra cuenta YA verificada. */
   setPhone(userId: number, phone: string): Promise<"ok" | "taken">;
+  /**
+   * Libera un número solo reclamado (phone_verified=false), p. ej. registro clásico
+   * que escribió el número sin OTP. Así el dueño real por WhatsApp no cae en esa cuenta.
+   */
+  clearUnverifiedPhone(phone: string): Promise<boolean>;
   touchLastLogin(userId: number): Promise<void>;
   updateName(userId: number, firstName: string | null, lastName: string | null): Promise<void>;
 }
