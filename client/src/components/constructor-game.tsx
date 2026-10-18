@@ -390,7 +390,7 @@ export function ConstructorGame() {
       ctx.fillText('¡GAME OVER!', canvas.width / 2, canvas.height / 2 - 20);
       ctx.font = '16px Arial';
       ctx.fillText(`Puntuación Final: ${gameState.score}`, canvas.width / 2, canvas.height / 2 + 10);
-      ctx.fillText('Presiona R para reiniciar', canvas.width / 2, canvas.height / 2 + 40);
+      ctx.fillText('Presioná R para reiniciar', canvas.width / 2, canvas.height / 2 + 40);
       ctx.textAlign = 'left';
     }
 
@@ -496,7 +496,7 @@ export function ConstructorGame() {
               </div>
               <div>
                 <CardTitle className="text-lg">Juego del Constructor</CardTitle>
-                <p className="text-sm text-gray-600">¡Destruye los cubos con tu martillo!</p>
+                <p className="text-sm text-muted-foreground">¡Destruye los cubos con tu martillo!</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -525,7 +525,7 @@ export function ConstructorGame() {
             </div>
             <div>
               <CardTitle className="text-lg">Juego del Constructor MICAA</CardTitle>
-              <p className="text-sm text-gray-600">Usa las flechas o WASD para moverte • X o Enter para martillo • P para pausa</p>
+              <p className="text-sm text-muted-foreground">Usá las flechas o WASD para moverte • X o Enter para martillo • P para pausa</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -568,11 +568,11 @@ export function ConstructorGame() {
             style={{ imageRendering: 'pixelated' }}
           />
         </div>
-        <div className="mt-4 text-center text-sm text-gray-600">
+        <div className="mt-4 text-center text-sm text-muted-foreground">
           <p>Récord Personal: <span className="font-semibold text-orange-600">{highScore} puntos</span></p>
           {gameOver && (
             <p className="mt-2 text-red-600 font-medium">
-              ¡Game Over! Presiona el botón de reinicio o la tecla R para volver a jugar
+              ¡Game Over! Presioná el botón de reinicio o la tecla R para volver a jugar
             </p>
           )}
         </div>

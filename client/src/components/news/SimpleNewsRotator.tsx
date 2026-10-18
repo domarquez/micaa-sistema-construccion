@@ -14,7 +14,7 @@ interface NewsItem {
 }
 
 const categoryColors = {
-  economia: 'bg-blue-100 text-blue-700 border-blue-300',
+  economia: 'bg-primary/10 text-primary border-primary/40',
   gobierno: 'bg-green-100 text-green-700 border-green-300', 
   obras: 'bg-orange-100 text-orange-700 border-orange-300',
   tecnologia: 'bg-purple-100 text-purple-700 border-purple-300',
@@ -160,7 +160,7 @@ export function SimpleNewsRotator() {
           >
             {categoryLabels[category] || categoryLabels.general}
           </Badge>
-          <span className="text-[8px] sm:text-[9px] text-gray-500 flex-shrink-0">
+          <span className="text-[8px] sm:text-[9px] text-muted-foreground flex-shrink-0">
             {newsItem.publishedAt ? formatTimeAgo(newsItem.publishedAt) : ''}
           </span>
         </div>
@@ -171,17 +171,17 @@ export function SimpleNewsRotator() {
         </h4>
 
         {/* Summary */}
-        <p className="text-[9px] sm:text-xs text-gray-600 line-clamp-2 flex-grow">
+        <p className="text-[9px] sm:text-xs text-muted-foreground line-clamp-2 flex-grow">
           {newsItem.summary}
         </p>
 
         {/* Source and Link */}
         <div className="flex items-center justify-between gap-1 mt-auto">
-          <span className="text-[8px] sm:text-[9px] text-blue-600 font-medium truncate">
+          <span className="text-[8px] sm:text-[9px] text-primary font-medium truncate">
             {newsItem.sourceName}
           </span>
           {newsItem.sourceUrl && (
-            <ExternalLink className="w-3 h-3 text-blue-600 hover:text-blue-700 flex-shrink-0" />
+            <ExternalLink className="w-3 h-3 text-primary hover:text-primary flex-shrink-0" />
           )}
         </div>
       </div>
@@ -205,7 +205,7 @@ export function SimpleNewsRotator() {
     return (
       <div className="w-full mb-2 sm:mb-3 md:mb-4 px-2 sm:px-4">
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-          <p className="text-gray-600 text-sm">No hay noticias disponibles</p>
+          <p className="text-muted-foreground text-sm">No hay noticias disponibles</p>
         </div>
       </div>
     );
@@ -213,13 +213,13 @@ export function SimpleNewsRotator() {
 
   return (
     <div className="w-full mb-2 sm:mb-3 md:mb-4 px-2 sm:px-4">
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-primary/40 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 bg-blue-100 border-b border-blue-200">
+        <div className="flex items-center justify-between px-3 py-2 bg-primary/10 border-b border-primary/40">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <Newspaper className="w-4 h-4 text-blue-700" />
-            <span className="text-sm font-semibold text-blue-800">
+            <Newspaper className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">
               Noticias del Sector
             </span>
           </div>
@@ -248,7 +248,7 @@ export function SimpleNewsRotator() {
               <button
                 key={index}
                 className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+                  index === currentIndex ? 'bg-primary' : 'bg-gray-300'
                 }`}
                 onClick={() => setCurrentIndex(index)}
               />
@@ -287,7 +287,7 @@ export function SimpleNewsRotator() {
                 <button
                   key={index}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+                    index === currentIndex ? 'bg-primary' : 'bg-gray-300'
                   }`}
                   onClick={() => setCurrentIndex(index)}
                 />
@@ -298,7 +298,7 @@ export function SimpleNewsRotator() {
 
         {/* Pause indicator */}
         {isPaused && (
-          <div className="absolute top-2 right-2 text-[8px] text-blue-600 bg-white px-2 py-1 rounded shadow-sm z-10">
+          <div className="absolute top-2 right-2 text-[8px] text-primary bg-white px-2 py-1 rounded shadow-sm z-10">
             Pausado
           </div>
         )}

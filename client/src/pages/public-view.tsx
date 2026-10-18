@@ -197,7 +197,7 @@ export default function PublicView() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
             <Card className="bg-white shadow-lg">
               <CardContent className="p-3 sm:p-4 md:p-6 text-center">
-                <div className="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-blue-100 text-blue-600 rounded-full mb-2 sm:mb-3 md:mb-4">
+                <div className="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-full mb-2 sm:mb-3 md:mb-4">
                   <Package className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                 </div>
                 <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
@@ -207,7 +207,7 @@ export default function PublicView() {
                     formatNumber(statistics?.totalMaterials || 0)
                   )}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-600 leading-tight">Materiales Disponibles</p>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-tight">Materiales Disponibles</p>
               </CardContent>
             </Card>
 
@@ -223,7 +223,7 @@ export default function PublicView() {
                     formatNumber(statistics?.totalActivities || 0)
                   )}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-600 leading-tight">Actividades de Construcción</p>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-tight">Actividades de Construcción</p>
               </CardContent>
             </Card>
 
@@ -239,7 +239,7 @@ export default function PublicView() {
                     formatNumber(statistics?.totalSuppliers || 0)
                   )}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-600 leading-tight">Empresas Proveedoras</p>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-tight">Empresas Proveedoras</p>
               </CardContent>
             </Card>
 
@@ -255,7 +255,7 @@ export default function PublicView() {
                     `$${formatCurrency(statistics?.totalProjectValue || 0)}`
                   )}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-600 leading-tight">Valor Total de Proyectos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-tight">Valor Total de Proyectos</p>
               </CardContent>
             </Card>
           </div>
@@ -279,7 +279,7 @@ export default function PublicView() {
             </Button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {advertisements.slice(0, 2).map((ad, index) => (
-                <Card key={ad.id} className="relative overflow-hidden border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+                <Card key={ad.id} className="relative overflow-hidden border-2 border-primary/40 dark:border-blue-800 bg-[var(--micaa-bg)] dark:from-blue-950 dark:to-indigo-950">
                   <CardContent className="p-0">
                     <div 
                       className="cursor-pointer group"
@@ -314,7 +314,7 @@ export default function PublicView() {
                         )}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2 text-xs">
-                            <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center space-x-1 text-muted-foreground dark:text-gray-400">
                               <Eye className="w-3 h-3" />
                               <span>{ad.viewCount}</span>
                             </div>
@@ -322,7 +322,7 @@ export default function PublicView() {
                               {ad.adType === "featured" ? "★" : "↗"}
                             </Badge>
                           </div>
-                          <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                          <div className="text-xs text-primary dark:text-blue-400 font-medium">
                             {ad.supplier.city}
                           </div>
                         </div>
@@ -354,7 +354,7 @@ export default function PublicView() {
                     {formatNumber(statistics?.totalUsers || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">Usuarios</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Usuarios</p>
                 <p className="text-xs text-green-600 mt-1 hidden sm:block">Registrados</p>
               </div>
             </CardContent>
@@ -371,7 +371,7 @@ export default function PublicView() {
                     {formatNumber(statistics?.activeBudgets || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">Presupuestos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Presupuestos</p>
                 <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Presupuestos</p>
               </div>
             </CardContent>
@@ -388,7 +388,7 @@ export default function PublicView() {
                     {formatNumber(statistics?.totalProjects || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">Proyectos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Proyectos</p>
                 <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Proyectos</p>
               </div>
             </CardContent>
@@ -405,7 +405,7 @@ export default function PublicView() {
                     {formatNumber(statistics?.totalSuppliers || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">Proveedores</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Proveedores</p>
                 <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Proveedores</p>
               </div>
             </CardContent>
@@ -414,7 +414,7 @@ export default function PublicView() {
           <Card className="shadow-material cursor-pointer hover:shadow-lg transition-shadow touch-target mobile-button tap-highlight-none" onClick={() => setActiveTab("materials")}>
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col items-center text-center">
-                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mb-2 flex-shrink-0" />
+                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-primary mb-2 flex-shrink-0" />
                 {isLoading ? (
                   <Skeleton className="h-5 sm:h-6 w-8 sm:w-12 mb-1" />
                 ) : (
@@ -422,7 +422,7 @@ export default function PublicView() {
                     {formatNumber(statistics?.totalMaterials || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">Materiales</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Materiales</p>
                 <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Materiales</p>
               </div>
             </CardContent>
@@ -439,7 +439,7 @@ export default function PublicView() {
                     {formatNumber(statistics?.totalActivities || 0)}
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">Actividades</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Actividades</p>
                 <p className="text-xs text-green-600 mt-1 hidden sm:block">Ver Actividades</p>
               </div>
             </CardContent>
@@ -456,7 +456,7 @@ export default function PublicView() {
                     {formatCurrency(statistics?.totalProjectValue || 0).replace(' Bs', '')} Bs
                   </p>
                 )}
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">Valor Total</p>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Valor Total</p>
                 <p className="text-xs text-green-600 mt-1 hidden sm:block">Acumulado</p>
               </div>
             </CardContent>
@@ -644,14 +644,14 @@ export default function PublicView() {
                           <TableCell className="font-semibold text-green-600">
                             {formatCurrency(material.price)}
                           </TableCell>
-                          <TableCell className="text-gray-500">
+                          <TableCell className="text-muted-foreground">
                             {material.unit}
                           </TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={3} className="text-center py-8 text-gray-500">
+                        <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
                           No se encontraron materiales
                         </TableCell>
                       </TableRow>
@@ -705,7 +705,7 @@ export default function PublicView() {
                       </Badge>
                     )}
                     
-                    <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <div className="space-y-2 text-sm text-muted-foreground dark:text-gray-400">
                       {supplier.city && (
                         <div className="flex items-center space-x-2">
                           <MapPin className="w-4 h-4" />
@@ -725,7 +725,7 @@ export default function PublicView() {
                             href={supplier.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
+                            className="text-primary hover:underline"
                           >
                             Sitio web
                           </a>
@@ -734,7 +734,7 @@ export default function PublicView() {
                     </div>
                     
                     {supplier.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 line-clamp-2">
+                      <p className="text-sm text-muted-foreground dark:text-gray-400 mt-3 line-clamp-2">
                         {supplier.description}
                       </p>
                     )}
@@ -745,7 +745,7 @@ export default function PublicView() {
                         <span className="text-sm font-medium">
                           {Number(supplier.rating).toFixed(1)}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-muted-foreground">
                           ({supplier.reviewCount})
                         </span>
                       </div>
@@ -759,7 +759,7 @@ export default function PublicView() {
                 </Card>
               ))
             ) : (
-              <div className="col-span-full text-center py-8 text-gray-500">
+              <div className="col-span-full text-center py-8 text-muted-foreground">
                 <Store className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>No se encontraron proveedores</p>
               </div>
@@ -776,7 +776,7 @@ export default function PublicView() {
                 🚀 Funcionalidades Completas Próximamente de Pago
               </h3>
               <p className="text-amber-700 dark:text-amber-300 mb-4">
-                Actualmente puedes explorar materiales y proveedores de forma gratuita. 
+                Actualmente podés explorar materiales y proveedores de forma gratuita. 
                 Pronto lanzaremos nuestro plan premium con funcionalidades completas:
               </p>
               <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1 mb-4">
@@ -813,7 +813,7 @@ export default function PublicView() {
       <footer className="bg-gray-800 dark:bg-gray-900 text-white py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h3 className="text-xl font-semibold mb-4">¿Tienes consultas o sugerencias?</h3>
+            <h3 className="text-xl font-semibold mb-4">¿Tenés consultas o sugerencias?</h3>
             <ContactForm 
               triggerText="Envíanos un mensaje con tus consultas o sugerencias"
               triggerVariant="outline"
@@ -821,7 +821,7 @@ export default function PublicView() {
             />
             <p className="text-gray-400 mt-4 text-sm">Sistema interno de mensajería MICAA</p>
             <div className="mt-6 pt-6 border-t border-gray-700">
-              <p className="text-gray-500 text-sm">© 2025 MICAA. Sistema de Cómputos y Presupuestos para Bolivia.</p>
+              <p className="text-muted-foreground text-sm">© 2025 MICAA. Sistema de Cómputos y Presupuestos para Bolivia.</p>
             </div>
           </div>
         </div>

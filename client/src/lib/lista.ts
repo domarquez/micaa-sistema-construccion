@@ -1,3 +1,4 @@
+import { displayName } from "@/lib/format";
 export type ListaSourceKind = "base" | "person" | "supplier";
 
 export interface ListaItem {
@@ -96,7 +97,5 @@ export function listaTotal(items: ListaItem[]): number {
 }
 
 export function titleCaseMaterial(name: string): string {
-  if (!name) return "";
-  const lower = name.toLowerCase();
-  return lower.charAt(0).toUpperCase() + lower.slice(1);
+  return displayName(name);
 }

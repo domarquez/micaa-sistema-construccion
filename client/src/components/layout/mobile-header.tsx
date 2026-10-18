@@ -108,7 +108,7 @@ export default function MobileHeader() {
                   <Package className="w-5 h-5 mr-3 text-orange-600" />
                   <div className="text-left">
                     <div className="font-medium">Materiales</div>
-                    <div className="text-sm text-gray-500">Catálogo completo</div>
+                    <div className="text-sm text-muted-foreground">Catálogo completo</div>
                   </div>
                 </button>
 
@@ -125,7 +125,7 @@ export default function MobileHeader() {
                   <Store className="w-5 h-5 mr-3 text-orange-600" />
                   <div className="text-left">
                     <div className="font-medium">Proveedores</div>
-                    <div className="text-sm text-gray-500">Empresas verificadas</div>
+                    <div className="text-sm text-muted-foreground">Empresas verificadas</div>
                   </div>
                 </button>
 
@@ -139,7 +139,7 @@ export default function MobileHeader() {
                   <Construction className="w-5 h-5 mr-3 text-orange-600" />
                   <div className="text-left">
                     <div className="font-medium">Actividades</div>
-                    <div className="text-sm text-gray-500">APU y composiciones</div>
+                    <div className="text-sm text-muted-foreground">APU y composiciones</div>
                   </div>
                 </button>
 
@@ -153,7 +153,7 @@ export default function MobileHeader() {
                   <Calculator className="w-5 h-5 mr-3 text-orange-600" />
                   <div className="text-left">
                     <div className="font-medium">Presupuestos</div>
-                    <div className="text-sm text-gray-500">Crear y gestionar</div>
+                    <div className="text-sm text-muted-foreground">Crear y gestionar</div>
                   </div>
                 </button>
               </div>
@@ -168,7 +168,7 @@ export default function MobileHeader() {
                   <Mail className="w-5 h-5 mr-3 text-orange-600" />
                   <div className="text-left">
                     <div className="font-medium">Contacto</div>
-                    <div className="text-sm text-gray-500">Enviar mensaje</div>
+                    <div className="text-sm text-muted-foreground">Enviar mensaje</div>
                   </div>
                 </button>
 
@@ -176,7 +176,7 @@ export default function MobileHeader() {
                   <Phone className="w-5 h-5 mr-3 text-orange-600" />
                   <div className="text-left">
                     <div className="font-medium">Ayuda</div>
-                    <div className="text-sm text-gray-500">Soporte técnico</div>
+                    <div className="text-sm text-muted-foreground">Soporte técnico</div>
                   </div>
                 </div>
               </div>

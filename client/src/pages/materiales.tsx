@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { ListSkeleton } from "@/components/ui/states";
+import { formatBs, formatUnit, relativeDays } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearch } from "wouter";
 import { titleCaseMaterial } from "@/lib/lista";
@@ -25,9 +27,6 @@ function priceOf(m: MaterialRow): number {
   return parseFloat(String(m.price)) || 0;
 }
 
-function formatBs(n: number) {
-  return `Bs ${n.toLocaleString("es-BO", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
-}
 
 function matchFactor(factors: CityFactor[], city: string): number {
   const aliases: Record<string, string[]> = {
@@ -87,9 +86,9 @@ export default function MaterialesPage() {
   });
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8">
+    <div className="mx-auto max-w-4xl px-4 py-8">
       <h1 className="text-[20px] font-semibold text-[var(--micaa-fg)]">Materiales</h1>
-      <p className="mt-1 text-[12px] text-[var(--micaa-muted)]">
+      <p className="mt-1 text-sm text-[var(--micaa-muted)]">
         Precios orientativos para {city}
         {materialsFactor !== 1 ? ` (×${materialsFactor.toFixed(2)} vs SCZ)` : ""}
       </p>
@@ -103,16 +102,16 @@ export default function MaterialesPage() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Buscar material…"
-          className="h-11 w-full rounded-xl border border-[var(--micaa-line)] bg-white px-4 text-[14px] outline-none focus:border-[var(--micaa-accent)]"
+          className="h-11 w-full rounded-xl border border-[var(--micaa-line)] bg-white px-4 text-base outline-none focus:border-[var(--micaa-accent)]"
         />
       </form>
 
       <div className="mt-4 divide-y divide-[var(--micaa-line)] border-t border-[var(--micaa-line)]">
         {isLoading && (
-          <p className="py-6 text-center text-[12px] text-[var(--micaa-muted)]">Cargando…</p>
+          <ListSkeleton rows={6} />
         )}
         {!isLoading && materials.length === 0 && (
-          <p className="py-6 text-center text-[12px] text-[var(--micaa-muted)]">Sin resultados.</p>
+          <p className="py-6 text-center text-sm text-[var(--micaa-muted)]">Sin resultados.</p>
         )}
         {materials.map((m) => (
           <Link
@@ -121,9 +120,9 @@ export default function MaterialesPage() {
             className="flex items-baseline justify-between gap-4 py-3"
           >
             <div className="min-w-0">
-              <div className="truncate text-[14px]">{titleCaseMaterial(m.name)}</div>
-              <div className="mt-0.5 text-[12px] text-[var(--micaa-muted)]">
-                {m.unit}
+              <div className="truncate text-base">{titleCaseMaterial(m.name)}</div>
+              <div className="mt-0.5 text-sm text-[var(--micaa-muted)]">
+                {formatUnit(m.unit)}
                 {m.category?.name ? ` · ${titleCaseMaterial(m.category.name)}` : ""}
               </div>
             </div>

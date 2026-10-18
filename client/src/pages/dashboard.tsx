@@ -93,7 +93,7 @@ export default function Dashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-on-surface">Panel Principal</h1>
-          <p className="text-sm md:text-base text-gray-600 mt-1">
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Vista general del sistema MICAA
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function Dashboard() {
                   {formatNumber(stats?.totalUsers || 0)}
                 </p>
               )}
-              <p className="text-xs text-gray-600">Usuarios</p>
+              <p className="text-xs text-muted-foreground">Usuarios</p>
             </div>
           </CardContent>
         </Card>
@@ -135,7 +135,7 @@ export default function Dashboard() {
                   {formatNumber(stats?.activeBudgets || 0)}
                 </p>
               )}
-              <p className="text-xs text-gray-600">Presupuestos</p>
+              <p className="text-xs text-muted-foreground">Presupuestos</p>
             </div>
           </CardContent>
         </Card>
@@ -151,7 +151,7 @@ export default function Dashboard() {
                   {formatNumber(stats?.totalProjects || 0)}
                 </p>
               )}
-              <p className="text-xs text-gray-600">Proyectos</p>
+              <p className="text-xs text-muted-foreground">Proyectos</p>
             </div>
           </CardContent>
         </Card>
@@ -167,7 +167,7 @@ export default function Dashboard() {
                   {formatNumber(stats?.totalSuppliers || 0)}
                 </p>
               )}
-              <p className="text-xs text-gray-600">Proveedores</p>
+              <p className="text-xs text-muted-foreground">Proveedores</p>
             </div>
           </CardContent>
         </Card>
@@ -175,7 +175,7 @@ export default function Dashboard() {
         <Card className="shadow-material">
           <CardContent className="p-3">
             <div className="flex flex-col items-center text-center">
-              <Package className="w-5 h-5 text-blue-600 mb-1" />
+              <Package className="w-5 h-5 text-primary mb-1" />
               {statsLoading ? (
                 <Skeleton className="h-5 w-12 mb-1" />
               ) : (
@@ -183,7 +183,7 @@ export default function Dashboard() {
                   {formatNumber(stats?.totalMaterials || 0)}
                 </p>
               )}
-              <p className="text-xs text-gray-600">Materiales</p>
+              <p className="text-xs text-muted-foreground">Materiales</p>
             </div>
           </CardContent>
         </Card>
@@ -199,7 +199,7 @@ export default function Dashboard() {
                   {formatNumber(stats?.totalActivities || 0)}
                 </p>
               )}
-              <p className="text-xs text-gray-600">Actividades</p>
+              <p className="text-xs text-muted-foreground">Actividades</p>
             </div>
           </CardContent>
         </Card>
@@ -215,7 +215,7 @@ export default function Dashboard() {
                   {formatCurrency(stats?.totalProjectValue || 0).replace(' Bs', '')} Bs
                 </p>
               )}
-              <p className="text-xs text-gray-600">Valor Total</p>
+              <p className="text-xs text-muted-foreground">Valor Total</p>
             </div>
           </CardContent>
         </Card>
@@ -315,7 +315,7 @@ export default function Dashboard() {
                   <div key={budget.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                     <div>
                       <p className="font-medium text-on-surface">{budget.project?.name || 'Proyecto sin nombre'}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         {budget.updatedAt ? formatRelativeTime(budget.updatedAt) : 'Fecha no disponible'}
                       </p>
                     </div>
@@ -334,7 +334,7 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <Calculator className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>No hay presupuestos recientes</p>
                 <Link href="/budgets/new">

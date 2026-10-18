@@ -137,10 +137,10 @@ export function SupplierManagementAdvanced() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total</p>
+                <p className="text-sm text-muted-foreground">Total</p>
                 <p className="text-2xl font-bold">{stats?.totalSuppliers || 0}</p>
               </div>
-              <Building2 className="w-6 h-6 text-blue-600" />
+              <Building2 className="w-6 h-6 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -149,7 +149,7 @@ export function SupplierManagementAdvanced() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Activos</p>
+                <p className="text-sm text-muted-foreground">Activos</p>
                 <p className="text-2xl font-bold text-green-600">{stats?.activeSuppliers || 0}</p>
               </div>
               <Users className="w-6 h-6 text-green-600" />
@@ -161,7 +161,7 @@ export function SupplierManagementAdvanced() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Premium</p>
+                <p className="text-sm text-muted-foreground">Premium</p>
                 <p className="text-2xl font-bold text-yellow-600">{stats?.premiumSuppliers || 0}</p>
               </div>
               <Crown className="w-6 h-6 text-yellow-600" />
@@ -173,7 +173,7 @@ export function SupplierManagementAdvanced() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Rating Promedio</p>
+                <p className="text-sm text-muted-foreground">Rating Promedio</p>
                 <p className="text-2xl font-bold text-purple-600">{stats?.averageRating?.toFixed(1) || "0.0"}</p>
               </div>
               <Star className="w-6 h-6 text-purple-600" />
@@ -185,7 +185,7 @@ export function SupplierManagementAdvanced() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Pedidos</p>
+                <p className="text-sm text-muted-foreground">Pedidos</p>
                 <p className="text-2xl font-bold text-orange-600">{stats?.totalOrders || 0}</p>
               </div>
               <Truck className="w-6 h-6 text-orange-600" />
@@ -197,7 +197,7 @@ export function SupplierManagementAdvanced() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Crecimiento</p>
+                <p className="text-sm text-muted-foreground">Crecimiento</p>
                 <p className="text-2xl font-bold text-teal-600">+{stats?.monthlyGrowth || 0}%</p>
               </div>
               <TrendingUp className="w-6 h-6 text-teal-600" />
@@ -284,7 +284,7 @@ export function SupplierManagementAdvanced() {
                           </Avatar>
                           <div>
                             <h3 className="font-semibold text-lg">{supplier.companyName}</h3>
-                            <p className="text-sm text-gray-600">{supplier.speciality}</p>
+                            <p className="text-sm text-muted-foreground">{supplier.speciality}</p>
                           </div>
                         </div>
                         {getMembershipBadge(supplier.membershipType)}
@@ -295,27 +295,27 @@ export function SupplierManagementAdvanced() {
                           <div className="flex items-center">
                             {getRatingStars(parseFloat(supplier.rating || "0"))}
                           </div>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-muted-foreground">
                             ({supplier.reviewCount} reseñas)
                           </span>
                         </div>
 
                         {supplier.address && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <MapPin className="w-4 h-4" />
                             <span>{supplier.city}, {supplier.country}</span>
                           </div>
                         )}
 
                         {supplier.phone && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Phone className="w-4 h-4" />
                             <span>{supplier.phone}</span>
                           </div>
                         )}
 
                         {supplier.website && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Globe className="w-4 h-4" />
                             <span className="truncate">{supplier.website}</span>
                           </div>
@@ -392,7 +392,7 @@ export function SupplierManagementAdvanced() {
                             </Avatar>
                             <div>
                               <p className="font-medium">{supplier.companyName}</p>
-                              <p className="text-sm text-gray-500">{supplier.businessType}</p>
+                              <p className="text-sm text-muted-foreground">{supplier.businessType}</p>
                             </div>
                           </div>
                         </TableCell>
@@ -457,7 +457,7 @@ export function SupplierManagementAdvanced() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Análisis de Proveedores
                 </h3>
-                <p className="text-gray-600 max-w-md mx-auto">
+                <p className="text-muted-foreground max-w-md mx-auto">
                   Visualice estadísticas detalladas sobre el rendimiento y engagement de sus proveedores.
                 </p>
               </div>

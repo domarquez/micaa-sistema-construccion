@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+import { formatBs, formatUnit, relativeDays } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "wouter";
 import { addListaItem, titleCaseMaterial } from "@/lib/lista";
 import { getCity } from "@/lib/city";
 import { useToast } from "@/hooks/use-toast";
+import { ListSkeleton } from "@/components/ui/states";
 
 type Quote = {
   kind: "base" | "person" | "supplier";
@@ -44,9 +46,6 @@ type Payload = {
   cityFactor?: number | null;
 };
 
-function formatBs(n: number) {
-  return `Bs ${n.toLocaleString("es-BO", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
-}
 
 function formatKg(n: number) {
   return `${n.toLocaleString("es-BO", { minimumFractionDigits: 0, maximumFractionDigits: 4 })} kg`;
@@ -60,9 +59,7 @@ function resolvePricePerKg(q: Quote, materialWeightKg?: number | null): number |
 }
 
 function ageLabel(d?: number) {
-  if (d == null) return "";
-  if (d <= 0) return "hace 0 d";
-  return `hace ${d} d`;
+  return relativeDays(d);
 }
 
 function formatProvenanceDate(iso?: string | null): string | null {
@@ -83,6 +80,41 @@ function procedenciaLine(q: Quote): string | null {
   ) as string[];
   if (parts.length === 0) return null;
   return `Procedencia: ${parts.join(" · ")}`;
+}
+
+/** Colapsa duplicados exactos (misma fuente, mismo precio, mismo día). */
+function dedupeQuotes(list: Quote[]): Quote[] {
+  const seen = new Set<string>();
+  return list.filter((q) => {
+    const k = [q.kind, q.label, q.price, q.ageDays ?? "", q.provenanceDate ?? "", q.supplierId ?? q.userId ?? ""].join("|");
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
+
+/** Detalle para distinguir dos cotizaciones con la misma etiqueta. */
+function distinguisher(q: Quote, i: number, list: Quote[]): string | null {
+  const twins = list.filter((x) => x.label === q.label);
+  if (twins.length < 2) return null;
+  const n = twins.indexOf(q) + 1;
+  return `cotización ${n} de ${twins.length}`;
+}
+
+function isSinIva(q: Quote): boolean {
+  return q.source === "market" || /sin iva/i.test(q.label || "");
+}
+
+function IvaBadge({ q }: { q: Quote }) {
+  const sin = isSinIva(q);
+  return (
+    <span
+      className={`rounded-full border px-1.5 py-0.5 text-xs leading-none ${sin ? "border-amber-300 bg-amber-50 text-amber-900" : "border-[var(--micaa-line)] bg-white text-[var(--micaa-muted)]"}`}
+      title={sin ? "Precio estimado sin factura" : "Precio con factura (IVA incluido)"}
+    >
+      {sin ? "sin IVA" : "con IVA"}
+    </span>
+  );
 }
 
 export default function MaterialDetail() {
@@ -116,7 +148,7 @@ export default function MaterialDetail() {
     enabled: Number.isFinite(id),
   });
 
-  const quotes = data?.quotes || [];
+  const quotes = useMemo(() => dedupeQuotes(data?.quotes || []), [data?.quotes]);
   const active = quotes[selected] || quotes[0];
 
   const defaultIndex = useMemo(() => {
@@ -149,12 +181,16 @@ export default function MaterialDetail() {
   };
 
   if (isLoading) {
-    return <p className="p-8 text-center text-[12px] text-[var(--micaa-muted)]">Cargando…</p>;
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-8">
+        <ListSkeleton rows={4} />
+      </div>
+    );
   }
   if (error || !data) {
     return (
       <div className="mx-auto max-w-xl px-4 py-10 text-center">
-        <p className="text-[14px] text-[var(--micaa-muted)]">No se encontró el material.</p>
+        <p className="text-base text-[var(--micaa-muted)]">No se encontró el material.</p>
         <Link href="/materiales" className="mt-4 inline-block text-[var(--micaa-accent)]">
           Volver al catálogo
         </Link>
@@ -163,17 +199,18 @@ export default function MaterialDetail() {
   }
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8">
-      <Link href="/materiales" className="text-[12px] text-[var(--micaa-muted)] hover:text-[var(--micaa-fg)]">
+    <div className="mx-auto max-w-5xl px-4 py-8 lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-10">
+      <div className="min-w-0">
+      <Link href="/materiales" className="text-sm text-[var(--micaa-muted)] hover:text-[var(--micaa-fg)]">
         ← Materiales
       </Link>
       <h1 className="mt-3 text-[20px] font-semibold text-[var(--micaa-fg)]">
         {titleCaseMaterial(data.name)}
-        <span className="font-normal text-[var(--micaa-muted)]"> · {data.unit}</span>
+        <span className="font-normal text-[var(--micaa-muted)]"> · {formatUnit(data.unit)}</span>
       </h1>
-      <p className="mt-1 text-[12px] text-[var(--micaa-muted)]">
+      <p className="mt-1 text-sm text-[var(--micaa-muted)]">
         {titleCaseMaterial(data.category)}
-        {data.catalogAgeDays ? ` · catálogo hace ${data.catalogAgeDays} d` : ""}
+        {data.catalogAgeDays ? ` · catálogo ${relativeDays(data.catalogAgeDays)}` : ""}
         {` · ${city}`}
         {data.cityFactor != null && data.cityFactor !== 1
           ? ` · factor mat. ×${Number(data.cityFactor).toFixed(2)}`
@@ -203,23 +240,24 @@ export default function MaterialDetail() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-3">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2 text-[14px] text-[var(--micaa-fg)]">
+                    <div className="flex items-center gap-2 text-base text-[var(--micaa-fg)]">
                       {fresh && (
                         <span
                           className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--micaa-ok)]"
                           title="Reciente"
                         />
                       )}
-                      <span className="truncate">{q.label}</span>
+                      <span className="truncate">{q.label.replace(/\s*\(sin IVA\)/i, "")}</span>
+                      <IvaBadge q={q} />
                       {(q.kind === "base" || q.estimated || q.source === "market") && (
-                        <span className="text-[12px] text-[var(--micaa-muted)]">estimada</span>
+                        <span className="text-sm text-[var(--micaa-muted)]">estimada</span>
                       )}
                     </div>
-                    <div className="mt-0.5 text-[12px] text-[var(--micaa-muted)]">
-                      {[q.city, ageLabel(q.ageDays)].filter(Boolean).join(" · ")}
+                    <div className="mt-0.5 text-sm text-[var(--micaa-muted)]">
+                      {[q.city, ageLabel(q.ageDays), distinguisher(q, i, quotes)].filter(Boolean).join(" · ")}
                     </div>
                     {procedencia && (
-                      <div className="mt-0.5 text-[12px] text-[var(--micaa-muted)]">
+                      <div className="mt-0.5 text-sm text-[var(--micaa-muted)]">
                         {procedencia}
                         {showLink && (
                           <>
@@ -248,7 +286,7 @@ export default function MaterialDetail() {
                     </div>
                     {(q.weightKg ?? data.weightKg) != null &&
                       (q.weightKg ?? data.weightKg)! > 0 && (
-                        <div className="mt-0.5 text-[11px] text-[var(--micaa-muted)] tabular-nums">
+                        <div className="mt-0.5 text-sm text-[var(--micaa-muted)] tabular-nums">
                           peso {(q.weightKg ?? data.weightKg)!.toLocaleString("es-BO", {
                             maximumFractionDigits: 4,
                           })}{" "}
@@ -266,29 +304,37 @@ export default function MaterialDetail() {
         })}
       </div>
 
-      <div className="mt-6 flex items-center gap-3">
+      <p className="mt-3 text-xs text-[var(--micaa-muted)]">
+        <strong className="font-medium text-[var(--micaa-fg)]">con IVA</strong>: precio con factura.{" "}
+        <strong className="font-medium text-[var(--micaa-fg)]">sin IVA</strong>: estimado sin factura (MICAA Market).
+      </p>
+      </div>
+
+      <aside className="mt-6 lg:sticky lg:top-20 lg:mt-10 lg:self-start lg:rounded-xl lg:border lg:border-[var(--micaa-line)] lg:bg-white lg:p-4">
+      <div className="flex items-center gap-3">
         <input
           type="number"
           min={0.01}
           step="any"
           value={qty}
           onChange={(e) => setQty(parseFloat(e.target.value) || 1)}
-          className="h-10 w-20 rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
+          className="h-10 w-20 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
         />
         <button
           type="button"
           onClick={add}
-          className="h-10 flex-1 rounded-lg bg-[var(--micaa-accent)] px-4 text-[14px] font-medium text-[var(--micaa-accent-fg)]"
+          className="h-10 flex-1 rounded-lg bg-[var(--micaa-accent)] px-4 text-base font-medium text-[var(--micaa-accent-fg)]"
         >
           Agregar a la lista
         </button>
       </div>
       {active && (
-        <p className="mt-2 text-[12px] text-[var(--micaa-muted)]">
-          Usarás el precio de <strong className="text-[var(--micaa-fg)]">{active.label}</strong>
+        <p className="mt-2 text-sm text-[var(--micaa-muted)]">
+          Vas a usar el precio de <strong className="text-[var(--micaa-fg)]">{active.label}</strong>
           {" "}({formatBs(active.price)}), no un promedio.
         </p>
       )}
+      </aside>
     </div>
   );
 }

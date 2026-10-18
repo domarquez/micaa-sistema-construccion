@@ -164,7 +164,7 @@ export function AdvancedMaterialsTable() {
     if (selectedMaterials.length === 0) {
       toast({
         title: "Error",
-        description: "Selecciona al menos un material",
+        description: "Seleccioná al menos un material",
         variant: "destructive",
       });
       return;
@@ -278,7 +278,7 @@ export function AdvancedMaterialsTable() {
 
         {/* Bulk Actions */}
         {selectedMaterials.length > 0 && (
-          <div className="flex items-center gap-2 mb-4 p-3 bg-blue-50 rounded-lg">
+          <div className="flex items-center gap-2 mb-4 p-3 bg-primary/10 rounded-lg">
             <span className="text-sm font-medium">
               {selectedMaterials.length} materiales seleccionados
             </span>
@@ -344,7 +344,7 @@ export function AdvancedMaterialsTable() {
                 ))
               ) : filteredMaterials.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     No se encontraron materiales
                   </TableCell>
                 </TableRow>
@@ -361,7 +361,7 @@ export function AdvancedMaterialsTable() {
                       <div>
                         <p className="font-medium">{material.name}</p>
                         {material.description && (
-                          <p className="text-sm text-gray-500 truncate max-w-xs">
+                          <p className="text-sm text-muted-foreground truncate max-w-xs">
                             {material.description}
                           </p>
                         )}
@@ -376,7 +376,7 @@ export function AdvancedMaterialsTable() {
                     <TableCell className="text-right font-medium">
                       {formatCurrency(parseFloat(material.price))}
                     </TableCell>
-                    <TableCell className="text-sm text-gray-500">
+                    <TableCell className="text-sm text-muted-foreground">
                       {material.lastUpdated ? new Date(material.lastUpdated).toLocaleDateString() : "N/A"}
                     </TableCell>
                     <TableCell>

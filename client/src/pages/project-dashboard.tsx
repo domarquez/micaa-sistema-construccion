@@ -46,7 +46,7 @@ export default function ProjectDashboard() {
             <Building2 className="w-8 h-8 text-primary" />
             {currentProject.name}
           </h1>
-          <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
             <span>Cliente: {currentProject.client}</span>
             <span>•</span>
             <span>Ubicación: {currentProject.location}</span>
@@ -178,24 +178,24 @@ export default function ProjectDashboard() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       Módulo de Reportes
                     </h3>
-                    <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                       Genere reportes detallados de progreso, costos y análisis del proyecto.
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
                       <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
                         <BarChart3 className="w-6 h-6" />
                         <span className="font-medium">Reporte de Progreso</span>
-                        <span className="text-xs text-gray-500">Estado actual del proyecto</span>
+                        <span className="text-xs text-muted-foreground">Estado actual del proyecto</span>
                       </Button>
                       <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
                         <Calculator className="w-6 h-6" />
                         <span className="font-medium">Análisis Financiero</span>
-                        <span className="text-xs text-gray-500">Costos y presupuestos</span>
+                        <span className="text-xs text-muted-foreground">Costos y presupuestos</span>
                       </Button>
                       <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
                         <Calendar className="w-6 h-6" />
                         <span className="font-medium">Cronograma</span>
-                        <span className="text-xs text-gray-500">Planificación temporal</span>
+                        <span className="text-xs text-muted-foreground">Planificación temporal</span>
                       </Button>
                     </div>
                   </div>

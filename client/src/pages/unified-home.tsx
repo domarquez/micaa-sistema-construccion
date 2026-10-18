@@ -140,7 +140,7 @@ export default function UnifiedHome() {
               <Link href="/budgets" className="w-full sm:w-auto max-w-full">
                 <Button 
                   size="sm" 
-                  className="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 text-[11px] sm:text-sm md:text-base lg:text-lg px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 md:py-3 max-w-full"
+                  className="w-full sm:w-auto bg-primary text-white hover:bg-primary/90 text-sm sm:text-sm md:text-base lg:text-lg px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 md:py-3 max-w-full"
                 >
                   <span className="truncate">🚀 Crear Presupuesto</span>
                 </Button>
@@ -149,7 +149,7 @@ export default function UnifiedHome() {
                 <Link href="/login" className="flex-1">
                   <Button 
                     size="sm" 
-                    className="w-full bg-white text-blue-600 hover:bg-gray-100 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 py-2"
+                    className="w-full bg-white text-primary hover:bg-gray-100 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 py-2"
                   >
                     Iniciar Sesión
                   </Button>
@@ -168,12 +168,12 @@ export default function UnifiedHome() {
         </div>
 
         {/* Anonymous Usage Notice - Mobile Optimized */}
-        <div className="bg-blue-50 border-l-4 border-blue-400 p-1 sm:p-1.5 md:p-2 mobile-padding mb-1 sm:mb-2 md:mb-3 max-w-full overflow-hidden">
+        <div className="bg-primary/10 border-l-4 border-primary/40 p-1 sm:p-1.5 md:p-2 mobile-padding mb-1 sm:mb-2 md:mb-3 max-w-full overflow-hidden">
           <div className="flex items-start gap-1 sm:gap-1.5 md:gap-2 max-w-full">
-            <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-[10px] sm:text-xs md:text-sm min-w-0 flex-1 max-w-full overflow-hidden">
-              <p className="text-blue-800 font-medium break-words leading-tight text-left">Modo de Prueba Gratuita</p>
-              <p className="text-blue-700 mt-0.5 break-words leading-tight text-left max-w-full">
+            <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-primary flex-shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-xs md:text-sm min-w-0 flex-1 max-w-full overflow-hidden">
+              <p className="text-primary font-medium break-words leading-tight text-left">Modo de Prueba Gratuita</p>
+              <p className="text-primary mt-0.5 break-words leading-tight text-left max-w-full">
                 ✅ Crear, descargar presupuestos. 
                 ⚠️ No se guardan - 
                 <Link href="/register" className="underline font-medium">regístrate</Link> gratis.
@@ -224,7 +224,7 @@ export default function UnifiedHome() {
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
               <div className="flex flex-col items-start text-left min-w-0 w-full">
-                <Package className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-blue-600 mb-0.5 flex-shrink-0" />
+                <Package className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-primary mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
@@ -323,7 +323,7 @@ export default function UnifiedHome() {
                     variant={activeTab === "materials" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("materials")}
-                    className="text-[10px] sm:text-xs md:text-sm lg:text-base flex-1 min-w-0 px-1 sm:px-2 md:px-3 py-2 max-w-[50%]"
+                    className="text-xs sm:text-xs md:text-sm lg:text-base flex-1 min-w-0 px-1 sm:px-2 md:px-3 py-2 max-w-[50%]"
                   >
                     <Package className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 mr-0.5 sm:mr-1 flex-shrink-0" />
                     <span className="truncate">Materiales</span>
@@ -332,7 +332,7 @@ export default function UnifiedHome() {
                     variant={activeTab === "suppliers" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setActiveTab("suppliers")}
-                    className="text-[10px] sm:text-xs md:text-sm lg:text-base flex-1 min-w-0 px-1 sm:px-2 md:px-3 py-2 max-w-[50%]"
+                    className="text-xs sm:text-xs md:text-sm lg:text-base flex-1 min-w-0 px-1 sm:px-2 md:px-3 py-2 max-w-[50%]"
                   >
                     <Store className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 mr-0.5 sm:mr-1 flex-shrink-0" />
                     <span className="truncate">Proveedores</span>
@@ -373,9 +373,9 @@ export default function UnifiedHome() {
                     <Table className="min-w-full">
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="text-[9px] sm:text-[10px] md:text-xs text-left p-1 sm:p-2">Material</TableHead>
-                          <TableHead className="text-[9px] sm:text-[10px] md:text-xs text-left p-1 sm:p-2">Unidad</TableHead>
-                          <TableHead className="text-[9px] sm:text-[10px] md:text-xs text-right p-1 sm:p-2">Precio</TableHead>
+                          <TableHead className="text-[9px] sm:text-xs md:text-xs text-left p-1 sm:p-2">Material</TableHead>
+                          <TableHead className="text-[9px] sm:text-xs md:text-xs text-left p-1 sm:p-2">Unidad</TableHead>
+                          <TableHead className="text-[9px] sm:text-xs md:text-xs text-right p-1 sm:p-2">Precio</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -390,13 +390,13 @@ export default function UnifiedHome() {
                         ) : (
                           filteredMaterials.map((material) => (
                             <TableRow key={material.id} className="hover:bg-muted/50">
-                              <TableCell className="text-[9px] sm:text-[10px] md:text-xs font-medium text-left p-1 sm:p-2 break-words">
+                              <TableCell className="text-[9px] sm:text-xs md:text-xs font-medium text-left p-1 sm:p-2 break-words">
                                 {material.name}
                               </TableCell>
-                              <TableCell className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground text-left p-1 sm:p-2">
+                              <TableCell className="text-[9px] sm:text-xs md:text-xs text-muted-foreground text-left p-1 sm:p-2">
                                 {material.unit}
                               </TableCell>
-                              <TableCell className="text-[9px] sm:text-[10px] md:text-xs text-right font-semibold p-1 sm:p-2">
+                              <TableCell className="text-[9px] sm:text-xs md:text-xs text-right font-semibold p-1 sm:p-2">
                                 {formatCurrency(parseFloat(material.price))}
                               </TableCell>
                             </TableRow>
@@ -417,7 +417,7 @@ export default function UnifiedHome() {
                           <div className="flex flex-col gap-1 sm:gap-2">
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1 min-w-0 text-left">
-                                <h3 className="text-[10px] sm:text-xs md:text-sm font-semibold text-foreground truncate text-left">
+                                <h3 className="text-xs sm:text-xs md:text-sm font-semibold text-foreground truncate text-left">
                                   {supplier.companyName}
                                 </h3>
                               </div>
@@ -436,7 +436,7 @@ export default function UnifiedHome() {
                                 </Badge>
                               </div>
                             </div>
-                            <div className="flex flex-wrap items-start gap-1 sm:gap-1.5 text-[8px] sm:text-[9px] md:text-[10px] text-muted-foreground">
+                            <div className="flex flex-wrap items-start gap-1 sm:gap-1.5 text-[8px] sm:text-[9px] md:text-xs text-muted-foreground">
                               {supplier.city && (
                                 <div className="flex items-center gap-0.5 text-left">
                                   <MapPin className="w-2 h-2 sm:w-2.5 sm:h-2.5 flex-shrink-0" />
@@ -515,14 +515,14 @@ export default function UnifiedHome() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-2 md:gap-3 lg:gap-4 mobile-padding overflow-hidden">
         <Card className="min-w-0 max-w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
-            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate">Mis Presupuestos</CardTitle>
+            <CardTitle className="text-xs sm:text-xs md:text-sm font-medium truncate">Mis Presupuestos</CardTitle>
             <Calculator className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
           <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0 text-left">
             <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none text-left">
               {budgetsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : budgets?.length || 0}
             </div>
-            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
+            <p className="text-[8px] sm:text-xs md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
               Presupuestos activos
             </p>
           </CardContent>
@@ -530,14 +530,14 @@ export default function UnifiedHome() {
 
         <Card className="min-w-0 max-w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
-            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate text-left">Materiales</CardTitle>
+            <CardTitle className="text-xs sm:text-xs md:text-sm font-medium truncate text-left">Materiales</CardTitle>
             <Package className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
           <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0 text-left">
             <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none text-left">
               {statsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : formatNumber(statistics?.totalMaterials || 0)}
             </div>
-            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
+            <p className="text-[8px] sm:text-xs md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
               En catálogo
             </p>
           </CardContent>
@@ -545,14 +545,14 @@ export default function UnifiedHome() {
 
         <Card className="min-w-0 max-w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
-            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate text-left">Actividades</CardTitle>
+            <CardTitle className="text-xs sm:text-xs md:text-sm font-medium truncate text-left">Actividades</CardTitle>
             <Combine className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
           <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0 text-left">
             <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none text-left">
               {statsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : formatNumber(statistics?.totalActivities || 0)}
             </div>
-            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
+            <p className="text-[8px] sm:text-xs md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
               Disponibles
             </p>
           </CardContent>
@@ -560,14 +560,14 @@ export default function UnifiedHome() {
 
         <Card className="min-w-0 max-w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
-            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium truncate text-left">Proveedores</CardTitle>
+            <CardTitle className="text-xs sm:text-xs md:text-sm font-medium truncate text-left">Proveedores</CardTitle>
             <Truck className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
           </CardHeader>
           <CardContent className="p-2 sm:p-4 md:p-6 pt-0 min-w-0 text-left">
             <div className="text-sm sm:text-lg md:text-2xl font-bold leading-none text-left">
               {statsLoading ? <Skeleton className="h-4 sm:h-6 md:h-8 w-8 sm:w-12 md:w-16" /> : formatNumber(statistics?.totalSuppliers || 0)}
             </div>
-            <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
+            <p className="text-[8px] sm:text-xs md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight text-left">
               Registrados
             </p>
           </CardContent>
@@ -637,7 +637,7 @@ export default function UnifiedHome() {
                 <span className="text-sm sm:text-base md:text-lg truncate">Presupuestos Recientes</span>
               </span>
               <Link href="/budgets">
-                <Button variant="outline" size="sm" className="text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8">
+                <Button variant="outline" size="sm" className="text-xs sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8">
                   <span className="hidden sm:inline">Ver Todos</span>
                   <span className="sm:hidden">Ver</span>
                 </Button>
@@ -663,12 +663,12 @@ export default function UnifiedHome() {
                   <div key={budget.id} className="flex items-start justify-between p-2 sm:p-3 border rounded hover:bg-muted/50 transition-colors gap-2">
                     <div className="flex-1 min-w-0 text-left">
                       <h3 className="font-medium truncate text-left text-xs sm:text-sm">{budget.project?.name || `Presupuesto ${budget.id}`}</h3>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground text-left">
+                      <p className="text-xs sm:text-xs text-muted-foreground text-left">
                         {formatRelativeTime(budget.updatedAt || budget.createdAt || new Date())}
                       </p>
                     </div>
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      <span className="font-semibold text-[10px] sm:text-xs text-right">{formatCurrency((budget as any).totalCost || 0)}</span>
+                      <span className="font-semibold text-xs sm:text-xs text-right">{formatCurrency((budget as any).totalCost || 0)}</span>
                       <div className="flex gap-0.5 sm:gap-1">
                         <Link href={`/budgets/${budget.id}`}>
                           <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-1">
@@ -688,9 +688,9 @@ export default function UnifiedHome() {
             ) : (
               <div className="text-center py-8">
                 <Calculator className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">No tienes presupuestos aún</h3>
+                <h3 className="text-lg font-medium mb-2">No tenés presupuestos aún</h3>
                 <p className="text-muted-foreground mb-4">
-                  Crea tu primer presupuesto para comenzar a gestionar tus proyectos.
+                  Creá tu primer presupuesto para comenzar a gestionar tus proyectos.
                 </p>
                 <Link href="/budgets/new">
                   <Button>

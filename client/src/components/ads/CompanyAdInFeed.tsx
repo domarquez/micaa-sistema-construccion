@@ -47,7 +47,7 @@ export default function CompanyAdInFeed() {
 
   return (
     <div className="mobile-padding mb-4">
-      <div className="text-xs text-gray-500 mb-2 text-center">Publicidad</div>
+      <div className="text-xs text-muted-foreground mb-2 text-center">Publicidad</div>
       <Card 
         className="cursor-pointer hover:shadow-lg transition-all border border-orange-200 bg-gradient-to-br from-orange-50 to-blue-50 max-w-full overflow-hidden"
         onClick={handleAdClick}
@@ -76,7 +76,7 @@ export default function CompanyAdInFeed() {
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-gray-600">
+              <div className="flex flex-wrap items-center gap-2 text-xs sm:text-xs text-muted-foreground">
                 {ad.supplier.city && (
                   <div className="flex items-center gap-1">
                     <MapPin className="w-3 h-3" />

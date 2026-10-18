@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Construction, ArrowLeft, Mail, Lock, CheckCircle } from "lucide-react";
+import { ArrowLeft, Mail, Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import WhatsAppCodeFlow from "@/components/WhatsAppCodeFlow";
@@ -71,12 +71,12 @@ export default function Login() {
 
       toast({
         title: "Código enviado",
-        description: "Revisa tu email (también la carpeta de spam) para obtener el código de verificación",
+        description: "Revisá tu email (también la carpeta de spam) para obtener el código de verificación",
       });
 
       setRecoveryStep('verify');
     } catch (error: any) {
-      const errorMessage = error.message || 'Error de conexión. Intenta de nuevo.';
+      const errorMessage = error.message || 'Error de conexión. Intentá de nuevo.';
       toast({
         title: "Error",
         description: errorMessage,
@@ -144,7 +144,7 @@ export default function Login() {
 
       toast({
         title: "Contraseña actualizada",
-        description: `Tu usuario es: ${data.username}. Ya puedes iniciar sesión con tu nueva contraseña.`,
+        description: `Tu usuario es: ${data.username}. Ya podés iniciar sesión con tu nueva contraseña.`,
       });
 
       setShowPasswordRecovery(false);
@@ -174,32 +174,24 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-indigo-100 px-2 sm:px-4 py-4 sm:py-8 safe-area-inset-top safe-area-inset-bottom overflow-x-hidden flex flex-col items-center justify-center">
-      <div className="absolute top-1 sm:top-2 md:top-4 left-1 sm:left-2 md:left-4 z-10">
-        <Link href="/">
-          <Button variant="outline" size="sm" className="flex items-center gap-1 sm:gap-2 mobile-ultra-compact text-[10px] sm:text-xs md:text-sm px-1 sm:px-2 py-0.5 sm:py-1 h-6 sm:h-7 md:h-8">
-            <ArrowLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4" />
-            <span className="hidden sm:inline">Volver</span>
-          </Button>
-        </Link>
-      </div>
+    <div className="mx-auto flex w-full max-w-md flex-col px-4 py-8 sm:py-12">
+      <Link href="/" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" /> Volver al inicio
+      </Link>
 
-      <Card className="auth-card w-full sm:max-w-xs md:max-w-md shadow-lg">
-        <CardHeader className="text-center p-2 sm:p-4 md:p-6">
-          <div className="mx-auto w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-primary rounded-lg flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
-            <Construction className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
-          </div>
-          <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold">MICAA</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
-            Sistema de presupuestos
+      <Card className="w-full">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-semibold tracking-tight">MICAA</CardTitle>
+          <CardDescription>
+            Precios y presupuestos de construcción en Bolivia
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-2 sm:p-4 md:p-6">
+        <CardContent>
           {!showPasswordRecovery ? (
             <>
               {/* Opción principal: WhatsApp (sin contraseña). Este dispositivo queda recordado 1 año. */}
               <div className="mb-3 sm:mb-4">
-                <p className="text-center text-xs sm:text-sm font-medium mb-2">Entra con tu WhatsApp</p>
+                <p className="text-center text-xs sm:text-sm font-medium mb-2">Entrá con tu WhatsApp</p>
                 <WhatsAppCodeFlow
                   mode="login"
                   onSuccess={(data) => {
@@ -211,8 +203,8 @@ export default function Login() {
 
               <div className="relative my-3 sm:my-4">
                 <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-                <div className="relative flex justify-center text-[10px] sm:text-xs uppercase">
-                  <span className="bg-white px-2 text-gray-500">o</span>
+                <div className="relative flex justify-center text-xs sm:text-xs uppercase">
+                  <span className="bg-white px-2 text-muted-foreground">o</span>
                 </div>
               </div>
 
@@ -220,7 +212,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPasswordLogin(true)}
-                  className="w-full text-center text-[10px] sm:text-xs md:text-sm text-gray-600 hover:underline"
+                  className="w-full text-center text-xs sm:text-xs md:text-sm text-muted-foreground hover:underline"
                   data-testid="button-show-password-login"
                 >
                   Entrar con usuario y contraseña
@@ -236,7 +228,7 @@ export default function Login() {
                     value={credentials.username}
                     onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
                     required
-                    placeholder="Ingresa tu usuario"
+                    placeholder="Ingresá tu usuario"
                     className="text-xs sm:text-sm h-8 sm:h-9 md:h-10"
                     data-testid="input-login-username"
                   />
@@ -249,13 +241,13 @@ export default function Login() {
                     value={credentials.password}
                     onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
                     required
-                    placeholder="Ingresa tu contraseña"
+                    placeholder="Ingresá tu contraseña"
                     className="text-xs sm:text-sm h-8 sm:h-9 md:h-10"
                     data-testid="input-login-password"
                   />
                 </div>
                 {error && (
-                  <div className="text-red-600 text-[10px] sm:text-xs bg-red-50 p-1.5 sm:p-2 md:p-3 rounded-md border border-red-200">
+                  <div className="text-red-600 text-xs sm:text-xs bg-red-50 p-1.5 sm:p-2 md:p-3 rounded-md border border-red-200">
                     {error}
                   </div>
                 )}
@@ -268,7 +260,7 @@ export default function Login() {
                 <button 
                   type="button"
                   onClick={() => setShowPasswordRecovery(true)}
-                  className="text-[10px] sm:text-xs md:text-sm text-primary hover:underline"
+                  className="text-xs sm:text-xs md:text-sm text-primary hover:underline"
                   data-testid="button-forgot-password"
                 >
                   ¿Olvidaste tu contraseña?
@@ -278,8 +270,8 @@ export default function Login() {
               )}
 
               <div className="mt-3 sm:mt-4 md:mt-6 text-center">
-                <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">
-                  ¿No tienes cuenta? Entra con WhatsApp y se crea sola.{" "}
+                <p className="text-xs sm:text-xs md:text-sm text-muted-foreground">
+                  ¿No tenés cuenta? Entrá con WhatsApp y se crea sola.{" "}
                   <Link href="/register" className="text-primary hover:underline font-medium">
                     Registro con correo
                   </Link>
@@ -291,10 +283,10 @@ export default function Login() {
               {recoveryStep === 'email' && (
                 <>
                   <div className="text-center mb-4">
-                    <Mail className="w-12 h-12 text-blue-500 mx-auto mb-2" />
+                    <Mail className="w-12 h-12 text-primary mx-auto mb-2" />
                     <h3 className="text-lg font-semibold">Recuperar Contraseña</h3>
-                    <p className="text-sm text-gray-600">
-                      Ingresa tu email para recibir un código
+                    <p className="text-sm text-muted-foreground">
+                      Ingresá tu email para recibir un código
                     </p>
                   </div>
                   
@@ -316,7 +308,7 @@ export default function Login() {
                       </div>
                     </div>
                     
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isRecoveryLoading} data-testid="button-send-recovery-code">
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isRecoveryLoading} data-testid="button-send-recovery-code">
                       <Mail className="w-4 h-4 mr-2" />
                       {isRecoveryLoading ? "Enviando..." : "Enviar Código"}
                     </Button>
@@ -327,10 +319,10 @@ export default function Login() {
               {recoveryStep === 'verify' && (
                 <>
                   <div className="text-center mb-4">
-                    <Mail className="w-12 h-12 text-blue-500 mx-auto mb-2" />
+                    <Mail className="w-12 h-12 text-primary mx-auto mb-2" />
                     <h3 className="text-lg font-semibold">Verificar Código</h3>
-                    <p className="text-sm text-gray-600">
-                      Ingresa el código de 6 dígitos que recibiste
+                    <p className="text-sm text-muted-foreground">
+                      Ingresá el código de 6 dígitos que recibiste
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
                       Enviado a: {recoveryEmail}
@@ -353,7 +345,7 @@ export default function Login() {
                       />
                     </div>
                     
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-verify-recovery-code">
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90" data-testid="button-verify-recovery-code">
                       Verificar Código
                     </Button>
                   </form>
@@ -362,7 +354,7 @@ export default function Login() {
                     <button 
                       type="button"
                       onClick={handleSendRecoveryCode}
-                      className="text-sm text-blue-600 hover:underline"
+                      className="text-sm text-primary hover:underline"
                       disabled={isRecoveryLoading}
                     >
                       ¿No recibiste el código? Reenviar
@@ -376,8 +368,8 @@ export default function Login() {
                   <div className="text-center mb-4">
                     <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
                     <h3 className="text-lg font-semibold">Nueva Contraseña</h3>
-                    <p className="text-sm text-gray-600">
-                      Crea una nueva contraseña para tu cuenta
+                    <p className="text-sm text-muted-foreground">
+                      Creá una nueva contraseña para tu cuenta
                     </p>
                   </div>
                   
@@ -427,7 +419,7 @@ export default function Login() {
                 <button 
                   type="button"
                   onClick={resetRecovery}
-                  className="text-sm text-gray-600 hover:underline"
+                  className="text-sm text-muted-foreground hover:underline"
                 >
                   Volver al inicio de sesión
                 </button>

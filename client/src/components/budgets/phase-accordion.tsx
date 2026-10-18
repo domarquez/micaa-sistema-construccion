@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ListSkeleton } from "@/components/ui/states";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -120,7 +121,7 @@ export default function PhaseAccordion({ phaseId }: PhaseAccordionProps) {
   const selectedPhase = activities?.[0]?.phase;
 
   if (!selectedPhase) {
-    return <div className="text-center text-gray-500">Cargando actividades...</div>;
+    return <ListSkeleton rows={4} />;
   }
 
   return (
@@ -128,7 +129,7 @@ export default function PhaseAccordion({ phaseId }: PhaseAccordionProps) {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">{selectedPhase.name}</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {activities?.length || 0} actividades disponibles
           </p>
         </div>
@@ -144,7 +145,7 @@ export default function PhaseAccordion({ phaseId }: PhaseAccordionProps) {
             <div className="font-semibold text-primary">
               {formatCurrency(totalBudget)}
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               Total estimado
             </div>
           </div>
@@ -299,7 +300,7 @@ export default function PhaseAccordion({ phaseId }: PhaseAccordionProps) {
           <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
             <div>
               <h4 className="font-semibold text-on-surface">Total de la Fase</h4>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {budgetItems.length} elemento{budgetItems.length !== 1 ? 's' : ''} • {selectedPhase?.name}
               </p>
             </div>
@@ -307,7 +308,7 @@ export default function PhaseAccordion({ phaseId }: PhaseAccordionProps) {
               <p className="text-2xl font-bold text-primary">
                 {formatCurrency(totalBudget)}
               </p>
-              <p className="text-sm text-gray-600">IVA incluido</p>
+              <p className="text-sm text-muted-foreground">IVA incluido</p>
             </div>
           </div>
         </>

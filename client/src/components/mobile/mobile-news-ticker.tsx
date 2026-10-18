@@ -70,7 +70,7 @@ export function MobileNewsTicker() {
       'Vivienda': 'bg-green-100 text-green-800',
       'Materiales': 'bg-orange-100 text-orange-800',
       'Normativa': 'bg-purple-100 text-purple-800',
-      'Economía': 'bg-blue-100 text-blue-800',
+      'Economía': 'bg-primary/10 text-primary',
       'Eventos': 'bg-pink-100 text-pink-800'
     };
     return colors[category] || 'bg-gray-100 text-gray-800';
@@ -86,7 +86,7 @@ export function MobileNewsTicker() {
 
   return (
     <div className="px-4">
-      <div className="text-xs text-gray-500 mb-2 flex items-center justify-center">
+      <div className="text-xs text-muted-foreground mb-2 flex items-center justify-center">
         <TrendingUp className="w-3 h-3 mr-1" />
         Noticias de Construcción en Bolivia
       </div>

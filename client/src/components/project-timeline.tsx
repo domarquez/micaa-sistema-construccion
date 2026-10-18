@@ -101,7 +101,7 @@ export function ProjectTimeline() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed": return "bg-green-500";
-      case "in-progress": return "bg-blue-500";
+      case "in-progress": return "bg-primary";
       case "delayed": return "bg-red-500";
       default: return "bg-gray-300";
     }
@@ -110,9 +110,9 @@ export function ProjectTimeline() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed": return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case "in-progress": return <Play className="w-4 h-4 text-blue-600" />;
+      case "in-progress": return <Play className="w-4 h-4 text-primary" />;
       case "delayed": return <AlertCircle className="w-4 h-4 text-red-600" />;
-      default: return <Pause className="w-4 h-4 text-gray-600" />;
+      default: return <Pause className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -162,19 +162,19 @@ export function ProjectTimeline() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="text-center">
               <p className="text-2xl font-bold text-primary">{overallProgress.toFixed(1)}%</p>
-              <p className="text-sm text-gray-600">Progreso General</p>
+              <p className="text-sm text-muted-foreground">Progreso General</p>
               <Progress value={overallProgress} className="mt-2" />
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">{formatCurrency(totalSpent)}</p>
-              <p className="text-sm text-gray-600">Ejecutado</p>
-              <p className="text-xs text-gray-500">de {formatCurrency(totalBudget)}</p>
+              <p className="text-sm text-muted-foreground">Ejecutado</p>
+              <p className="text-xs text-muted-foreground">de {formatCurrency(totalBudget)}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-2xl font-bold text-primary">
                 {phases.filter(p => p.status === "completed").length}/{phases.length}
               </p>
-              <p className="text-sm text-gray-600">Fases Completadas</p>
+              <p className="text-sm text-muted-foreground">Fases Completadas</p>
             </div>
           </div>
         </CardContent>
@@ -213,27 +213,27 @@ export function ProjectTimeline() {
                           </Button>
                         </div>
 
-                        <p className="text-gray-600 text-sm mb-4">{phase.description}</p>
+                        <p className="text-muted-foreground text-sm mb-4">{phase.description}</p>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Inicio</p>
+                            <p className="text-xs text-muted-foreground mb-1">Inicio</p>
                             <p className="text-sm font-medium">
                               {phase.startDate.toLocaleDateString()}
                             </p>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Fin</p>
+                            <p className="text-xs text-muted-foreground mb-1">Fin</p>
                             <p className="text-sm font-medium">
                               {phase.endDate.toLocaleDateString()}
                             </p>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Presupuesto</p>
+                            <p className="text-xs text-muted-foreground mb-1">Presupuesto</p>
                             <p className="text-sm font-medium">{formatCurrency(phase.budget)}</p>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Ejecutado</p>
+                            <p className="text-xs text-muted-foreground mb-1">Ejecutado</p>
                             <p className="text-sm font-medium">{formatCurrency(phase.spent)}</p>
                           </div>
                         </div>

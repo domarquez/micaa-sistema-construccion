@@ -58,7 +58,7 @@ export default function AdminDatabase() {
       console.error('Export error:', error);
       toast({
         title: "Error de Exportación",
-        description: "No se pudo exportar la base de datos. Verifica tu conexión.",
+        description: "No se pudo exportar la base de datos. Verificá tu conexión.",
         variant: "destructive",
       });
     } finally {
@@ -70,7 +70,7 @@ export default function AdminDatabase() {
     <div className="container mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Administración de Base de Datos</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           Herramientas para gestión y exportación de datos del sistema MICAA
         </p>
       </div>
@@ -84,7 +84,7 @@ export default function AdminDatabase() {
               Exportar Base de Datos
             </CardTitle>
             <CardDescription>
-              Descarga un archivo SQL completo con todas las tablas y datos del sistema
+              Descargá un archivo SQL completo con todas las tablas y datos del sistema
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -105,7 +105,7 @@ export default function AdminDatabase() {
                 </>
               )}
             </Button>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Incluye estructura de tablas y todos los datos actuales
             </p>
           </CardContent>
@@ -125,19 +125,19 @@ export default function AdminDatabase() {
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Tablas:</span>
+                <span className="text-sm text-muted-foreground">Tablas:</span>
                 <span className="font-medium">~20 tablas</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Materiales:</span>
+                <span className="text-sm text-muted-foreground">Materiales:</span>
                 <span className="font-medium">1,762 registros</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Actividades:</span>
+                <span className="text-sm text-muted-foreground">Actividades:</span>
                 <span className="font-medium">~450 registros</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Empresas:</span>
+                <span className="text-sm text-muted-foreground">Empresas:</span>
                 <span className="font-medium">~150 registros</span>
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function AdminDatabase() {
                 Compatible con PostgreSQL
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                <span className="w-2 h-2 bg-primary rounded-full"></span>
                 Formato SQL estándar
               </div>
             </div>
@@ -187,10 +187,10 @@ export default function AdminDatabase() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-muted-foreground">
             <p>• La exportación incluye todos los datos sensibles del sistema</p>
             <p>• El archivo se genera en tiempo real y puede tardar unos minutos</p>
-            <p>• Guarda el archivo en un lugar seguro para respaldos</p>
+            <p>• Guardá el archivo en un lugar seguro para respaldos</p>
             <p>• El formato SQL es compatible con sistemas PostgreSQL</p>
             <p>• Esta función está disponible solo para administradores</p>
           </div>

@@ -142,7 +142,7 @@ export default function MaterialForm({ material, categories, onClose }: Material
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccione una categoría" />
+                        <SelectValue placeholder="Seleccioná una categoría" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

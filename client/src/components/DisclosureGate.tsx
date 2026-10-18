@@ -16,7 +16,7 @@ export function WhatsAppSignupCta({ compact = false }: { compact?: boolean }) {
         className="whitespace-nowrap font-medium text-[var(--micaa-accent)]"
         data-testid="cta-whatsapp-compact"
       >
-        Inscríbete con WhatsApp
+        Inscribite con WhatsApp
       </Link>
     );
   }
@@ -25,9 +25,9 @@ export function WhatsAppSignupCta({ compact = false }: { compact?: boolean }) {
       <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
         <MessageCircle className="h-5 w-5 text-green-700" />
       </div>
-      <h2 className="text-lg font-semibold">Inscríbete con WhatsApp</h2>
+      <h2 className="text-lg font-semibold">Inscribite con WhatsApp</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Es gratis y sin contraseña. Con tu WhatsApp verificado puedes crear proyectos, empezar desde una plantilla y armar presupuestos.
+        Es gratis y sin contraseña. Con tu WhatsApp verificado podés crear proyectos, empezar desde una plantilla y armar presupuestos.
       </p>
       <div className="mt-4 text-left">
         {nextStep === "verify" ? (
@@ -38,14 +38,14 @@ export function WhatsAppSignupCta({ compact = false }: { compact?: boolean }) {
         ) : (
           <Link
             href="/login"
-            className="block w-full rounded-md bg-green-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-green-700"
+            className="block w-full rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-white hover:bg-primary/90"
           >
-            Inscríbete con WhatsApp
+            Inscribite con WhatsApp
           </Link>
         )}
       </div>
       <p className="mt-4 text-xs text-muted-foreground">
-        Mientras tanto, puedes seguir viendo <Link href="/materiales" className="underline">precios de materiales</Link>.
+        Mientras tanto, podés seguir viendo <Link href="/materiales" className="underline">precios de materiales</Link>.
       </p>
     </div>
   );

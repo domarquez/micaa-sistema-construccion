@@ -191,7 +191,7 @@ export default function CityFactors() {
     const value = parseFloat(factor);
     if (value > 1.1) return "bg-red-100 text-red-800";
     if (value < 0.95) return "bg-green-100 text-green-800";
-    return "bg-blue-100 text-blue-800";
+    return "bg-primary/10 text-primary";
   };
 
   if (isLoading) {
@@ -554,7 +554,7 @@ export default function CityFactors() {
             <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">No hay factores de precios configurados</h3>
             <p className="text-muted-foreground mb-4">
-              Crea el primer factor de precios para comenzar a gestionar ajustes por ubicación
+              Creá el primer factor de precios para comenzar a gestionar ajustes por ubicación
             </p>
             <Button onClick={() => setIsCreateDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />

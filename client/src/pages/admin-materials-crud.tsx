@@ -198,7 +198,7 @@ export default function AdminMaterialsCRUD() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Gestión Completa de Materiales</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             CRUD completo - Crear, editar, eliminar y gestionar precios de materiales
           </p>
         </div>

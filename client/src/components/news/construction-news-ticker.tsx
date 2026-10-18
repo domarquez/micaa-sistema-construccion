@@ -55,7 +55,7 @@ const sampleNews: NewsItem[] = [
 ];
 
 const categoryColors = {
-  economia: 'bg-blue-100 text-blue-700 border-blue-300',
+  economia: 'bg-primary/10 text-primary border-primary/40',
   gobierno: 'bg-green-100 text-green-700 border-green-300', 
   obras: 'bg-orange-100 text-orange-700 border-orange-300',
   tecnologia: 'bg-purple-100 text-purple-700 border-purple-300',
@@ -113,7 +113,7 @@ export function ConstructionNewsTicker() {
   const currentNews = newsData[currentIndex];
 
   return (
-    <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200 overflow-hidden max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-xs mx-auto">
+    <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-primary/40 overflow-hidden max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-xs mx-auto">
       <div 
         className="aspect-square flex flex-col p-0.5 sm:p-1 md:p-1.5 lg:p-2 xl:p-3"
         onMouseEnter={() => setIsPaused(true)}
@@ -127,7 +127,7 @@ export function ConstructionNewsTicker() {
               Noticias del Sector
             </span>
           </div>
-          <div className="flex items-center space-x-1 text-xs text-gray-500">
+          <div className="flex items-center space-x-1 text-xs text-muted-foreground">
             <Clock className="w-3 h-3" />
           </div>
         </div>
@@ -148,21 +148,21 @@ export function ConstructionNewsTicker() {
               {currentNews.title}
             </h4>
             
-            <p className="text-xs text-gray-600 line-clamp-2 sm:line-clamp-3 text-center">
+            <p className="text-xs text-muted-foreground line-clamp-2 sm:line-clamp-3 text-center">
               {currentNews.summary}
             </p>
           </div>
 
           <div className="mt-3 space-y-2">
             <div className="text-center">
-              <span className="text-xs text-gray-500">{currentNews.sourceName}</span>
+              <span className="text-xs text-muted-foreground">{currentNews.sourceName}</span>
             </div>
 
             {currentNews.sourceUrl && (
               <div className="flex justify-center">
                 <button
                   onClick={() => window.open(currentNews.sourceUrl, '_blank')}
-                  className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-full transition-colors"
+                  className="p-2 text-primary hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
                   title="Leer noticia completa"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -177,14 +177,14 @@ export function ConstructionNewsTicker() {
                   key={index}
                   className={`h-0.5 sm:h-1 transition-all duration-300 ${
                     index === currentIndex 
-                      ? 'bg-blue-600 w-4 sm:w-6' 
+                      ? 'bg-primary w-4 sm:w-6' 
                       : 'bg-gray-300 w-1.5 sm:w-2'
                   } rounded-full`}
                 />
               ))}
             </div>
             
-            <div className="text-xs text-gray-500 text-center">
+            <div className="text-xs text-muted-foreground text-center">
               {currentIndex + 1} de {newsData.length}
             </div>
           </div>

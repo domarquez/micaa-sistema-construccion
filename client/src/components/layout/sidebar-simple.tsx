@@ -195,7 +195,7 @@ export default function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive("/inscribete")} className="w-full font-medium text-green-700">
                     <Link href={nextStep === "login" ? "/login" : "/inscribete"} data-testid="sidebar-cta-whatsapp">
                       <MessageCircle className="w-4 h-4" />
-                      <span>Inscríbete con WhatsApp</span>
+                      <span>Inscribite con WhatsApp</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

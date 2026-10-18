@@ -216,7 +216,7 @@ export default function LandingPage() {
                   <span className="block text-orange-200">Digital en Bolivia</span>
                 </h1>
                 <p className="text-lg text-orange-100 leading-relaxed">
-                  Conectamos arquitectos, constructores y proveedores. Crea presupuestos precisos, 
+                  Conectamos arquitectos, constructores y proveedores. Creá presupuestos precisos, 
                   encuentra materiales y explora el marketplace más completo del sector construcción.
                 </p>
               </div>
@@ -339,7 +339,7 @@ export default function LandingPage() {
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Empresas Destacadas
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-muted-foreground dark:text-gray-400">
                 Descubre las mejores empresas del sector construcción en Bolivia
               </p>
             </div>
@@ -347,7 +347,7 @@ export default function LandingPage() {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-0 right-0 z-10 h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600"
+              className="absolute top-0 right-0 z-10 h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 text-muted-foreground"
               onClick={handleCloseAds}
             >
               <X className="w-4 h-4" />
@@ -357,7 +357,7 @@ export default function LandingPage() {
               {advertisements.slice(0, 2).map((ad, index) => (
                 <Card 
                   key={ad.id} 
-                  className="relative overflow-hidden border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                  className="relative overflow-hidden border-2 border-primary/40 dark:border-blue-800 bg-[var(--micaa-bg)] dark:from-blue-950 dark:to-indigo-950 hover:shadow-lg transition-all duration-300 cursor-pointer group"
                   onClick={() => handleAdClick(ad)}
                 >
                   <CardContent className="p-0">
@@ -371,7 +371,7 @@ export default function LandingPage() {
                       
                       {/* Badge de tipo */}
                       <div className="absolute top-3 left-3">
-                        <Badge className={ad.adType === "featured" ? "bg-yellow-500 text-white" : "bg-blue-500 text-white"}>
+                        <Badge className={ad.adType === "featured" ? "bg-yellow-500 text-white" : "bg-primary text-white"}>
                           {ad.adType === "featured" ? (
                             <>
                               <Star className="w-3 h-3 mr-1" />
@@ -402,16 +402,16 @@ export default function LandingPage() {
                       )}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 text-sm">
-                          <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400">
+                          <div className="flex items-center space-x-1 text-muted-foreground dark:text-gray-400">
                             <Eye className="w-4 h-4" />
                             <span>{ad.viewCount}</span>
                           </div>
-                          <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400">
+                          <div className="flex items-center space-x-1 text-muted-foreground dark:text-gray-400">
                             <MapPin className="w-4 h-4" />
                             <span>{ad.supplier.city}</span>
                           </div>
                         </div>
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                        <Button size="sm" className="bg-primary hover:bg-primary/90 text-white">
                           Ver Más
                           <ArrowRight className="w-3 h-3 ml-1" />
                         </Button>
@@ -435,9 +435,9 @@ export default function LandingPage() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  Explora Nuestro Ecosistema
+                  Explorá Nuestro Ecosistema
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-muted-foreground dark:text-gray-400">
                   Descubre materiales, proveedores y herramientas para tu próximo proyecto
                 </p>
               </div>
@@ -456,11 +456,11 @@ export default function LandingPage() {
                   <Calculator className="w-12 h-12 mx-auto text-orange-600 mb-4" />
                   <CardTitle className="text-lg">Presupuestos APU</CardTitle>
                   <CardDescription>
-                    Crea presupuestos detallados con análisis de precios unitarios profesionales
+                    Creá presupuestos detallados con análisis de precios unitarios profesionales
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm text-gray-600">
+                  <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
                       <span>Cálculo automático de composiciones</span>
@@ -486,11 +486,11 @@ export default function LandingPage() {
                   <Package className="w-12 h-12 mx-auto text-green-600 mb-4" />
                   <CardTitle className="text-lg">Catálogo de Materiales</CardTitle>
                   <CardDescription>
-                    Accede a más de 2,000 materiales con precios actualizados del mercado boliviano
+                    Accedé a más de 2,000 materiales con precios actualizados del mercado boliviano
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm text-gray-600">
+                  <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
                       <span>Precios actualizados semanalmente</span>
@@ -519,7 +519,7 @@ export default function LandingPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm text-gray-600">
+                  <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
                       <span>Proveedores verificados</span>
@@ -612,7 +612,7 @@ export default function LandingPage() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option value="all">Todas las categorías</option>
                   {categories?.slice(0, 10).map((category) => (
@@ -640,7 +640,7 @@ export default function LandingPage() {
                     <Card key={material.id} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-4">
                         <h3 className="font-semibold text-sm mb-1 line-clamp-2">{material.name}</h3>
-                        <p className="text-xs text-gray-500 mb-2">{material.unit}</p>
+                        <p className="text-xs text-muted-foreground mb-2">{material.unit}</p>
                         <div className="flex justify-between items-center">
                           <span className="font-bold text-orange-600">{formatCurrency(material.price)}</span>
                           <Badge variant="secondary" className="text-xs">Público</Badge>
@@ -654,15 +654,15 @@ export default function LandingPage() {
             {filteredMaterials.length === 0 && !materialsLoading && (
               <div className="text-center py-8">
                 <Package className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-                <p className="text-gray-500">No se encontraron materiales</p>
+                <p className="text-muted-foreground">No se encontraron materiales</p>
               </div>
             )}
 
             {/* Registro para ver más */}
             <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
               <CardContent className="p-6 text-center">
-                <h3 className="text-xl font-bold mb-2">¿Quieres ver más materiales?</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-xl font-bold mb-2">¿Querés ver más materiales?</h3>
+                <p className="text-muted-foreground mb-4">
                   Regístrate gratis para acceder al catálogo completo de más de 2,000 materiales
                 </p>
                 <Button onClick={() => window.location.href = "/register"} className="bg-orange-600 hover:bg-orange-700">
@@ -716,7 +716,7 @@ export default function LandingPage() {
                             </div>
                             <div>
                               <h3 className="font-semibold text-sm line-clamp-1">{supplier.companyName}</h3>
-                              <p className="text-xs text-gray-500">{supplier.contactPerson}</p>
+                              <p className="text-xs text-muted-foreground">{supplier.contactPerson}</p>
                             </div>
                           </div>
                           <div className="flex items-center">
@@ -726,14 +726,14 @@ export default function LandingPage() {
                         </div>
 
                         <div className="space-y-2 mb-4">
-                          <p className="text-sm text-gray-600 line-clamp-2">{supplier.description}</p>
+                          <p className="text-sm text-muted-foreground line-clamp-2">{supplier.description}</p>
                           <Badge variant="secondary" className="text-xs">
                             {supplier.speciality}
                           </Badge>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center text-sm text-gray-500">
+                          <div className="flex items-center text-sm text-muted-foreground">
                             <MapPin className="w-4 h-4 mr-1" />
                             {supplier.city}
                           </div>
@@ -751,7 +751,7 @@ export default function LandingPage() {
             {filteredSuppliers.length === 0 && !suppliersLoading && (
               <div className="text-center py-8">
                 <Truck className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-                <p className="text-gray-500">No se encontraron proveedores</p>
+                <p className="text-muted-foreground">No se encontraron proveedores</p>
               </div>
             )}
           </TabsContent>
@@ -770,7 +770,7 @@ export default function LandingPage() {
               ¿Listo para Digitalizar tu Construcción?
             </h2>
             <p className="text-orange-100 text-lg mb-6 max-w-2xl mx-auto">
-              Únete a miles de profesionales que ya confían en MICAA para sus proyectos. 
+              Unite a miles de profesionales que ya confían en MICAA para sus proyectos. 
               Registrarte es completamente gratis y toma menos de 2 minutos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

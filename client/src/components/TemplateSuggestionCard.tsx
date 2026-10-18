@@ -22,7 +22,7 @@ export function TemplateSuggestionCard() {
           <LayoutTemplate className="h-5 w-5 text-white" />
         </div>
         <div className="min-w-0">
-          <p className="font-semibold">Empieza desde una plantilla</p>
+          <p className="font-semibold">Empezá desde una plantilla</p>
           <p className="text-sm text-muted-foreground">
             Casa, muro, baño, piscina, galpón… ajusta las medidas y obtén el costo al instante.
           </p>

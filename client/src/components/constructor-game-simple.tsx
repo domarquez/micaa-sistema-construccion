@@ -86,8 +86,8 @@ export function ConstructorGameSimple() {
         </CardTitle>
         <CardDescription className="text-center text-sm sm:text-base px-2 sm:px-0">
           {isMobile 
-            ? '¡Toca para construir! Selecciona un bloque y toca una celda.'
-            : '¡Construye tu proyecto! Selecciona un bloque y haz clic en el área de construcción.'
+            ? '¡Tocá para construir! Seleccioná un bloque y tocá una celda.'
+            : '¡Construye tu proyecto! Seleccioná un bloque y hacé clic en el área de construcción.'
           }
         </CardDescription>
       </CardHeader>
@@ -110,7 +110,7 @@ export function ConstructorGameSimple() {
             {/* Selector de Bloques */}
             <div className="bg-gray-100 dark:bg-gray-800 p-3 sm:p-4 rounded-lg">
               <h3 className="text-xs sm:text-sm font-semibold mb-2">
-                Selecciona el tipo de bloque:
+                Seleccioná el tipo de bloque:
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                 {blockTypes.map((blockType) => (
@@ -119,8 +119,8 @@ export function ConstructorGameSimple() {
                     onClick={() => setSelectedBlock(blockType.type)}
                     className={`p-2 sm:p-3 rounded-lg transition-all duration-200 ${
                       selectedBlock === blockType.type
-                        ? 'bg-blue-500 text-white shadow-lg scale-105'
-                        : 'bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
+                        ? 'bg-primary text-white shadow-lg scale-105'
+                        : 'bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-primary/40 dark:hover:border-primary/40'
                     }`}
                   >
                     <div className="text-lg sm:text-2xl mb-1">{blockType.emoji}</div>
@@ -129,7 +129,7 @@ export function ConstructorGameSimple() {
                 ))}
               </div>
               {selectedBlock && (
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 text-center">
+                <p className="text-xs sm:text-sm text-muted-foreground dark:text-gray-400 mt-2 text-center">
                   Bloque seleccionado: {getBlockEmoji(selectedBlock)} {blockTypes.find(b => b.type === selectedBlock)?.name}
                 </p>
               )}
@@ -138,7 +138,7 @@ export function ConstructorGameSimple() {
             {/* Área de Construcción - Vertical en móvil */}
             <div className="bg-gradient-to-b from-sky-200 to-green-200 dark:from-sky-800 dark:to-green-800 rounded-lg p-3 sm:p-4 relative">
               <h3 className="text-xs sm:text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200 text-center">
-                Área de Construcción - {isMobile ? 'Toca' : 'Haz clic'} en las celdas
+                Área de Construcción - {isMobile ? 'Tocá' : 'Hacé clic'} en las celdas
               </h3>
               <div 
                 className={`grid gap-1 mx-auto ${
@@ -164,7 +164,7 @@ export function ConstructorGameSimple() {
                         hasBlock
                           ? 'border-green-400 bg-white/90 dark:bg-gray-700/90 shadow-md'
                           : selectedBlock
-                          ? 'border-blue-300 bg-blue-50/70 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-800/50'
+                          ? 'border-primary/40 bg-primary/10/70 dark:bg-blue-900/30 hover:bg-primary/10 dark:hover:bg-primary/90/50'
                           : 'border-gray-300 bg-white/50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50'
                       }`}
                       onClick={() => handleCellClick(x, y)}
@@ -179,10 +179,10 @@ export function ConstructorGameSimple() {
                 })}
               </div>
               
-              <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 text-center">
+              <p className="text-xs text-muted-foreground dark:text-gray-300 mt-2 text-center">
                 {isMobile 
-                  ? 'Toca una celda vacía para construir, toca un bloque para remover'
-                  : 'Haz clic en una celda vacía para construir, clic en un bloque para remover'
+                  ? 'Tocá una celda vacía para construir, tocá un bloque para remover'
+                  : 'Hacé clic en una celda vacía para construir, clic en un bloque para remover'
                 }
               </p>
             </div>
@@ -239,8 +239,8 @@ export function ConstructorGameSimple() {
 
             {/* Estadísticas */}
             {blocks.length > 0 && (
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-center">
-                <div className="text-xs sm:text-sm text-blue-800 dark:text-blue-200">
+              <div className="bg-primary/10 dark:bg-blue-900/20 rounded-lg p-3 text-center">
+                <div className="text-xs sm:text-sm text-primary dark:text-blue-200">
                   <p className="font-medium">
                     ¡Genial! Has colocado {blocks.length} bloque{blocks.length !== 1 ? 's' : ''}
                   </p>

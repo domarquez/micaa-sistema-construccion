@@ -106,7 +106,7 @@ export default function AdminMaterials() {
     
     const price = parseFloat(newPrice);
     if (isNaN(price) || price <= 0) {
-      alert("Por favor ingresa un precio válido.");
+      alert("Por favor ingresá un precio válido.");
       return;
     }
 
@@ -115,7 +115,7 @@ export default function AdminMaterials() {
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
-        alert('No se encontró token de autenticación. Inicia sesión nuevamente.');
+        alert('No se encontró token de autenticación. Iniciá sesión nuevamente.');
         setIsSaving(false);
         return;
       }
@@ -178,7 +178,7 @@ export default function AdminMaterials() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Gestión de Precios de Materiales</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Administra los precios base de todos los materiales del sistema
           </p>
         </div>
@@ -282,7 +282,7 @@ export default function AdminMaterials() {
                       <div>
                         <div className="font-medium">{material.name}</div>
                         {material.description && (
-                          <div className="text-sm text-gray-500">{material.description}</div>
+                          <div className="text-sm text-muted-foreground">{material.description}</div>
                         )}
                       </div>
                     </TableCell>
@@ -300,7 +300,7 @@ export default function AdminMaterials() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditPrice(material)}
-                        className="hover:bg-blue-50 hover:border-blue-300"
+                        className="hover:bg-primary/10 hover:border-primary/40"
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Editar Precio
@@ -319,18 +319,18 @@ export default function AdminMaterials() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
             <h3 className="text-lg font-semibold mb-4">Editar Precio Base</h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Actualiza el precio base del material seleccionado
             </p>
             
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium block">Material</label>
-                <p className="text-gray-600">{editingMaterial.name}</p>
+                <p className="text-muted-foreground">{editingMaterial.name}</p>
               </div>
               <div>
                 <label className="text-sm font-medium block">Precio Actual</label>
-                <p className="text-gray-600">Bs. {Number(editingMaterial.price).toFixed(2)}</p>
+                <p className="text-muted-foreground">Bs. {Number(editingMaterial.price).toFixed(2)}</p>
               </div>
               <div>
                 <label className="text-sm font-medium block">Nuevo Precio</label>
@@ -350,7 +350,7 @@ export default function AdminMaterials() {
               <button
                 onClick={handleSavePrice}
                 disabled={isSaving}
-                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
+                className="flex-1 bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center"
               >
                 {isSaving ? (
                   <>

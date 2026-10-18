@@ -216,7 +216,7 @@ export async function importAPUCompositions() {
 
   } catch (error) {
     console.error("Error en importación del sistema MICAA:", error);
-    throw new Error("Error accediendo al sistema MICAA. Verifica la conexión a internet.");
+    throw new Error("Error accediendo al sistema MICAA. Verificá la conexión a internet.");
   }
 }
 

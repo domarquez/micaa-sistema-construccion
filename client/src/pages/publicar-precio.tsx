@@ -90,14 +90,14 @@ export default function PublicarPrecioPage() {
 
   if (isAnonymous) {
     return (
-      <div className="mx-auto max-w-xl px-4 py-10 text-center">
+      <div className="mx-auto max-w-4xl px-4 py-10 text-center">
         <h1 className="text-[20px] font-semibold">Publicar precio</h1>
-        <p className="mt-2 text-[14px] text-[var(--micaa-muted)]">
+        <p className="mt-2 text-base text-[var(--micaa-muted)]">
           Los invitados solo miran. Entrá para cargar un precio de persona o ferretería.
         </p>
         <Link
           href="/login"
-          className="mt-6 inline-flex h-10 items-center rounded-lg bg-[var(--micaa-accent)] px-4 text-[14px] text-[var(--micaa-accent-fg)]"
+          className="mt-6 inline-flex h-10 items-center rounded-lg bg-[var(--micaa-accent)] px-4 text-base text-[var(--micaa-accent-fg)]"
         >
           Entrar
         </Link>
@@ -106,9 +106,9 @@ export default function PublicarPrecioPage() {
   }
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8">
+    <div className="mx-auto max-w-4xl px-4 py-8">
       <h1 className="text-[20px] font-semibold">Publicar precio</h1>
-      <p className="mt-1 text-[12px] text-[var(--micaa-muted)]">
+      <p className="mt-1 text-sm text-[var(--micaa-muted)]">
         Buscá el material, poné el precio en Bs y elegí ciudad (obligatoria) y si es visible en la ficha.
       </p>
 
@@ -117,12 +117,12 @@ export default function PublicarPrecioPage() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Buscar material…"
-          className="h-10 flex-1 rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
+          className="h-10 flex-1 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
         />
         <button
           type="button"
           onClick={search}
-          className="h-10 rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
+          className="h-10 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
         >
           Buscar
         </button>
@@ -134,7 +134,7 @@ export default function PublicarPrecioPage() {
             <button
               key={h.id}
               type="button"
-              className="block w-full border-b border-[var(--micaa-line)] px-3 py-2 text-left text-[14px] last:border-0 hover:bg-black/[0.02]"
+              className="block w-full border-b border-[var(--micaa-line)] px-3 py-2 text-left text-base last:border-0 hover:bg-black/[0.02]"
               onClick={() => {
                 setMaterialId(h.id);
                 setMaterialName(h.name);
@@ -151,7 +151,7 @@ export default function PublicarPrecioPage() {
       )}
 
       <form onSubmit={submit} className="mt-6 space-y-3">
-        <div className="text-[12px] text-[var(--micaa-muted)]">
+        <div className="text-sm text-[var(--micaa-muted)]">
           {materialId ? (
             <>
               Elegido: <span className="text-[var(--micaa-fg)]">{titleCaseMaterial(materialName)}</span>
@@ -167,11 +167,11 @@ export default function PublicarPrecioPage() {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           placeholder="Precio Bs"
-          className="h-10 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
+          className="h-10 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base"
           required
         />
         <div>
-          <label className="mb-1 block text-[12px] text-[var(--micaa-muted)]">
+          <label className="mb-1 block text-sm text-[var(--micaa-muted)]">
             Ciudad <span className="text-red-500">*</span>
           </label>
           <select
@@ -181,7 +181,7 @@ export default function PublicarPrecioPage() {
               setCityState(next);
             }}
             required
-            className="h-10 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-[14px]"
+            className="h-10 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base"
           >
             {CITY_LIST.map((c) => (
               <option key={c} value={c}>
@@ -190,14 +190,14 @@ export default function PublicarPrecioPage() {
             ))}
           </select>
         </div>
-        <label className="flex items-center gap-2 text-[14px]">
+        <label className="flex items-center gap-2 text-base">
           <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
           Visible en la ficha pública
         </label>
         <button
           type="submit"
           disabled={saving}
-          className="h-10 w-full rounded-lg bg-[var(--micaa-accent)] text-[14px] font-medium text-[var(--micaa-accent-fg)] disabled:opacity-60"
+          className="h-10 w-full rounded-lg bg-[var(--micaa-accent)] text-base font-medium text-[var(--micaa-accent-fg)] disabled:opacity-60"
         >
           {saving ? "Guardando…" : "Guardar precio"}
         </button>

@@ -40,7 +40,7 @@ try {
   // Fallback for older browsers
   const root = document.getElementById("root");
   if (root) {
-    root.innerHTML = '<div style="padding: 20px; text-align: center;"><h2>MICAA - Sistema de Construcción</h2><p>Cargando aplicación...</p><p>Si no carga, intente actualizar la página.</p></div>';
+    root.innerHTML = '<div style="padding: 20px; text-align: center;"><h2>MICAA · Precios y presupuestos de construcción</h2><p>Cargando aplicación...</p><p>Si no carga, actualizá la página.</p></div>';
   }
 }
 

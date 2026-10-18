@@ -74,7 +74,7 @@ export default function Suppliers() {
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
           Empresas Proveedoras
         </h1>
-        <p className="text-lg text-gray-600">
+        <p className="text-lg text-muted-foreground">
           Encuentra proveedores de materiales de construcción con precios competitivos
         </p>
       </div>
@@ -128,7 +128,7 @@ export default function Suppliers() {
             ))}
           </select>
 
-          <div className="text-sm text-gray-600 flex items-center">
+          <div className="text-sm text-muted-foreground flex items-center">
             {filteredSuppliers.length} empresas encontradas
           </div>
         </div>
@@ -173,13 +173,13 @@ export default function Suppliers() {
                         </Badge>
                       )}
                       {supplier.speciality && (
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                        <Badge variant="secondary" className="bg-primary/10 text-primary">
                           {getSpecialityLabel(supplier.speciality)}
                         </Badge>
                       )}
                     </div>
                     {supplier.description && (
-                      <p className="text-sm text-gray-600 mt-2 line-clamp-3">
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-3">
                         {supplier.description}
                       </p>
                     )}
@@ -189,7 +189,7 @@ export default function Suppliers() {
               <div className="space-y-3">
                 {/* Location */}
                 {supplier.city && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     {supplier.city}
                     {supplier.address && `, ${supplier.address}`}
@@ -279,8 +279,8 @@ export default function Suppliers() {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             No se encontraron empresas
           </h3>
-          <p className="text-gray-600">
-            Intenta ajustar los filtros de búsqueda para encontrar más resultados
+          <p className="text-muted-foreground">
+            Intentá ajustar los filtros de búsqueda para encontrar más resultados
           </p>
         </div>
       )}

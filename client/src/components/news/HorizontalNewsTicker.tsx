@@ -5,7 +5,7 @@ import { ExternalLink, Newspaper } from 'lucide-react';
 import type { ConstructionNews } from '@shared/schema';
 
 const categoryColors = {
-  economia: 'bg-blue-100 text-blue-700 border-blue-300',
+  economia: 'bg-primary/10 text-primary border-primary/40',
   gobierno: 'bg-green-100 text-green-700 border-green-300', 
   obras: 'bg-orange-100 text-orange-700 border-orange-300',
   tecnologia: 'bg-purple-100 text-purple-700 border-purple-300',
@@ -77,10 +77,10 @@ export function HorizontalNewsTicker() {
   if (isLoading) {
     return (
       <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
-        <div className="bg-blue-50 rounded-lg p-2 border border-blue-200">
+        <div className="bg-primary/10 rounded-lg p-2 border border-primary/40">
           <div className="flex items-center gap-2">
-            <Newspaper className="w-4 h-4 text-blue-600 animate-pulse" />
-            <span className="text-sm text-blue-700">Cargando noticias...</span>
+            <Newspaper className="w-4 h-4 text-primary animate-pulse" />
+            <span className="text-sm text-primary">Cargando noticias...</span>
           </div>
         </div>
       </div>
@@ -93,13 +93,13 @@ export function HorizontalNewsTicker() {
 
   return (
     <div className="mobile-padding mb-2 sm:mb-3 md:mb-4">
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-primary/40 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-100 border-b border-blue-200">
+        <div className="flex items-center justify-between px-2 sm:px-3 py-1 sm:py-1.5 bg-primary/10 border-b border-primary/40">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-blue-700" />
-            <span className="text-xs sm:text-sm font-semibold text-blue-800">
+            <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+            <span className="text-xs sm:text-sm font-semibold text-primary">
               Noticias del Sector
             </span>
           </div>
@@ -137,7 +137,7 @@ export function HorizontalNewsTicker() {
                     >
                       {categoryLabels[category]}
                     </Badge>
-                    <span className="text-[8px] sm:text-[9px] text-gray-500">
+                    <span className="text-[8px] sm:text-[9px] text-muted-foreground">
                       {newsItem.publishedAt ? formatTimeAgo(newsItem.publishedAt) : ''}
                     </span>
                   </div>
@@ -148,17 +148,17 @@ export function HorizontalNewsTicker() {
                   </h4>
 
                   {/* Summary */}
-                  <p className="text-[9px] sm:text-xs text-gray-600 line-clamp-2 text-left">
+                  <p className="text-[9px] sm:text-xs text-muted-foreground line-clamp-2 text-left">
                     {newsItem.summary}
                   </p>
 
                   {/* Source and Link */}
                   <div className="flex items-center justify-between">
-                    <span className="text-[8px] sm:text-[9px] text-blue-600 font-medium">
+                    <span className="text-[8px] sm:text-[9px] text-primary font-medium">
                       {newsItem.sourceName}
                     </span>
                     {newsItem.sourceUrl && (
-                      <ExternalLink className="w-3 h-3 text-blue-600 hover:text-blue-700" />
+                      <ExternalLink className="w-3 h-3 text-primary hover:text-primary" />
                     )}
                   </div>
                 </div>
@@ -169,7 +169,7 @@ export function HorizontalNewsTicker() {
 
         {/* Pause indicator */}
         {isPaused && (
-          <div className="absolute top-1 right-1 text-[8px] text-blue-600 bg-white px-1 rounded">
+          <div className="absolute top-1 right-1 text-[8px] text-primary bg-white px-1 rounded">
             Pausado
           </div>
         )}

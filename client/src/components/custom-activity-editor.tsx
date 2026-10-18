@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ListSkeleton } from "@/components/ui/states";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -302,7 +303,7 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
   const grandTotal = materialsTotal + laborTotal + equipmentTotal;
 
   if (isLoading) {
-    return <div className="p-4">Cargando composiciones...</div>;
+    return <div className="p-4"><ListSkeleton rows={4} /></div>;
   }
 
   return (
@@ -316,7 +317,7 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
           </Button>
           <div>
             <h1 className="text-2xl font-bold">{activity.name}</h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {activity.unit} • {activity.phase?.name}
             </p>
           </div>
@@ -338,19 +339,19 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">Materiales</p>
-              <p className="text-lg font-bold text-blue-600">{formatCurrency(materialsTotal)}</p>
+              <p className="text-sm text-muted-foreground">Materiales</p>
+              <p className="text-lg font-bold text-primary">{formatCurrency(materialsTotal)}</p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Mano de Obra</p>
+              <p className="text-sm text-muted-foreground">Mano de Obra</p>
               <p className="text-lg font-bold text-green-600">{formatCurrency(laborTotal)}</p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Equipos</p>
+              <p className="text-sm text-muted-foreground">Equipos</p>
               <p className="text-lg font-bold text-orange-600">{formatCurrency(equipmentTotal)}</p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Total</p>
+              <p className="text-sm text-muted-foreground">Total</p>
               <p className="text-xl font-bold text-primary">{formatCurrency(grandTotal)}</p>
             </div>
           </div>
@@ -638,7 +639,7 @@ export default function CustomActivityEditor({ activity, onBack }: CustomActivit
             {newComposition.description && (
               <div className="p-3 bg-gray-50 rounded-lg">
                 <p className="text-sm font-medium">{newComposition.description}</p>
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-muted-foreground">
                   {newComposition.quantity} {newComposition.unit} × Bs. {newComposition.unitCost} = 
                   Bs. {(parseFloat(newComposition.quantity || "0") * parseFloat(newComposition.unitCost || "0")).toFixed(2)}
                 </p>
@@ -675,7 +676,7 @@ function CompositionTable({
 }) {
   if (compositions.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-muted-foreground">
         No hay composiciones agregadas aún
       </div>
     );

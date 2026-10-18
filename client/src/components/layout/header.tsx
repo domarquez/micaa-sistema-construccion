@@ -73,7 +73,7 @@ export default function AppHeader() {
             <MicaaLogo size="sm" showText={false} className="md:hidden scale-75 sm:scale-90 flex-shrink-0" />
             <MicaaLogo size="md" showText={true} className="hidden md:block flex-shrink-0" />
             <div className="hidden lg:block">
-              <p className="text-xs text-gray-600">Sistema de Cómputos y Presupuestos</p>
+              <p className="text-xs text-muted-foreground">Sistema de Cómputos y Presupuestos</p>
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@ export default function AppHeader() {
           {isAnonymous ? (
             /* Anonymous User Header - Mobile Optimized */
             <div className="flex items-center gap-1 min-w-0">
-              <Badge variant="outline" className="text-orange-600 border-orange-600 text-[10px] py-0 px-1 hidden md:flex items-center flex-shrink-0">
+              <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs py-0 px-1 hidden md:flex items-center flex-shrink-0">
                 <AlertTriangle className="w-2.5 h-2.5 mr-0.5" />
                 <span>Anónimo</span>
               </Badge>
@@ -113,7 +113,7 @@ export default function AppHeader() {
                   size="sm" 
                   variant="outline"
                   onClick={() => window.location.href = "/login"}
-                  className="text-[9px] sm:text-[10px] md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 flex-shrink-0"
+                  className="text-[9px] sm:text-xs md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 flex-shrink-0"
                 >
                   <User className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:mr-0.5" />
                   <span className="hidden md:inline">Login</span>
@@ -121,7 +121,7 @@ export default function AppHeader() {
                 <Button 
                   size="sm"
                   onClick={() => window.location.href = "/register"}
-                  className="text-[9px] sm:text-[10px] md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 bg-orange-600 hover:bg-orange-700 flex-shrink-0"
+                  className="text-[9px] sm:text-xs md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 bg-orange-600 hover:bg-orange-700 flex-shrink-0"
                 >
                   <UserPlus className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:mr-0.5" />
                   <span className="hidden md:inline">Sign Up</span>
@@ -191,7 +191,7 @@ export default function AppHeader() {
                     <div className="text-xs font-medium text-green-600 mb-1">
                       Opciones disponibles:
                     </div>
-                    <div className="grid grid-cols-2 gap-1 text-xs text-gray-600">
+                    <div className="grid grid-cols-2 gap-1 text-xs text-muted-foreground">
                       <span>• Crear presupuestos</span>
                       <span>• Ver materiales</span>
                       <span>• Calcular APUs</span>
@@ -264,7 +264,7 @@ export default function AppHeader() {
               {/* Main Navigation */}
               <div className="grid grid-cols-2 gap-3">
                 <div 
-                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  className="flex items-center text-muted-foreground hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
                     window.location.href = "/";
                     setMobileMenuOpen(false);
@@ -274,7 +274,7 @@ export default function AppHeader() {
                   <span>Inicio</span>
                 </div>
                 <div 
-                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  className="flex items-center text-muted-foreground hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
                     window.location.href = "/materials";
                     setMobileMenuOpen(false);
@@ -289,7 +289,7 @@ export default function AppHeader() {
               <>
               <div className="grid grid-cols-2 gap-3">
                 <div 
-                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  className="flex items-center text-muted-foreground hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
                     window.location.href = "/activities";
                     setMobileMenuOpen(false);
@@ -299,7 +299,7 @@ export default function AppHeader() {
                   <span>Actividades</span>
                 </div>
                 <div 
-                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  className="flex items-center text-muted-foreground hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
                     window.location.href = "/budgets";
                     setMobileMenuOpen(false);
@@ -312,7 +312,7 @@ export default function AppHeader() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div 
-                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  className="flex items-center text-muted-foreground hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
                     window.location.href = "/marketplace";
                     setMobileMenuOpen(false);
@@ -322,7 +322,7 @@ export default function AppHeader() {
                   <span>Marketplace</span>
                 </div>
                 <div 
-                  className="flex items-center text-gray-600 hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
+                  className="flex items-center text-muted-foreground hover:text-orange-600 cursor-pointer text-sm py-2 px-2 rounded hover:bg-gray-50 transition-colors"
                   onClick={() => {
                     window.location.href = "/tools";
                     setMobileMenuOpen(false);
@@ -341,7 +341,7 @@ export default function AppHeader() {
                     setMobileMenuOpen(false);
                   }}
                 >
-                  Inscríbete con WhatsApp
+                  Inscribite con WhatsApp
                 </div>
               ) : null}
 
@@ -366,9 +366,9 @@ export default function AppHeader() {
                 <ContactForm 
                   triggerText="Contacto"
                   triggerVariant="ghost"
-                  className="justify-start p-2 text-left text-gray-600 hover:text-orange-600 text-sm rounded hover:bg-gray-50 transition-colors"
+                  className="justify-start p-2 text-left text-muted-foreground hover:text-orange-600 text-sm rounded hover:bg-gray-50 transition-colors"
                 />
-                <div className="flex items-center text-gray-600 text-sm py-2 px-2">
+                <div className="flex items-center text-muted-foreground text-sm py-2 px-2">
                   <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span>Ayuda</span>
                 </div>

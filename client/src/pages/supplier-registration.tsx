@@ -178,7 +178,7 @@ export default function SupplierRegistration() {
       } catch (error) {
         toast({
           title: "Error",
-          description: "Error al subir el logo. Intenta de nuevo.",
+          description: "Error al subir el logo. Intentá de nuevo.",
           variant: "destructive",
         });
         return;
@@ -217,10 +217,10 @@ export default function SupplierRegistration() {
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             {company ? "Mi Empresa Proveedora" : "Registro de Empresa Proveedora"}
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground">
             {company 
               ? "Gestiona la información de tu empresa y conecta con arquitectos y constructores"
-              : "Registra tu empresa para ofrecer materiales de construcción con precios competitivos"
+              : "Registrá tu empresa para ofrecer materiales de construcción con precios competitivos"
             }
           </p>
         </div>
@@ -234,7 +234,7 @@ export default function SupplierRegistration() {
                   Información de la Empresa
                 </CardTitle>
                 <CardDescription>
-                  Completa los datos de tu empresa para que los clientes puedan contactarte
+                  Completá los datos de tu empresa para que los clientes puedan contactarte
                 </CardDescription>
               </div>
               {company && (
@@ -282,7 +282,7 @@ export default function SupplierRegistration() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecciona tipo de negocio" />
+                              <SelectValue placeholder="Seleccioná tipo de negocio" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -310,7 +310,7 @@ export default function SupplierRegistration() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecciona tu especialidad" />
+                              <SelectValue placeholder="Seleccioná tu especialidad" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -391,7 +391,7 @@ export default function SupplierRegistration() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecciona ciudad" />
+                              <SelectValue placeholder="Seleccioná ciudad" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -516,11 +516,11 @@ export default function SupplierRegistration() {
                           className="w-20 h-20 object-cover rounded-lg border"
                         />
                         <div>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             {logoPreview ? "Vista previa" : "Logo actual"}
                           </p>
                           <p className="text-xs text-gray-400">
-                            {logoPreview ? "Archivo seleccionado para subir" : "Sube una nueva imagen para reemplazarlo"}
+                            {logoPreview ? "Archivo seleccionado para subir" : "Subí una nueva imagen para reemplazarlo"}
                           </p>
                           {logoPreview && (
                             <Button
@@ -551,8 +551,8 @@ export default function SupplierRegistration() {
                         />
                         <label htmlFor="logo-upload" className="cursor-pointer">
                           <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                          <p className="text-sm text-gray-600">
-                            Haz clic para subir tu logotipo
+                          <p className="text-sm text-muted-foreground">
+                            Hacé clic para subir tu logotipo
                           </p>
                           <p className="text-xs text-gray-400 mt-1">
                             PNG, JPG hasta 5MB
@@ -593,9 +593,9 @@ export default function SupplierRegistration() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <h3 className="font-semibold text-blue-900">Membresía</h3>
-                    <p className="text-blue-600 capitalize">{company.membershipType}</p>
+                  <div className="text-center p-4 bg-primary/10 rounded-lg">
+                    <h3 className="font-semibold text-primary">Membresía</h3>
+                    <p className="text-primary capitalize">{company.membershipType}</p>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <h3 className="font-semibold text-green-900">Estado</h3>

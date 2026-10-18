@@ -111,7 +111,7 @@ export default function Marketplace() {
       case 'premium':
         return <Badge className="bg-yellow-500 text-white"><Zap className="w-3 h-3 mr-1" />Premium</Badge>;
       case 'pro':
-        return <Badge className="bg-blue-500 text-white">Pro</Badge>;
+        return <Badge className="bg-primary text-white">Pro</Badge>;
       default:
         return <Badge variant="outline">Free</Badge>;
     }
@@ -133,7 +133,7 @@ export default function Marketplace() {
       <div className="flex flex-col space-y-4">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-on-surface">Marketplace de Materiales</h2>
-          <p className="text-sm md:text-base text-gray-600">Encuentra las mejores ofertas de materiales de construcción</p>
+          <p className="text-sm md:text-base text-muted-foreground">Encuentra las mejores ofertas de materiales de construcción</p>
         </div>
 
         {/* Filtros */}
@@ -169,7 +169,7 @@ export default function Marketplace() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Materiales con Ofertas</p>
+                <p className="text-sm text-muted-foreground">Materiales con Ofertas</p>
                 <p className="text-2xl font-bold text-on-surface">{filteredMaterials.length}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -183,12 +183,12 @@ export default function Marketplace() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Empresas Activas</p>
+                <p className="text-sm text-muted-foreground">Empresas Activas</p>
                 <p className="text-2xl font-bold text-on-surface">
                   {new Set(filteredMaterials.flatMap(m => m.offers.map(o => o.supplier.id))).size}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                 <Store className="w-6 h-6 text-primary" />
               </div>
             </div>
@@ -199,7 +199,7 @@ export default function Marketplace() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Ofertas Totales</p>
+                <p className="text-sm text-muted-foreground">Ofertas Totales</p>
                 <p className="text-2xl font-bold text-on-surface">
                   {filteredMaterials.reduce((total, material) => total + material.offers.length, 0)}
                 </p>
@@ -232,11 +232,11 @@ export default function Marketplace() {
                     <CardTitle className="text-lg">{material.name}</CardTitle>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="outline">{material.category.name}</Badge>
-                      <span className="text-sm text-gray-600">Precio base: {formatCurrency(material.price)}</span>
+                      <span className="text-sm text-muted-foreground">Precio base: {formatCurrency(material.price)}</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">Unidad: {material.unit}</p>
+                    <p className="text-sm text-muted-foreground">Unidad: {material.unit}</p>
                     <p className="text-sm font-medium text-green-600">
                       {material.offers.length} oferta{material.offers.length !== 1 ? 's' : ''} disponible{material.offers.length !== 1 ? 's' : ''}
                     </p>
@@ -252,12 +252,12 @@ export default function Marketplace() {
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
-                              <Store className="w-4 h-4 text-gray-600" />
+                              <Store className="w-4 h-4 text-muted-foreground" />
                               <span className="font-medium text-sm">{offer.supplier.companyName}</span>
                               {getMembershipBadge(offer.supplier.membershipType)}
                             </div>
                             {offer.supplier.speciality && (
-                              <span className="text-xs text-gray-500 ml-6">{getSpecialityLabel(offer.supplier.speciality)}</span>
+                              <span className="text-xs text-muted-foreground ml-6">{getSpecialityLabel(offer.supplier.speciality)}</span>
                             )}
                           </div>
                           {savings > 0 && (
@@ -272,18 +272,18 @@ export default function Marketplace() {
                             <span className="text-lg font-bold text-green-600">
                               {formatCurrency(offer.price)}
                             </span>
-                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <Star className="w-3 h-3 fill-current" />
                               <span>{offer.supplier.rating.toFixed(1)}</span>
                             </div>
                           </div>
                           
-                          <div className="flex items-center gap-1 text-xs text-gray-600">
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <MapPin className="w-3 h-3" />
                             <span>{offer.supplier.city}</span>
                           </div>
                           
-                          <div className="flex items-center gap-4 text-xs text-gray-600">
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               <span>{offer.leadTimeDays} días</span>
@@ -326,7 +326,7 @@ export default function Marketplace() {
             <CardContent className="py-12 text-center">
               <Store className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No hay ofertas disponibles</h3>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 {searchTerm || selectedCategory !== "all" 
                   ? "No se encontraron ofertas para los filtros seleccionados."
                   : "Aún no hay empresas ofreciendo precios para materiales."}

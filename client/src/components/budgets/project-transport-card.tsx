@@ -63,7 +63,7 @@ export default function ProjectTransportCard({ project, onProjectChange, compact
       qc.invalidateQueries({ queryKey: ["/api/projects"] });
       const st = data.status;
       if (body.mode === "auto" && !st?.ok) {
-        toast({ title: "No se pudo ubicar la dirección", description: "Elige la zona o ingresa los km a mano.", variant: "destructive" });
+        toast({ title: "No se pudo ubicar la dirección", description: "Elegí la zona o ingresá los km a mano.", variant: "destructive" });
       } else {
         toast({ title: okMsg, description: transportSummaryText({ ...project, ...data.project }) });
       }
@@ -91,14 +91,14 @@ export default function ProjectTransportCard({ project, onProjectChange, compact
         </button>
       </div>
       {extra > 0 && (
-        <p className="mt-1 text-[11px] text-slate-500">
+        <p className="mt-1 text-sm text-slate-500">
           Se suma «Transporte y movilización» al presupuesto: materiales +{materialsPct(extra, 1).toLocaleString("es-BO", { maximumFractionDigits: 2 })} %
           (× factor de ciudad) y {faresPerDay(extra)} pasaje(s) extra por obrero·día.
         </p>
       )}
       {open && (
         <div className="mt-3 space-y-3">
-          <p className="text-[11px] text-slate-500">
+          <p className="text-sm text-slate-500">
             {BASE_PRICE_NOTE} {kz ? `Km cero: ${kz.zeroLabel} (≈ ${kz.radiusKm} km por calle desde ${kz.center.name}).` : ""}
             {project.geocodedAddress ? ` Dirección encontrada: ${String(project.geocodedAddress).slice(0, 120)}.` : ""}
             {project.transportMethod ? ` Método: ${TRANSPORT_METHOD_LABELS[project.transportMethod as TransportMethod] ?? project.transportMethod}.` : ""}
@@ -138,7 +138,7 @@ export default function ProjectTransportCard({ project, onProjectChange, compact
           </div>
           {showMap && (
             <Suspense fallback={<div className="h-56 grid place-items-center text-slate-400">Cargando mapa…</div>}>
-              <p className="text-[11px] text-slate-500">Toca el mapa donde está la obra para recalcular la distancia.</p>
+              <p className="text-sm text-slate-500">Tocá el mapa donde está la obra para recalcular la distancia.</p>
               <ProjectLocationMap
                 center={center}
                 kmZero={kz ? { lat: kz.center.lat, lng: kz.center.lng, name: kz.center.name, radiusKm: kz.radiusKm } : null}

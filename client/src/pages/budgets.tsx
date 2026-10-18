@@ -132,8 +132,8 @@ export default function Budgets() {
       toast({
         title: "Error al eliminar",
         description: isAnonymous 
-          ? "No se pudo eliminar el presupuesto. Inténtelo nuevamente."
-          : "No se pudo eliminar el proyecto. Inténtelo nuevamente.",
+          ? "No se pudo eliminar el presupuesto. Intentalo nuevamente."
+          : "No se pudo eliminar el proyecto. Intentalo nuevamente.",
         variant: "destructive",
       });
     },
@@ -244,7 +244,7 @@ export default function Budgets() {
       } catch (fallbackError) {
         toast({
           title: "Error al generar PDF",
-          description: "No se pudo crear el documento. Verifique su navegador.",
+          description: "No se pudo crear el documento. Verificá su navegador.",
           variant: "destructive",
         });
       }
@@ -699,7 +699,7 @@ export default function Budgets() {
           <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-on-surface">
             {isAnonymous ? "Presupuestos (Modo Prueba)" : "Gestión de Presupuestos"}
           </h2>
-          <p className="text-xs sm:text-sm md:text-base text-gray-600">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground">
             {isAnonymous 
               ? "Crear presupuestos temporales - regístrate para guardarlos permanentemente"
               : "Crear y administrar presupuestos de construcción"
@@ -802,7 +802,7 @@ export default function Budgets() {
                               <div className="text-xs sm:text-sm font-medium text-gray-900">
                                 {budget.project.name}
                               </div>
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-muted-foreground">
                                 {budget.project.location || budget.project.city}
                               </div>
                             </div>
@@ -829,7 +829,7 @@ export default function Budgets() {
                              budget.status === 'completed' ? 'Completado' : 'Borrador'}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-gray-500 text-xs">
+                        <TableCell className="text-muted-foreground text-xs">
                           {formatRelativeTime(budget.createdAt!)}
                         </TableCell>
                         <TableCell>
@@ -838,7 +838,7 @@ export default function Budgets() {
                               variant="ghost"
                               size="icon"
                               onClick={() => window.location.href = `/budgets/${budget.id}`}
-                              className="text-blue-600 hover:text-blue-800 h-7 w-7 sm:h-8 sm:w-8"
+                              className="text-primary hover:text-primary h-7 w-7 sm:h-8 sm:w-8"
                               title="Ver detalles del presupuesto"
                             >
                               <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -905,7 +905,7 @@ export default function Budgets() {
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       <Calculator className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                       <p>No hay presupuestos creados</p>
                       <p className="text-sm">Cree su primer presupuesto para comenzar</p>
@@ -958,10 +958,10 @@ export default function Budgets() {
                         <h3 className="font-semibold text-sm text-on-surface truncate mb-1">
                           {budget.project.name}
                         </h3>
-                        <p className="text-xs text-gray-600 truncate">
+                        <p className="text-xs text-muted-foreground truncate">
                           {budget.project.client || 'Sin cliente'}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           {budget.createdAt ? formatRelativeTime(budget.createdAt) : 'Fecha no disponible'}
                         </p>
                       </div>
@@ -969,19 +969,19 @@ export default function Budgets() {
                     
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-600">Fase:</span>
+                        <span className="text-xs text-muted-foreground">Fase:</span>
                         <span className="text-xs font-medium">
                           {budget.phase?.name || 'Multifase'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-600">Total:</span>
+                        <span className="text-xs text-muted-foreground">Total:</span>
                         <span className="text-sm font-bold text-primary">
                           {formatCurrency(parseFloat(budget.total))}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-600">Estado:</span>
+                        <span className="text-xs text-muted-foreground">Estado:</span>
                         <Badge variant="secondary" className="text-xs px-2 py-0">
                           {budget.status === 'active' ? 'Activo' : 'Inactivo'}
                         </Badge>
@@ -993,7 +993,7 @@ export default function Budgets() {
                         variant="ghost"
                         size="icon"
                         onClick={() => window.location.href = `/budgets/${budget.id}`}
-                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 touch-target h-7 w-7"
+                        className="text-primary hover:text-primary hover:bg-primary/10 touch-target h-7 w-7"
                         title="Ver detalles"
                       >
                         <Eye className="w-3 h-3" />
@@ -1052,7 +1052,7 @@ export default function Budgets() {
             ) : (
               <div className="text-center py-12">
                 <Calculator className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <p className="text-gray-500 mb-2">No hay presupuestos creados</p>
+                <p className="text-muted-foreground mb-2">No hay presupuestos creados</p>
                 <p className="text-sm text-gray-400 mb-4">Cree su primer presupuesto para comenzar</p>
                 <Button
                   onClick={() => setShowForm(true)}

@@ -257,7 +257,7 @@ export default function Materials() {
           <h2 className="text-xl md:text-2xl font-bold text-on-surface">
             {user && (user as any)?.role === "admin" ? "Gestión de Materiales" : "Catálogo de Materiales"}
           </h2>
-          <p className="text-sm md:text-base text-gray-600">
+          <p className="text-sm md:text-base text-muted-foreground">
             {user && (user as any)?.role === "admin" ? "Administrar materiales y precios" : "Explorar materiales y precios para tus proyectos"}
           </p>
         </div>
@@ -425,14 +425,14 @@ export default function Materials() {
                         <TableCell>
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center">
-                              <IconComponent className="w-4 h-4 text-gray-600" />
+                              <IconComponent className="w-4 h-4 text-muted-foreground" />
                             </div>
                             <div>
                               <div className="text-sm font-medium text-gray-900">
                                 {material.name}
                               </div>
                               {material.description && (
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-muted-foreground">
                                   {material.description}
                                 </div>
                               )}
@@ -451,18 +451,18 @@ export default function Materials() {
                             </span>
                             {material.hasCustomPrice && material.customPrice && (
                               <>
-                                <span className="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded-md border border-blue-200">
+                                <span className="text-primary font-bold bg-primary/10 px-2 py-1 rounded-md border border-primary/40">
                                   {formatCurrency(Number(material.customPrice.customPrice))}
                                 </span>
-                                <User className="w-4 h-4 text-blue-600" />
+                                <User className="w-4 h-4 text-primary" />
                               </>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="text-gray-500">
+                        <TableCell className="text-muted-foreground">
                           {material.unit}
                         </TableCell>
-                        <TableCell className="text-gray-500 hidden sm:table-cell">
+                        <TableCell className="text-muted-foreground hidden sm:table-cell">
                           {formatRelativeTime(material.lastUpdated!)}
                         </TableCell>
                         <TableCell>
@@ -486,7 +486,7 @@ export default function Materials() {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => handleCustomizePrice(material)}
-                                    className="text-blue-600 hover:text-blue-900"
+                                    className="text-primary hover:text-primary"
                                     title="Personalizar precio"
                                   >
                                     <User className="w-4 h-4" />
@@ -521,8 +521,8 @@ export default function Materials() {
                             )}
                             {/* Mensaje para usuarios anónimos */}
                             {!user && (
-                              <div className="text-xs text-gray-500 italic">
-                                Inicia sesión para personalizar precios
+                              <div className="text-xs text-muted-foreground italic">
+                                Iniciá sesión para personalizar precios
                               </div>
                             )}
                           </div>
@@ -532,10 +532,10 @@ export default function Materials() {
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                       <p>No se encontraron materiales</p>
-                      <p className="text-sm">Intente ajustar los filtros de búsqueda</p>
+                      <p className="text-sm">Intentá ajustar los filtros de búsqueda</p>
                     </TableCell>
                   </TableRow>
                 )}
@@ -567,7 +567,7 @@ export default function Materials() {
             <div className="space-y-4">
               <div>
                 <Label>Precio actual del sistema:</Label>
-                <p className="text-lg font-semibold text-gray-600">
+                <p className="text-lg font-semibold text-muted-foreground">
                   {customizingMaterial && formatCurrency(customizingMaterial.price)}
                 </p>
               </div>
@@ -583,10 +583,10 @@ export default function Materials() {
                   placeholder="0.00"
                 />
               </div>
-              <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+              <div className="bg-primary/10 dark:bg-blue-950 border border-primary/40 dark:border-blue-800 rounded-lg p-3">
                 <div className="flex items-start space-x-2">
-                  <User className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <User className="w-4 h-4 text-primary dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-primary dark:text-blue-300">
                     Este precio personalizado solo será visible para ti y se aplicará únicamente en tus proyectos. 
                     Otros usuarios seguirán viendo el precio original del sistema.
                   </p>

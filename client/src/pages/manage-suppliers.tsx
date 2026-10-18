@@ -144,7 +144,7 @@ export default function ManageSuppliers() {
   };
 
   const deleteSupplier = (id: number) => {
-    if (confirm("¿Estás seguro de que quieres eliminar esta empresa?")) {
+    if (confirm("¿Estás seguro de que querés eliminar esta empresa?")) {
       deleteSupplierMutation.mutate(id);
     }
   };
@@ -165,12 +165,12 @@ export default function ManageSuppliers() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Gestión de Empresas Proveedoras</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Total: {suppliers.length} empresas | Mostrando: {filteredSuppliers.length}
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Users className="w-5 h-5 text-blue-600" />
+          <Users className="w-5 h-5 text-primary" />
           <span className="text-sm font-medium">
             {suppliers.filter((s: SupplierCompany) => s.is_active).length} activas
           </span>
@@ -296,7 +296,7 @@ export default function ManageSuppliers() {
                           </div>
                         )}
                         {supplier.website && (
-                          <div className="text-blue-600 truncate max-w-32">
+                          <div className="text-primary truncate max-w-32">
                             {supplier.website}
                           </div>
                         )}
@@ -312,7 +312,7 @@ export default function ManageSuppliers() {
                           </div>
                         )}
                         {supplier.city && (
-                          <div className="text-gray-500 mt-1">{supplier.city}</div>
+                          <div className="text-muted-foreground mt-1">{supplier.city}</div>
                         )}
                       </div>
                     </TableCell>
@@ -328,7 +328,7 @@ export default function ManageSuppliers() {
                         </div>
                         <div className="flex items-center space-x-2">
                           {supplier.is_verified ? (
-                            <Badge className="bg-blue-100 text-blue-800">Verificada</Badge>
+                            <Badge className="bg-primary/10 text-primary">Verificada</Badge>
                           ) : (
                             <Badge variant="outline">No verificada</Badge>
                           )}
@@ -337,7 +337,7 @@ export default function ManageSuppliers() {
                     </TableCell>
                     
                     <TableCell>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         {new Date(supplier.created_at).toLocaleDateString('es-BO')}
                       </div>
                     </TableCell>
@@ -363,7 +363,7 @@ export default function ManageSuppliers() {
                           onClick={() => toggleVerified(supplier.id, supplier.is_verified)}
                           disabled={updateSupplierMutation.isPending}
                         >
-                          <Edit className="w-4 h-4 text-blue-600" />
+                          <Edit className="w-4 h-4 text-primary" />
                         </Button>
                         
                         <Button
@@ -383,7 +383,7 @@ export default function ManageSuppliers() {
           </div>
           
           {filteredSuppliers.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <Building2 className="mx-auto w-12 h-12 mb-4 opacity-50" />
               <p>No se encontraron empresas con los filtros aplicados</p>
             </div>

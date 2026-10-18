@@ -34,7 +34,7 @@ export default function ImportCompanies() {
     } else {
       toast({
         title: "Archivo no válido",
-        description: "Por favor selecciona un archivo PDF",
+        description: "Por favor seleccioná un archivo PDF",
         variant: "destructive",
       });
     }
@@ -66,7 +66,7 @@ export default function ImportCompanies() {
       
       toast({
         title: "Texto extraído",
-        description: "PDF procesado correctamente. Ahora puedes analizar las empresas.",
+        description: "PDF procesado correctamente. Ahora podés analizar las empresas.",
       });
     } catch (error) {
       console.error("Error extracting PDF:", error);
@@ -340,8 +340,8 @@ export default function ImportCompanies() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           Importar Empresas desde PDF
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Sube un archivo PDF con listado de empresas para extraer automáticamente la información
+        <p className="text-muted-foreground dark:text-gray-400">
+          Subí un archivo PDF con listado de empresas para extraer automáticamente la información
         </p>
       </div>
 
@@ -364,7 +364,7 @@ export default function ImportCompanies() {
                 onChange={handleFileSelect}
                 className="mt-1"
               />
-              <p className="text-xs text-blue-600 mt-1">
+              <p className="text-xs text-primary mt-1">
                 Carga tu PDF y luego copia el texto desde el documento
               </p>
             </div>
@@ -392,15 +392,15 @@ export default function ImportCompanies() {
             )}
             
             <div className="border-t pt-4">
-              <Label htmlFor="manual-text">Importación Manual - Pega el texto del catálogo</Label>
-              <p className="text-xs text-gray-600 mb-2">
-                Copia todo el texto del catálogo y pégalo aquí. El sistema detectará automáticamente empresas, direcciones, teléfonos y rubros.
+              <Label htmlFor="manual-text">Importación Manual - Pegá el texto del catálogo</Label>
+              <p className="text-xs text-muted-foreground mb-2">
+                Copiá todo el texto del catálogo y pegalo aquí. El sistema detectará automáticamente empresas, direcciones, teléfonos y rubros.
               </p>
               <Textarea
                 id="manual-text"
                 value={extractedText}
                 onChange={(e) => setExtractedText(e.target.value)}
-                placeholder="Pega aquí el texto completo del catálogo de empresas...
+                placeholder="Pegá aquí el texto completo del catálogo de empresas...
 
 Ejemplo:
 CONSTRUCTORA ABC S.R.L.
@@ -429,7 +429,7 @@ Venta de herramientas y ferretería en general"
           <CardContent>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-muted-foreground mb-2">
                   Estadísticas del texto:
                 </p>
                 <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-xs">
@@ -472,7 +472,7 @@ Venta de herramientas y ferretería en general"
               <Button 
                 onClick={importCompanies}
                 disabled={isImporting}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-primary hover:bg-primary/90"
               >
                 {isImporting ? "Importando..." : "4. Importar Todas"}
               </Button>
@@ -483,7 +483,7 @@ Venta de herramientas y ferretería en general"
               {parsedCompanies.map((company, index) => (
                 <div key={index} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
                   <h3 className="font-semibold text-sm mb-2">{company.name}</h3>
-                  <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="space-y-1 text-xs text-muted-foreground dark:text-gray-400">
                     {company.address && <p><strong>Dirección:</strong> {company.address}</p>}
                     {company.phone && <p><strong>Teléfono:</strong> {company.phone}</p>}
                     {company.email && <p><strong>Email:</strong> {company.email}</p>}

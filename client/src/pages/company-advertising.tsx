@@ -245,7 +245,7 @@ export default function CompanyAdvertising() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
         <div>
           <h2 className="text-2xl font-bold text-on-surface">Gestión de Publicidad</h2>
-          <p className="text-gray-600">Administra los anuncios de tu empresa</p>
+          <p className="text-muted-foreground">Administra los anuncios de tu empresa</p>
         </div>
         <Button
           onClick={() => setShowForm(true)}
@@ -327,7 +327,7 @@ export default function CompanyAdvertising() {
                           <div>
                             <div className="font-medium">{ad.title}</div>
                             {ad.description && (
-                              <div className="text-sm text-gray-500 line-clamp-1">
+                              <div className="text-sm text-muted-foreground line-clamp-1">
                                 {ad.description}
                               </div>
                             )}
@@ -360,7 +360,7 @@ export default function CompanyAdvertising() {
                         <div className="text-sm">
                           <div>Inicio: {ad.startDate ? new Date(ad.startDate).toLocaleDateString() : "No definido"}</div>
                           {ad.endDate && (
-                            <div className="text-gray-500">Fin: {new Date(ad.endDate).toLocaleDateString()}</div>
+                            <div className="text-muted-foreground">Fin: {new Date(ad.endDate).toLocaleDateString()}</div>
                           )}
                         </div>
                       </TableCell>
@@ -391,10 +391,10 @@ export default function CompanyAdvertising() {
               </Table>
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <Camera className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>No tienes publicidades creadas</p>
-              <p className="text-sm">Crea tu primera publicidad para aparecer en MICA</p>
+              <p>No tenés publicidades creadas</p>
+              <p className="text-sm">Creá tu primera publicidad para aparecer en MICA</p>
             </div>
           )}
         </CardContent>
@@ -408,7 +408,7 @@ export default function CompanyAdvertising() {
               {editingAd ? "Editar Publicidad" : "Crear Nueva Publicidad"}
             </DialogTitle>
             <DialogDescription>
-              Crea un anuncio para promocionar tu empresa en MICA. Los usuarios podrán ver tu publicidad en la vista pública.
+              Creá un anuncio para promocionar tu empresa en MICA. Los usuarios podrán ver tu publicidad en la vista pública.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -446,9 +446,9 @@ export default function CompanyAdvertising() {
                       <div className="mt-4">
                         <Label htmlFor="file-upload" className="cursor-pointer">
                           <span className="mt-2 block text-sm font-medium text-gray-900 dark:text-gray-100">
-                            Sube una imagen
+                            Subí una imagen
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted-foreground">
                             JPG, PNG hasta 5MB (se redimensionará automáticamente a 400x400px)
                           </span>
                         </Label>
@@ -464,12 +464,12 @@ export default function CompanyAdvertising() {
                   </div>
 
                   {selectedFile && (
-                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-primary/10 dark:bg-blue-900/20 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <Camera className="w-5 h-5 text-blue-600" />
+                        <Camera className="w-5 h-5 text-primary" />
                         <div>
                           <p className="text-sm font-medium">{selectedFile.name}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
                           </p>
                         </div>
@@ -479,7 +479,7 @@ export default function CompanyAdvertising() {
                         size="sm"
                         onClick={handleUploadImage}
                         disabled={uploadImageMutation.isPending}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-primary hover:bg-primary/90"
                       >
                         {uploadImageMutation.isPending ? "Procesando..." : "Subir"}
                       </Button>
@@ -492,7 +492,7 @@ export default function CompanyAdvertising() {
                       <span className="w-full border-t border-gray-300 dark:border-gray-600" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white dark:bg-gray-900 px-2 text-gray-500">O usa una URL</span>
+                      <span className="bg-white dark:bg-gray-900 px-2 text-muted-foreground">O usa una URL</span>
                     </div>
                   </div>
 
@@ -565,7 +565,7 @@ export default function CompanyAdvertising() {
                     }}
                   />
                   <h4 className="font-semibold">{formData.title || "Título del anuncio"}</h4>
-                  <p className="text-sm text-gray-600">{formData.description || "Descripción del anuncio"}</p>
+                  <p className="text-sm text-muted-foreground">{formData.description || "Descripción del anuncio"}</p>
                 </div>
               </div>
             )}

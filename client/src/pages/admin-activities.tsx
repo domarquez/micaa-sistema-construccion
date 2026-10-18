@@ -153,7 +153,7 @@ export default function AdminActivities() {
     if (isNaN(phaseId)) {
       toast({
         title: "Error",
-        description: "Por favor selecciona una fase válida.",
+        description: "Por favor seleccioná una fase válida.",
         variant: "destructive",
       });
       return;
@@ -169,13 +169,13 @@ export default function AdminActivities() {
     const colors = {
       1: "bg-gray-100 text-gray-800",     // TRABAJOS PRELIMINARES
       2: "bg-orange-100 text-orange-800", // MOVIMIENTOS DE TIERRAS
-      3: "bg-blue-100 text-blue-800",     // OBRA GRUESA
+      3: "bg-primary/10 text-primary",     // OBRA GRUESA
       4: "bg-green-100 text-green-800",   // OBRA FINA
       5: "bg-cyan-100 text-cyan-800",     // INSTALACIONES HIDROSANITARIAS
       6: "bg-yellow-100 text-yellow-800", // INSTALACIONES ELÉCTRICAS
       7: "bg-purple-100 text-purple-800", // TRABAJOS DE ACABADOS
       8: "bg-emerald-100 text-emerald-800", // JARDINES Y EXTERIORES
-      9: "bg-indigo-100 text-indigo-800"    // VÍAS Y ACCESOS
+      9: "bg-primary/10 text-primary"    // VÍAS Y ACCESOS
     };
     return colors[phaseId] || "bg-gray-100 text-gray-800";
   };
@@ -188,7 +188,7 @@ export default function AdminActivities() {
             <span className="hidden sm:inline">Gestión de Actividades</span>
             <span className="sm:hidden">Actividades</span>
           </h1>
-          <p className="text-sm md:text-base text-gray-600 mt-2">
+          <p className="text-sm md:text-base text-muted-foreground mt-2">
             Organiza las actividades por fases de construcción
           </p>
         </div>
@@ -346,11 +346,11 @@ export default function AdminActivities() {
                           <div className="space-y-4">
                             <div>
                               <label className="text-sm font-medium">Actividad</label>
-                              <p className="text-gray-600">{editingActivity?.name}</p>
+                              <p className="text-muted-foreground">{editingActivity?.name}</p>
                             </div>
                             <div>
                               <label className="text-sm font-medium">Fase Actual</label>
-                              <p className="text-gray-600">{editingActivity && phaseMap[editingActivity.phaseId]}</p>
+                              <p className="text-muted-foreground">{editingActivity && phaseMap[editingActivity.phaseId]}</p>
                             </div>
                             <div>
                               <label className="text-sm font-medium">Nueva Fase</label>

@@ -132,7 +132,7 @@ export default function ActivityCompositions() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Composiciones de Actividades</h1>
-          <p className="text-gray-600 mt-2">Define los materiales y mano de obra para cada actividad</p>
+          <p className="text-muted-foreground mt-2">Define los materiales y mano de obra para cada actividad</p>
         </div>
       </div>
 
@@ -165,13 +165,13 @@ export default function ActivityCompositions() {
                     key={activity.id}
                     className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                       selectedActivityId === activity.id
-                        ? "border-blue-500 bg-blue-50"
+                        ? "border-primary/40 bg-primary/10"
                         : "hover:bg-gray-50"
                     }`}
                     onClick={() => setSelectedActivityId(activity.id)}
                   >
                     <div className="font-medium">{activity.name}</div>
-                    <div className="text-sm text-gray-600">{activity.phase.name}</div>
+                    <div className="text-sm text-muted-foreground">{activity.phase.name}</div>
                     <Badge variant="outline" className="mt-1">
                       {activity.unit}
                     </Badge>
@@ -187,7 +187,7 @@ export default function ActivityCompositions() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>
-                {selectedActivity ? `Composición: ${selectedActivity.name}` : "Selecciona una actividad"}
+                {selectedActivity ? `Composición: ${selectedActivity.name}` : "Seleccioná una actividad"}
               </CardTitle>
               {selectedActivity && (
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -328,8 +328,8 @@ export default function ActivityCompositions() {
           </CardHeader>
           <CardContent>
             {!selectedActivity ? (
-              <div className="text-center py-8 text-gray-500">
-                Selecciona una actividad para ver su composición
+              <div className="text-center py-8 text-muted-foreground">
+                Seleccioná una actividad para ver su composición
               </div>
             ) : compositionsLoading ? (
               <div className="space-y-3">
@@ -345,13 +345,13 @@ export default function ActivityCompositions() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           {composition.type === "material" ? (
-                            <Package className="h-4 w-4 text-blue-600" />
+                            <Package className="h-4 w-4 text-primary" />
                           ) : (
                             <Wrench className="h-4 w-4 text-green-600" />
                           )}
                           <span className="font-medium">{composition.description}</span>
                         </div>
-                        <div className="text-sm text-gray-600 mt-1">
+                        <div className="text-sm text-muted-foreground mt-1">
                           {composition.quantity} {composition.unit} × {formatCurrency(Number(composition.unitCost))}
                         </div>
                         <div className="text-sm font-medium text-gray-900">
@@ -371,7 +371,7 @@ export default function ActivityCompositions() {
                 ))}
                 
                 {compositions?.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-muted-foreground">
                     No hay composiciones definidas para esta actividad
                   </div>
                 )}

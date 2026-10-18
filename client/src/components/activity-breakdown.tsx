@@ -211,7 +211,7 @@ export default function ActivityBreakdown({
     onSuccess: () => {
       toast({
         title: "Actividad copiada",
-        description: "La actividad se ha copiado a tu lista personalizada y puedes editarla completamente",
+        description: "La actividad se ha copiado a tu lista personalizada y podés editarla completamente",
       });
     },
     onError: () => {
@@ -249,7 +249,7 @@ export default function ActivityBreakdown({
               {copyToCustomActivities.isPending ? "Copiando..." : "Copiar y Personalizar"}
             </Button>
             <div className="text-right">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 {quantity} unidades × {formatCurrency(unitPrice)}
               </div>
               <div className="text-lg font-bold text-primary">
@@ -264,7 +264,7 @@ export default function ActivityBreakdown({
             {isLoading ? (
               <div className="text-center py-4">
                 <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
-                <p className="text-sm text-gray-600">Cargando composición...</p>
+                <p className="text-sm text-muted-foreground">Cargando composición...</p>
               </div>
             ) : composition ? (
               <div className="space-y-6">
@@ -272,15 +272,15 @@ export default function ActivityBreakdown({
                 {composition.materials.length > 0 && (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <Package className="w-4 h-4 text-blue-600" />
-                      <h4 className="font-semibold text-blue-600">Materiales</h4>
+                      <Package className="w-4 h-4 text-primary" />
+                      <h4 className="font-semibold text-primary">Materiales</h4>
                     </div>
                     <div className="space-y-2">
                       {composition.materials.map((material, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                        <div key={index} className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
                           <div className="flex-1">
                             <p className="font-medium">{material.description}</p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                               {material.quantity} {material.unit}
                             </p>
                           </div>
@@ -344,7 +344,7 @@ export default function ActivityBreakdown({
                                           <p className="font-medium text-sm">{displayName}</p>
                                         </div>
                                         <p className="font-medium">{formatCurrency(displayPrice)}</p>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm text-muted-foreground">
                                           Total: {formatCurrency(calculatedTotal)}
                                         </p>
                                       </>
@@ -381,13 +381,13 @@ export default function ActivityBreakdown({
                         <div key={index} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                           <div className="flex-1">
                             <p className="font-medium">{labor.description}</p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                               {labor.quantity} {labor.unit}
                             </p>
                           </div>
                           <div className="text-right">
                             <p className="font-medium">{formatCurrency(labor.unitPrice)}</p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                               Total: {formatCurrency(labor.total)}
                             </p>
                           </div>
@@ -409,13 +409,13 @@ export default function ActivityBreakdown({
                         <div key={index} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                           <div className="flex-1">
                             <p className="font-medium">{equipment.description}</p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                               {equipment.quantity} {equipment.unit}
                             </p>
                           </div>
                           <div className="text-right">
                             <p className="font-medium">{formatCurrency(equipment.unitPrice)}</p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                               Total: {formatCurrency(equipment.total)}
                             </p>
                           </div>
@@ -426,9 +426,9 @@ export default function ActivityBreakdown({
                 )}
 
                 <div className="border-t pt-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <Star className="w-4 h-4" />
-                    <span>Haz clic en el ícono de edición para personalizar nombres y precios de materiales</span>
+                    <span>Hacé clic en el ícono de edición para personalizar nombres y precios de materiales</span>
                   </div>
                   {/* Show user's saved custom materials */}
                   {(() => {
@@ -456,7 +456,7 @@ export default function ActivityBreakdown({
                 </div>
               </div>
             ) : (
-              <div className="text-center py-4 text-gray-600">
+              <div className="text-center py-4 text-muted-foreground">
                 <p>No se pudo cargar la composición de esta actividad</p>
               </div>
             )}

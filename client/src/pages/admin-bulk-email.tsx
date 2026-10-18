@@ -121,7 +121,7 @@ export default function AdminBulkEmail() {
     if (!selectedTemplate) {
       toast({
         title: "Error",
-        description: "Selecciona un template de email.",
+        description: "Seleccioná un template de email.",
         variant: "destructive",
       });
       return;
@@ -177,8 +177,8 @@ export default function AdminBulkEmail() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold">Envío Masivo de Emails</h1>
-          <p className="text-gray-600 mt-2">
-            Envía emails a todas las empresas proveedoras del sistema
+          <p className="text-muted-foreground mt-2">
+            Enviá emails a todas las empresas proveedoras del sistema
           </p>
         </div>
         <Badge variant="outline" className="text-lg px-4 py-2">
@@ -189,9 +189,9 @@ export default function AdminBulkEmail() {
 
       {/* Preview Card */}
       {preview && (
-        <Card className="border-blue-200 bg-blue-50">
+        <Card className="border-primary/40 bg-primary/10">
           <CardHeader>
-            <CardTitle className="flex items-center text-blue-800">
+            <CardTitle className="flex items-center text-primary">
               <Users className="h-5 w-5 mr-2" />
               Resumen de Empresas
             </CardTitle>
@@ -199,16 +199,16 @@ export default function AdminBulkEmail() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{preview.totalCompanies}</div>
-                <div className="text-sm text-gray-600">Empresas Activas</div>
+                <div className="text-2xl font-bold text-primary">{preview.totalCompanies}</div>
+                <div className="text-sm text-muted-foreground">Empresas Activas</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{preview.estimatedTime}</div>
-                <div className="text-sm text-gray-600">Tiempo Estimado</div>
+                <div className="text-2xl font-bold text-primary">{preview.estimatedTime}</div>
+                <div className="text-sm text-muted-foreground">Tiempo Estimado</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">5 min</div>
-                <div className="text-sm text-gray-600">Pausa entre Emails</div>
+                <div className="text-2xl font-bold text-primary">5 min</div>
+                <div className="text-sm text-muted-foreground">Pausa entre Emails</div>
               </div>
             </div>
           </CardContent>
@@ -244,7 +244,7 @@ export default function AdminBulkEmail() {
               <Label htmlFor="template">Tipo de Email</Label>
               <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona el tipo de email" />
+                  <SelectValue placeholder="Seleccioná el tipo de email" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="password_update">Actualización de Contraseña</SelectItem>
@@ -253,7 +253,7 @@ export default function AdminBulkEmail() {
                 </SelectContent>
               </Select>
               {selectedTemplate && (
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {getTemplateDescription(selectedTemplate)}
                 </p>
               )}
@@ -330,7 +330,7 @@ export default function AdminBulkEmail() {
               <p>Cargando trabajos...</p>
             </div>
           ) : jobs.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <Mail className="h-12 w-12 mx-auto mb-4 opacity-30" />
               <p>No hay envíos masivos registrados</p>
             </div>
@@ -341,7 +341,7 @@ export default function AdminBulkEmail() {
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h3 className="font-semibold">{job.subject}</h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Template: {job.template} | Creado: {formatDateTime(job.createdAt)}
                       </p>
                     </div>
@@ -350,21 +350,21 @@ export default function AdminBulkEmail() {
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
                     <div>
-                      <div className="text-sm text-gray-600">Enviados</div>
+                      <div className="text-sm text-muted-foreground">Enviados</div>
                       <div className="font-bold">{job.sentCount}/{job.totalCount}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-600">Progreso</div>
+                      <div className="text-sm text-muted-foreground">Progreso</div>
                       <div className="font-bold">
                         {job.totalCount > 0 ? Math.round((job.sentCount / job.totalCount) * 100) : 0}%
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-600">Errores</div>
+                      <div className="text-sm text-muted-foreground">Errores</div>
                       <div className="font-bold text-red-600">{job.errors.length}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-600">Estado</div>
+                      <div className="text-sm text-muted-foreground">Estado</div>
                       <div className="font-bold">
                         {job.completedAt ? formatDateTime(job.completedAt) : 'En proceso'}
                       </div>

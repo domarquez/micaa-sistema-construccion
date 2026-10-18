@@ -14,7 +14,7 @@ interface NewsItem {
 }
 
 const categoryColors: Record<string, string> = {
-  economia: 'bg-blue-100 text-blue-700',
+  economia: 'bg-primary/10 text-primary',
   gobierno: 'bg-green-100 text-green-700',
   obras: 'bg-orange-100 text-orange-700',
   tecnologia: 'bg-purple-100 text-purple-700',
@@ -68,8 +68,8 @@ export function NewsRotator() {
 
   if (isLoading) {
     return (
-      <div className="w-full bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 p-2 sm:p-4 mx-2 sm:mx-0 mb-3">
-        <div className="flex items-center gap-1 sm:gap-2 text-blue-700">
+      <div className="w-full bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-primary/40 p-2 sm:p-4 mx-2 sm:mx-0 mb-3">
+        <div className="flex items-center gap-1 sm:gap-2 text-primary">
           <Newspaper className="w-3 h-3 sm:w-5 sm:h-5 animate-pulse" />
           <span className="text-xs sm:text-sm font-semibold">Cargando noticias...</span>
         </div>
@@ -92,17 +92,17 @@ export function NewsRotator() {
 
   return (
     <div className="news-panel w-full mb-2 sm:mb-3 px-1 sm:px-2 md:px-4">
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-md sm:rounded-lg border sm:border-2 border-blue-300 shadow-sm sm:shadow-md">
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-md sm:rounded-lg border sm:border-2 border-primary/40 shadow-sm sm:shadow-md">
         {/* Header - Compacto en móvil */}
         <div className="flex items-center justify-between px-2 py-1 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500">
           <div className="flex items-center gap-1 sm:gap-2">
             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse"></div>
             <Newspaper className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
-            <span className="text-[10px] sm:text-sm md:text-base font-bold text-white truncate">
+            <span className="text-xs sm:text-sm md:text-base font-bold text-white truncate">
               NOTICIAS DEL SECTOR
             </span>
           </div>
-          <Badge variant="secondary" className="text-[8px] sm:text-xs bg-white text-blue-700 font-semibold px-1 py-0 sm:px-2 sm:py-1">
+          <Badge variant="secondary" className="text-[8px] sm:text-xs bg-white text-primary font-semibold px-1 py-0 sm:px-2 sm:py-1">
             {newsData.length}
           </Badge>
         </div>
@@ -113,7 +113,7 @@ export function NewsRotator() {
             {/* Flecha izquierda */}
             <button
               onClick={() => setCurrentIndex((prev) => (prev - 1 + newsData.length) % newsData.length)}
-              className="flex-shrink-0 p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex-shrink-0 p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
               aria-label="Noticia anterior"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -125,7 +125,7 @@ export function NewsRotator() {
                 <Badge className={`text-[8px] sm:text-xs px-1 py-0 ${categoryColors[currentNews.category] || categoryColors.general}`}>
                   {categoryLabels[currentNews.category] || currentNews.category}
                 </Badge>
-                <span className="text-[8px] sm:text-xs text-gray-500 flex-shrink-0">
+                <span className="text-[8px] sm:text-xs text-muted-foreground flex-shrink-0">
                   {formatTimeAgo(currentNews.publishedAt)}
                 </span>
               </div>
@@ -134,12 +134,12 @@ export function NewsRotator() {
                 {currentNews.title}
               </h3>
 
-              <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2 sm:line-clamp-3 leading-snug">
+              <p className="text-xs sm:text-xs md:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2 sm:line-clamp-3 leading-snug">
                 {currentNews.summary}
               </p>
 
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[8px] sm:text-xs text-blue-600 font-medium truncate">
+                <span className="text-[8px] sm:text-xs text-primary font-medium truncate">
                   📰 {currentNews.sourceName}
                 </span>
                 
@@ -148,7 +148,7 @@ export function NewsRotator() {
                     href={currentNews.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-xs text-blue-600 hover:text-blue-700 hover:underline flex-shrink-0"
+                    className="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-xs text-primary hover:text-primary hover:underline flex-shrink-0"
                   >
                     Ver <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                   </a>
@@ -156,7 +156,7 @@ export function NewsRotator() {
               </div>
 
               {/* Indicador de posición */}
-              <div className="text-center mt-2 text-[10px] sm:text-xs text-gray-500">
+              <div className="text-center mt-2 text-xs sm:text-xs text-muted-foreground">
                 {currentIndex + 1} de {newsData.length}
               </div>
             </div>
@@ -164,7 +164,7 @@ export function NewsRotator() {
             {/* Flecha derecha */}
             <button
               onClick={() => setCurrentIndex((prev) => (prev + 1) % newsData.length)}
-              className="flex-shrink-0 p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex-shrink-0 p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
               aria-label="Siguiente noticia"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -174,8 +174,8 @@ export function NewsRotator() {
 
         {/* Footer - Oculto en móvil pequeño */}
         <div className="hidden sm:block px-2 sm:px-4 py-1 sm:py-2 bg-gray-50 border-t">
-          <div className="text-[8px] sm:text-xs text-gray-500 text-center">
-            Actualizado cada 6 horas • Usa las flechas para navegar
+          <div className="text-[8px] sm:text-xs text-muted-foreground text-center">
+            Actualizado cada 6 horas • Usá las flechas para navegar
           </div>
         </div>
       </div>
