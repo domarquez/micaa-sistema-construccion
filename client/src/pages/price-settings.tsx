@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ListSkeleton } from "@/components/ui/states";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -116,7 +117,7 @@ export default function PriceSettingsPage() {
   };
 
   if (isLoading) {
-    return <div className="p-6">Cargando configuración...</div>;
+    return <div className="p-6"><ListSkeleton rows={4} /></div>;
   }
 
   return (
@@ -124,7 +125,7 @@ export default function PriceSettingsPage() {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-on-surface">Configuración de Precios</h2>
-        <p className="text-gray-600">Gestionar factores de cambio e inflación</p>
+        <p className="text-muted-foreground">Gestionar factores de cambio e inflación</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -152,7 +153,7 @@ export default function PriceSettingsPage() {
                   <span className="font-mono">{settings.globalAdjustmentFactor}</span>
                 </div>
                 <Separator />
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   Última actualización: {formatDate(settings.lastUpdated)}
                   {settings.updatedBy && ` por ${settings.updatedBy}`}
                 </div>
@@ -180,7 +181,7 @@ export default function PriceSettingsPage() {
                 onChange={(e) => setUsdRate(e.target.value)}
                 placeholder="6.96"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Tipo de cambio oficial USD a bolivianos
               </p>
             </div>
@@ -195,7 +196,7 @@ export default function PriceSettingsPage() {
                 onChange={(e) => setInflationFactor(e.target.value)}
                 placeholder="1.0000"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Factor para ajustes por inflación (1.0 = sin cambio)
               </p>
             </div>
@@ -248,7 +249,7 @@ export default function PriceSettingsPage() {
                 onChange={(e) => setGlobalFactor(e.target.value)}
                 placeholder="1.05"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Ej: 1.05 = aumentar 5%, 0.95 = reducir 5%
               </p>
             </div>
@@ -274,7 +275,7 @@ export default function PriceSettingsPage() {
           </div>
 
           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">Deshabilitado: el ajuste global sobrescribía materials.price (y se acumulaba, p. ej. ×1,30 ya aplicado en ago-2025). Los precios base se actualizan con el rebase TC/UFV; para corregir un material usa su edición individual.</p>
-          <div className="text-xs text-gray-600">
+          <div className="text-xs text-muted-foreground">
             Ejemplos de uso:
             <ul className="list-disc list-inside mt-1 space-y-1">
               <li>1.10 - Incrementar todos los precios 10% por inflación</li>

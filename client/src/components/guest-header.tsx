@@ -12,8 +12,8 @@ const baseLinks = [
   { href: "/", label: "Inicio" },
   { href: "/materiales", label: "Materiales" },
   { href: "/lista", label: "Mi lista" },
-  { href: "/publicar-precio", label: "Publicar precio" },
 ];
+const publishLink = { href: "/publicar-precio", label: "Publicar precio" };
 
 export function GuestHeader() {
   const [location] = useLocation();
@@ -58,14 +58,16 @@ export function GuestHeader() {
 
   const isActive = (href: string) => location === href || (href !== "/" && location.startsWith(href));
   const label = (l: { href: string; label: string }) => `${l.label}${l.href === "/lista" && count > 0 ? ` (${count})` : ""}`;
-  const links = member ? [...baseLinks.slice(0, 1), { href: "/proyectos", label: "Proyectos" }, ...baseLinks.slice(1)] : baseLinks;
+  // Progresivo: "Publicar precio" sólo con sesión iniciada.
+  const withPublish = isAuthenticated ? [...baseLinks, publishLink] : baseLinks;
+  const links = member ? [...withPublish.slice(0, 1), { href: "/proyectos", label: "Proyectos" }, ...withPublish.slice(1)] : withPublish;
 
   const citySelect = (cls: string) => (
     <select
       value={city}
       onChange={onCityChange}
       aria-label="Ciudad para precios"
-      className={`h-8 rounded-md border border-[var(--micaa-line)] bg-transparent px-1.5 text-[12px] text-[var(--micaa-fg)] outline-none focus:border-[var(--micaa-accent)] ${cls}`}
+      className={`h-9 rounded-md border bg-white border-[var(--micaa-line)] px-1.5 text-sm text-[var(--micaa-fg)] outline-none focus:border-[var(--micaa-accent)] ${cls}`}
     >
       {CITY_LIST.map((c) => (
         <option key={c} value={c}>{c}</option>
@@ -75,29 +77,29 @@ export function GuestHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--micaa-line)] bg-[var(--micaa-bg)]/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-12 max-w-3xl items-center gap-3 px-4 text-sm">
+      <div className="mx-auto flex h-14 max-w-5xl items-center gap-3 px-4 text-sm">
         <Link href="/" className="font-semibold tracking-tight text-[var(--micaa-fg)]">
           MICAA
         </Link>
 
         {/* Desktop: enlaces en línea (igual que antes) */}
-        <nav className="hidden flex-1 items-center gap-3 overflow-x-auto text-[var(--micaa-muted)] sm:flex">
+        <nav className="hidden flex-1 items-center gap-4 overflow-x-auto text-[var(--micaa-muted)] sm:flex">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className={isActive(l.href) ? "whitespace-nowrap text-[var(--micaa-fg)]" : "whitespace-nowrap hover:text-[var(--micaa-fg)]"}
+              className={isActive(l.href) ? "whitespace-nowrap font-medium text-[var(--micaa-fg)]" : "whitespace-nowrap hover:text-[var(--micaa-fg)]"}
             >
               {label(l)}
             </Link>
           ))}
         </nav>
-        <label className="hidden shrink-0 items-center gap-1 text-[12px] text-[var(--micaa-muted)] sm:flex">
+        <label className="hidden shrink-0 items-center gap-2 text-sm text-[var(--micaa-muted)] sm:flex">
           <span className="hidden md:inline">Ciudad</span>
           {citySelect("max-w-[9.5rem]")}
         </label>
         {canInstall && (
-          <button type="button" onClick={() => install()} className="hidden items-center gap-1 whitespace-nowrap text-[12px] text-[var(--micaa-muted)] hover:text-[var(--micaa-fg)] sm:flex" data-testid="button-install-app">
+          <button type="button" onClick={() => install()} className="hidden items-center gap-1 whitespace-nowrap rounded-md border border-[var(--micaa-line)] px-2 py-1 text-sm font-medium text-[var(--micaa-fg)] hover:border-[var(--micaa-accent)] sm:flex" data-testid="button-install-app">
             <Download className="h-3.5 w-3.5" /> Instalar app
           </button>
         )}
@@ -116,10 +118,10 @@ export function GuestHeader() {
           {nextStep && (
             <Link
               href={nextStep === "login" ? "/login" : "/inscribete"}
-              className="rounded-full bg-green-600 px-3 py-1 text-[12px] font-medium text-white"
+              className="rounded-full bg-[var(--micaa-accent)] px-3 py-1 text-sm font-medium text-white"
               data-testid="cta-whatsapp-mobile"
             >
-              Inscríbete
+              Inscribite
             </Link>
           )}
           <button
@@ -137,7 +139,7 @@ export function GuestHeader() {
 
       {open && (
         <div className="border-t border-[var(--micaa-line)] bg-[var(--micaa-bg)] sm:hidden" data-testid="mobile-menu">
-          <nav className="mx-auto flex max-w-3xl flex-col px-4 py-2 text-[15px]">
+          <nav className="mx-auto flex max-w-5xl flex-col px-4 py-2 text-base">
             {links.map((l) => (
               <Link
                 key={l.href}
@@ -165,9 +167,9 @@ export function GuestHeader() {
             {nextStep ? (
               <Link
                 href={nextStep === "login" ? "/login" : "/inscribete"}
-                className="my-2 rounded-md bg-green-600 px-4 py-2.5 text-center font-medium text-white"
+                className="my-2 rounded-md bg-[var(--micaa-accent)] px-4 py-2.5 text-center font-medium text-white"
               >
-                Inscríbete con WhatsApp
+                Inscribite con WhatsApp
               </Link>
             ) : null}
             {isAuthenticated && (

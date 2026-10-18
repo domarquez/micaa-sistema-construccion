@@ -150,7 +150,7 @@ class ResendEmailService {
             <div style="background: #f8fafc; padding: 30px; border: 1px solid #e2e8f0; border-top: none;">
               <h2 style="color: #1e293b; margin-top: 0;">¡Bienvenido, ${userName}!</h2>
               <p style="color: #475569;">Tu cuenta ha sido verificada exitosamente.</p>
-              <p style="color: #475569;">Ahora puedes:</p>
+              <p style="color: #475569;">Ahora podés:</p>
               <ul style="color: #475569;">
                 <li>Crear presupuestos de construcción</li>
                 <li>Gestionar materiales y proveedores</li>

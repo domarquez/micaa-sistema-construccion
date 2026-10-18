@@ -115,7 +115,7 @@ export default function CustomActivities() {
             </p>
 
             <div className="bg-white rounded-lg p-4 mb-6 border border-orange-200">
-              <h3 className="font-semibold text-orange-900 mb-3">¿Qué puedes hacer con actividades personalizadas?</h3>
+              <h3 className="font-semibold text-orange-900 mb-3">¿Qué podés hacer con actividades personalizadas?</h3>
               <div className="text-left space-y-2 text-sm text-orange-700">
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
@@ -176,8 +176,8 @@ export default function CustomActivities() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold">Actividades Personalizadas</h1>
-            <p className="text-gray-600">
-              Crea y gestiona tus propias actividades de construcción personalizadas
+            <p className="text-muted-foreground">
+              Creá y gestiona tus propias actividades de construcción personalizadas
             </p>
           </div>
         </div>
@@ -192,13 +192,13 @@ export default function CustomActivities() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Actividades Nuevas</p>
+                <p className="text-sm font-medium text-muted-foreground">Actividades Nuevas</p>
                 <p className="text-2xl font-bold text-primary">
                   {customActivities?.length || 0}
                 </p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Settings className="w-6 h-6 text-blue-600" />
+              <div className="p-3 bg-primary/10 rounded-full">
+                <Settings className="w-6 h-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -208,7 +208,7 @@ export default function CustomActivities() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Actividades</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Actividades</p>
                 <p className="text-2xl font-bold text-green-600">
                   {(customActivities?.length || 0) + (userActivities?.length || 0)}
                 </p>
@@ -224,7 +224,7 @@ export default function CustomActivities() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Actividades Duplicadas</p>
+                <p className="text-sm font-medium text-muted-foreground">Actividades Duplicadas</p>
                 <p className="text-2xl font-bold text-orange-600">
                   {userActivities?.length || 0}
                 </p>
@@ -254,8 +254,8 @@ export default function CustomActivities() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-green-700">🟢 Actividades Duplicadas del Sistema</CardTitle>
-                <p className="text-sm text-gray-600">
-                  Actividades que duplicaste desde el catálogo principal y puedes personalizar
+                <p className="text-sm text-muted-foreground">
+                  Actividades que duplicaste desde el catálogo principal y podés personalizar
                 </p>
               </CardHeader>
               <CardContent>
@@ -272,12 +272,12 @@ export default function CustomActivities() {
                             (Personalizada)
                           </span>
                         </h4>
-                        <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
                         <div className="flex items-center gap-4 mt-2">
-                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                             {activity.phase?.name || 'Sin Fase'}
                           </span>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                          <span className="text-xs bg-gray-100 text-muted-foreground px-2 py-1 rounded">
                             Unidad: {activity.unit}
                           </span>
                           <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
@@ -316,9 +316,9 @@ export default function CustomActivities() {
                 if (materials.length === 0) {
                   return (
                     <div className="text-center py-8">
-                      <p className="text-gray-600 mb-4">Aún no tienes materiales personalizados</p>
-                      <p className="text-sm text-gray-500">
-                        Ve a cualquier presupuesto y personaliza los precios de los materiales para agregarlos aquí
+                      <p className="text-muted-foreground mb-4">Aún no tenés materiales personalizados</p>
+                      <p className="text-sm text-muted-foreground">
+                        Andá a cualquier presupuesto y personalizá los precios de los materiales para agregarlos aquí
                       </p>
                     </div>
                   );
@@ -330,13 +330,13 @@ export default function CustomActivities() {
                       <div key={material.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div>
                           <p className="font-medium">{material.customName}</p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             Original: {material.originalName} • {material.unit}
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="font-medium">Bs {parseFloat(material.price).toFixed(2)}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             Guardado: {new Date(material.savedAt).toLocaleDateString()}
                           </p>
                         </div>
@@ -358,29 +358,29 @@ export default function CustomActivities() {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2">¿Qué son las actividades personalizadas?</h3>
-                  <p className="text-gray-600">
+                  <p className="text-muted-foreground">
                     Las actividades personalizadas te permiten crear y modificar actividades de construcción 
-                    según tus necesidades específicas. Puedes cambiar nombres, precios, agregar o quitar 
+                    según tus necesidades específicas. Podés cambiar nombres, precios, agregar o quitar 
                     materiales, y tener tu propia base de datos de actividades.
                   </p>
                 </div>
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Cómo crear actividades personalizadas:</h3>
-                  <ul className="list-decimal list-inside space-y-2 text-gray-600">
-                    <li>Haz clic en "Nueva Actividad" para crear una desde cero</li>
-                    <li>O ve a cualquier presupuesto y haz clic en "Copiar y Personalizar" en una actividad existente</li>
-                    <li>Edita el nombre, descripción y unidad de medida</li>
-                    <li>Agrega, modifica o elimina materiales, mano de obra y equipos</li>
-                    <li>Guarda tu actividad personalizada</li>
+                  <ul className="list-decimal list-inside space-y-2 text-muted-foreground">
+                    <li>Hacé clic en "Nueva Actividad" para crear una desde cero</li>
+                    <li>O ve a cualquier presupuesto y hacé clic en "Copiar y Personalizar" en una actividad existente</li>
+                    <li>Editá el nombre, descripción y unidad de medida</li>
+                    <li>Agregá, modifica o elimina materiales, mano de obra y equipos</li>
+                    <li>Guardá tu actividad personalizada</li>
                   </ul>
                 </div>
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Personalizar materiales:</h3>
-                  <ul className="list-decimal list-inside space-y-2 text-gray-600">
-                    <li>En cualquier presupuesto, expande una actividad</li>
-                    <li>Haz clic en el ícono de edición junto a un material</li>
+                  <ul className="list-decimal list-inside space-y-2 text-muted-foreground">
+                    <li>En cualquier presupuesto, expandí una actividad</li>
+                    <li>Hacé clic en el ícono de edición junto a un material</li>
                     <li>Cambia el nombre y precio del material</li>
                     <li>El material personalizado se guardará en tu lista</li>
                   </ul>
@@ -388,7 +388,7 @@ export default function CustomActivities() {
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Usar en presupuestos:</h3>
-                  <p className="text-gray-600">
+                  <p className="text-muted-foreground">
                     Próximamente podrás usar tus actividades personalizadas directamente en nuevos presupuestos, 
                     creando una experiencia completamente personalizada para tus proyectos de construcción.
                   </p>

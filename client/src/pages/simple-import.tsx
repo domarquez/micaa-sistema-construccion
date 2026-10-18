@@ -112,7 +112,7 @@ export default function SimpleImport() {
     onSuccess: () => {
       toast({
         title: "Información extraída",
-        description: "Los datos se completaron automáticamente. Revisa y ajusta si es necesario.",
+        description: "Los datos se completaron automáticamente. Revisá y ajusta si es necesario.",
       });
     }
   });
@@ -167,7 +167,7 @@ export default function SimpleImport() {
     <div className="container mx-auto p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Importación Simple de Empresa</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           Importa una empresa a la vez con información completa
         </p>
       </div>
@@ -180,7 +180,7 @@ export default function SimpleImport() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="company-text">Pega la información de UNA empresa</Label>
+              <Label htmlFor="company-text">Pegá la información de UNA empresa</Label>
               <Textarea
                 id="company-text"
                 value={extractedText}

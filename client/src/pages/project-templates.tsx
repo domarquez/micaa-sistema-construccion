@@ -49,7 +49,7 @@ export default function ProjectTemplatesPage() {
       <div>
         <h1 className="flex items-center gap-2 text-2xl font-bold"><LayoutTemplate className="h-6 w-6" /> Desde plantilla</h1>
         <p className="text-sm text-muted-foreground">
-          Proyectos ya armados (fases, actividades y cantidades). Ajusta las medidas, revisa el costo en vivo y crea tu proyecto.
+          Proyectos ya armados (fases, actividades y cantidades). Ajusta las medidas, revisá el costo en vivo y crea tu proyecto.
         </p>
       </div>
       {isLoading && <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-40" />)}</div>}
@@ -186,7 +186,7 @@ function TemplateConfigurator({ tpl, onBack }: { tpl: TemplateSummary; onBack: (
             <div className="space-y-1">
               <Label htmlFor="tpl-address">Dirección de la obra <span className="font-normal text-muted-foreground">(opcional)</span></Label>
               <Input id="tpl-address" value={address} placeholder="Barrio, avenida o localidad (Warnes, Cotoca…)" onChange={(e) => setAddress(e.target.value)} />
-              <p className="text-[11px] text-muted-foreground">Precios base puestos en obra (km cero urbano). Fuera de esa zona se suma «Transporte y movilización».</p>
+              <p className="text-sm text-muted-foreground">Precios base puestos en obra (km cero urbano). Fuera de esa zona se suma «Transporte y movilización».</p>
             </div>
             <Button className="w-full" onClick={create} disabled={creating || invalid || !preview || preview.missingCount > 0 || !!error}>
               {creating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} Crear proyecto

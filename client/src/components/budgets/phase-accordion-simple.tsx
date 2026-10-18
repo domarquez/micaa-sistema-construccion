@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ListSkeleton } from "@/components/ui/states";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -134,7 +135,7 @@ export default function PhaseAccordion({ phaseId, projectId, projectCity, projec
   }, [budgetItems, totalBudget, onBudgetChange]);
 
   if (!selectedPhase) {
-    return <div className="text-center text-gray-500">Cargando actividades...</div>;
+    return <ListSkeleton rows={4} />;
   }
 
   // Debug logs
@@ -148,14 +149,14 @@ export default function PhaseAccordion({ phaseId, projectId, projectCity, projec
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{selectedPhase.name}</h3>
-      <p className="text-sm text-gray-600">{activities?.length || 0} actividades disponibles</p>
-      <p className="text-sm text-blue-600">{budgetItems.length} elemento(s) en el presupuesto</p>
+      <p className="text-sm text-muted-foreground">{activities?.length || 0} actividades disponibles</p>
+      <p className="text-sm text-primary">{budgetItems.length} elemento(s) en el presupuesto</p>
       
       <div className="border border-gray-300 rounded p-4">
         <h4 className="font-medium mb-4">Elementos del Presupuesto</h4>
         
         {budgetItems.length === 0 && (
-          <p className="text-gray-500">No hay elementos</p>
+          <p className="text-muted-foreground">No hay elementos</p>
         )}
         
         {budgetItems.map((item) => (

@@ -31,13 +31,13 @@ export default function PublicHeader() {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
-          <a href="#materials" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
+          <a href="#materials" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             Materiales
           </a>
-          <a href="#activities" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
+          <a href="#activities" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             Actividades
           </a>
-          <a href="#suppliers" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
+          <a href="#suppliers" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             Proveedores
           </a>
           
@@ -99,21 +99,21 @@ export default function PublicHeader() {
           <div className="px-4 py-4 space-y-4">
             <a 
               href="#materials" 
-              className="block text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors py-2"
+              className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
               onClick={closeMenu}
             >
               📦 Materiales
             </a>
             <a 
               href="#activities" 
-              className="block text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors py-2"
+              className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
               onClick={closeMenu}
             >
               🔧 Actividades
             </a>
             <a 
               href="#suppliers" 
-              className="block text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors py-2"
+              className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
               onClick={closeMenu}
             >
               🏢 Proveedores
@@ -133,7 +133,7 @@ export default function PublicHeader() {
               </Button>
               <Button 
                 size="sm" 
-                className="w-full justify-center bg-blue-600 hover:bg-blue-700"
+                className="w-full justify-center bg-primary hover:bg-primary/90"
                 onClick={() => {
                   closeMenu();
                   window.location.href = "/register";

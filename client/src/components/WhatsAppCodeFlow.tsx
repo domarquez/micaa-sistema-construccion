@@ -59,7 +59,7 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
     setError("");
     setMismatch(null);
     window.open(link, "_blank", "noopener");
-    setInfo("Envía el mensaje en WhatsApp y te responderemos con tu código.");
+    setInfo("Enviá el mensaje en WhatsApp y te responderemos con tu código.");
     setStep("code");
   };
 
@@ -105,7 +105,7 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
         setMismatch(data.senderMasked || "otro número");
         throw new Error(data.message);
       }
-      if (!r.ok) throw new Error(data.message || "Código incorrecto. Revisa los 6 dígitos.");
+      if (!r.ok) throw new Error(data.message || "Código incorrecto. Revisá los 6 dígitos.");
       setMismatch(null);
       onSuccess(data);
     } catch (e: any) {
@@ -116,7 +116,7 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
   };
 
   if (config && !config.enabled) {
-    return <p className="text-xs text-gray-500 text-center">El acceso por WhatsApp no está disponible en este momento.</p>;
+    return <p className="text-xs text-muted-foreground text-center">El acceso por WhatsApp no está disponible en este momento.</p>;
   }
 
   return (
@@ -135,17 +135,20 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
               placeholder="7123 4567"
               data-testid="input-wa-phone"
             />
-            <p className="text-[10px] sm:text-xs text-gray-500">Bolivia (+591) por defecto. Otro país: escribe el número con +.</p>
+            <p className="text-xs sm:text-xs text-muted-foreground">Bolivia (+591) por defecto. Otro país: escribí el número con +.</p>
           </div>
           <Button
             type="button"
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100"
             disabled={!phoneLooksOk || !(start?.waLink || config?.waLink)}
             onClick={openWhatsApp}
             data-testid="button-wa-open"
           >
             <MessageCircle className="w-4 h-4 mr-2" /> Abrir WhatsApp
           </Button>
+          {!phoneLooksOk && (
+            <p className="text-center text-xs text-muted-foreground" data-testid="text-wa-hint">Escribí tu número para continuar.</p>
+          )}
           <Button
             type="button"
             variant="outline"
@@ -160,7 +163,7 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
         </>
       ) : (
         <form onSubmit={verify} className="space-y-3">
-          {info && <p className="text-xs text-gray-600 text-center">{info}</p>}
+          {info && <p className="text-xs text-muted-foreground text-center">{info}</p>}
           <div className="space-y-1">
             <Label htmlFor="wa-code" className="text-xs sm:text-sm">Código de 6 dígitos</Label>
             <Input
@@ -176,7 +179,7 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
             />
           </div>
           {mismatch && (
-            <Button type="button" variant="outline" className="w-full border-green-600 text-green-700" disabled={busy} onClick={() => verify(undefined, true)} data-testid="button-wa-use-sender">
+            <Button type="button" variant="outline" className="w-full border-primary text-primary" disabled={busy} onClick={() => verify(undefined, true)} data-testid="button-wa-use-sender">
               {mode === "login" ? "Entrar" : "Vincular"} con el WhatsApp {mismatch}
             </Button>
           )}
@@ -184,7 +187,7 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
             {busy ? "Verificando..." : mode === "login" ? "Entrar" : "Vincular WhatsApp"}
           </Button>
           <div className="flex items-center justify-between text-xs">
-            <button type="button" className="text-gray-600 hover:underline flex items-center gap-1" onClick={() => { setStep("phone"); setCode(""); setError(""); setInfo(""); setMismatch(null); }}>
+            <button type="button" className="text-muted-foreground hover:underline flex items-center gap-1" onClick={() => { setStep("phone"); setCode(""); setError(""); setInfo(""); setMismatch(null); }}>
               <ArrowLeft className="w-3 h-3" /> Cambiar número
             </button>
             <button type="button" className="text-primary hover:underline disabled:opacity-50" disabled={busy || cooldown > 0} onClick={sendCode}>

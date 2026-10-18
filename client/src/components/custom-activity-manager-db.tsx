@@ -158,8 +158,8 @@ export default function CustomActivityManagerDB({ onEditActivity }: CustomActivi
       <Card>
         <CardContent className="p-6">
           <div className="text-center">
-            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Cargando actividades personalizadas...</p>
+            <div className="w-8 h-8 border-4 border-primary/40 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Cargando actividades personalizadas...</p>
           </div>
         </CardContent>
       </Card>
@@ -252,10 +252,10 @@ export default function CustomActivityManagerDB({ onEditActivity }: CustomActivi
           <div className="text-center py-8">
             <Settings className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No tienes actividades personalizadas
+              No tenés actividades personalizadas
             </h3>
-            <p className="text-gray-600 mb-4">
-              Crea tu primera actividad personalizada para tus proyectos específicos
+            <p className="text-muted-foreground mb-4">
+              Creá tu primera actividad personalizada para tus proyectos específicos
             </p>
             <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
               <Plus className="w-4 h-4" />
@@ -276,9 +276,9 @@ export default function CustomActivityManagerDB({ onEditActivity }: CustomActivi
                       )}
                     </div>
                     {activity.description && (
-                      <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
+                      <p className="text-sm text-muted-foreground mb-2">{activity.description}</p>
                     )}
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       Creada: {new Date(activity.createdAt).toLocaleDateString()}
                     </p>
                   </div>

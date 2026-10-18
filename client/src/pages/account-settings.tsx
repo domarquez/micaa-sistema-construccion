@@ -10,7 +10,7 @@ export default function AccountSettings() {
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Configuración de Cuenta</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           Gestiona tu perfil y configuraciones de seguridad
         </p>
       </div>
@@ -56,7 +56,7 @@ export default function AccountSettings() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Configuraciones de preferencias próximamente disponibles.
               </p>
             </CardContent>

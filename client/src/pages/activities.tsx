@@ -61,7 +61,7 @@ export default function Activities() {
             </p>
 
             <div className="bg-white rounded-lg p-4 mb-6 border border-orange-200">
-              <h3 className="font-semibold text-orange-900 mb-3">¿Qué puedes hacer con las actividades?</h3>
+              <h3 className="font-semibold text-orange-900 mb-3">¿Qué podés hacer con las actividades?</h3>
               <div className="text-left space-y-2 text-sm text-orange-700">
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
@@ -149,7 +149,7 @@ export default function Activities() {
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
       toast({
         title: "Actividad duplicada",
-        description: "La actividad ha sido duplicada exitosamente. Ahora puedes personalizarla.",
+        description: "La actividad ha sido duplicada exitosamente. Ahora podés personalizarla.",
       });
       refetchActivities();
     },
@@ -157,7 +157,7 @@ export default function Activities() {
       toast({
         title: "Error",
         description: error.message === "Activity already duplicated" 
-          ? "Esta actividad ya fue duplicada anteriormente. Ve a 'Actividades Personalizadas' para editarla."
+          ? "Esta actividad ya fue duplicada anteriormente. Andá a 'Actividades Personalizadas' para editarla."
           : "No se pudo duplicar la actividad.",
         variant: "destructive",
       });
@@ -196,10 +196,10 @@ export default function Activities() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Actividades de Construcción con APU</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Actividades con análisis de precios unitarios para proyectos de construcción
             <br />
-            <span className="text-sm">Solo puedes duplicar cada actividad una vez. Las actividades ya duplicadas muestran "✓ Ya Duplicada"</span>
+            <span className="text-sm">Solo podés duplicar cada actividad una vez. Las actividades ya duplicadas muestran "✓ Ya Duplicada"</span>
           </p>
         </div>
         {user && (
@@ -240,7 +240,7 @@ export default function Activities() {
           </Select>
         </div>
         
-        <div className="flex justify-between items-center text-sm text-gray-600">
+        <div className="flex justify-between items-center text-sm text-muted-foreground">
           <div>
             Mostrando {activities.length} de {totalCount} actividades
             {selectedPhase && (
@@ -291,7 +291,7 @@ export default function Activities() {
             <Card key={phaseName}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-blue-600" />
+                  <Building2 className="h-5 w-5 text-primary" />
                   {phaseName}
                   <Badge variant="secondary" className="ml-auto">
                     {phaseActivities.length} actividades
@@ -317,7 +317,7 @@ export default function Activities() {
                             <span className="text-green-700 font-semibold text-sm ml-2 bg-green-100 px-2 py-1 rounded">(Personalizada)</span>
                           )}
                         </h4>
-                        <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
                         <div className="flex items-center gap-4 mt-2">
                           <Badge variant="outline">
                             Unidad: {activity.unit}
@@ -388,8 +388,8 @@ export default function Activities() {
               <CardContent className="text-center py-12">
                 <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No se encontraron actividades</h3>
-                <p className="text-gray-600">
-                  {searchTerm ? "Intenta con otros términos de búsqueda" : "No hay actividades registradas"}
+                <p className="text-muted-foreground">
+                  {searchTerm ? "Intentá con otros términos de búsqueda" : "No hay actividades registradas"}
                 </p>
               </CardContent>
             </Card>
@@ -400,7 +400,7 @@ export default function Activities() {
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="mt-8 flex items-center justify-between">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             Página {currentPage} de {totalPages} ({totalCount} actividades total)
           </div>
           <div className="flex items-center space-x-2">
@@ -456,7 +456,7 @@ export default function Activities() {
       )}
 
       {activities && (
-        <div className="mt-4 text-center text-sm text-gray-500">
+        <div className="mt-4 text-center text-sm text-muted-foreground">
           {Object.keys(groupedActivities || {}).length} fases mostradas
         </div>
       )}

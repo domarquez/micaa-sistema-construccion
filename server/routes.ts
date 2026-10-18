@@ -161,7 +161,7 @@ export async function registerRoutes(app: any) {
         console.log('❌ Email send failed');
         res.status(500).json({
           success: false,
-          message: "Error al enviar el correo. Revisa la configuración SMTP."
+          message: "Error al enviar el correo. Revisá la configuración SMTP."
         });
       }
     } catch (error) {
@@ -1541,7 +1541,7 @@ export async function registerRoutes(app: any) {
         console.error(`WhatsApp delivery failed for ${phone}`);
         return res.status(500).json({ 
           success: false, 
-          message: "Error al enviar mensaje por WhatsApp. Verifica que el número sea correcto." 
+          message: "Error al enviar mensaje por WhatsApp. Verificá que el número sea correcto." 
         });
       }
 
@@ -1658,7 +1658,7 @@ export async function registerRoutes(app: any) {
         console.error(`Email delivery failed for ${email}`);
         return res.status(500).json({ 
           success: false, 
-          message: "Error al enviar email. Verifica que la dirección sea correcta." 
+          message: "Error al enviar email. Verificá que la dirección sea correcta." 
         });
       }
 
@@ -1809,7 +1809,7 @@ export async function registerRoutes(app: any) {
           .limit(1);
 
         if (recentVerification.length === 0) {
-          return res.status(400).json({ message: "Debes verificar tu email primero" });
+          return res.status(400).json({ message: "Tenés que verificar tu email primero" });
         }
 
         // Check if verification was within last 30 minutes

@@ -66,7 +66,7 @@ export default function AdminMaterials() {
     
     const price = parseFloat(newPrice);
     if (isNaN(price) || price <= 0) {
-      alert("Por favor ingresa un precio válido.");
+      alert("Por favor ingresá un precio válido.");
       return;
     }
 
@@ -75,7 +75,7 @@ export default function AdminMaterials() {
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
-        alert('No se encontró token de autenticación. Inicia sesión nuevamente.');
+        alert('No se encontró token de autenticación. Iniciá sesión nuevamente.');
         setIsSaving(false);
         return;
       }
@@ -144,7 +144,7 @@ export default function AdminMaterials() {
             <span className="hidden sm:inline">Gestión de Materiales</span>
             <span className="sm:hidden">Materiales</span>
           </h1>
-          <p className="text-sm md:text-base text-gray-600">Administra precios y materiales del sistema</p>
+          <p className="text-sm md:text-base text-muted-foreground">Administra precios y materiales del sistema</p>
         </div>
       </div>
 
@@ -220,13 +220,13 @@ export default function AdminMaterials() {
                         <div>
                           <p className="font-medium text-sm md:text-base">{material.name}</p>
                           {material.description && (
-                            <p className="text-xs md:text-sm text-gray-500 hidden sm:block">{material.description}</p>
+                            <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">{material.description}</p>
                           )}
                           <div className="md:hidden flex gap-2 mt-1">
                             {category && (
                               <Badge variant="outline" className="text-xs">{category.name}</Badge>
                             )}
-                            <span className="text-xs text-gray-500">{material.unit}</span>
+                            <span className="text-xs text-muted-foreground">{material.unit}</span>
                           </div>
                         </div>
                       </TableCell>
@@ -267,18 +267,18 @@ export default function AdminMaterials() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md mx-auto shadow-xl">
             <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Editar Precio Base</h3>
-            <p className="text-sm text-gray-600 mb-3 md:mb-4">
+            <p className="text-sm text-muted-foreground mb-3 md:mb-4">
               Actualiza el precio base del material seleccionado
             </p>
             
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium block">Material</label>
-                <p className="text-gray-600">{editingMaterial.name}</p>
+                <p className="text-muted-foreground">{editingMaterial.name}</p>
               </div>
               <div>
                 <label className="text-sm font-medium block">Precio Actual</label>
-                <p className="text-gray-600">Bs. {Number(editingMaterial.price).toFixed(2)}</p>
+                <p className="text-muted-foreground">Bs. {Number(editingMaterial.price).toFixed(2)}</p>
               </div>
               <div>
                 <label className="text-sm font-medium block">Nuevo Precio</label>
@@ -298,7 +298,7 @@ export default function AdminMaterials() {
               <button
                 onClick={handleSavePrice}
                 disabled={isSaving}
-                className="flex-1 bg-blue-600 text-white px-3 md:px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center text-sm md:text-base"
+                className="flex-1 bg-primary text-white px-3 md:px-4 py-2 rounded hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center text-sm md:text-base"
               >
                 {isSaving ? (
                   <>

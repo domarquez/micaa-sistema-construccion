@@ -154,7 +154,7 @@ export default function MobileSimple() {
               <div className="text-lg font-bold text-orange-600">
                 {(statistics as any)?.totalMaterials?.toLocaleString() || '0'}
               </div>
-              <div className="text-xs text-gray-600">Materiales</div>
+              <div className="text-xs text-muted-foreground">Materiales</div>
             </CardContent>
           </Card>
           <Card>
@@ -162,7 +162,7 @@ export default function MobileSimple() {
               <div className="text-lg font-bold text-orange-600">
                 {(statistics as any)?.totalActivities || '0'}
               </div>
-              <div className="text-xs text-gray-600">Actividades</div>
+              <div className="text-xs text-muted-foreground">Actividades</div>
             </CardContent>
           </Card>
         </div>
@@ -204,7 +204,7 @@ export default function MobileSimple() {
                             {category.name}
                           </Badge>
                         )}
-                        <p className="text-xs text-gray-600 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Unidad: {material.unit}
                         </p>
                       </div>
@@ -219,7 +219,7 @@ export default function MobileSimple() {
               );
             })
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
               <p>Cargando materiales...</p>
             </div>

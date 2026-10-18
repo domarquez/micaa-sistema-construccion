@@ -17,7 +17,7 @@ export function AnonymousWarning({ action = "realizar esta acción", className =
             Modo Anónimo - Los datos no se guardarán
           </p>
           <p className="text-xs text-orange-700 dark:text-orange-300 leading-relaxed">
-            Puedes {action}, pero los datos se perderán al cerrar la sesión. 
+            Podés {action}, pero los datos se perderán al cerrar la sesión. 
             Regístrate gratis para guardar tu trabajo permanentemente.
           </p>
         </div>

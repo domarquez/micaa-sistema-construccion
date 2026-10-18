@@ -12,7 +12,7 @@ import ActivityCatalogBrowser from "@/components/budgets/activity-catalog-browse
  *  1) Simple: caja de búsqueda + "Más usadas" (uso real en presupuestos/plantillas + lista curada).
  *  2) Debajo: explorar por fase › familia (variantes tras «Ver variantes»).
  *  3) Avanzado (toggle): filtrar la búsqueda por una fase.
- * Al elegir, el formulario agrega la actividad en SU fase (la crea si no estaba).
+ * Al elegir, el formulario agregá la actividad en SU fase (la crea si no estaba).
  */
 interface Props {
   phases?: ConstructionPhase[];
@@ -75,7 +75,7 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
         <div className="border rounded-md max-h-80 overflow-y-auto divide-y" role="listbox">
           {isFetching && results.length === 0 && <p className="p-3 text-xs text-muted-foreground">Buscando…</p>}
           {!isFetching && results.length === 0 && (
-            <p className="p-3 text-xs text-muted-foreground">Sin resultados para «{q}». Prueba con otra palabra (ej. «muro», «ladrillo», «piso»).</p>
+            <p className="p-3 text-xs text-muted-foreground">Sin resultados para «{q}». Probá con otra palabra (ej. «muro», «ladrillo», «piso»).</p>
           )}
           {results.map((a) => (
             <button
@@ -88,8 +88,8 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
               data-testid={`activity-result-${a.id}`}
             >
               <div className="text-sm font-medium leading-snug break-words">{a.name}</div>
-              <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-                <Badge variant="outline" className="text-[10px]">
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                <Badge variant="outline" className="text-xs">
                   {a.phase?.name || "Sin fase"}
                   {a.family ? ` › ${a.family.parentName ?? a.family.name}` : ""}
                 </Badge>
@@ -99,7 +99,7 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
             </button>
           ))}
           {searchData && searchData.totalCount > results.length && (
-            <p className="p-2 text-[11px] text-muted-foreground">Mostrando {results.length} de {searchData.totalCount}. Agrega otra palabra para afinar.</p>
+            <p className="p-2 text-sm text-muted-foreground">Mostrando {results.length} de {searchData.totalCount}. Agregá otra palabra para afinar.</p>
           )}
         </div>
       ) : (
@@ -115,7 +115,7 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
                   type="button"
                   size="sm"
                   variant="secondary"
-                  className="h-auto py-1 px-2 text-[11px] sm:text-xs max-w-full whitespace-normal text-left"
+                  className="h-auto py-1 px-2 text-sm sm:text-xs max-w-full whitespace-normal text-left"
                   onClick={() => pick(a)}
                   title={`${a.name} (${a.unit}) — ${a.phase?.name ?? ""}`}
                   data-testid={`most-used-${a.id}`}
@@ -133,7 +133,7 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
       <div>
         <button
           type="button"
-          className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
           onClick={() => setShowAdvanced((v) => !v)}
           aria-expanded={showAdvanced}
         >
@@ -141,7 +141,7 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
         </button>
         {showAdvanced && (
           <div className="mt-2">
-            <label className="text-[11px] text-muted-foreground block mb-1">Limitar la búsqueda a una fase</label>
+            <label className="text-sm text-muted-foreground block mb-1">Limitar la búsqueda a una fase</label>
             <select
               value={phaseFilter}
               onChange={(e) => setPhaseFilter(e.target.value)}

@@ -145,8 +145,8 @@ export function CreateActivityDialog({ originalActivity, triggerButton }: Create
           </DialogTitle>
           <DialogDescription>
             {originalActivity 
-              ? "Crea una copia de esta actividad con modificaciones. La nueva actividad será visible para todos los usuarios."
-              : "Crea una nueva actividad de construcción que estará disponible para todos los usuarios de la plataforma."
+              ? "Creá una copia de esta actividad con modificaciones. La nueva actividad será visible para todos los usuarios."
+              : "Creá una nueva actividad de construcción que estará disponible para todos los usuarios de la plataforma."
             }
           </DialogDescription>
         </DialogHeader>

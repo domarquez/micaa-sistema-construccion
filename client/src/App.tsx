@@ -1,3 +1,5 @@
+import { SiteFooter } from "@/components/layout/site-footer";
+import { ListSkeleton } from "@/components/ui/states";
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -52,7 +54,7 @@ import { DisclosureGate, WhatsAppSignupCta } from "@/components/DisclosureGate";
 import { featureForPath } from "@/lib/disclosure";
 import { MemberProjects, ProjectsPage, StartProjectCard } from "@/components/MemberProjects";
 
-/** Inicio: materiales siempre; con nivel ≥1 (WhatsApp verificado o admin) además "Empieza un proyecto" + mis proyectos. */
+/** Inicio: materiales siempre; con nivel ≥1 (WhatsApp verificado o admin) además "Empezá un proyecto" + mis proyectos. */
 function HomePage() {
   const { can } = useDisclosureLevel();
   return (
@@ -122,6 +124,7 @@ function GuestLayout() {
       <main>
         <PriceRoutes />
       </main>
+      <SiteFooter />
     </div>
   );
 }
@@ -196,17 +199,23 @@ function Router() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--micaa-bg)]">
-        <p className="text-[14px] text-[var(--micaa-muted)]">Cargando…</p>
+        <div className="w-64"><ListSkeleton rows={3} /></div>
       </div>
     );
   }
 
   if (location === "/login" || location === "/register") {
     return (
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
-      </Switch>
+      <div className="min-h-screen bg-[var(--micaa-bg)] text-[var(--micaa-fg)]">
+        <GuestHeader />
+        <main>
+          <Switch>
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
+          </Switch>
+        </main>
+        <SiteFooter />
+      </div>
     );
   }
 

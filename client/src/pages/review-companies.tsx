@@ -49,12 +49,12 @@ export default function ReviewCompanies() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Empresas Importadas</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Total: {companies.length} empresas | Mostrando: {filteredCompanies.length}
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Users className="w-5 h-5 text-blue-600" />
+          <Users className="w-5 h-5 text-primary" />
           <span className="text-sm font-medium">
             {companies.filter((c: any) => c.isActive).length} activas
           </span>
@@ -107,7 +107,7 @@ export default function ReviewCompanies() {
                     )}
                   </div>
                 </div>
-                <Building2 className="w-8 h-8 text-blue-600 flex-shrink-0" />
+                <Building2 className="w-8 h-8 text-primary flex-shrink-0" />
               </div>
             </CardHeader>
             
@@ -115,7 +115,7 @@ export default function ReviewCompanies() {
               {/* Dirección */}
               {company.address && (
                 <div className="flex items-start space-x-2">
-                  <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                  <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700 leading-relaxed">
                     {company.address}
                   </p>
@@ -124,7 +124,7 @@ export default function ReviewCompanies() {
               
               {/* Ciudad */}
               {company.city && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   📍 {company.city}
                 </div>
               )}
@@ -132,7 +132,7 @@ export default function ReviewCompanies() {
               {/* Teléfono */}
               {company.phone && (
                 <div className="flex items-center space-x-2">
-                  <Phone className="w-4 h-4 text-gray-500" />
+                  <Phone className="w-4 h-4 text-muted-foreground" />
                   <p className="text-sm text-gray-700">
                     {company.phone}
                   </p>
@@ -148,14 +148,14 @@ export default function ReviewCompanies() {
               
               {/* Website */}
               {company.website && (
-                <div className="text-sm text-blue-600 truncate">
+                <div className="text-sm text-primary truncate">
                   🌐 {company.website}
                 </div>
               )}
               
               {/* Descripción */}
               {company.description && (
-                <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded text-xs">
+                <div className="text-sm text-muted-foreground bg-gray-50 p-2 rounded text-xs">
                   {company.description.substring(0, 100)}
                   {company.description.length > 100 && '...'}
                 </div>
@@ -169,7 +169,7 @@ export default function ReviewCompanies() {
               )}
               
               {/* Fecha de creación */}
-              <div className="flex items-center space-x-2 text-xs text-gray-500 pt-2 border-t">
+              <div className="flex items-center space-x-2 text-xs text-muted-foreground pt-2 border-t">
                 <Calendar className="w-3 h-3" />
                 <span>
                   Agregada: {new Date(company.createdAt).toLocaleDateString('es-BO')}
@@ -194,9 +194,9 @@ export default function ReviewCompanies() {
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No se encontraron empresas
             </h3>
-            <p className="text-gray-500">
+            <p className="text-muted-foreground">
               {searchTerm ? 
-                "Intenta con otros términos de búsqueda" : 
+                "Intentá con otros términos de búsqueda" : 
                 "No hay empresas importadas aún"
               }
             </p>
@@ -213,28 +213,28 @@ export default function ReviewCompanies() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-primary">
                   {companies.length}
                 </div>
-                <div className="text-sm text-gray-600">Total Empresas</div>
+                <div className="text-sm text-muted-foreground">Total Empresas</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-600">
                   {companies.filter((c: any) => c.isActive).length}
                 </div>
-                <div className="text-sm text-gray-600">Activas</div>
+                <div className="text-sm text-muted-foreground">Activas</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-purple-600">
                   {companies.filter((c: any) => c.isVerified).length}
                 </div>
-                <div className="text-sm text-gray-600">Verificadas</div>
+                <div className="text-sm text-muted-foreground">Verificadas</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-orange-600">
                   {[...new Set(companies.map((c: any) => c.businessType))].length}
                 </div>
-                <div className="text-sm text-gray-600">Tipos de Negocio</div>
+                <div className="text-sm text-muted-foreground">Tipos de Negocio</div>
               </div>
             </div>
           </CardContent>

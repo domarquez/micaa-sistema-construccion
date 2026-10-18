@@ -90,7 +90,7 @@ export function ActivitySelector({
           <Select value={selectedPhaseId} onValueChange={setSelectedPhaseId}>
             <SelectTrigger className="w-full">
               <div className="flex items-center gap-2">
-                <FolderOpen className="h-4 w-4 text-gray-500" />
+                <FolderOpen className="h-4 w-4 text-muted-foreground" />
                 <SelectValue placeholder="Seleccionar grupo" />
               </div>
             </SelectTrigger>
@@ -140,14 +140,14 @@ export function ActivitySelector({
           >
             {selectedActivity ? (
               <div className="flex items-center gap-2 truncate">
-                <Building2 className="h-4 w-4 text-gray-500" />
+                <Building2 className="h-4 w-4 text-muted-foreground" />
                 <span className="truncate">{selectedActivity.name}</span>
                 <Badge variant="secondary" className="ml-auto">
                   {selectedActivity.phase.name}
                 </Badge>
               </div>
             ) : (
-              <span className="text-gray-500">{placeholder}</span>
+              <span className="text-muted-foreground">{placeholder}</span>
             )}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -195,7 +195,7 @@ export function ActivitySelector({
                           <div className="flex-1 min-w-0">
                             <div className="font-medium truncate">{activity.name}</div>
                             {activity.description && (
-                              <div className="text-sm text-gray-500 truncate">
+                              <div className="text-sm text-muted-foreground truncate">
                                 {activity.description}
                               </div>
                             )}
@@ -258,14 +258,14 @@ export function ActivitySelector({
             {selectedActivity.description && (
               <div className="text-sm">
                 <span className="font-medium">Descripción:</span>
-                <p className="text-gray-600 mt-1">{selectedActivity.description}</p>
+                <p className="text-muted-foreground mt-1">{selectedActivity.description}</p>
               </div>
             )}
 
             {selectedActivity.compositions && selectedActivity.compositions.length > 0 && (
               <div className="text-sm">
                 <span className="font-medium">Composición APU:</span>
-                <div className="text-gray-600 mt-1">
+                <div className="text-muted-foreground mt-1">
                   {selectedActivity.compositions.length} insumo(s) registrado(s)
                 </div>
               </div>

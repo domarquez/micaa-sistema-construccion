@@ -28,28 +28,28 @@ export function AppFooter() {
   }, []);
 
   return (
-    <footer className="bg-gray-900 text-gray-400 py-3 mt-auto">
+    <footer className="border-t border-[var(--micaa-line)] bg-[var(--micaa-bg)] text-[var(--micaa-muted)] py-3 mt-auto">
       <div className="container mx-auto px-4">
         <div className="flex flex-col gap-2">
           {stats && (
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-1.5" data-testid="stats-visits">
-              <Eye className="w-3.5 h-3.5 text-blue-400" />
-              <span className="font-medium text-white">{stats.visitCount.toLocaleString()}</span>
+              <Eye className="w-3.5 h-3.5 text-primary" />
+              <span className="font-medium text-[var(--micaa-fg)]">{stats.visitCount.toLocaleString()}</span>
               <span>visitas</span>
             </div>
             <div className="flex items-center gap-1.5" data-testid="stats-users">
-              <Users className="w-3.5 h-3.5 text-green-400" />
-              <span className="font-medium text-white">{stats.registeredUsers.toLocaleString()}</span>
+              <Users className="w-3.5 h-3.5 text-primary" />
+              <span className="font-medium text-[var(--micaa-fg)]">{stats.registeredUsers.toLocaleString()}</span>
               <span>registrados</span>
             </div>
           </div>
           )}
           
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-t border-gray-700 pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-t border-[var(--micaa-line)] pt-2">
             <div className="flex items-center gap-1">
               <span>MICAA © {currentYear}</span>
-              <span className="hidden sm:inline">- Sistema de Construcción Bolivia</span>
+              <span className="hidden sm:inline">· Precios y presupuestos de construcción en Bolivia</span>
             </div>
             
             <div className="flex items-center gap-1">

@@ -13,7 +13,7 @@ interface NewsItem {
 }
 
 const categoryColors = {
-  economia: 'bg-blue-100 text-blue-700 border-blue-300',
+  economia: 'bg-primary/10 text-primary border-primary/40',
   gobierno: 'bg-green-100 text-green-700 border-green-300', 
   obras: 'bg-orange-100 text-orange-700 border-orange-300',
   tecnologia: 'bg-purple-100 text-purple-700 border-purple-300',
@@ -119,20 +119,20 @@ export function StaticNewsRotator() {
     return (
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-2">
-          <Badge className={`text-[10px] px-1.5 py-0.5 ${colorClass}`}>
+          <Badge className={`text-xs px-1.5 py-0.5 ${colorClass}`}>
             {labelText}
           </Badge>
-          <span className="text-[10px] text-gray-500 flex-shrink-0">
+          <span className="text-xs text-muted-foreground flex-shrink-0">
             {formatTimeAgo(newsItem.publishedAt)}
           </span>
         </div>
         <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight">
           {newsItem.title}
         </h3>
-        <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
+        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
           {newsItem.summary}
         </p>
-        <div className="flex items-center justify-between text-[10px] text-gray-500">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{newsItem.sourceName}</span>
           {newsItem.sourceUrl && (
             <ExternalLink className="w-3 h-3" />
@@ -146,14 +146,14 @@ export function StaticNewsRotator() {
 
   return (
     <div className="w-full mb-2 sm:mb-3 md:mb-4 px-1 sm:px-2 md:px-4 mobile-padding">
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-blue-200 overflow-hidden relative max-w-full">
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-primary/40 overflow-hidden relative max-w-full">
         {/* Header */}
-        <div className="bg-white border-b border-blue-200 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between">
+        <div className="bg-white border-b border-primary/40 px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between">
           <div className="flex items-center gap-1 sm:gap-2">
-            <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+            <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
             <span className="text-xs sm:text-sm font-medium text-gray-900">Noticias del Sector</span>
           </div>
-          <Badge variant="outline" className="text-[10px]">
+          <Badge variant="outline" className="text-xs">
             {staticNews.length} noticias
           </Badge>
         </div>
@@ -175,7 +175,7 @@ export function StaticNewsRotator() {
               <button
                 key={index}
                 className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+                  index === currentIndex ? 'bg-primary' : 'bg-gray-300'
                 }`}
                 onClick={() => setCurrentIndex(index)}
               />
@@ -211,7 +211,7 @@ export function StaticNewsRotator() {
                 <button
                   key={index}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+                    index === currentIndex ? 'bg-primary' : 'bg-gray-300'
                   }`}
                   onClick={() => setCurrentIndex(index)}
                 />
@@ -222,7 +222,7 @@ export function StaticNewsRotator() {
 
         {/* Pause indicator */}
         {isPaused && (
-          <div className="absolute top-2 right-2 text-[8px] text-blue-600 bg-white px-2 py-1 rounded shadow-sm z-10">
+          <div className="absolute top-2 right-2 text-[8px] text-primary bg-white px-2 py-1 rounded shadow-sm z-10">
             Pausado
           </div>
         )}

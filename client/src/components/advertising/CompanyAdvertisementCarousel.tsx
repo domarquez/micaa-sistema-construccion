@@ -67,7 +67,7 @@ export function CompanyAdvertisementCarousel() {
 
   const AdCard = ({ ad }: { ad: AdvertisementWithSupplier }) => (
     <Card 
-      className="shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-200 overflow-hidden cursor-pointer hover:shadow-xl transition-shadow flex-1"
+      className="shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 border border-primary/40 overflow-hidden cursor-pointer hover:shadow-xl transition-shadow flex-1"
       onClick={() => handleAdClick(ad)}
     >
       <CardContent className="p-0">
@@ -81,8 +81,8 @@ export function CompanyAdvertisementCarousel() {
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center">
-                <Eye className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mx-auto mb-1" />
-                <span className="text-xs sm:text-sm text-blue-600 font-medium">
+                <Eye className="w-8 h-8 sm:w-10 sm:h-10 text-primary mx-auto mb-1" />
+                <span className="text-xs sm:text-sm text-primary font-medium">
                   {ad.supplier.companyName}
                 </span>
               </div>
@@ -91,21 +91,21 @@ export function CompanyAdvertisementCarousel() {
         </div>
 
         <div className="p-2 sm:p-3 text-left">
-          <h3 className="text-xs sm:text-sm md:text-base font-bold text-blue-900 leading-tight line-clamp-2 mb-1">
+          <h3 className="text-xs sm:text-sm md:text-base font-bold text-primary leading-tight line-clamp-2 mb-1">
             {ad.title}
           </h3>
           
-          <p className="text-[10px] sm:text-xs md:text-sm font-semibold text-orange-700 mb-1">
+          <p className="text-xs sm:text-xs md:text-sm font-semibold text-orange-700 mb-1">
             {ad.supplier.companyName}
           </p>
 
           {ad.description && (
-            <p className="text-[10px] sm:text-xs text-gray-700 line-clamp-2 mb-1">
+            <p className="text-xs sm:text-xs text-gray-700 line-clamp-2 mb-1">
               {ad.description}
             </p>
           )}
 
-          <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-[9px] sm:text-[10px] text-gray-600">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-[9px] sm:text-xs text-muted-foreground">
             {ad.supplier.city && (
               <div className="flex items-center gap-0.5">
                 <MapPin className="w-2.5 h-2.5" />
@@ -118,7 +118,7 @@ export function CompanyAdvertisementCarousel() {
                 <span>{ad.supplier.phone}</span>
               </div>
             )}
-            <div className="flex items-center gap-0.5 text-blue-600">
+            <div className="flex items-center gap-0.5 text-primary">
               <ExternalLink className="w-2.5 h-2.5" />
               <span>Ver más</span>
             </div>
@@ -131,10 +131,10 @@ export function CompanyAdvertisementCarousel() {
   return (
     <div className="news-panel mobile-padding mb-4 sm:mb-6 max-w-full overflow-hidden">
       <div className="flex items-center justify-between gap-2 mb-2">
-        <span className="text-xs sm:text-sm text-gray-600 font-medium">
+        <span className="text-xs sm:text-sm text-muted-foreground font-medium">
           Empresas Proveedoras - Publicidad
         </span>
-        <Badge variant="secondary" className="text-[9px] sm:text-[10px] px-2 py-0.5 bg-yellow-100 text-yellow-800 border border-yellow-300">
+        <Badge variant="secondary" className="text-[9px] sm:text-xs px-2 py-0.5 bg-yellow-100 text-yellow-800 border border-yellow-300">
           Patrocinado
         </Badge>
       </div>
@@ -187,7 +187,7 @@ export function CompanyAdvertisementCarousel() {
                 key={index}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   Math.floor(currentIndex / 2) === index 
-                    ? 'bg-blue-600' 
+                    ? 'bg-primary' 
                     : 'bg-gray-300'
                 }`}
                 onClick={() => setCurrentIndex(index * 2)}

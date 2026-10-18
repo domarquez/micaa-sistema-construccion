@@ -150,33 +150,33 @@ export default function MobileStatic() {
               <div className="text-lg font-bold text-orange-600">
                 {staticStatistics.totalMaterials.toLocaleString()}
               </div>
-              <div className="text-xs text-gray-600">Materiales</div>
+              <div className="text-xs text-muted-foreground">Materiales</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-3 text-center">
-              <div className="text-lg font-bold text-blue-600">
+              <div className="text-lg font-bold text-primary">
                 {staticStatistics.totalActivities}
               </div>
-              <div className="text-xs text-gray-600">Actividades</div>
+              <div className="text-xs text-muted-foreground">Actividades</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Supplier Advertisement */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="bg-[var(--micaa-bg)] border-primary/40">
           <CardContent className="p-4">
-            <div className="text-xs text-gray-500 mb-2 text-center">
+            <div className="text-xs text-muted-foreground mb-2 text-center">
               Empresas Proveedoras Destacadas
             </div>
-            <h3 className="font-semibold text-sm text-blue-900 mb-1">
+            <h3 className="font-semibold text-sm text-primary mb-1">
               {currentAd.name}
             </h3>
-            <p className="text-xs text-blue-700 mb-2">
+            <p className="text-xs text-primary mb-2">
               {currentAd.description}
             </p>
             <div className="flex items-center justify-between">
-              <div className="text-xs text-blue-600">
+              <div className="text-xs text-primary">
                 📍 {currentAd.city} | 📞 {currentAd.phone}
               </div>
               <div className="flex space-x-1">
@@ -184,7 +184,7 @@ export default function MobileStatic() {
                   <div
                     key={idx}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      idx === currentAdIndex ? 'bg-blue-600' : 'bg-blue-300'
+                      idx === currentAdIndex ? 'bg-primary' : 'bg-blue-300'
                     }`}
                   />
                 ))}
@@ -196,7 +196,7 @@ export default function MobileStatic() {
         {/* Construction News */}
         <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
           <CardContent className="p-3">
-            <div className="text-xs text-gray-500 mb-2 flex items-center justify-center">
+            <div className="text-xs text-muted-foreground mb-2 flex items-center justify-center">
               <TrendingUp className="w-3 h-3 mr-1" />
               Noticias de Construcción
             </div>
@@ -236,7 +236,7 @@ export default function MobileStatic() {
                       <Badge variant="secondary" className="text-xs">
                         {material.category}
                       </Badge>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-muted-foreground">
                         {material.unit}
                       </span>
                     </div>
@@ -253,40 +253,40 @@ export default function MobileStatic() {
         </div>
 
         {/* Premium Features Notice */}
-        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-[var(--micaa-bg)] border-primary/40">
           <CardContent className="p-4">
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <div className="bg-blue-600 text-white rounded-full p-2">
+                <div className="bg-primary text-white rounded-full p-2">
                   <Package className="w-4 h-4" />
                 </div>
               </div>
-              <h3 className="font-semibold text-sm text-blue-900 mb-2">
+              <h3 className="font-semibold text-sm text-primary mb-2">
                 Funcionalidades Premium
               </h3>
-              <div className="text-xs text-blue-700 text-left space-y-1 mb-3">
+              <div className="text-xs text-primary text-left space-y-1 mb-3">
                 <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                   <span>Crear actividades personalizadas</span>
                 </div>
                 <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                   <span>Generar presupuestos detallados</span>
                 </div>
                 <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                   <span>Exportar APU en PDF</span>
                 </div>
                 <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
                   <span>Gestión completa de proyectos</span>
                 </div>
               </div>
-              <p className="text-xs text-blue-600 mb-3">
+              <p className="text-xs text-primary mb-3">
                 Regístrate gratis para acceder a todas las herramientas profesionales
               </p>
               <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
+                className="w-full bg-primary hover:bg-primary/90 text-white text-xs h-8"
                 onClick={() => window.location.href = "/register"}
               >
                 Crear Cuenta Gratis

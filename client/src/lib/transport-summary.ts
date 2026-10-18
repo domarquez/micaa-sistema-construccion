@@ -41,7 +41,7 @@ export function transportOrigin(s: TransportSnapshot | null): string {
 const fmt = (n: number) => (Number.isFinite(n) ? n : 0).toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 /**
- * Escribe el bloque de resumen al final del PDF (jsPDF). Devuelve la nueva Y.
+ * Escribí el bloque de resumen al final del PDF (jsPDF). Devuelve la nueva Y.
  *   Subtotal actividades · Transporte y movilización (si > 0) · TOTAL GENERAL · nota precios base
  */
 export function writePdfTotals(

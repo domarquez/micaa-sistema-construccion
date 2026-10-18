@@ -127,10 +127,10 @@ export function BudgetAnalyzer() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Presupuesto Total</p>
+                <p className="text-sm font-medium text-muted-foreground">Presupuesto Total</p>
                 <p className="text-2xl font-bold">{formatCurrency(analysis.totalBudget)}</p>
               </div>
-              <DollarSign className="w-8 h-8 text-blue-600" />
+              <DollarSign className="w-8 h-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -139,9 +139,9 @@ export function BudgetAnalyzer() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Ejecutado</p>
+                <p className="text-sm font-medium text-muted-foreground">Ejecutado</p>
                 <p className="text-2xl font-bold text-green-600">{formatCurrency(analysis.totalExecuted)}</p>
-                <p className="text-sm text-gray-500">{executionPercentage.toFixed(1)}% del total</p>
+                <p className="text-sm text-muted-foreground">{executionPercentage.toFixed(1)}% del total</p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
@@ -152,11 +152,11 @@ export function BudgetAnalyzer() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Variación</p>
+                <p className="text-sm font-medium text-muted-foreground">Variación</p>
                 <p className={`text-2xl font-bold ${getVarianceColor(analysis.variance)}`}>
                   {formatCurrency(Math.abs(analysis.variance))}
                 </p>
-                <p className="text-sm text-gray-500">{variancePercentage.toFixed(1)}% del presupuesto</p>
+                <p className="text-sm text-muted-foreground">{variancePercentage.toFixed(1)}% del presupuesto</p>
               </div>
               {getVarianceIcon(analysis.variance)}
             </div>
@@ -167,11 +167,11 @@ export function BudgetAnalyzer() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Eficiencia</p>
-                <p className="text-2xl font-bold text-blue-600">{analysis.efficiency}%</p>
+                <p className="text-sm font-medium text-muted-foreground">Eficiencia</p>
+                <p className="text-2xl font-bold text-primary">{analysis.efficiency}%</p>
                 <Progress value={analysis.efficiency} className="mt-2" />
               </div>
-              <Calculator className="w-8 h-8 text-blue-600" />
+              <Calculator className="w-8 h-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -209,15 +209,15 @@ export function BudgetAnalyzer() {
                     
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-600">Presupuestado</p>
+                        <p className="text-muted-foreground">Presupuestado</p>
                         <p className="font-medium">{formatCurrency(phase.budgeted)}</p>
                       </div>
                       <div>
-                        <p className="text-gray-600">Ejecutado</p>
+                        <p className="text-muted-foreground">Ejecutado</p>
                         <p className="font-medium">{formatCurrency(phase.executed)}</p>
                       </div>
                       <div>
-                        <p className="text-gray-600">Progreso</p>
+                        <p className="text-muted-foreground">Progreso</p>
                         <div className="flex items-center gap-2">
                           <Progress 
                             value={phase.executed > 0 ? (phase.executed / phase.budgeted) * 100 : 0} 
@@ -270,7 +270,7 @@ export function BudgetAnalyzer() {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">{formatCurrency(category.value)}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                           {((category.value / analysis.totalExecuted) * 100).toFixed(1)}%
                         </p>
                       </div>

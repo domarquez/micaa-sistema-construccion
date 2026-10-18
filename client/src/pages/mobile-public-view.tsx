@@ -68,7 +68,7 @@ export default function MobilePublicView() {
                 <div className="text-lg font-bold text-orange-600">
                   {(statistics as any)?.totalMaterials?.toLocaleString() || '0'}
                 </div>
-                <div className="text-xs text-gray-600">Materiales</div>
+                <div className="text-xs text-muted-foreground">Materiales</div>
               </CardContent>
             </Card>
             <Card className="bg-white shadow-sm">
@@ -76,7 +76,7 @@ export default function MobilePublicView() {
                 <div className="text-lg font-bold text-orange-600">
                   {(statistics as any)?.totalActivities || '0'}
                 </div>
-                <div className="text-xs text-gray-600">Actividades</div>
+                <div className="text-xs text-muted-foreground">Actividades</div>
               </CardContent>
             </Card>
           </div>
@@ -84,15 +84,15 @@ export default function MobilePublicView() {
 
         {/* Advertisement Carousel */}
         <div className="px-4 mb-4">
-          <div className="bg-gray-100 rounded-lg p-4 text-center text-sm text-gray-600">
+          <div className="bg-gray-100 rounded-lg p-4 text-center text-sm text-muted-foreground">
             Espacio publicitario disponible
           </div>
         </div>
 
         {/* Construction News */}
         <div className="mb-4 px-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-sm text-blue-800">
+          <div className="bg-primary/10 border border-primary/40 rounded-lg p-3">
+            <p className="text-sm text-primary">
               📢 Últimas noticias del sector construcción en Bolivia
             </p>
           </div>
@@ -166,7 +166,7 @@ export default function MobilePublicView() {
                                 {category.name}
                               </Badge>
                             )}
-                            <div className="text-xs text-gray-600">
+                            <div className="text-xs text-muted-foreground">
                               Unidad: {material.unit}
                             </div>
                           </div>
@@ -183,7 +183,7 @@ export default function MobilePublicView() {
               </div>
 
               {filteredMaterials.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">No se encontraron materiales</p>
                 </div>
@@ -202,7 +202,7 @@ export default function MobilePublicView() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-medium text-sm">{supplier.name}</h3>
-                            <p className="text-xs text-gray-600 truncate">
+                            <p className="text-xs text-muted-foreground truncate">
                               {supplier.description}
                             </p>
                           </div>
@@ -211,7 +211,7 @@ export default function MobilePublicView() {
                     </Card>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-muted-foreground">
                     <Store className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">No hay proveedores disponibles</p>
                   </div>

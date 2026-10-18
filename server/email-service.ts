@@ -275,11 +275,11 @@ class EmailService {
         
         <p style="color: #374151; line-height: 1.6;">
           Hola ${name},<br><br>
-          ¡Tu cuenta en MICAA ha sido creada exitosamente! Ya puedes acceder a todas las funcionalidades del sistema.
+          ¡Tu cuenta en MICAA ha sido creada exitosamente! Ya podés acceder a todas las funcionalidades del sistema.
         </p>
         
         <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #374151; margin-top: 0;">¿Qué puedes hacer en MICAA?</h3>
+          <h3 style="color: #374151; margin-top: 0;">¿Qué podés hacer en MICAA?</h3>
           <ul style="color: #374151; line-height: 1.8;">
             <li>📋 Crear y gestionar presupuestos de construcción</li>
             <li>🧱 Explorar nuestro catálogo de más de 1,700 materiales</li>
@@ -304,7 +304,7 @@ class EmailService {
         </div>
         
         <p style="color: #6b7280; font-size: 14px;">
-          Si tienes alguna pregunta, no dudes en contactarnos respondiendo a este email.
+          Si tenés alguna pregunta, no dudés en contactarnos respondiendo a este email.
         </p>
         
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">

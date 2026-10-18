@@ -80,22 +80,22 @@ export function MobileAdCarousel() {
 
   return (
     <div className="relative">
-      <div className="text-xs text-gray-500 mb-2 text-center">
+      <div className="text-xs text-muted-foreground mb-2 text-center">
         Empresas Proveedoras Destacadas
       </div>
       
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+      <Card className="bg-[var(--micaa-bg)] border-primary/40">
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-sm text-blue-900 mb-1">
+              <h3 className="font-semibold text-sm text-primary mb-1">
                 {currentAd.name}
               </h3>
-              <p className="text-xs text-blue-700 mb-2">
+              <p className="text-xs text-primary mb-2">
                 {currentAd.description}
               </p>
               
-              <div className="flex items-center space-x-3 text-xs text-blue-600 mb-2">
+              <div className="flex items-center space-x-3 text-xs text-primary mb-2">
                 <div className="flex items-center">
                   <MapPin className="w-3 h-3 mr-1" />
                   {currentAd.city}
@@ -112,7 +112,7 @@ export function MobileAdCarousel() {
                 {currentAd.specialties.slice(0, 3).map((specialty, idx) => (
                   <span
                     key={idx}
-                    className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                    className="bg-primary/10 text-primary text-xs px-2 py-1 rounded"
                   >
                     {specialty}
                   </span>
@@ -125,7 +125,7 @@ export function MobileAdCarousel() {
                 variant="ghost"
                 size="sm"
                 onClick={prevAd}
-                className="h-7 w-7 p-0 text-blue-600 hover:bg-blue-100"
+                className="h-7 w-7 p-0 text-primary hover:bg-primary/10"
               >
                 <ChevronLeft className="w-3 h-3" />
               </Button>
@@ -133,7 +133,7 @@ export function MobileAdCarousel() {
                 variant="ghost"
                 size="sm"
                 onClick={nextAd}
-                className="h-7 w-7 p-0 text-blue-600 hover:bg-blue-100"
+                className="h-7 w-7 p-0 text-primary hover:bg-primary/10"
               >
                 <ChevronRight className="w-3 h-3" />
               </Button>
@@ -146,7 +146,7 @@ export function MobileAdCarousel() {
                 <div
                   key={idx}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    idx === currentIndex ? 'bg-blue-600' : 'bg-blue-300'
+                    idx === currentIndex ? 'bg-primary' : 'bg-blue-300'
                   }`}
                 />
               ))}
@@ -156,7 +156,7 @@ export function MobileAdCarousel() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs h-7 px-2 border-blue-300 text-blue-700 hover:bg-blue-100"
+                className="text-xs h-7 px-2 border-primary/40 text-primary hover:bg-primary/10"
               >
                 <ExternalLink className="w-3 h-3 mr-1" />
                 Visitar

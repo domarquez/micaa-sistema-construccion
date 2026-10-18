@@ -169,7 +169,7 @@ export default function SupplierPricing() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
         <div>
           <h2 className="text-2xl font-bold text-on-surface">Mis Ofertas de Precios</h2>
-          <p className="text-gray-600">Gestiona tus cotizaciones de materiales y herramientas</p>
+          <p className="text-muted-foreground">Gestiona tus cotizaciones de materiales y herramientas</p>
         </div>
         <div className="flex items-center space-x-4">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -194,7 +194,7 @@ export default function SupplierPricing() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Cotizaciones Activas</p>
+                <p className="text-sm text-muted-foreground">Cotizaciones Activas</p>
                 <p className="text-2xl font-bold text-green-600">
                   {myQuotes?.filter(q => getQuoteStatus(q).status === 'active').length || 0}
                 </p>
@@ -210,7 +210,7 @@ export default function SupplierPricing() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Por Vencer</p>
+                <p className="text-sm text-muted-foreground">Por Vencer</p>
                 <p className="text-2xl font-bold text-yellow-600">
                   {myQuotes?.filter(q => getQuoteStatus(q).status === 'expiring').length || 0}
                 </p>
@@ -226,7 +226,7 @@ export default function SupplierPricing() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Ofertas Vencidas</p>
+                <p className="text-sm text-muted-foreground">Ofertas Vencidas</p>
                 <p className="text-2xl font-bold text-red-600">
                   {myQuotes?.filter(q => getQuoteStatus(q).status === 'expired').length || 0}
                 </p>
@@ -242,13 +242,13 @@ export default function SupplierPricing() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Cotizaciones</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-sm text-muted-foreground">Total Cotizaciones</p>
+                <p className="text-2xl font-bold text-primary">
                   {myQuotes?.length || 0}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Package className="w-6 h-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -294,7 +294,7 @@ export default function SupplierPricing() {
                     <TableCell className="font-semibold text-green-600">
                       {formatCurrency(quote.price)}
                     </TableCell>
-                    <TableCell className="text-gray-600">
+                    <TableCell className="text-muted-foreground">
                       {formatCurrency(parseFloat(quote.material.price))}
                     </TableCell>
                     <TableCell>
@@ -320,10 +320,10 @@ export default function SupplierPricing() {
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <DollarSign className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>No tienes cotizaciones activas</p>
-              <p className="text-sm">Comienza creando ofertas para materiales</p>
+              <p>No tenés cotizaciones activas</p>
+              <p className="text-sm">Comenzá creando ofertas para materiales</p>
             </div>
           )}
         </CardContent>
@@ -382,7 +382,7 @@ export default function SupplierPricing() {
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
               <p>No hay materiales disponibles</p>
             </div>
@@ -396,7 +396,7 @@ export default function SupplierPricing() {
           <DialogHeader>
             <DialogTitle>Crear Cotización</DialogTitle>
             <DialogDescription>
-              Crea una oferta de precio para {selectedMaterial?.name}
+              Creá una oferta de precio para {selectedMaterial?.name}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -410,7 +410,7 @@ export default function SupplierPricing() {
                 onChange={(e) => setQuotePrice(e.target.value)}
                 placeholder="0.00"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Precio actual: {selectedMaterial ? formatCurrency(parseFloat(selectedMaterial.price)) : ""}
               </p>
             </div>

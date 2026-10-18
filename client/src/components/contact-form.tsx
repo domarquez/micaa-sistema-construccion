@@ -75,7 +75,7 @@ export function ContactForm({
     onError: (error) => {
       toast({
         title: "Error",
-        description: "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+        description: "No se pudo enviar el mensaje. Intentalo de nuevo.",
         variant: "destructive",
       });
       console.error("Error sending message:", error);
@@ -98,7 +98,7 @@ export function ContactForm({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5" />
-            Contáctanos - MICAA
+            Contactanos - MICAA
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -141,7 +141,7 @@ export function ContactForm({
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona el tipo de mensaje" />
+                        <SelectValue placeholder="Seleccioná el tipo de mensaje" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ListSkeleton } from "@/components/ui/states";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -90,7 +91,7 @@ export function LinkWhatsAppCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2"><MessageCircle className="w-5 h-5 text-green-600" /> WhatsApp</CardTitle>
         <CardDescription>
-          {linked ? `Vinculado: ${linked}. Puedes entrar con un código por WhatsApp, sin contraseña.` : "Vincula tu WhatsApp para entrar con un código, sin contraseña."}
+          {linked ? `Vinculado: ${linked}. Podés entrar con un código por WhatsApp, sin contraseña.` : "Vincula tu WhatsApp para entrar con un código, sin contraseña."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -172,9 +173,9 @@ export function MyDevicesCard() {
       </CardHeader>
       <CardContent className="space-y-3">
         {devices === null ? (
-          <p className="text-sm text-gray-500">Cargando…</p>
+          <ListSkeleton rows={2} />
         ) : devices.length === 0 ? (
-          <p className="text-sm text-gray-500">No hay dispositivos recordados.</p>
+          <p className="text-sm text-muted-foreground">No hay dispositivos recordados.</p>
         ) : (
           <ul className="divide-y">
             {devices.map((d) => (
@@ -183,7 +184,7 @@ export function MyDevicesCard() {
                   <p className="text-sm font-medium">
                     {d.deviceName || "Dispositivo"} {d.current && <span className="ml-1 text-xs text-green-700">(este dispositivo)</span>}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Último uso: {fmt(d.lastSeenAt)} · {d.authMethod === "whatsapp" ? "WhatsApp" : "Contraseña"}
                   </p>
                 </div>

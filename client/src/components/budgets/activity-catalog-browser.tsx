@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ListSkeleton } from "@/components/ui/states";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronRight, Layers, Plus } from "lucide-react";
@@ -29,7 +30,7 @@ function ActivityRow({ a, onPick }: { a: CatalogActivity; onPick: (a: CatalogAct
       <Plus className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary" />
       <span className="min-w-0 flex-1">
         <span className="block text-xs sm:text-sm leading-snug break-words">{a.name}</span>
-        <span className="block text-[11px] text-muted-foreground">{a.unit} · ref. Bs {fmt(a.unitPrice)}</span>
+        <span className="block text-sm text-muted-foreground">{a.unit} · ref. Bs {fmt(a.unitPrice)}</span>
       </span>
     </button>
   );
@@ -52,13 +53,13 @@ function FamilyBlock({ f, onPick }: { f: CatalogFamily; onPick: (a: CatalogActiv
           {open ? <ChevronDown className="w-4 h-4 flex-shrink-0" /> : <ChevronRight className="w-4 h-4 flex-shrink-0" />}
           <span className="font-medium break-words">{f.name}</span>
         </span>
-        <Badge variant="outline" className="text-[10px] flex-shrink-0">{f.count}</Badge>
+        <Badge variant="outline" className="text-xs flex-shrink-0">{f.count}</Badge>
       </button>
       {open && (
         <div className="pl-4 pb-2">
           {list.map((a) => <ActivityRow key={a.id} a={a} onPick={onPick} />)}
           {f.activities.length > FIRST && (
-            <button type="button" className="text-[11px] text-primary px-2 py-1" onClick={() => setShowAll((v) => !v)}>
+            <button type="button" className="text-sm text-primary px-2 py-1" onClick={() => setShowAll((v) => !v)}>
               {showAll ? "Ver menos" : `Ver todas (${f.activities.length})`}
             </button>
           )}
@@ -70,7 +71,7 @@ function FamilyBlock({ f, onPick }: { f: CatalogFamily; onPick: (a: CatalogActiv
                   type="button"
                   aria-expanded={vOpen}
                   onClick={() => setOpenVariants((p) => (vOpen ? p.filter((x) => x !== v.id) : [...p, v.id]))}
-                  className="flex items-center gap-1 text-[11px] sm:text-xs text-primary px-2 py-1"
+                  className="flex items-center gap-1 text-sm sm:text-xs text-primary px-2 py-1"
                   data-testid={`catalog-variants-${v.id}`}
                 >
                   <Layers className="w-3.5 h-3.5" />
@@ -99,7 +100,7 @@ export default function ActivityCatalogBrowser({ onPick }: { onPick: (activity: 
   return (
     <div data-testid="activity-catalog-browser">
       <p className="text-xs font-medium text-muted-foreground mb-2">Explorar por fase</p>
-      {isLoading && <p className="text-xs text-muted-foreground">Cargando catálogo…</p>}
+      {isLoading && <ListSkeleton rows={4} />}
       <div className="border rounded-md divide-y">
         {phases.map((p, i) => {
           const open = openPhase === p.id;
@@ -113,10 +114,10 @@ export default function ActivityCatalogBrowser({ onPick }: { onPick: (activity: 
               >
                 <span className="flex items-center gap-2 min-w-0">
                   {open ? <ChevronDown className="w-4 h-4 flex-shrink-0" /> : <ChevronRight className="w-4 h-4 flex-shrink-0" />}
-                  <span className="text-[11px] text-muted-foreground w-5 text-right flex-shrink-0">{i + 1}.</span>
+                  <span className="text-sm text-muted-foreground w-5 text-right flex-shrink-0">{i + 1}.</span>
                   <span className="text-sm font-medium break-words">{p.name}</span>
                 </span>
-                <Badge variant="secondary" className="text-[10px] flex-shrink-0">{p.count}</Badge>
+                <Badge variant="secondary" className="text-xs flex-shrink-0">{p.count}</Badge>
               </button>
               {open && (
                 <div className="px-1 sm:px-3 pb-2">

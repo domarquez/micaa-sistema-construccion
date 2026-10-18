@@ -20,7 +20,7 @@ export default function AdFooter({ slot = "3456789012", className = "" }: AdFoot
 
   return (
     <div className={`ad-shell ad-container text-center py-4 border-t border-gray-200 mt-8 mobile-padding max-w-full overflow-hidden ${className}`}>
-      <div className="text-xs text-gray-500 mb-2">Publicidad</div>
+      <div className="text-xs text-muted-foreground mb-2">Publicidad</div>
       <ins
         ref={adRef}
         className="adsbygoogle"

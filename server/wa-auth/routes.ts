@@ -40,8 +40,8 @@ export function publicUser(u: AuthUser) {
   };
 }
 
-const INVALID_PHONE = { ok: false, code: "INVALID_PHONE", message: "Número no válido. Escribe tu número de WhatsApp (ej. 71234567 o +591 71234567)." };
-const INVALID_CODE = { ok: false, code: "INVALID_CODE", message: "Código incorrecto. Revisa los 6 dígitos." };
+const INVALID_PHONE = { ok: false, code: "INVALID_PHONE", message: "Número no válido. Escribí tu número de WhatsApp (ej. 71234567 o +591 71234567)." };
+const INVALID_CODE = { ok: false, code: "INVALID_CODE", message: "Código incorrecto. Revisá los 6 dígitos." };
 const noActive = (phone: string) => ({
   ok: false, code: "NO_ACTIVE_CODE",
   message: `No hay un código vigente para ${maskPhone(phone)} (venció, ya se usó o se envió a otro número). Si escribiste a MICAA desde otro WhatsApp, usa ese número, o toca «Enviarme el código».`,
@@ -106,7 +106,7 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
   }
   const requireUser = async (req: Request, res: Response, next: NextFunction) => {
     const u = await currentUser(req);
-    if (!u) return res.status(401).json({ message: "Inicia sesión" });
+    if (!u) return res.status(401).json({ message: "Iniciá sesión" });
     (req as any).waUser = u;
     next();
   };
@@ -115,13 +115,13 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
     if (r.reason === "send_failed") {
       return res.status(502).json({
         ok: false, code: "WA_SEND_FAILED",
-        message: "No pudimos enviar el código por WhatsApp ahora. Intenta en unos minutos o usa “Abrir WhatsApp”.",
+        message: "No pudimos enviar el código por WhatsApp ahora. Intentá en unos minutos o usá “Abrir WhatsApp”.",
       });
     }
     res.setHeader("Retry-After", String(r.retryAfterSeconds));
     const message = r.reason === "cooldown"
       ? `Espera ${r.retryAfterSeconds} s antes de pedir otro código.`
-      : "Pediste demasiados códigos. Intenta más tarde o usa “Abrir WhatsApp”.";
+      : "Pediste demasiados códigos. Intentá más tarde o usá “Abrir WhatsApp”.";
     return res.status(429).json({ ok: false, code: r.reason === "cooldown" ? "COOLDOWN" : "RATE_LIMITED", message, retryAfterSeconds: r.retryAfterSeconds });
   }
 
@@ -194,7 +194,7 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
         // Cuenta existente con ese número (p. ej. registro antiguo): el código acaba de probar que el número es suyo.
         if ((await deps.users.setPhone(user.id, phone)) === "ok") user = { ...user, phoneVerified: true };
       }
-      if (!user.isActive) return res.status(403).json({ ok: false, message: "Cuenta desactivada. Contacta al administrador." });
+      if (!user.isActive) return res.status(403).json({ ok: false, message: "Cuenta desactivada. Contactá al administrador." });
       await deps.users.touchLastLogin(user.id);
       const { token } = await sessions.start(req, res, user, "whatsapp", req.body?.deviceName);
       res.json({ success: true, ok: true, token, user: publicUser(user), isNewUser });

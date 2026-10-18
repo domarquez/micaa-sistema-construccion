@@ -234,7 +234,7 @@ export default function BudgetDetails() {
       
     } catch (error) {
       console.error('Error generando PDF:', error);
-      alert('Error al generar el PDF. Intenta de nuevo.');
+      alert('Error al generar el PDF. Intentá de nuevo.');
     }
   };
 
@@ -335,8 +335,8 @@ export default function BudgetDetails() {
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">
           Presupuesto no encontrado
         </h2>
-        <p className="text-gray-600 mb-6">
-          El presupuesto que buscas no existe o no tienes permisos para verlo.
+        <p className="text-muted-foreground mb-6">
+          El presupuesto que buscas no existe o no tenés permisos para verlo.
         </p>
         <Button onClick={() => window.history.back()}>
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -366,7 +366,7 @@ export default function BudgetDetails() {
             <h1 className="text-2xl font-bold text-on-surface">
               {budget.project.name}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {budget.phase ? budget.phase.name : "Multifase"} • Presupuesto #{budget.id}
             </p>
           </div>
@@ -407,32 +407,32 @@ export default function BudgetDetails() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-3">
-                <User className="w-5 h-5 text-gray-500" />
+                <User className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-gray-600">Cliente</p>
+                  <p className="text-sm text-muted-foreground">Cliente</p>
                   <p className="font-medium">{budget.project.client || "No especificado"}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-gray-500" />
+                <MapPin className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-gray-600">Ubicación</p>
+                  <p className="text-sm text-muted-foreground">Ubicación</p>
                   <p className="font-medium">{budget.project.location || "No especificado"}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-gray-500" />
+                <Calendar className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-gray-600">Fecha de Inicio</p>
+                  <p className="text-sm text-muted-foreground">Fecha de Inicio</p>
                   <p className="font-medium">
                     {budget.project.startDate ? formatDate(budget.project.startDate) : "No definida"}
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-gray-500" />
+                <FileText className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-gray-600">Estado</p>
+                  <p className="text-sm text-muted-foreground">Estado</p>
                   <p className="font-medium capitalize">{budget.project.status}</p>
                 </div>
               </div>
@@ -446,29 +446,29 @@ export default function BudgetDetails() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm text-gray-600">Total del Presupuesto</p>
+              <p className="text-sm text-muted-foreground">Total del Presupuesto</p>
               <p className="text-2xl font-bold text-primary">
                 {formatCurrency(budget.total)}
               </p>
             </div>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between gap-2">
-                <span className="text-gray-600">Subtotal actividades</span>
+                <span className="text-muted-foreground">Subtotal actividades</span>
                 <span className="font-semibold">{formatCurrency(totalItems)}</span>
               </div>
               {transportCost > 0 && (
                 <div className="flex justify-between gap-2" title={transportDetail(transportSnap)}>
-                  <span className="text-gray-600">{TRANSPORT_LINE_LABEL}</span>
+                  <span className="text-muted-foreground">{TRANSPORT_LINE_LABEL}</span>
                   <span className="font-semibold">{formatCurrency(transportCost)}</span>
                 </div>
               )}
               {transportCost > 0 && (
-                <p className="text-[11px] text-gray-500">{transportOrigin(transportSnap)} · {transportDetail(transportSnap)} · incluye GG, utilidad e IT</p>
+                <p className="text-sm text-muted-foreground">{transportOrigin(transportSnap)} · {transportDetail(transportSnap)} · incluye GG, utilidad e IT</p>
               )}
-              <p className="text-[11px] text-gray-400">{BASE_PRICE_NOTE}</p>
+              <p className="text-sm text-gray-400">{BASE_PRICE_NOTE}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Fase de Construcción</p>
+              <p className="text-sm text-muted-foreground">Fase de Construcción</p>
               <p className="font-medium">{budget.phase ? budget.phase.name : "Multifase"}</p>
             </div>
           </CardContent>
@@ -507,7 +507,7 @@ export default function BudgetDetails() {
                     <h3 className="font-semibold text-on-surface">
                       {group.name}
                       {!group.isActive && (
-                        <span className="ml-2 text-xs font-normal text-gray-500">(fase anterior)</span>
+                        <span className="ml-2 text-xs font-normal text-muted-foreground">(fase anterior)</span>
                       )}
                     </h3>
                     <span className="font-semibold tabular-nums">{formatCurrency(group.total)}</span>
@@ -515,7 +515,7 @@ export default function BudgetDetails() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-left text-xs text-gray-500">
+                        <tr className="text-left text-xs text-muted-foreground">
                           <th className="py-1 pr-2 font-medium">Actividad</th>
                           <th className="py-1 px-2 font-medium">Und</th>
                           <th className="py-1 px-2 font-medium text-right">Cantidad</th>
@@ -527,7 +527,7 @@ export default function BudgetDetails() {
                         {group.items.map((item) => (
                           <tr key={item.id} className="border-t border-gray-100">
                             <td className="py-2 pr-2">{item.activity?.name || `Actividad #${item.activityId}`}</td>
-                            <td className="py-2 px-2 text-gray-600">{item.activity?.unit || "—"}</td>
+                            <td className="py-2 px-2 text-muted-foreground">{item.activity?.unit || "—"}</td>
                             <td className="py-2 px-2 text-right tabular-nums">
                               {Number(item.quantity).toLocaleString("es-BO", { maximumFractionDigits: 3 })}
                             </td>
@@ -559,7 +559,7 @@ export default function BudgetDetails() {
                     </div>
                   </>
                 )}
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="text-sm text-muted-foreground mt-2">
                   Vista de solo lectura. Para cambiar cantidades o precios usa «Editar» en la lista de proyectos.
                 </p>
               </div>
@@ -567,7 +567,7 @@ export default function BudgetDetails() {
           ) : (
             <div className="text-center py-8">
               <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Este presupuesto aún no tiene items calculados.
               </p>
             </div>

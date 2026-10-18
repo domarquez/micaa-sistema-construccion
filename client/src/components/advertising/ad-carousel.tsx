@@ -133,13 +133,13 @@ export function AdCarousel() {
             {/* Content - Compact below image */}
             <div className="p-0.5 sm:p-1 md:p-1.5 lg:p-2 xl:p-3 bg-white rounded-b-lg">
               <div className="text-center">
-                <h3 className="font-semibold text-gray-900 text-[10px] sm:text-xs md:text-sm line-clamp-2 break-words leading-tight mb-0.5 sm:mb-1">
+                <h3 className="font-semibold text-gray-900 text-xs sm:text-xs md:text-sm line-clamp-2 break-words leading-tight mb-0.5 sm:mb-1">
                   {currentAd.title}
                 </h3>
-                <p className="text-orange-600 font-medium text-[10px] sm:text-xs break-words leading-tight mb-1 sm:mb-2">
+                <p className="text-orange-600 font-medium text-xs sm:text-xs break-words leading-tight mb-1 sm:mb-2">
                   {currentAd.company}
                 </p>
-                <p className="text-gray-600 text-[10px] sm:text-xs line-clamp-2 mb-2 sm:mb-3">
+                <p className="text-muted-foreground text-xs sm:text-xs line-clamp-2 mb-2 sm:mb-3">
                   {currentAd.description}
                 </p>
 
@@ -158,7 +158,7 @@ export function AdCarousel() {
                   ))}
                 </div>
                 
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   {currentIndex + 1} de {sampleAds.length}
                 </div>
               </div>

@@ -155,7 +155,7 @@ export default function ActivityDetailDialog({
   };
 
   const handleDelete = (compositionId: number) => {
-    if (confirm('¿Estás seguro de que quieres eliminar esta composición?')) {
+    if (confirm('¿Estás seguro de que querés eliminar esta composición?')) {
       deleteCompositionMutation.mutate(compositionId);
     }
   };
@@ -250,7 +250,7 @@ export default function ActivityDetailDialog({
           <DialogTitle className="text-lg font-semibold">
             Análisis de Precios Unitarios (APU)
           </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">
+          <DialogDescription className="text-sm text-muted-foreground">
             Desglose detallado de materiales, mano de obra y costos para: {activityName}
           </DialogDescription>
         </DialogHeader>
@@ -366,7 +366,7 @@ export default function ActivityDetailDialog({
                   </div>
                   
                   {/* Total Final */}
-                  <div className="bg-blue-50 p-3 rounded-lg mt-3">
+                  <div className="bg-primary/10 p-3 rounded-lg mt-3">
                     <div className="flex justify-between text-base font-bold">
                       <span>Total Precio Unitario</span>
                       <span>{formatCurrency(apuCalculation.totalUnitPrice)}</span>
@@ -385,14 +385,14 @@ export default function ActivityDetailDialog({
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
-                      <Package className="w-4 h-4 text-blue-600" />
+                      <Package className="w-4 h-4 text-primary" />
                       Materiales
                       <Badge variant="outline">{materials.length} items</Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-muted-foreground">
                         Total materiales: {formatCurrency(materials.reduce((sum, m) => sum + parseFloat(m.quantity) * liveCost(m), 0))}
                       </div>
                       {isCustomActivity && user && (
@@ -509,7 +509,7 @@ export default function ActivityDetailDialog({
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-muted-foreground">
                         Total mano de obra: {formatCurrency(labor.reduce((sum, l) => sum + parseFloat(l.quantity) * liveCost(l), 0))}
                       </div>
                       {isCustomActivity && user && (
@@ -662,7 +662,7 @@ export default function ActivityDetailDialog({
             </div>
           ) : !apuCalculation ? (
             <Card>
-              <CardContent className="py-8 text-center text-gray-500">
+              <CardContent className="py-8 text-center text-muted-foreground">
                 <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>No hay composiciones disponibles para esta actividad</p>
                 <p className="text-sm">Las composiciones se crean y gestionan dentro del sistema MICAA</p>
@@ -680,7 +680,7 @@ export default function ActivityDetailDialog({
               Agregar {showAddModal.type === 'material' ? 'Material' : showAddModal.type === 'labor' ? 'Mano de Obra' : 'Equipo'}
             </DialogTitle>
             <DialogDescription>
-              Selecciona un elemento del catálogo y especifica la cantidad
+              Seleccioná un elemento del catálogo y especifica la cantidad
             </DialogDescription>
           </DialogHeader>
           
@@ -693,7 +693,7 @@ export default function ActivityDetailDialog({
                   setSelectedItem(material);
                 }}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un material" />
+                    <SelectValue placeholder="Seleccioná un material" />
                   </SelectTrigger>
                   <SelectContent>
                     {materialsCatalog.map((material: any) => (
@@ -714,7 +714,7 @@ export default function ActivityDetailDialog({
                   setSelectedItem(labor);
                 }}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona mano de obra" />
+                    <SelectValue placeholder="Seleccioná mano de obra" />
                   </SelectTrigger>
                   <SelectContent>
                     {laborCatalog.map((labor: any) => (
@@ -735,7 +735,7 @@ export default function ActivityDetailDialog({
                   setSelectedItem(tool);
                 }}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un equipo" />
+                    <SelectValue placeholder="Seleccioná un equipo" />
                   </SelectTrigger>
                   <SelectContent>
                     {toolsCatalog.map((tool: any) => (
@@ -755,14 +755,14 @@ export default function ActivityDetailDialog({
                 step="0.01"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                placeholder="Ingresa la cantidad"
+                placeholder="Ingresá la cantidad"
               />
             </div>
 
             {selectedItem && (
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-medium">Resumen:</h4>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {selectedItem.name} × {quantity} {selectedItem.unit}
                 </p>
                 <p className="text-sm font-medium mt-1">

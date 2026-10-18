@@ -130,7 +130,7 @@ export default function AdminSuppliers() {
 
   const getBusinessTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      'construction': 'bg-blue-500',
+      'construction': 'bg-primary',
       'materials': 'bg-green-500',
       'tools': 'bg-orange-500',
       'services': 'bg-purple-500'
@@ -158,7 +158,7 @@ export default function AdminSuppliers() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Gestión de Empresas Proveedoras</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Administra empresas proveedoras y sus datos de contacto
           </p>
         </div>
@@ -200,10 +200,10 @@ export default function AdminSuppliers() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Proveedores</p>
+                <p className="text-sm text-muted-foreground">Total Proveedores</p>
                 <p className="text-2xl font-bold">{suppliers.length}</p>
               </div>
-              <Building2 className="h-8 w-8 text-blue-500" />
+              <Building2 className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -212,7 +212,7 @@ export default function AdminSuppliers() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Activos</p>
+                <p className="text-sm text-muted-foreground">Activos</p>
                 <p className="text-2xl font-bold">{suppliers.filter(s => s.isActive).length}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-500" />
@@ -224,7 +224,7 @@ export default function AdminSuppliers() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Inactivos</p>
+                <p className="text-sm text-muted-foreground">Inactivos</p>
                 <p className="text-2xl font-bold">{suppliers.filter(s => !s.isActive).length}</p>
               </div>
               <XCircle className="h-8 w-8 text-red-500" />
@@ -236,7 +236,7 @@ export default function AdminSuppliers() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Construcción</p>
+                <p className="text-sm text-muted-foreground">Construcción</p>
                 <p className="text-2xl font-bold">{suppliers.filter(s => s.businessType === 'construction').length}</p>
               </div>
               <Building2 className="h-8 w-8 text-orange-500" />
@@ -272,7 +272,7 @@ export default function AdminSuppliers() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{supplier.user.username}</p>
-                        <p className="text-sm text-gray-500">{supplier.user.email}</p>
+                        <p className="text-sm text-muted-foreground">{supplier.user.email}</p>
                       </div>
                     </TableCell>
                     <TableCell>{getBusinessTypeBadge(supplier.businessType)}</TableCell>

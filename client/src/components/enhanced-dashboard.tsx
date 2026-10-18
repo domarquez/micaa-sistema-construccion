@@ -65,7 +65,7 @@ export function EnhancedDashboard() {
       value: 92,
       change: "+8%", 
       trend: "up",
-      color: "bg-blue-500"
+      color: "bg-primary"
     },
     {
       label: "Satisfacción del Usuario",
@@ -83,7 +83,7 @@ export function EnhancedDashboard() {
       description: "Crear presupuesto de proyecto",
       icon: Calculator,
       href: "/budgets/new",
-      color: "text-blue-600"
+      color: "text-primary"
     },
     {
       title: "Gestionar Materiales",
@@ -114,7 +114,7 @@ export function EnhancedDashboard() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">Panel Principal</h1>
-          <p className="text-sm sm:text-base text-gray-600 truncate mt-1">
+          <p className="text-sm sm:text-base text-muted-foreground truncate mt-1">
             Sistema Integral de Cómputos y Presupuestos MICAA
           </p>
         </div>
@@ -132,7 +132,7 @@ export function EnhancedDashboard() {
         <Card className="shadow-sm hover:shadow-md transition-shadow h-full">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-col items-center text-center">
-              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mb-2" />
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary mb-2" />
               {statsLoading ? (
                 <Skeleton className="h-5 sm:h-6 w-10 sm:w-12 mb-1" />
               ) : (
@@ -140,7 +140,7 @@ export function EnhancedDashboard() {
                   {formatNumber(stats?.totalUsers || 0)}
                 </p>
               )}
-              <p className="text-xs sm:text-sm text-gray-600 truncate">Usuarios</p>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">Usuarios</p>
             </div>
           </CardContent>
         </Card>
@@ -156,7 +156,7 @@ export function EnhancedDashboard() {
                   {formatNumber(stats?.activeBudgets || 0)}
                 </p>
               )}
-              <p className="text-sm text-gray-600">Presupuestos</p>
+              <p className="text-sm text-muted-foreground">Presupuestos</p>
             </div>
           </CardContent>
         </Card>
@@ -172,7 +172,7 @@ export function EnhancedDashboard() {
                   {formatNumber(stats?.totalProjects || 0)}
                 </p>
               )}
-              <p className="text-sm text-gray-600">Proyectos</p>
+              <p className="text-sm text-muted-foreground">Proyectos</p>
             </div>
           </CardContent>
         </Card>
@@ -188,7 +188,7 @@ export function EnhancedDashboard() {
                   {formatNumber(stats?.totalSuppliers || 0)}
                 </p>
               )}
-              <p className="text-sm text-gray-600">Proveedores</p>
+              <p className="text-sm text-muted-foreground">Proveedores</p>
             </div>
           </CardContent>
         </Card>
@@ -196,7 +196,7 @@ export function EnhancedDashboard() {
         <Card className="shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex flex-col items-center text-center">
-              <Package className="w-6 h-6 text-blue-600 mb-2" />
+              <Package className="w-6 h-6 text-primary mb-2" />
               {statsLoading ? (
                 <Skeleton className="h-6 w-12 mb-1" />
               ) : (
@@ -204,7 +204,7 @@ export function EnhancedDashboard() {
                   {formatNumber(stats?.totalMaterials || 0)}
                 </p>
               )}
-              <p className="text-sm text-gray-600">Materiales</p>
+              <p className="text-sm text-muted-foreground">Materiales</p>
             </div>
           </CardContent>
         </Card>
@@ -220,7 +220,7 @@ export function EnhancedDashboard() {
                   {formatNumber(stats?.totalActivities || 0)}
                 </p>
               )}
-              <p className="text-sm text-gray-600">Actividades</p>
+              <p className="text-sm text-muted-foreground">Actividades</p>
             </div>
           </CardContent>
         </Card>
@@ -236,7 +236,7 @@ export function EnhancedDashboard() {
                   {formatCurrency(stats?.totalProjectValue || 0).replace(' Bs', '')}
                 </p>
               )}
-              <p className="text-sm text-gray-600">Valor Total</p>
+              <p className="text-sm text-muted-foreground">Valor Total</p>
             </div>
           </CardContent>
         </Card>
@@ -333,7 +333,7 @@ export function EnhancedDashboard() {
                     <action.icon className={`w-6 h-6 ${action.color}`} />
                     <div className="text-center">
                       <p className="font-medium text-sm">{action.title}</p>
-                      <p className="text-xs text-gray-600 mt-1">{action.description}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{action.description}</p>
                     </div>
                   </Button>
                 </Link>

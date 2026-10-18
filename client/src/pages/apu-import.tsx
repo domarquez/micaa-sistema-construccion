@@ -113,7 +113,7 @@ export default function APUImport() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Importar Análisis de Precios Unitarios</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Importa composiciones de actividades basadas en análisis de precios unitarios estándar
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function APUImport() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Download className="h-5 w-5 text-blue-600" />
+              <Download className="h-5 w-5 text-primary" />
               Datos de APU Disponibles
             </CardTitle>
           </CardHeader>
@@ -136,11 +136,11 @@ export default function APUImport() {
               <div className="grid grid-cols-1 gap-4">
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-gray-900">Fuente de Datos: Sistema MICAA</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Se accederá directamente a la base de datos de análisis de precios unitarios
                     del sistema MICAA para obtener composiciones actualizadas con:
                   </p>
-                  <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                  <ul className="text-sm text-muted-foreground mt-2 space-y-1">
                     <li>• Materiales con cantidades y precios específicos</li>
                     <li>• Mano de obra especializada por actividad</li>
                     <li>• Equipos y herramientas necesarios</li>
@@ -149,12 +149,12 @@ export default function APUImport() {
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-primary/10 border border-primary/40 rounded-lg p-4">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
                   <div>
-                    <h4 className="font-medium text-blue-900">Proceso de Importación</h4>
-                    <p className="text-sm text-blue-700 mt-1">
+                    <h4 className="font-medium text-primary">Proceso de Importación</h4>
+                    <p className="text-sm text-primary mt-1">
                       El sistema buscará actividades similares en tu base de datos y asignará
                       las composiciones correspondientes. Los materiales se vincularán automáticamente
                       con los existentes en tu inventario.
@@ -177,7 +177,7 @@ export default function APUImport() {
           <CardContent>
             <div className="space-y-4">
               <p className="text-gray-700">
-                Haz clic en el botón para importar TODAS las composiciones de actividades del sistema.
+                Hacé clic en el botón para importar TODAS las composiciones de actividades del sistema.
                 Este proceso importará todos los grupos y todos los APUs disponibles.
               </p>
               
@@ -231,7 +231,7 @@ export default function APUImport() {
                   {importCompleteData.isPending ? "Importando..." : "Importar Empresas Proveedoras Reales"}
                 </Button>
                 
-                <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg space-y-1">
+                <div className="text-xs text-muted-foreground bg-gray-50 p-3 rounded-lg space-y-1">
                   <p><strong>Reorganizar:</strong> Distribuye las actividades importadas en las fases correctas según su tipo (demolición → preliminares, vidrios → acabados, etc.)</p>
                   <p><strong>Calcular Precios:</strong> Actualiza automáticamente los precios unitarios de todas las actividades basándose en sus composiciones importadas (materiales + mano de obra).</p>
                   <p><strong>Empresas Proveedoras:</strong> Importa 178 empresas reales de Bolivia incluyendo proveedores de materiales, constructoras, empresas eléctricas y de diseño con datos de contacto auténticos.</p>
@@ -240,12 +240,12 @@ export default function APUImport() {
 
               {importAPU.isPending && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary/40 border-t-transparent"></div>
                     Procesando importación masiva desde insucons.com...
                   </div>
                   <Progress value={undefined} className="w-full" />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Extrayendo todos los grupos, APUs y composiciones. Por favor espera...
                   </p>
                 </div>
@@ -287,11 +287,11 @@ export default function APUImport() {
                   )}
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">Próximos pasos</h4>
-                  <ul className="text-sm text-blue-700 space-y-1">
+                <div className="bg-primary/10 border border-primary/40 rounded-lg p-4">
+                  <h4 className="font-medium text-primary mb-2">Próximos pasos</h4>
+                  <ul className="text-sm text-primary space-y-1">
                     <li>• Las actividades ahora tienen composiciones definidas</li>
-                    <li>• Puedes revisar y ajustar las composiciones en la sección de Actividades</li>
+                    <li>• Podés revisar y ajustar las composiciones en la sección de Actividades</li>
                     <li>• Los precios se calcularán automáticamente al crear presupuestos</li>
                     <li>• Los costos se actualizan cuando cambies precios de materiales</li>
                   </ul>

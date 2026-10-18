@@ -351,17 +351,17 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
                         const selectable = r.inputId != null && r.options.length > 0 && apu.overridesAvailable;
                         const dirty = dirtyKeys.includes(rowKey(r));
                         return (
-                          <tr key={r.compositionId} className={`border-b align-top ${dirty ? "bg-blue-50" : ""}`}>
+                          <tr key={r.compositionId} className={`border-b align-top ${dirty ? "bg-primary/10" : ""}`}>
                             <td className="px-2 py-1.5">
                               <div className="font-medium">{r.name}</div>
                               {r.override && (
-                                <Badge variant="outline" className="mt-0.5 text-[10px]">
+                                <Badge variant="outline" className="mt-0.5 text-xs">
                                   {r.override.scope === "item" ? "Ajuste de este ítem" : "Ajuste del proyecto"}
                                 </Badge>
                               )}
-                              {r.sourceRef && <div className="text-[10px] text-muted-foreground">Fuente: {r.sourceRef}</div>}
+                              {r.sourceRef && <div className="text-xs text-muted-foreground">Fuente: {r.sourceRef}</div>}
                               {r.warnings.map((w, i) => (
-                                <div key={i} className="text-[10px] text-amber-700 flex items-center gap-1">
+                                <div key={i} className="text-xs text-amber-700 flex items-center gap-1">
                                   <AlertTriangle className="w-3 h-3" /> {w}
                                 </div>
                               ))}
@@ -370,7 +370,7 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
                             <td className="px-2 py-1.5 text-right whitespace-nowrap">
                               {r.quantity.toLocaleString("es-BO", { maximumFractionDigits: 4 })}
                               {r.wastePct > 0 && (
-                                <div className="text-[10px] text-muted-foreground">
+                                <div className="text-xs text-muted-foreground">
                                   +{r.wastePct}% desp. = {eff.toLocaleString("es-BO", { maximumFractionDigits: 4 })}
                                 </div>
                               )}
@@ -408,7 +408,7 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
                               ) : (
                                 <div>
                                   {bs(r.unitPrice)}
-                                  <div className="text-[10px] text-muted-foreground">{r.sourceLabel}</div>
+                                  <div className="text-xs text-muted-foreground">{r.sourceLabel}</div>
                                 </div>
                               )}
                             </td>
@@ -457,7 +457,7 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
                 <Line label={`Utilidad (${apu.percentages.utility}%)`} value={preview.utilityCost} sub />
                 <Line label={`IT (${apu.percentages.tax}%)`} value={preview.taxCost} sub />
               </div>
-              <div className="border rounded-md p-3 bg-blue-50 flex flex-col justify-between gap-2">
+              <div className="border rounded-md p-3 bg-primary/10 flex flex-col justify-between gap-2">
                 <div>
                   <div className="text-sm text-muted-foreground">Precio unitario {dirtyKeys.length ? "(vista previa)" : ""}</div>
                   <div className="text-2xl font-bold">{bs(preview.totalUnitPrice)}</div>

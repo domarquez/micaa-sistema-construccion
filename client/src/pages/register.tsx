@@ -50,12 +50,12 @@ export default function Register() {
     onSuccess: () => {
       toast({
         title: "Código enviado",
-        description: "Revisa tu email (también la carpeta de spam) para obtener el código de verificación",
+        description: "Revisá tu email (también la carpeta de spam) para obtener el código de verificación",
       });
       setStep('verify');
     },
     onError: (error: Error) => {
-      const errorMessage = error.message || 'Error de conexión. Intenta de nuevo.';
+      const errorMessage = error.message || 'Error de conexión. Intentá de nuevo.';
       toast({
         title: "Error",
         description: errorMessage,
@@ -113,7 +113,7 @@ export default function Register() {
     onSuccess: () => {
       toast({
         title: "Registro exitoso",
-        description: "Tu cuenta ha sido creada. Ya puedes iniciar sesión.",
+        description: "Tu cuenta ha sido creada. Ya podés iniciar sesión.",
       });
       window.location.href = "/login";
     },
@@ -133,7 +133,7 @@ export default function Register() {
     if (!email || !emailRegex.test(email)) {
       toast({
         title: "Email inválido",
-        description: "Ingresa una dirección de email válida",
+        description: "Ingresá una dirección de email válida",
         variant: "destructive",
       });
       return;
@@ -172,7 +172,7 @@ export default function Register() {
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "Contraseñas no coinciden",
-        description: "Por favor verifique que las contraseñas sean iguales",
+        description: "Por favor verificá que las contraseñas sean iguales",
         variant: "destructive",
       });
       return;
@@ -196,14 +196,14 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-indigo-100 px-2 sm:px-4 py-4 sm:py-8 safe-area-inset-top safe-area-inset-bottom overflow-x-hidden flex flex-col items-center justify-center">
+    <div className="min-h-screen w-full bg-[var(--micaa-bg)] px-2 sm:px-4 py-4 sm:py-8 safe-area-inset-top safe-area-inset-bottom overflow-x-hidden flex flex-col items-center justify-center">
       <Card className="auth-card w-full sm:max-w-xs md:max-w-md shadow-lg">
         <CardHeader className="text-center p-2 sm:p-4 md:p-6">
           <div className="mx-auto mb-2 sm:mb-3 md:mb-4 p-2 sm:p-3 bg-primary/10 rounded-full w-fit">
             <Construction className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-primary" />
           </div>
           <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold">Crear Cuenta</CardTitle>
-          <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">Registro con Email</p>
+          <p className="text-xs sm:text-xs md:text-sm text-muted-foreground">Registro con Email</p>
           
           <div className="flex justify-center gap-2 mt-3">
             <div className={`flex items-center gap-1 text-xs ${step === 'email' ? 'text-green-600 font-medium' : 'text-gray-400'}`}>
@@ -233,9 +233,9 @@ export default function Register() {
           {step === 'email' && (
             <form onSubmit={handleSendCode} className="space-y-4">
               <div className="text-center mb-4">
-                <Mail className="w-12 h-12 text-blue-500 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">
-                  Ingresa tu email para recibir un código de verificación
+                <Mail className="w-12 h-12 text-primary mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">
+                  Ingresá tu email para recibir un código de verificación
                 </p>
               </div>
               
@@ -254,14 +254,14 @@ export default function Register() {
                     data-testid="input-email"
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Recibirás un código de 6 dígitos
                 </p>
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-primary hover:bg-primary/90"
                 disabled={sendCodeMutation.isPending}
                 data-testid="button-send-code"
               >
@@ -276,7 +276,7 @@ export default function Register() {
               </Button>
 
               <div className="text-center text-xs sm:text-sm">
-                <span className="text-gray-600">¿Ya tienes cuenta? </span>
+                <span className="text-muted-foreground">¿Ya tenés cuenta? </span>
                 <Link href="/login" className="text-primary hover:underline font-medium">
                   Iniciar sesión
                 </Link>
@@ -287,13 +287,13 @@ export default function Register() {
           {step === 'verify' && (
             <form onSubmit={handleVerifyCode} className="space-y-4">
               <div className="text-center mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Mail className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Mail className="w-6 h-6 text-primary" />
                 </div>
-                <p className="text-sm text-gray-600">
-                  Ingresa el código enviado a
+                <p className="text-sm text-muted-foreground">
+                  Ingresá el código enviado a
                 </p>
-                <p className="font-medium text-blue-600 text-sm">{email}</p>
+                <p className="font-medium text-primary text-sm">{email}</p>
               </div>
 
               <div>
@@ -324,14 +324,14 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setStep('email')}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-muted-foreground hover:text-gray-700"
                 >
                   Cambiar email
                 </button>
                 <button
                   type="button"
                   onClick={() => sendCodeMutation.mutate(email)}
-                  className="text-blue-600 hover:underline"
+                  className="text-primary hover:underline"
                   disabled={sendCodeMutation.isPending}
                 >
                   Reenviar código
@@ -464,7 +464,7 @@ export default function Register() {
               </Button>
 
               <div className="text-center text-xs sm:text-sm">
-                <span className="text-gray-600">¿Ya tienes cuenta? </span>
+                <span className="text-muted-foreground">¿Ya tenés cuenta? </span>
                 <Link href="/login" className="text-primary hover:underline font-medium">
                   Iniciar sesión
                 </Link>
@@ -474,7 +474,7 @@ export default function Register() {
         </CardContent>
       </Card>
 
-      <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-4 px-4">
+      <p className="text-center text-xs sm:text-xs text-muted-foreground mt-4 px-4">
         Al registrarte, aceptas nuestros términos de servicio y política de privacidad
       </p>
     </div>

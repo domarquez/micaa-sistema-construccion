@@ -17,14 +17,14 @@ export function AnonymousBudgetWarning({ showActions = true, className = "" }: A
       </AlertTitle>
       <AlertDescription className="text-orange-700 space-y-2">
         <p>
-          ✅ <strong>Puedes hacer todo:</strong> Crear, editar, calcular, descargar PDF e imprimir presupuestos
+          ✅ <strong>Podés hacer todo:</strong> Crear, editar, calcular, descargar PDF e imprimir presupuestos
         </p>
         <p>
           ⚠️ <strong>Importante:</strong> Este presupuesto NO se guardará automáticamente en la base de datos
         </p>
         <p>
           💾 Para guardar permanentemente tus proyectos y acceder desde cualquier dispositivo, 
-          necesitas registrarte gratuitamente.
+          necesitás registrarte gratuitamente.
         </p>
         
         {showActions && (

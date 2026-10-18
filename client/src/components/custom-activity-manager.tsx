@@ -310,11 +310,11 @@ export default function CustomActivityManager({ onActivitySelect }: CustomActivi
         <Card>
           <CardContent className="text-center py-8">
             <Settings className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 mb-4">
-              Aún no tienes actividades personalizadas
+            <p className="text-muted-foreground mb-4">
+              Aún no tenés actividades personalizadas
             </p>
-            <p className="text-sm text-gray-500 mb-4">
-              Crea actividades nuevas o copia actividades existentes para personalizarlas
+            <p className="text-sm text-muted-foreground mb-4">
+              Creá actividades nuevas o copia actividades existentes para personalizarlas
             </p>
           </CardContent>
         </Card>
@@ -327,7 +327,7 @@ export default function CustomActivityManager({ onActivitySelect }: CustomActivi
                   <div>
                     <CardTitle className="text-lg">{activity.customName}</CardTitle>
                     {activity.originalName && (
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Basada en: {activity.originalName}
                       </p>
                     )}
@@ -354,7 +354,7 @@ export default function CustomActivityManager({ onActivitySelect }: CustomActivi
               <CardContent>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-blue-600" />
+                    <Package className="w-4 h-4 text-primary" />
                     <span>{activity.materials.length} Materiales</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -367,7 +367,7 @@ export default function CustomActivityManager({ onActivitySelect }: CustomActivi
                   </div>
                 </div>
                 {activity.description && (
-                  <p className="text-sm text-gray-600 mt-3">{activity.description}</p>
+                  <p className="text-sm text-muted-foreground mt-3">{activity.description}</p>
                 )}
                 <div className="flex gap-2 mt-4">
                   <Button
@@ -392,11 +392,11 @@ export default function CustomActivityManager({ onActivitySelect }: CustomActivi
       )}
 
       <div className="text-center">
-        <p className="text-sm text-gray-600 mb-2">
-          ¿Quieres personalizar una actividad existente?
+        <p className="text-sm text-muted-foreground mb-2">
+          ¿Querés personalizar una actividad existente?
         </p>
-        <p className="text-xs text-gray-500">
-          Ve a cualquier presupuesto, expande una actividad y haz clic en "Copiar y Personalizar"
+        <p className="text-xs text-muted-foreground">
+          Andá a cualquier presupuesto, expandí una actividad y hacé clic en "Copiar y Personalizar"
         </p>
       </div>
     </div>

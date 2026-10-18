@@ -143,7 +143,7 @@ export default function AdminUsers() {
             <span className="hidden sm:inline">Gestión de Usuarios</span>
             <span className="sm:hidden">Usuarios</span>
           </h1>
-          <p className="text-sm md:text-base text-gray-600 mt-2">
+          <p className="text-sm md:text-base text-muted-foreground mt-2">
             Administra roles, permisos y estado de usuarios del sistema
           </p>
         </div>
@@ -186,10 +186,10 @@ export default function AdminUsers() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Usuarios</p>
+                <p className="text-sm text-muted-foreground">Total Usuarios</p>
                 <p className="text-2xl font-bold">{users.length}</p>
               </div>
-              <Users className="h-8 w-8 text-blue-500" />
+              <Users className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -198,7 +198,7 @@ export default function AdminUsers() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Administradores</p>
+                <p className="text-sm text-muted-foreground">Administradores</p>
                 <p className="text-2xl font-bold">{users.filter(u => u.role === 'admin').length}</p>
               </div>
               <Shield className="h-8 w-8 text-red-500" />
@@ -210,7 +210,7 @@ export default function AdminUsers() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Proveedores</p>
+                <p className="text-sm text-muted-foreground">Proveedores</p>
                 <p className="text-2xl font-bold">{users.filter(u => u.role === 'supplier').length}</p>
               </div>
               <Users className="h-8 w-8 text-green-500" />
@@ -222,10 +222,10 @@ export default function AdminUsers() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Usuarios Activos</p>
+                <p className="text-sm text-muted-foreground">Usuarios Activos</p>
                 <p className="text-2xl font-bold">{users.filter(u => u.isActive).length}</p>
               </div>
-              <UserCheck className="h-8 w-8 text-blue-500" />
+              <UserCheck className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>

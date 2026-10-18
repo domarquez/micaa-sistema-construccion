@@ -335,7 +335,7 @@ export default function ActivityCompositionEditor({
                 </div>
                 <div className="flex items-end">
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">Costo total estimado</p>
+                    <p className="text-sm text-muted-foreground">Costo total estimado</p>
                     <p className="text-xl font-bold text-primary">
                       {formatCurrency(getTotalCost())}
                     </p>
@@ -374,7 +374,7 @@ export default function ActivityCompositionEditor({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Package className="w-5 h-5 text-blue-600" />
+                    <Package className="w-5 h-5 text-primary" />
                     Materiales
                   </CardTitle>
                 </CardHeader>
@@ -427,7 +427,7 @@ export default function ActivityCompositionEditor({
                   {/* Materials list */}
                   <div className="space-y-2">
                     {editedActivity.materials.map((material) => (
-                      <div key={material.id} className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+                      <div key={material.id} className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg">
                         <div className="flex-1 grid grid-cols-5 gap-2 text-sm">
                           <div>
                             <p className="font-medium">{material.description}</p>

@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { ListSkeleton } from "@/components/ui/states";
+import { formatBs, formatUnit, relativeDays } from "@/lib/format";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { titleCaseMaterial } from "@/lib/lista";
@@ -34,9 +36,6 @@ function priceOf(m: MaterialRow): number {
   return parseFloat(String(m.price)) || 0;
 }
 
-function formatBs(n: number) {
-  return `Bs ${n.toLocaleString("es-BO", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
-}
 
 function matchFactor(factors: CityFactor[], city: string): number {
   const aliases: Record<string, string[]> = {
@@ -106,13 +105,13 @@ export default function PriceHome({ afterSearch }: { afterSearch?: React.ReactNo
   };
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-10">
+    <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="mb-8 text-center">
         <h1 className="text-[32px] font-semibold tracking-tight text-[var(--micaa-fg)]">MICAA</h1>
-        <p className="mt-1 text-[14px] text-[var(--micaa-muted)]">
+        <p className="mt-1 text-base text-[var(--micaa-muted)]">
           Precios de materiales en Bolivia
         </p>
-        <p className="mt-1 text-[12px] text-[var(--micaa-muted)]">
+        <p className="mt-1 text-sm text-[var(--micaa-muted)]">
           Vista: {city}
           {materialsFactor !== 1 ? ` · factor mat. ×${materialsFactor.toFixed(2)}` : " · base SCZ"}
         </p>
@@ -123,12 +122,12 @@ export default function PriceHome({ afterSearch }: { afterSearch?: React.ReactNo
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Buscar material…"
-          className="h-11 w-full rounded-xl border border-[var(--micaa-line)] bg-white px-4 text-[14px] text-[var(--micaa-fg)] outline-none focus:border-[var(--micaa-accent)]"
+          className="h-11 w-full rounded-xl border border-[var(--micaa-line)] bg-white px-4 text-base text-[var(--micaa-fg)] outline-none focus:border-[var(--micaa-accent)]"
           autoFocus
         />
       </form>
 
-      <div className="mb-8 flex flex-wrap justify-center gap-2 text-[12px]">
+      <div className="mb-8 flex flex-wrap justify-center gap-2 text-sm">
         {SUGGESTIONS.map((s) => (
           <button
             key={s.q}
@@ -149,7 +148,7 @@ export default function PriceHome({ afterSearch }: { afterSearch?: React.ReactNo
 
       <div className="divide-y divide-[var(--micaa-line)] border-t border-[var(--micaa-line)]">
         {isLoading && (
-          <p className="py-6 text-center text-[12px] text-[var(--micaa-muted)]">Cargando…</p>
+          <ListSkeleton rows={6} />
         )}
         {!isLoading &&
           rows.map((m) => (
@@ -159,11 +158,11 @@ export default function PriceHome({ afterSearch }: { afterSearch?: React.ReactNo
               className="flex items-baseline justify-between gap-4 py-3 hover:bg-black/[0.02]"
             >
               <div className="min-w-0 text-left">
-                <div className="truncate text-[14px] text-[var(--micaa-fg)]">
+                <div className="truncate text-base text-[var(--micaa-fg)]">
                   {titleCaseMaterial(m.name)}
                 </div>
-                <div className="mt-0.5 text-[12px] text-[var(--micaa-muted)]">
-                  {m.unit}
+                <div className="mt-0.5 text-sm text-[var(--micaa-muted)]">
+                  {formatUnit(m.unit)}
                   {m.category?.name ? ` · ${titleCaseMaterial(m.category.name)}` : ""}
                   {" · estimada"}
                 </div>
@@ -174,11 +173,30 @@ export default function PriceHome({ afterSearch }: { afterSearch?: React.ReactNo
             </Link>
           ))}
         {!isLoading && rows.length === 0 && (
-          <p className="py-6 text-center text-[12px] text-[var(--micaa-muted)]">
+          <p className="py-6 text-center text-sm text-[var(--micaa-muted)]">
             No hay materiales para mostrar.
           </p>
         )}
       </div>
+
+      <div className="mt-6 text-center">
+        <Link
+          href="/materiales"
+          className="inline-flex h-11 items-center rounded-lg bg-[var(--micaa-accent)] px-6 text-base font-medium text-[var(--micaa-accent-fg)] hover:opacity-90"
+          data-testid="link-ver-todos"
+        >
+          Ver todos los materiales
+        </Link>
+      </div>
+
+      <section className="mt-12 rounded-xl border border-[var(--micaa-line)] bg-white p-5 text-left">
+        <h2 className="text-lg font-semibold text-[var(--micaa-fg)]">¿Qué es MICAA?</h2>
+        <p className="mt-2 text-base text-[var(--micaa-muted)]">
+          MICAA junta precios reales de materiales de construcción en Bolivia: catálogo base, cotizaciones de
+          ferreterías y precios que publica la gente. Buscá un material, compará fuentes y armá tu lista.
+          Cuando quieras, entrá con tu WhatsApp para guardar proyectos y presupuestos.
+        </p>
+      </section>
     </div>
   );
 }

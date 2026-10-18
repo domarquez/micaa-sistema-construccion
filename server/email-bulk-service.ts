@@ -341,8 +341,8 @@ class BulkEmailService {
             <h3 style="color: #667eea; margin-top: 0;">🔐 Actualiza tu Contraseña</h3>
             <p>Para acceder a las nuevas funcionalidades, te recomendamos actualizar tu contraseña:</p>
             <ul>
-              <li>Accede a tu panel de usuario</li>
-              <li>Ve a "Configuración de Cuenta"</li>
+              <li>Accedé a tu panel de usuario</li>
+              <li>Andá a "Configuración de Cuenta"</li>
               <li>Actualiza tu contraseña por una más segura</li>
             </ul>
           </div>
@@ -363,8 +363,8 @@ class BulkEmailService {
             </a>
           </div>
 
-          <p><strong>¿Necesitas ayuda?</strong><br>
-          Contáctanos en <a href="mailto:contacto@micaaa.top">contacto@micaaa.top</a></p>
+          <p><strong>¿Necesitás ayuda?</strong><br>
+          Contactanos en <a href="mailto:contacto@micaaa.top">contacto@micaaa.top</a></p>
         `;
         break;
 
@@ -373,7 +373,7 @@ class BulkEmailService {
           <h2 style="color: #667eea;">¡Promociona tu Empresa, ${emailData.contactName}!</h2>
           <p><strong>${emailData.companyName}</strong></p>
           
-          <p>¿Sabías que puedes promocionar tu empresa directamente en MICAA y llegar a más clientes potenciales?</p>
+          <p>¿Sabías que podés promocionar tu empresa directamente en MICAA y llegar a más clientes potenciales?</p>
           
           <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #f57c00; margin-top: 0;">📢 Sistema de Publicidad MICAA</h3>
@@ -389,11 +389,11 @@ class BulkEmailService {
           <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #7b1fa2; margin-top: 0;">🚀 Cómo Empezar</h3>
             <ol>
-              <li>Accede a tu panel de empresa</li>
-              <li>Ve a la sección "Publicidad"</li>
-              <li>Sube tu logo e información</li>
+              <li>Accedé a tu panel de empresa</li>
+              <li>Andá a la sección "Publicidad"</li>
+              <li>Subí tu logo e información</li>
               <li>Configura tu anuncio</li>
-              <li>¡Comienza a recibir más clientes!</li>
+              <li>¡Comenzá a recibir más clientes!</li>
             </ol>
           </div>
 
@@ -403,8 +403,8 @@ class BulkEmailService {
             </a>
           </div>
 
-          <p><strong>¿Tienes preguntas?</strong><br>
-          Escríbenos a <a href="mailto:contacto@micaaa.top">contacto@micaaa.top</a></p>
+          <p><strong>¿Tenés preguntas?</strong><br>
+          Escribinos a <a href="mailto:contacto@micaaa.top">contacto@micaaa.top</a></p>
         `;
         break;
 
@@ -441,7 +441,7 @@ class BulkEmailService {
             </a>
           </div>
 
-          <p><strong>¿Necesitas asistencia?</strong><br>
+          <p><strong>¿Necesitás asistencia?</strong><br>
           No dudes en contactarnos: <a href="mailto:contacto@micaaa.top">contacto@micaaa.top</a></p>
         `;
         break;
@@ -470,8 +470,8 @@ Te contactamos desde MICAA para informarte sobre las nuevas funcionalidades disp
 
 ACTUALIZA TU CONTRASEÑA
 Para acceder a las nuevas funcionalidades, te recomendamos actualizar tu contraseña:
-- Accede a tu panel de usuario
-- Ve a "Configuración de Cuenta"
+- Accedé a tu panel de usuario
+- Andá a "Configuración de Cuenta"
 - Actualiza tu contraseña por una más segura
 
 NUEVAS FUNCIONALIDADES:
@@ -480,9 +480,9 @@ NUEVAS FUNCIONALIDADES:
 - Reportes Detallados: Análisis de tu actividad
 - Integración Mejorada: Mejor experiencia de usuario
 
-Accede al sistema: ${baseUrl}/auth/login
+Accedé al sistema: ${baseUrl}/auth/login
 
-¿Necesitas ayuda? Contáctanos en contacto@micaaa.top
+¿Necesitás ayuda? Contactanos en contacto@micaaa.top
 
 © 2025 MICAA - Bolivia
         `.trim();
@@ -494,7 +494,7 @@ MICAA - Sistema Integral de Construcción y Arquitectura
 ¡Promociona tu Empresa, ${emailData.contactName}!
 ${emailData.companyName}
 
-¿Sabías que puedes promocionar tu empresa directamente en MICAA y llegar a más clientes potenciales?
+¿Sabías que podés promocionar tu empresa directamente en MICAA y llegar a más clientes potenciales?
 
 SISTEMA DE PUBLICIDAD MICAA:
 - Mostrar tu empresa en la página principal
@@ -503,15 +503,15 @@ SISTEMA DE PUBLICIDAD MICAA:
 - Aumentar tu visibilidad en el mercado boliviano
 
 CÓMO EMPEZAR:
-1. Accede a tu panel de empresa
-2. Ve a la sección "Publicidad"
-3. Sube tu logo e información
+1. Accedé a tu panel de empresa
+2. Andá a la sección "Publicidad"
+3. Subí tu logo e información
 4. Configura tu anuncio
-5. ¡Comienza a recibir más clientes!
+5. ¡Comenzá a recibir más clientes!
 
 Crear publicidad: ${baseUrl}/auth/login
 
-¿Tienes preguntas? Escríbenos a contacto@micaaa.top
+¿Tenés preguntas? Escribinos a contacto@micaaa.top
 
 © 2025 MICAA - Bolivia
         `.trim();
@@ -539,7 +539,7 @@ BENEFICIOS:
 
 Actualizar datos: ${baseUrl}/auth/login
 
-¿Necesitas asistencia? Contactanos: contacto@micaaa.top
+¿Necesitás asistencia? Contactanos: contacto@micaaa.top
 
 © 2025 MICAA - Bolivia
         `.trim();

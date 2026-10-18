@@ -179,7 +179,7 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
     onError: (error) => {
       toast({
         title: "Error al guardar",
-        description: "No se pudo guardar el presupuesto. Intente nuevamente.",
+        description: "No se pudo guardar el presupuesto. Intentá nuevamente.",
         variant: "destructive",
       });
     }
@@ -193,7 +193,7 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
   const handleSaveBudget = () => {
     if (!selectedPhase) {
       toast({
-        title: "Seleccione una fase",
+        title: "Seleccioná una fase",
         description: "Debe seleccionar una fase para crear el presupuesto.",
         variant: "destructive",
       });
@@ -259,7 +259,7 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
           <DialogDescription>
             {isEditing 
               ? "Modifique los detalles del presupuesto existente."
-              : "Complete la información del proyecto y seleccione las fases."
+              : "Complete la información del proyecto y seleccioná las fases."
             }
           </DialogDescription>
         </DialogHeader>
@@ -334,7 +334,7 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
                           <FormControl>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccione la ciudad" />
+                                <SelectValue placeholder="Seleccioná la ciudad" />
                               </SelectTrigger>
                               <SelectContent>
                                 {cityFactors.map((factor: any) => (
@@ -502,7 +502,7 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
                     onValueChange={(value) => setSelectedPhase(parseInt(value))}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccione una fase de construcción" />
+                      <SelectValue placeholder="Seleccioná una fase de construcción" />
                     </SelectTrigger>
                     <SelectContent>
                       {phases?.map((phase) => (

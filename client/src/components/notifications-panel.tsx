@@ -29,7 +29,7 @@ let globalNotifications: Notification[] = [
     id: "2", 
     type: "info",
     title: "Panel administrativo disponible",
-    message: "Accede a todas las funciones administrativas: gestión de usuarios, precios, materiales y herramientas",
+    message: "Accedé a todas las funciones administrativas: gestión de usuarios, precios, materiales y herramientas",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1),
     read: false
   }
@@ -71,7 +71,7 @@ export function NotificationsPanel() {
       case "warning": return <AlertTriangle className="w-4 h-4 text-yellow-600" />;
       case "error": return <X className="w-4 h-4 text-red-600" />;
       case "admin": return <Settings className="w-4 h-4 text-purple-600" />;
-      default: return <Info className="w-4 h-4 text-blue-600" />;
+      default: return <Info className="w-4 h-4 text-primary" />;
     }
   };
 
@@ -85,7 +85,7 @@ export function NotificationsPanel() {
           id: "admin-features",
           type: "admin" as const,
           title: "Funciones administrativas activas",
-          message: "Tienes acceso completo al panel de administración, gestión de usuarios, precios y configuraciones del sistema",
+          message: "Tenés acceso completo al panel de administración, gestión de usuarios, precios y configuraciones del sistema",
           timestamp: new Date(),
           read: false
         };
@@ -115,7 +115,7 @@ export function NotificationsPanel() {
       </CardHeader>
       <CardContent className="space-y-3">
         {notifications.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-4">
+          <p className="text-sm text-muted-foreground text-center py-4">
             No hay notificaciones
           </p>
         ) : (
@@ -125,7 +125,7 @@ export function NotificationsPanel() {
               className={`p-3 rounded-lg border transition-colors ${
                 notification.read 
                   ? "bg-gray-50 border-gray-200" 
-                  : "bg-blue-50 border-blue-200"
+                  : "bg-primary/10 border-primary/40"
               }`}
             >
               <div className="flex items-start gap-3">
@@ -146,10 +146,10 @@ export function NotificationsPanel() {
                       </Button>
                     )}
                   </div>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {notification.message}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     {formatRelativeTime(notification.timestamp)}
                   </p>
                 </div>

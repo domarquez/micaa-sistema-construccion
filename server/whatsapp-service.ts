@@ -86,7 +86,7 @@ class WhatsAppService {
   }
 
   async sendWelcomeMessage(phone: string, userName: string): Promise<boolean> {
-    const message = `👋 *¡Bienvenido a MICAA, ${userName}!*\n\n🏗️ Sistema Integral de Construcción y Arquitectura\n\nTu cuenta ha sido verificada exitosamente.\n\nAhora puedes:\n• Crear presupuestos de construcción\n• Gestionar materiales y proveedores\n• Calcular costos con precios regionales\n\n¡Gracias por unirte a MICAA!`;
+    const message = `👋 *¡Bienvenido a MICAA, ${userName}!*\n\n🏗️ Sistema Integral de Construcción y Arquitectura\n\nTu cuenta ha sido verificada exitosamente.\n\nAhora podés:\n• Crear presupuestos de construcción\n• Gestionar materiales y proveedores\n• Calcular costos con precios regionales\n\n¡Gracias por unirte a MICAA!`;
     return this.sendTextMessage(phone, message);
   }
 

@@ -257,7 +257,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       
       toast({
         title: "Proyecto creado exitosamente",
-        description: project?.location ? `📍 ${transportSummaryText(project)}` : "Ahora puedes agregar fases al presupuesto",
+        description: project?.location ? `📍 ${transportSummaryText(project)}` : "Ahora podés agregar fases al presupuesto",
       });
       
       // Reiniciar el formulario
@@ -267,7 +267,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       console.error("Error al crear proyecto:", error);
       toast({
         title: "Error",
-        description: "No se pudo crear el proyecto. Intenta nuevamente.",
+        description: "No se pudo crear el proyecto. Intentá nuevamente.",
         variant: "destructive",
       });
     },
@@ -317,7 +317,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       console.error("Error al actualizar proyecto:", error);
       toast({
         title: "Error",
-        description: "No se pudo actualizar el proyecto. Intenta nuevamente.",
+        description: "No se pudo actualizar el proyecto. Intentá nuevamente.",
         variant: "destructive",
       });
     },
@@ -411,7 +411,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       
       toast({
         title: "Proyecto duplicado exitosamente",
-        description: "Se creó una copia completa del proyecto y presupuesto. Ahora puedes editarla sin afectar el original.",
+        description: "Se creó una copia completa del proyecto y presupuesto. Ahora podés editarla sin afectar el original.",
       });
       
       // Cerrar el modal para que el usuario vea la nueva lista
@@ -421,7 +421,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       console.error("Error al duplicar proyecto:", error);
       toast({
         title: "Error",
-        description: "No se pudo duplicar el proyecto. Intenta nuevamente.",
+        description: "No se pudo duplicar el proyecto. Intentá nuevamente.",
         variant: "destructive",
       });
     },
@@ -600,7 +600,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     onError: (error) => {
       toast({
         title: "Error al guardar",
-        description: "No se pudo guardar el presupuesto. Intente nuevamente.",
+        description: "No se pudo guardar el presupuesto. Intentá nuevamente.",
         variant: "destructive",
       });
     }
@@ -637,7 +637,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     setOpenPhases((prev) => (prev.includes(String(phaseId)) ? prev : [...prev, String(phaseId)]));
   };
 
-  /** Agrega una actividad elegida en el buscador global: va a SU fase (se crea si falta). */
+  /** Agregá una actividad elegida en el buscador global: va a SU fase (se crea si falta). */
   const addActivityFromSearch = (activity: ActivityWithPhase) => {
     const phaseId = activity.phaseId;
     const phase = constructionPhases?.find(p => p.id === phaseId) || (activity as any).phase;
@@ -794,8 +794,8 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
               <div className="flex items-center gap-1 sm:gap-2 text-orange-800">
                 <span className="font-medium text-xs sm:text-sm">⚠️ Modo de Prueba - Presupuesto Temporal</span>
               </div>
-              <p className="text-orange-700 mt-1 text-[10px] sm:text-xs leading-relaxed break-words">
-                Puedes crear, editar y descargar presupuestos. Este presupuesto NO se guardará - 
+              <p className="text-orange-700 mt-1 text-xs sm:text-xs leading-relaxed break-words">
+                Podés crear, editar y descargar presupuestos. Este presupuesto NO se guardará - 
                 regístrate gratis para guardar tus proyectos permanentemente.
               </p>
             </div>
@@ -854,7 +854,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                           <FormControl>
                             <Input placeholder="Ej: Av. Banzer 7º anillo, barrio o localidad (Warnes, Cotoca…)" {...field} className="text-sm w-full" />
                           </FormControl>
-                          <p className="text-[11px] text-muted-foreground">Precios base puestos en obra (km cero urbano). Si la obra queda lejos, se suma «Transporte y movilización».</p>
+                          <p className="text-sm text-muted-foreground">Precios base puestos en obra (km cero urbano). Si la obra queda lejos, se suma «Transporte y movilización».</p>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -941,7 +941,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                     </Badge>
                   </CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
-                    Busca una actividad (se ubica sola en su fase) o agrega fases manualmente.
+                    Buscá una actividad (se ubica sola en su fase) o agregá fases manualmente.
                   </CardDescription>
                   {!isAnonymous && <ProjectTransportCard project={currentProject} onProjectChange={setCurrentProject} compact />}
                 </CardHeader>
@@ -951,7 +951,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                   </div>
                   <button
                     type="button"
-                    className="text-[11px] text-muted-foreground hover:text-foreground mb-2"
+                    className="text-sm text-muted-foreground hover:text-foreground mb-2"
                     onClick={() => setShowPhaseButtons((v) => !v)}
                     aria-expanded={showPhaseButtons}
                   >
@@ -1093,14 +1093,14 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                                       variant="link"
                                       className="h-auto p-0 text-xs"
                                       disabled={!item.dbId}
-                                      title={item.dbId ? "Ver el análisis de precio unitario y elegir precios por insumo" : "Guarda el presupuesto para ajustar el APU de este ítem"}
+                                      title={item.dbId ? "Ver el análisis de precio unitario y elegir precios por insumo" : "Guardá el presupuesto para ajustar el APU de este ítem"}
                                       onClick={() => item.dbId && setApuTarget({ phaseId: phaseData.phaseId, localId: item.id, dbId: item.dbId })}
                                     >
                                       <Calculator className="w-3.5 h-3.5 mr-1" />
                                       Ver / ajustar APU
                                     </Button>
                                     {!item.dbId && <span className="text-muted-foreground">(guarda el presupuesto para ajustarlo)</span>}
-                                    {item.priceManual && <Badge variant="outline" className="text-[10px]">P.U. manual</Badge>}
+                                    {item.priceManual && <Badge variant="outline" className="text-xs">P.U. manual</Badge>}
                                   </div>
                                 )}
                               </div>

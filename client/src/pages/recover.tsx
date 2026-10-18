@@ -30,7 +30,7 @@ export default function Recover() {
         setSuccess(true);
         toast({
           title: "Credenciales enviadas",
-          description: "Revisa tu email para obtener tus credenciales de acceso",
+          description: "Revisá tu email para obtener tus credenciales de acceso",
         });
       } else {
         toast({
@@ -42,7 +42,7 @@ export default function Recover() {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Error de conexión. Intenta nuevamente.",
+        description: "Error de conexión. Intentá nuevamente.",
         variant: "destructive",
       });
     } finally {
@@ -52,7 +52,7 @@ export default function Recover() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--micaa-bg)] p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
@@ -65,8 +65,8 @@ export default function Recover() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-center space-y-4">
-              <p className="text-sm text-gray-600">
-                Revisa tu bandeja de entrada (y carpeta de spam) para encontrar tu usuario y contraseña temporal.
+              <p className="text-sm text-muted-foreground">
+                Revisá tu bandeja de entrada (y carpeta de spam) para encontrar tu usuario y contraseña temporal.
               </p>
               
               <div className="space-y-2">
@@ -90,7 +90,7 @@ export default function Recover() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--micaa-bg)] p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
@@ -98,7 +98,7 @@ export default function Recover() {
           </div>
           <CardTitle className="text-2xl font-bold">Recuperar Credenciales</CardTitle>
           <CardDescription>
-            Ingresa tu email para recibir tu usuario y contraseña
+            Ingresá tu email para recibir tu usuario y contraseña
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -116,14 +116,14 @@ export default function Recover() {
               />
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
+            <div className="bg-primary/10 p-4 rounded-md border border-primary/40">
               <div className="flex items-start space-x-2">
-                <Mail className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-blue-800">
+                  <p className="text-sm font-medium text-primary">
                     Información importante
                   </p>
-                  <p className="text-sm text-blue-700 mt-1">
+                  <p className="text-sm text-primary mt-1">
                     Te enviaremos tanto tu nombre de usuario como una contraseña temporal por email. 
                     Te recomendamos cambiar la contraseña después de iniciar sesión.
                   </p>
@@ -148,12 +148,12 @@ export default function Recover() {
               </Button>
               
               <div className="flex items-center justify-center space-x-4 text-sm">
-                <Link href="/login" className="text-blue-600 hover:underline flex items-center">
+                <Link href="/login" className="text-primary hover:underline flex items-center">
                   <ArrowLeft className="h-4 w-4 mr-1" />
                   Volver al Login
                 </Link>
                 <span className="text-gray-400">|</span>
-                <Link href="/register" className="text-blue-600 hover:underline">
+                <Link href="/register" className="text-primary hover:underline">
                   Crear Cuenta
                 </Link>
               </div>

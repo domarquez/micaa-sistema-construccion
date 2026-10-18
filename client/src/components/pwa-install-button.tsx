@@ -16,7 +16,7 @@ export function PWAInstallButton({ className = "" }: { className?: string }) {
       onClick={() => { install().catch((e) => console.error('Error installing PWA:', e)); }}
       size="sm"
       variant="outline"
-      className={`text-[9px] sm:text-[10px] md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 bg-green-50 border-green-500 text-green-700 hover:bg-green-100 ${className}`}
+      className={`text-[9px] sm:text-xs md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 bg-green-50 border-green-500 text-green-700 hover:bg-green-100 ${className}`}
       data-testid="button-install-pwa"
     >
       <Download className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:mr-1" />
@@ -82,7 +82,7 @@ export function PWAInstallBanner() {
           <Button
             size="sm"
             onClick={handleInstall}
-            className="text-xs px-2 py-1 h-7 bg-white text-blue-600 hover:bg-gray-100"
+            className="text-xs px-2 py-1 h-7 bg-white text-primary hover:bg-gray-100"
           >
             Instalar
           </Button>
