@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   lastName: text("last_name"),
   phone: text("phone").unique(),
   phoneVerified: boolean("phone_verified").default(false),
+  emailVerified: boolean("email_verified").default(false),
   role: text("role").notNull().default("user"), // 'admin', 'user'
   userType: text("user_type").notNull().default("architect"), // 'architect', 'constructor', 'supplier'
   isActive: boolean("is_active").notNull().default(true),
