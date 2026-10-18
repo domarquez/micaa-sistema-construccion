@@ -8,6 +8,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
 import { getPublicMaterialPrice } from './material-price';
 import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
+import { registerSupplierGuideRoutes } from './supplier-guide';
 import { registerApuRoutes } from './apu-routes';
 import { registerProjectTemplateRoutes } from './project-templates';
 import { registerTransportRoutes, afterProjectSaved, stripTransportFields } from './transport';
@@ -76,6 +77,7 @@ export async function registerRoutes(app: any) {
 
   // WhatsApp ferretería price ingest (API key, no JWT) — register early
   app.post('/api/ingest/whatsapp-price', handleWhatsappPriceIngest);
+  registerSupplierGuideRoutes(app);
 
   const router = Router();
   // Usar la instancia de storage global
@@ -1214,16 +1216,6 @@ export async function registerRoutes(app: any) {
     } catch (error) {
       console.error("Error fetching public categories:", error);
       res.status(500).json({ message: "Failed to fetch categories" });
-    }
-  });
-
-  app.get("/api/public/suppliers", async (req: Request, res: Response) => {
-    try {
-      const suppliers = await db.select().from(supplierCompanies).where(eq(supplierCompanies.isActive, true)).limit(50);
-      res.json(suppliers);
-    } catch (error) {
-      console.error("Error fetching public suppliers:", error);
-      res.status(500).json({ message: "Failed to fetch suppliers" });
     }
   });
 

@@ -152,6 +152,8 @@ export const userMaterialPrices = pgTable("user_material_prices", {
   supplierPhone: text("supplier_phone"),
   /** Peso en kg por unidad de venta reportado en la cotización (nullable). */
   weightKg: decimal("weight_kg", { precision: 12, scale: 4 }),
+  /** FK a la guía de empresas (supplier_companies). Nullable; supplierName se conserva. */
+  supplierCompanyId: integer("supplier_company_id"),
   isPublic: boolean("is_public").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -453,6 +455,14 @@ export const supplierCompanies = pgTable("supplier_companies", {
   isVerified: boolean("is_verified").notNull().default(false),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
   reviewCount: integer("review_count").notNull().default(0),
+  /** Guía unificada (SQL aditivo 2026-10-18). */
+  normalizedName: text("normalized_name"),
+  phoneNormalized: text("phone_normalized"),
+  source: text("source").notNull().default("manual"), // manual | extractor | web
+  categories: text("categories").array(),
+  branches: jsonb("branches"),
+  contactStatus: text("contact_status"), // sin_contactar | contactado | respondio | no_responde | no_contactar | wa_inexistente
+  priceListUrl: text("price_list_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

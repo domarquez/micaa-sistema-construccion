@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import { createHash, randomBytes } from "crypto";
 import { eq, and, isNull, sql, type SQL } from "drizzle-orm";
 import { db } from "./db";
+import { resolveSupplierCompany } from "./supplier-guide";
 import {
   users,
   materials,
@@ -121,6 +122,8 @@ type ParsedItem = {
   reason?: string;
   supplierName?: string;
   phone?: string;
+  /** Id en supplier_companies (opcional; si falta se resuelve por teléfono/nombre). */
+  supplierCompanyId?: number;
   confidence: Confidence;
   specialty?: string;
   categoryHint?: string;
@@ -391,7 +394,16 @@ function parseItem(raw: unknown): { ok: true; item: ParsedItem } | { ok: false; 
       source: typeof b.source === "string" && b.source.trim() ? b.source.trim() : "whatsapp",
       reason: typeof b.reason === "string" ? b.reason : undefined,
       supplierName: typeof b.supplierName === "string" ? b.supplierName : undefined,
-      phone: typeof b.phone === "string" ? b.phone : undefined,
+      phone:
+        typeof b.supplierPhone === "string" && b.supplierPhone.trim()
+          ? b.supplierPhone
+          : typeof b.phone === "string"
+            ? b.phone
+            : undefined,
+      supplierCompanyId:
+        typeof b.supplierCompanyId === "number" && Number.isInteger(b.supplierCompanyId) && b.supplierCompanyId > 0
+          ? b.supplierCompanyId
+          : undefined,
       confidence,
       specialty: typeof b.specialty === "string" ? b.specialty : undefined,
       categoryHint: typeof b.categoryHint === "string" ? b.categoryHint : undefined,
@@ -769,6 +781,29 @@ async function persistQuote(
       .returning();
     quoteId = inserted[0].id;
     action = "inserted";
+  }
+
+  // Enlazar con la guía de empresas (crea empresa sin verificar si no existe). Nunca bloquea el ingest.
+  if (item.supplierName || item.phone || item.supplierCompanyId) {
+    try {
+      const companyId =
+        item.supplierCompanyId ??
+        (await resolveSupplierCompany({
+          name: item.supplierName,
+          phone: item.phone,
+          city: item.city,
+          userId: systemUserId,
+          autoCreate: true,
+        }));
+      if (companyId) {
+        await db
+          .update(userMaterialPrices)
+          .set({ supplierCompanyId: companyId })
+          .where(eq(userMaterialPrices.id, quoteId));
+      }
+    } catch (e) {
+      console.warn("ingest: no se pudo enlazar empresa", e);
+    }
   }
 
   // Fill-only materials.weightKg when null — NEVER touch materials.price

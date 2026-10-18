@@ -108,6 +108,7 @@ function PriceRoutes() {
       <Route path="/materiales" component={MaterialesPage} />
       <Route path="/materiales/:id" component={MaterialDetail} />
       <Route path="/lista" component={ListaPage} />
+      <Route path="/empresas" component={Suppliers} />
       <Route path="/publicar-precio" component={PublicarPrecioPage} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
@@ -161,6 +162,7 @@ function AuthenticatedLayout() {
               <Route path="/apu-import" component={APUImport} />
               <Route path="/city-factors" component={CityFactors} />
               <Route path="/suppliers" component={Suppliers} />
+              <Route path="/empresas" component={Suppliers} />
               <Route path="/supplier-registration" component={SupplierRegistration} />
               <Route path="/supplier-dashboard" component={SupplierDashboard} />
               <Route path="/supplier-pricing" component={SupplierPricing} />
