@@ -117,6 +117,66 @@ function IvaBadge({ q }: { q: Quote }) {
   );
 }
 
+type MaterialSupplier = {
+  id: number;
+  companyName: string;
+  city?: string | null;
+  phoneNormalized?: string | null;
+  isVerified: boolean;
+  price: number;
+  unit?: string | null;
+};
+
+/** Divulgación progresiva: cerrado por defecto, muestra "Ver N proveedores". */
+function MaterialSuppliers({ materialId }: { materialId: string | number }) {
+  const [open, setOpen] = useState(false);
+  const { data = [] } = useQuery<MaterialSupplier[]>({
+    queryKey: [`/api/public/materials/${materialId}/suppliers`],
+  });
+  if (!data.length) return null;
+  return (
+    <div className="mt-6">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="text-base font-medium text-[var(--micaa-accent)]"
+        aria-expanded={open}
+      >
+        {open ? "Ocultar proveedores" : `Ver ${data.length} ${data.length === 1 ? "proveedor" : "proveedores"}`}
+      </button>
+      {open && (
+        <ul className="mt-2 divide-y divide-[var(--micaa-line)] border-y border-[var(--micaa-line)] text-sm">
+          {data.map((s) => (
+            <li key={`${s.id}-${s.price}`} className="flex items-baseline justify-between gap-3 py-2">
+              <div className="min-w-0">
+                <span className="text-[var(--micaa-fg)]">{s.companyName}</span>
+                {!s.isVerified && <span className="ml-2 text-xs text-[var(--micaa-muted)]">sin verificar</span>}
+                <div className="text-[var(--micaa-muted)]">
+                  {s.city}
+                  {s.phoneNormalized && /^591[67]/.test(s.phoneNormalized) && (
+                    <>
+                      {" · "}
+                      <a href={`https://wa.me/${s.phoneNormalized}`} target="_blank" rel="noreferrer" className="text-[var(--micaa-accent)]">
+                        WhatsApp
+                      </a>
+                    </>
+                  )}
+                </div>
+              </div>
+              <span className="shrink-0 tabular-nums">{formatBs(s.price)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {open && (
+        <Link href="/empresas" className="mt-2 inline-block text-sm text-[var(--micaa-muted)] hover:text-[var(--micaa-fg)]">
+          Ver todas las empresas →
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export default function MaterialDetail() {
   const params = useParams<{ id: string }>();
   const id = parseInt(params.id || "", 10);
@@ -308,6 +368,7 @@ export default function MaterialDetail() {
         <strong className="font-medium text-[var(--micaa-fg)]">con IVA</strong>: precio con factura.{" "}
         <strong className="font-medium text-[var(--micaa-fg)]">sin IVA</strong>: estimado sin factura (MICAA Market).
       </p>
+      {Number.isFinite(id) && id > 0 && <MaterialSuppliers materialId={id} />}
       </div>
 
       <aside className="mt-6 lg:sticky lg:top-20 lg:mt-10 lg:self-start lg:rounded-xl lg:border lg:border-[var(--micaa-line)] lg:bg-white lg:p-4">

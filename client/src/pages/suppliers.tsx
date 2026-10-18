@@ -1,288 +1,247 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Building2, Phone, MessageCircle, Globe, Facebook, MapPin, Star, Crown } from "lucide-react";
+import { formatBs, formatUnit } from "@/lib/format";
 
-// Función para convertir códigos de especialidad en etiquetas legibles
-const getSpecialityLabel = (speciality: string): string => {
-  const specialities: Record<string, string> = {
-    acero: "Acero para Construcción",
-    aluminio: "Aluminio",
-    cemento: "Cemento y Hormigón",
-    agua: "Agua y Saneamiento",
-    electricos: "Materiales Eléctricos",
-    ceramicos: "Cerámicos y Pisos",
-    maderas: "Maderas",
-    pinturas: "Pinturas y Acabados",
-    plomeria: "Plomería y Gasfitería",
-    prefabricados: "Elementos Prefabricados",
-    herramientas: "Herramientas y Equipos",
-    seguridad: "Seguridad Industrial",
-    aislantes: "Materiales Aislantes",
-    vidrios: "Vidrios y Cristales",
-    general: "General/Varios"
-  };
-  return specialities[speciality] || speciality;
+type Supplier = {
+  id: number;
+  companyName: string;
+  speciality?: string | null;
+  description?: string | null;
+  address?: string | null;
+  city?: string | null;
+  phone?: string | null;
+  whatsapp?: string | null;
+  website?: string | null;
+  facebook?: string | null;
+  isVerified: boolean;
+  source?: string | null;
+  categories?: string[] | null;
+  branches?: { name?: string; address?: string; phone?: string }[] | null;
+  priceListUrl?: string | null;
+  phoneNormalized?: string | null;
+  priceCount: number;
 };
 
-export default function Suppliers() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCity, setFilterCity] = useState("");
-  const [filterType, setFilterType] = useState("");
-  const [filterSpeciality, setFilterSpeciality] = useState("");
+type SupplierPrice = {
+  materialId: number | null;
+  materialName: string;
+  price: number;
+  unit?: string | null;
+  city?: string | null;
+  updatedAt?: string | null;
+};
 
-  const { data: suppliers = [], isLoading } = useQuery({
-    queryKey: ["/api/supplier-companies"],
+const CATEGORY_LABELS: Record<string, string> = {
+  acero: "Acero y fierro",
+  cemento: "Cemento",
+  ferreteria: "Ferretería",
+  construccion_seco: "Construcción en seco",
+  aridos: "Áridos",
+  aislamiento: "Aislamiento / EPS",
+  electrico: "Eléctrico",
+  electricos: "Eléctrico",
+  sanitario: "Sanitario y grifería",
+  plomeria: "Sanitario y grifería",
+  maderas: "Maderas",
+  pinturas: "Pinturas",
+  ceramicos: "Cerámicos",
+  vidrios: "Vidrios",
+  agua: "Agua",
+  quincalleria: "Quincallería",
+  herramientas: "Herramientas",
+  general: "General",
+};
+
+const catLabel = (c: string) => CATEGORY_LABELS[c.toLowerCase()] ?? c;
+
+function supplierCategories(s: Supplier): string[] {
+  const list = (s.categories ?? []).filter(Boolean);
+  if (list.length) return list;
+  return s.speciality ? [s.speciality] : [];
+}
+
+function waLink(s: Supplier): string | null {
+  const p = s.phoneNormalized || (s.whatsapp || "").replace(/\D/g, "");
+  return p && /^591[67]\d{7}$/.test(p) ? `https://wa.me/${p}` : null;
+}
+
+function SupplierPrices({ id }: { id: number }) {
+  const { data = [], isLoading } = useQuery<SupplierPrice[]>({
+    queryKey: [`/api/public/suppliers/${id}/prices`],
   });
-
-  const filteredSuppliers = suppliers.filter((supplier: any) => {
-    const matchesSearch = supplier.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         supplier.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCity = !filterCity || supplier.city === filterCity;
-    const matchesType = !filterType || supplier.businessType === filterType;
-    const matchesSpeciality = !filterSpeciality || supplier.speciality === filterSpeciality;
-    
-    return matchesSearch && matchesCity && matchesType && matchesSpeciality;
-  }) || [];
-
-  const cities = Array.from(new Set(suppliers?.map((s: any) => s.city).filter(Boolean) || []));
-  const businessTypes = Array.from(new Set(suppliers?.map((s: any) => s.businessType).filter(Boolean) || []));
-  const specialities = Array.from(new Set(suppliers?.map((s: any) => s.speciality).filter(Boolean) || []));
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-64"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-64 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  if (isLoading) return <p className="mt-2 text-sm text-[var(--micaa-muted)]">Cargando precios…</p>;
+  if (!data.length) return <p className="mt-2 text-sm text-[var(--micaa-muted)]">Todavía sin precios.</p>;
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Empresas Proveedoras
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Encuentra proveedores de materiales de construcción con precios competitivos
-        </p>
-      </div>
+    <ul className="mt-2 divide-y divide-[var(--micaa-line)] text-sm">
+      {data.map((p, i) => (
+        <li key={i} className="flex items-baseline justify-between gap-3 py-1.5">
+          {p.materialId ? (
+            <Link href={`/materiales/${p.materialId}`} className="min-w-0 truncate hover:text-[var(--micaa-accent)]">
+              {p.materialName}
+            </Link>
+          ) : (
+            <span className="min-w-0 truncate">{p.materialName}</span>
+          )}
+          <span className="shrink-0 tabular-nums">
+            {formatBs(p.price)}
+            {p.unit ? <span className="text-[var(--micaa-muted)]"> / {formatUnit(p.unit)}</span> : null}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
-      {/* Filters */}
-      <div className="mb-8 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Input
-            placeholder="Buscar empresas..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          
-          <select
-            className="px-3 py-2 border border-gray-300 rounded-md"
-            value={filterCity}
-            onChange={(e) => setFilterCity(e.target.value)}
-          >
-            <option value="">Todas las ciudades</option>
-            {cities.map(city => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
-
-          <select
-            className="px-3 py-2 border border-gray-300 rounded-md"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <option value="">Todos los tipos</option>
-            {businessTypes.map(type => (
-              <option key={type} value={type}>
-                {type === 'wholesaler' ? 'Mayorista' :
-                 type === 'retailer' ? 'Minorista' :
-                 type === 'manufacturer' ? 'Fabricante' :
-                 type === 'distributor' ? 'Distribuidor' : type}
-              </option>
-            ))}
-          </select>
-
-          <select
-            className="px-3 py-2 border border-gray-300 rounded-md"
-            value={filterSpeciality}
-            onChange={(e) => setFilterSpeciality(e.target.value)}
-          >
-            <option value="">Todas las especialidades</option>
-            {specialities.map(speciality => (
-              <option key={speciality} value={speciality}>
-                {getSpecialityLabel(speciality)}
-              </option>
-            ))}
-          </select>
-
-          <div className="text-sm text-muted-foreground flex items-center">
-            {filteredSuppliers.length} empresas encontradas
-          </div>
-        </div>
-      </div>
-
-      {/* Suppliers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredSuppliers.map((supplier: any) => (
-          <Card key={supplier.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    {supplier.logoUrl ? (
-                      <img 
-                        src={supplier.logoUrl} 
-                        alt={supplier.companyName}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Building2 className="w-6 h-6 text-gray-400" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="flex items-center gap-2">
-                      {supplier.companyName}
-                      {supplier.membershipType === 'premium' && (
-                        <Crown className="h-4 w-4 text-yellow-500" />
-                      )}
-                    </CardTitle>
-                  </div>
-                </div>
-              </div>
-              <CardDescription className="mt-2">
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {supplier.businessType && (
-                        <Badge variant="outline">
-                          {supplier.businessType === 'wholesaler' ? 'Mayorista' :
-                           supplier.businessType === 'retailer' ? 'Minorista' :
-                           supplier.businessType === 'manufacturer' ? 'Fabricante' :
-                           supplier.businessType === 'distributor' ? 'Distribuidor' : supplier.businessType}
-                        </Badge>
-                      )}
-                      {supplier.speciality && (
-                        <Badge variant="secondary" className="bg-primary/10 text-primary">
-                          {getSpecialityLabel(supplier.speciality)}
-                        </Badge>
-                      )}
-                    </div>
-                    {supplier.description && (
-                      <p className="text-sm text-muted-foreground mt-2 line-clamp-3">
-                        {supplier.description}
-                      </p>
-                    )}
-                  </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {/* Location */}
-                {supplier.city && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    {supplier.city}
-                    {supplier.address && `, ${supplier.address}`}
-                  </div>
-                )}
-
-                {/* Rating */}
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm">
-                    {supplier.rating || "0.0"} ({supplier.reviewCount || 0} reseñas)
-                  </span>
-                  {supplier.isVerified && (
-                    <Badge variant="secondary" className="text-xs">
-                      Verificada
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Contact Options */}
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {supplier.phone && (
-                    <Button size="sm" variant="outline" asChild>
-                      <a href={`tel:${supplier.phone}`}>
-                        <Phone className="h-3 w-3 mr-1" />
-                        Llamar
-                      </a>
-                    </Button>
-                  )}
-                  
-                  {supplier.whatsapp && (
-                    <Button size="sm" variant="outline" asChild>
-                      <a 
-                        href={`https://wa.me/${supplier.whatsapp.replace(/[^0-9]/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <MessageCircle className="h-3 w-3 mr-1" />
-                        WhatsApp
-                      </a>
-                    </Button>
-                  )}
-
-                  {supplier.website && (
-                    <Button size="sm" variant="outline" asChild>
-                      <a 
-                        href={supplier.website.startsWith('http') ? supplier.website : `https://${supplier.website}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Globe className="h-3 w-3 mr-1" />
-                        Web
-                      </a>
-                    </Button>
-                  )}
-
-                  {supplier.facebook && (
-                    <Button size="sm" variant="outline" asChild>
-                      <a 
-                        href={`https://facebook.com/${supplier.facebook}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Facebook className="h-3 w-3 mr-1" />
-                        Facebook
-                      </a>
-                    </Button>
-                  )}
-                </div>
-
-                <div className="pt-2">
-                  <Button asChild className="w-full">
-                    <Link href={`/suppliers/${supplier.id}`}>
-                      Ver Catálogo
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredSuppliers.length === 0 && (
-        <div className="text-center py-12">
-          <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            No se encontraron empresas
-          </h3>
-          <p className="text-muted-foreground">
-            Intentá ajustar los filtros de búsqueda para encontrar más resultados
+function SupplierCard({ s }: { s: Supplier }) {
+  const [open, setOpen] = useState(false);
+  const wa = waLink(s);
+  const cats = supplierCategories(s);
+  const branches = (s.branches ?? []).filter((b) => b && (b.name || b.address));
+  return (
+    <li className="rounded-xl border border-[var(--micaa-line)] bg-white p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-semibold text-[var(--micaa-fg)]">{s.companyName}</h2>
+          <p className="mt-0.5 text-sm text-[var(--micaa-muted)]">
+            {[s.city, branches.length > 1 ? `${branches.length} sucursales` : s.address].filter(Boolean).join(" · ")}
           </p>
         </div>
+        {!s.isVerified && (
+          <span className="shrink-0 rounded-full border border-[var(--micaa-line)] px-2 py-0.5 text-xs text-[var(--micaa-muted)]">
+            sin verificar
+          </span>
+        )}
+      </div>
+      {cats.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {cats.map((c) => (
+            <span key={c} className="rounded-full bg-[var(--micaa-accent-soft,#fff3e8)] px-2 py-0.5 text-xs text-[var(--micaa-accent)]">
+              {catLabel(c)}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+        {wa && (
+          <a href={wa} target="_blank" rel="noreferrer" className="font-medium text-[var(--micaa-accent)]">
+            WhatsApp
+          </a>
+        )}
+        {s.website && (
+          <a
+            href={s.website.startsWith("http") ? s.website : `https://${s.website}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[var(--micaa-accent)]"
+          >
+            Web
+          </a>
+        )}
+        {s.priceListUrl && (
+          <a href={s.priceListUrl} target="_blank" rel="noreferrer" className="text-[var(--micaa-accent)]">
+            Lista de precios
+          </a>
+        )}
+        {s.priceCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="ml-auto text-[var(--micaa-fg)] underline-offset-2 hover:underline"
+          >
+            {open ? "Ocultar precios" : `Ver precios (${s.priceCount})`}
+          </button>
+        )}
+      </div>
+      {open && <SupplierPrices id={s.id} />}
+    </li>
+  );
+}
+
+export default function Suppliers() {
+  const [search, setSearch] = useState("");
+  const [city, setCity] = useState("");
+  const [cat, setCat] = useState("");
+  const [onlyPrices, setOnlyPrices] = useState(false);
+
+  const { data: suppliers = [], isLoading } = useQuery<Supplier[]>({ queryKey: ["/api/public/suppliers"] });
+
+  const cities = useMemo(
+    () => Array.from(new Set(suppliers.map((s) => s.city).filter(Boolean) as string[])).sort(),
+    [suppliers],
+  );
+  const cats = useMemo(
+    () => Array.from(new Set(suppliers.flatMap(supplierCategories))).sort((a, b) => catLabel(a).localeCompare(catLabel(b))),
+    [suppliers],
+  );
+
+  const q = search.trim().toLowerCase();
+  const filtered = suppliers.filter(
+    (s) =>
+      (!q || s.companyName.toLowerCase().includes(q) || (s.description ?? "").toLowerCase().includes(q)) &&
+      (!city || s.city === city) &&
+      (!cat || supplierCategories(s).includes(cat)) &&
+      (!onlyPrices || s.priceCount > 0),
+  );
+
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      <h1 className="text-[20px] font-semibold text-[var(--micaa-fg)]">Empresas</h1>
+      <p className="mt-1 text-base text-[var(--micaa-muted)]">
+        Buscá proveedores de materiales y mirá los precios que cotizaron.
+      </p>
+
+      <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-[1fr_12rem_14rem]">
+        <input
+          className="h-10 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
+          placeholder="Buscar empresa…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="h-10 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+        >
+          <option value="">Todas las ciudades</option>
+          {cities.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+        <select
+          className="h-10 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
+          value={cat}
+          onChange={(e) => setCat(e.target.value)}
+        >
+          <option value="">Todos los rubros</option>
+          {cats.map((c) => (
+            <option key={c} value={c}>{catLabel(c)}</option>
+          ))}
+        </select>
+      </div>
+      <label className="mt-3 flex items-center gap-2 text-sm text-[var(--micaa-muted)]">
+        <input type="checkbox" className="accent-[var(--micaa-accent)]" checked={onlyPrices} onChange={(e) => setOnlyPrices(e.target.checked)} />
+        Solo con precios
+      </label>
+
+      {isLoading ? (
+        <ul className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+          {[1, 2, 3, 4].map((i) => (
+            <li key={i} className="h-28 animate-pulse rounded-xl bg-[var(--micaa-line)]" />
+          ))}
+        </ul>
+      ) : (
+        <>
+          <p className="mt-6 text-sm text-[var(--micaa-muted)]">{filtered.length} empresas</p>
+          <ul className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
+            {filtered.map((s) => (
+              <SupplierCard key={s.id} s={s} />
+            ))}
+          </ul>
+          {filtered.length === 0 && (
+            <p className="mt-6 text-base text-[var(--micaa-muted)]">No encontramos empresas con esos filtros.</p>
+          )}
+        </>
       )}
     </div>
   );
