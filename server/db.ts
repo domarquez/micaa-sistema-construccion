@@ -8,16 +8,22 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// pg + SSL (Supabase / Neon pooler). DB_POOL_MAX sigue aplicando.
-const poolConfig: ConstructorParameters<typeof Pool>[0] = {
-  connectionString: process.env.DATABASE_URL,
+// Strip sslmode from URL so Pool ssl options win (Supabase pooler uses a
+// cert chain that fails verify-full / SELF_SIGNED_CERT_IN_CHAIN under pg v8+).
+const connectionString = process.env.DATABASE_URL.replace(
+  /([?&])sslmode=[^&]*/g,
+  "$1",
+).replace(/[?&]$/, "");
+
+const pool = new Pool({
+  connectionString,
   max: Math.max(1, Number(process.env.DB_POOL_MAX) || 3),
   idleTimeoutMillis: 20000,
   connectionTimeoutMillis: 10000,
   ssl: { rejectUnauthorized: false },
-};
+});
 
-export const pool = new Pool(poolConfig);
+export { pool };
 export const db = drizzle(pool, { schema });
 
 process.on("SIGINT", async () => {

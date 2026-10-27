@@ -98,7 +98,8 @@ async function main() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL requerido");
   const J = JSON.parse(fs.readFileSync(FILE, "utf8"));
   validateTemplatesJson(J);
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  const connectionString = process.env.DATABASE_URL!.replace(/([?&])sslmode=[^&]*/g, "$1").replace(/[?&]$/, "");
+  const pool = new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
   const c = await pool.connect();
   try {
     await c.query("BEGIN");
