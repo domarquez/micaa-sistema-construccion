@@ -12,13 +12,10 @@
  * - No toca is_premium ni price_bs de plantillas existentes (los define un admin). En inserts: is_premium = false.
  * - Valida que todas las fórmulas evalúen y que las cantidades por defecto coincidan con el JSON.
  */
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
+import { Pool } from "pg";
 import fs from "fs";
 import path from "path";
 import { evaluateTemplate } from "../shared/template-formula";
-
-neonConfig.webSocketConstructor = ws as any;
 const APPLY = process.argv.includes("--apply");
 const FILE = path.resolve(process.cwd(), process.argv.find((a) => a.endsWith(".json")) || "data/project-templates.json");
 const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
@@ -101,7 +98,7 @@ async function main() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL requerido");
   const J = JSON.parse(fs.readFileSync(FILE, "utf8"));
   validateTemplatesJson(J);
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
   const c = await pool.connect();
   try {
     await c.query("BEGIN");
