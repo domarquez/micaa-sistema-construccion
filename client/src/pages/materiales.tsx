@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useSearch } from "wouter";
 import { titleCaseMaterial } from "@/lib/lista";
 import { getCity } from "@/lib/city";
+import { PublicAdSense } from "@/components/ads/AdSenseSlot";
 
 type MaterialRow = {
   id: number;
@@ -88,6 +89,7 @@ export default function MaterialesPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <h1 className="text-[20px] font-semibold text-[var(--micaa-fg)]">Materiales</h1>
+      <PublicAdSense className="max-w-3xl" />
       <p className="mt-1 text-sm text-[var(--micaa-muted)]">
         Precios orientativos para {city}
         {materialsFactor !== 1 ? ` (×${materialsFactor.toFixed(2)} vs SCZ)` : ""}

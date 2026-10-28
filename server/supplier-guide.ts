@@ -76,12 +76,14 @@ async function listSuppliers(req: Request, res: Response) {
                s.address, s.city, s.phone, s.whatsapp, s.website, s.facebook, s.logo_url as "logoUrl",
                s.membership_type as "membershipType", s.is_verified as "isVerified", s.rating, s.review_count as "reviewCount",
                s.source, s.categories, s.branches, s.price_list_url as "priceListUrl", s.phone_normalized as "phoneNormalized",
+               coalesce(s.is_featured, false) as "isFeatured", s.featured_until as "featuredUntil", s.ad_plan as "adPlan",
                (select count(*) from user_material_prices u where u.supplier_company_id = s.id and u.is_public)::int
-             + (select count(*) from material_supplier_prices m where m.supplier_id = s.id and m.is_active)::int as "priceCount"
+             + (select count(*) from material_supplier_prices m where m.supplier_id = s.id and m.is_active)::int as "priceCount",
+               (coalesce(s.is_featured, false) and (s.featured_until is null or s.featured_until > now())) as "featuredActive"
         from supplier_companies s
         where s.is_active and coalesce(s.contact_status,'') not in ('no_contactar','wa_inexistente')
           and (${city}::text is null or s.city = ${city})
-        order by "priceCount" desc, s.is_verified desc, s.company_name`),
+        order by "featuredActive" desc, "priceCount" desc, s.is_verified desc, s.company_name`),
     );
     res.json(r);
   } catch (e) {
@@ -121,7 +123,10 @@ async function materialSuppliers(req: Request, res: Response) {
     const r = rows(
       await db.execute(sql`
         select s.id, s.company_name as "companyName", s.city, s.whatsapp, s.phone_normalized as "phoneNormalized",
-               s.is_verified as "isVerified", x.price, x.unit, x."updatedAt"
+               s.is_verified as "isVerified",
+               coalesce(s.is_featured, false) as "isFeatured",
+               (coalesce(s.is_featured, false) and (s.featured_until is null or s.featured_until > now())) as "featuredActive",
+               x.price, x.unit, x."updatedAt"
         from (
           (select distinct on (u.supplier_company_id) u.supplier_company_id as sid, u.price::float as price, u.unit,
                  coalesce(u.updated_at, u.created_at) as "updatedAt"
@@ -132,12 +137,41 @@ async function materialSuppliers(req: Request, res: Response) {
           where p.material_id = ${id} and p.is_active
         ) x join supplier_companies s on s.id = x.sid
         where s.is_active and coalesce(s.contact_status,'') not in ('no_contactar','wa_inexistente')
-        order by x.price asc`),
+        order by "featuredActive" desc, x.price asc`),
     );
     res.json(r);
   } catch (e) {
     console.error("Error fetching material suppliers:", e);
     res.status(500).json({ message: "No se pudieron cargar los proveedores" });
+  }
+}
+
+export async function setFeatured(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) return res.status(400).json({ message: "id inválido" });
+  const { isFeatured, featuredUntil, adPlan } = req.body ?? {};
+  try {
+    const featured = Boolean(isFeatured);
+    const until = featuredUntil ? new Date(featuredUntil) : null;
+    const plan = typeof adPlan === "string" ? adPlan : featured ? "destacado" : null;
+    const r = rows(
+      await db.execute(sql`
+        update supplier_companies
+        set is_featured = ${featured},
+            featured_until = ${until},
+            ad_plan = ${plan},
+            membership_type = case when ${featured} then 'premium' else coalesce(membership_type, 'free') end,
+            membership_expires_at = coalesce(${until}, membership_expires_at),
+            updated_at = now()
+        where id = ${id}
+        returning id, company_name as "companyName", is_featured as "isFeatured",
+                  featured_until as "featuredUntil", ad_plan as "adPlan"`),
+    );
+    if (!r[0]) return res.status(404).json({ message: "Empresa no encontrada" });
+    res.json(r[0]);
+  } catch (e) {
+    console.error("Error set featured:", e);
+    res.status(500).json({ message: "No se pudo actualizar el destacado" });
   }
 }
 

@@ -22,6 +22,9 @@ interface Supplier {
   email?: string;
   address?: string;
   isActive: boolean;
+  isFeatured?: boolean;
+  featuredUntil?: string | null;
+  adPlan?: string | null;
   user: {
     id: number;
     username: string;
@@ -40,7 +43,9 @@ export default function AdminSuppliers() {
     phone: "",
     email: "",
     address: "",
-    isActive: true
+    isActive: true,
+    isFeatured: false,
+    featuredUntil: "",
   });
   const { toast } = useToast();
 
@@ -101,7 +106,9 @@ export default function AdminSuppliers() {
       phone: supplier.phone || "",
       email: supplier.email || "",
       address: supplier.address || "",
-      isActive: supplier.isActive
+      isActive: supplier.isActive,
+      isFeatured: !!supplier.isFeatured,
+      featuredUntil: supplier.featuredUntil ? String(supplier.featuredUntil).slice(0, 10) : "",
     });
   };
 
@@ -298,7 +305,14 @@ export default function AdminSuppliers() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>{getStatusBadge(supplier.isActive)}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        {getStatusBadge(supplier.isActive)}
+                        {supplier.isFeatured && (
+                          <Badge className="bg-orange-600">Destacado</Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         <Dialog>
@@ -374,6 +388,26 @@ export default function AdminSuppliers() {
                                 />
                                 <Label htmlFor="isActive">Empresa Activa</Label>
                               </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="isFeatured"
+                                  checked={formData.isFeatured}
+                                  onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                                />
+                                <Label htmlFor="isFeatured">Destacado (publicidad)</Label>
+                              </div>
+                              {formData.isFeatured && (
+                                <div>
+                                  <Label htmlFor="featuredUntil">Destacado hasta</Label>
+                                  <Input
+                                    id="featuredUntil"
+                                    type="date"
+                                    value={formData.featuredUntil}
+                                    onChange={(e) => setFormData({ ...formData, featuredUntil: e.target.value })}
+                                  />
+                                </div>
+                              )}
                               <div className="flex justify-end space-x-2">
                                 <Button type="button" variant="outline" onClick={() => setEditingSupplier(null)}>
                                   Cancelar

@@ -8,7 +8,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
 import { getPublicMaterialPrice } from './material-price';
 import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
-import { registerSupplierGuideRoutes } from './supplier-guide';
+import { registerSupplierGuideRoutes, setFeatured as setSupplierFeatured } from './supplier-guide';
 import { registerApuRoutes } from './apu-routes';
 import { registerProjectTemplateRoutes } from './project-templates';
 import { registerTransportRoutes, afterProjectSaved, stripTransportFields } from './transport';
@@ -1838,14 +1838,16 @@ export async function registerRoutes(app: any) {
       const bcrypt = await import('bcryptjs');
       const hashedPassword = await bcrypt.default.hash(password, 10);
 
+      // Seguridad (PR #25): el teléfono solo se verifica vía WhatsApp OTP.
+      // No guardar phone ni marcar phoneVerified en el registro clásico.
       const newUser = await db.insert(users).values({
         username,
-        email: email || `${phone}@whatsapp.micaaa.top`,
+        email: email || `${username}@users.micaa.site`,
         password: hashedPassword,
         firstName,
         lastName,
-        phone,
-        phoneVerified: !!phone,
+        phone: null,
+        phoneVerified: false,
         role: userType === 'supplier' ? 'supplier' : 'user'
       }).returning();
 
@@ -2613,17 +2615,28 @@ export async function registerRoutes(app: any) {
   app.put("/api/admin/suppliers/:id", requireAdmin, async (req, res) => {
     try {
       const supplierId = parseInt(req.params.id);
-      const { companyName, businessType, phone, email, address, isActive } = req.body;
+      const { companyName, businessType, phone, email, address, isActive, isFeatured, featuredUntil, adPlan } = req.body;
       
-      const updatedSupplier = await db.update(supplierCompanies)
-        .set({
+      const patch: Record<string, unknown> = {
           companyName,
           businessType,
           phone,
           email,
           address,
           isActive
-        })
+      };
+      if (typeof isFeatured === "boolean") {
+        patch.isFeatured = isFeatured;
+        patch.adPlan = adPlan ?? (isFeatured ? "destacado" : null);
+        if (featuredUntil) patch.featuredUntil = new Date(featuredUntil);
+        if (!isFeatured) { patch.featuredUntil = null; patch.adPlan = null; }
+      } else if (featuredUntil !== undefined) {
+        patch.featuredUntil = featuredUntil ? new Date(featuredUntil) : null;
+      }
+      if (adPlan !== undefined && typeof isFeatured !== "boolean") patch.adPlan = adPlan;
+
+      const updatedSupplier = await db.update(supplierCompanies)
+        .set(patch as any)
         .where(eq(supplierCompanies.id, supplierId))
         .returning();
 
@@ -2637,6 +2650,8 @@ export async function registerRoutes(app: any) {
       res.status(500).json({ message: "Failed to update supplier" });
     }
   });
+
+  app.patch("/api/admin/suppliers/:id/featured", requireAdmin, setSupplierFeatured);
 
   app.delete("/api/admin/suppliers/:id", requireAdmin, async (req, res) => {
     try {

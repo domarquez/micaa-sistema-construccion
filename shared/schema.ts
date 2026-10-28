@@ -451,6 +451,10 @@ export const supplierCompanies = pgTable("supplier_companies", {
   imageUrls: text("image_urls").array(),
   membershipType: text("membership_type").notNull().default("free"), // 'free', 'premium'
   membershipExpiresAt: timestamp("membership_expires_at"),
+  /** Publicidad: destacado en guía (migración 0006, aditiva). */
+  isFeatured: boolean("is_featured").notNull().default(false),
+  featuredUntil: timestamp("featured_until"),
+  adPlan: text("ad_plan"), // free | destacado | material | banner
   isActive: boolean("is_active").notNull().default(true),
   isVerified: boolean("is_verified").notNull().default(false),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
