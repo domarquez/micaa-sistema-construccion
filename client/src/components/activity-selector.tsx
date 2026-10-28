@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatCurrency } from "@/lib/utils";
 import type { ActivityWithPhase, ConstructionPhase } from "@shared/schema";
+import { getCity } from "@/lib/city";
 
 interface ActivitySelectorProps {
   onActivitySelect?: (activity: ActivityWithPhase) => void;
@@ -43,11 +44,12 @@ export function ActivitySelector({
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>("all");
 
   const { data: activities, isLoading } = useQuery<ActivityWithPhase[]>({
-    queryKey: ["/api/activities", { withCompositions: true }],
+    queryKey: ["/api/activities", { withCompositions: true, city: getCity() }],
     queryFn: async () => {
-      const response = await fetch("/api/activities?withCompositions=true");
+      const response = await fetch(`/api/activities?withCompositions=true&city=${encodeURIComponent(getCity())}`);
       if (!response.ok) throw new Error('Failed to fetch activities');
-      return response.json();
+      const data = await response.json();
+      return (data.activities ?? data) as ActivityWithPhase[];
     },
   });
 

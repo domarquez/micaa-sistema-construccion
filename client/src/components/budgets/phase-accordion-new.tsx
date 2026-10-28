@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
 import { formatCurrency, calculateSubtotal } from "@/lib/utils";
 import type { ActivityWithPhase } from "@shared/schema";
+import { getCity } from "@/lib/city";
 
 interface BudgetItemData {
   id: string;
@@ -36,11 +37,12 @@ export default function PhaseAccordion({ phaseId }: PhaseAccordionProps) {
   const [budgetItems, setBudgetItems] = useState<BudgetItemData[]>([]);
 
   const { data: activities } = useQuery<ActivityWithPhase[]>({
-    queryKey: ["/api/activities", phaseId],
+    queryKey: ["/api/activities", phaseId, getCity()],
     queryFn: async () => {
-      const response = await fetch(`/api/activities?phaseId=${phaseId}`);
+      const response = await fetch(`/api/activities?phaseId=${phaseId}&city=${encodeURIComponent(getCity())}`);
       if (!response.ok) throw new Error('Failed to fetch activities');
-      return response.json();
+      const data = await response.json();
+      return (data.activities ?? data) as ActivityWithPhase[];
     }
   });
 
