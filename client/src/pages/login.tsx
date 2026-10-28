@@ -7,6 +7,7 @@ import { ArrowLeft, Mail, Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import WhatsAppCodeFlow from "@/components/WhatsAppCodeFlow";
+import { track, setAnalyticsUser } from "@/lib/analytics";
 
 type RecoveryStep = 'email' | 'verify' | 'newPassword';
 
@@ -43,6 +44,8 @@ export default function Login() {
 
       const data = await response.json();
       localStorage.setItem('auth_token', data.token);
+      track("login", { method: "password" });
+      if (data.user) setAnalyticsUser(data.user);
       
       window.location.href = '/';
     } catch (error: any) {
@@ -196,6 +199,8 @@ export default function Login() {
                   mode="login"
                   onSuccess={(data) => {
                     localStorage.setItem('auth_token', data.token);
+                    track(data.isNewUser ? "registration" : "login", { method: "whatsapp" });
+                    if (data.user) setAnalyticsUser(data.user);
                     window.location.href = '/';
                   }}
                 />

@@ -45,6 +45,7 @@ import { buildEditorPhases, editorPhaseRank, removeEditorItem, shouldHydrateEdit
 import type { Project, ConstructionPhase, ActivityWithPhase, BudgetWithProject } from "@shared/schema";
 import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
 import { useAuth } from "@/hooks/useAuth";
+import { track } from "@/lib/analytics";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, "El nombre del proyecto es requerido"),
@@ -252,6 +253,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     },
     onSuccess: (project) => {
       console.log("Proyecto creado exitosamente:", project);
+      track("budget_created", { projectId: project?.id, source: "multi-phase" });
       setCurrentProject(project);
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
       

@@ -6,6 +6,7 @@ import { addListaItem, titleCaseMaterial } from "@/lib/lista";
 import { getCity } from "@/lib/city";
 import { useToast } from "@/hooks/use-toast";
 import { ListSkeleton } from "@/components/ui/states";
+import { track } from "@/lib/analytics";
 
 type Quote = {
   kind: "base" | "person" | "supplier";
@@ -140,7 +141,27 @@ function MaterialSuppliers({ materialId }: { materialId: string | number }) {
     <div className="mt-6">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setOpen((v) => {
+            const next = !v;
+            if (next) {
+              track("ver_proveedores", {
+                materialId: Number(materialId),
+                count: data.length,
+                companies: data.slice(0, 8).map((s) => s.companyName),
+              });
+              data.slice(0, 5).forEach((s) =>
+                track("company_view", {
+                  supplierId: s.id,
+                  companyName: s.companyName,
+                  materialId: Number(materialId),
+                  featured: !!s.featuredActive,
+                }),
+              );
+            }
+            return next;
+          });
+        }}
         className="text-base font-medium text-[var(--micaa-accent)]"
         aria-expanded={open}
       >

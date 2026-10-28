@@ -30,6 +30,7 @@ import {
   Upload,
   Mail,
   Shield,
+  BarChart3,
   LayoutTemplate,
   MessageCircle,
 } from "lucide-react";
@@ -157,6 +158,11 @@ const adminItems = [
     title: "Base de Datos",
     url: "/admin/database",
     icon: Shield,
+  },
+  {
+    title: "Estadísticas",
+    url: "/admin/estadisticas",
+    icon: BarChart3,
   },
 ];
 

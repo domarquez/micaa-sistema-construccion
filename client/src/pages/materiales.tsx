@@ -6,6 +6,7 @@ import { Link, useSearch } from "wouter";
 import { titleCaseMaterial } from "@/lib/lista";
 import { getCity } from "@/lib/city";
 import { PublicAdSense } from "@/components/ads/AdSenseSlot";
+import { track } from "@/lib/analytics";
 
 type MaterialRow = {
   id: number;
@@ -51,6 +52,15 @@ export default function MaterialesPage() {
   useEffect(() => {
     setQ(initial);
   }, [initial]);
+
+  useEffect(() => {
+    const term = q.trim();
+    if (term.length < 2) return;
+    const t = window.setTimeout(() => {
+      track("material_search", { q: term.slice(0, 120), source: "materiales" });
+    }, 700);
+    return () => window.clearTimeout(t);
+  }, [q]);
 
   useEffect(() => {
     const sync = () => setCityState(getCity());

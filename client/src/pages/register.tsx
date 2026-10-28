@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Construction, User, Lock, UserPlus, Mail, CheckCircle } from "lucide-react";
+import { track, setAnalyticsUser } from "@/lib/analytics";
 
 type Step = 'email' | 'verify' | 'details';
 
@@ -110,7 +111,9 @@ export default function Register() {
       
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      track("registration", { method: "password" });
+      if (data?.user) setAnalyticsUser(data.user);
       toast({
         title: "Registro exitoso",
         description: "Tu cuenta ha sido creada. Ya podés iniciar sesión.",

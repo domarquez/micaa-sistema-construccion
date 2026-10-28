@@ -1,4 +1,5 @@
 import { ensureFeaturedSupplierColumns } from "./migrate-featured";
+import { ensureAnalyticsEventsTable } from "./migrate-analytics";
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import cron from "node-cron";
@@ -57,6 +58,7 @@ app.use((req, res, next) => {
   const { registerRoutes } = await import("./routes");
   await registerRoutes(app);
   await ensureFeaturedSupplierColumns();
+  await ensureAnalyticsEventsTable();
   
   // Initialize news data
   try {

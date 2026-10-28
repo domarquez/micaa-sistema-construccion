@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ListSkeleton } from "@/components/ui/states";
 import { Switch, Route, useLocation, Redirect } from "wouter";
@@ -36,6 +37,7 @@ import AdminCompanies from "@/pages/admin-companies";
 import AdminAdvertisements from "@/pages/admin-advertisements";
 import AdminBulkEmail from "@/pages/admin-bulk-email";
 import AdminDatabase from "@/pages/admin-database";
+import AdminEstadisticas from "@/pages/admin-estadisticas";
 import Marketplace from "@/pages/marketplace";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -46,6 +48,7 @@ import NotFound from "@/pages/not-found";
 import AnunciarPage from "@/pages/anunciar";
 import ContactoPage from "@/pages/contacto";
 import { MicaaWhatsAppFab } from "@/components/MicaaWhatsAppFab";
+import { AnalyticsProvider, setAnalyticsUser } from "@/lib/analytics";
 import { PublicAdSense } from "@/components/ads/AdSenseSlot";
 import AppSidebar from "@/components/layout/sidebar-simple";
 import AppHeader from "@/components/layout/header";
@@ -190,6 +193,7 @@ function AuthenticatedLayout() {
               <Route path="/admin/advertisements" component={AdminAdvertisements} />
               <Route path="/admin/bulk-email" component={AdminBulkEmail} />
               <Route path="/admin/database" component={AdminDatabase} />
+              <Route path="/admin/estadisticas" component={AdminEstadisticas} />
               <Route path="/marketplace" component={Marketplace} />
               <Route path="/account-settings" component={AccountSettings} />
               <Route component={NotFound} />
@@ -201,6 +205,15 @@ function AuthenticatedLayout() {
       </div>
     </SidebarProvider>
   );
+}
+
+
+function AnalyticsUserSync() {
+  const { user } = useAuth();
+  useEffect(() => {
+    setAnalyticsUser(user ? { id: (user as any).id, username: (user as any).username } : null);
+  }, [user]);
+  return null;
 }
 
 function Router() {
@@ -243,9 +256,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Router />
-        <Toaster />
-        <MicaaWhatsAppFab />
+        <AnalyticsProvider>
+          <AnalyticsUserSync />
+          <Router />
+          <Toaster />
+          <MicaaWhatsAppFab />
+        </AnalyticsProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
