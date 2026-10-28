@@ -191,7 +191,7 @@ export default function PublicarPrecioPage() {
           </select>
         </div>
         <label className="flex items-center gap-2 text-base">
-          <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
+          <input type="checkbox" className="h-4 w-4 shrink-0 accent-[var(--micaa-accent)]" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
           Visible en la ficha pública
         </label>
         <button

@@ -326,7 +326,7 @@ export default function MaterialDetail() {
               <input
                 type="radio"
                 name="quote"
-                className="mt-1 accent-[var(--micaa-accent)]"
+                className="mt-1 h-4 w-4 shrink-0 accent-[var(--micaa-accent)]"
                 checked={selected === i}
                 onChange={() => setSelected(i)}
               />

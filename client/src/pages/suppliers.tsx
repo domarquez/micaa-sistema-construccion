@@ -247,7 +247,7 @@ export default function Suppliers() {
         </select>
       </div>
       <label className="mt-3 flex items-center gap-2 text-sm text-[var(--micaa-muted)]">
-        <input type="checkbox" className="accent-[var(--micaa-accent)]" checked={onlyPrices} onChange={(e) => setOnlyPrices(e.target.checked)} />
+        <input type="checkbox" className="h-4 w-4 shrink-0 accent-[var(--micaa-accent)]" checked={onlyPrices} onChange={(e) => setOnlyPrices(e.target.checked)} />
         Solo con precios
       </label>
 
