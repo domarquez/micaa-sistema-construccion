@@ -126,9 +126,9 @@ export default function UnifiedHome() {
   if (isAnonymous) {
     // PUBLIC VIEW - Optimized for anonymous users
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 max-w-full overflow-x-hidden">
+      <div className="min-h-screen bg-[#FAFAF8] dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 max-w-full overflow-x-hidden">
         {/* Hero Section - Mobile Optimized */}
-        <div className="bg-gradient-to-r from-blue-600 to-orange-500 text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding max-w-full overflow-hidden">
+        <div className="bg-[var(--micaa-accent,#C2410C)] text-white py-2 sm:py-4 md:py-6 lg:py-8 mobile-padding max-w-full overflow-hidden">
           <div className="max-w-7xl mx-auto text-left sm:text-center max-w-full">
             <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1 sm:mb-2 md:mb-3 break-words leading-tight text-left sm:text-center max-w-full">
               MICAA - Sistema de Construcción
@@ -157,7 +157,7 @@ export default function UnifiedHome() {
                 <Link href="/register" className="flex-1">
                   <Button 
                     size="sm" 
-                    className="w-full bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:border-orange-700 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 py-2"
+                    className="w-full bg-white/15 text-white border border-white/40 hover:bg-white/25 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 py-2"
                   >
                     Registrarse Gratis
                   </Button>
@@ -256,7 +256,7 @@ export default function UnifiedHome() {
           <Card className="shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full">
             <CardContent className="p-0.5 sm:p-1 md:p-2 lg:p-3 mobile-ultra-compact min-w-0">
               <div className="flex flex-col items-start text-left min-w-0 w-full">
-                <Building2 className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-orange-600 mb-0.5 flex-shrink-0" />
+                <Building2 className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-[var(--micaa-accent,#C2410C)] mb-0.5 flex-shrink-0" />
                 {statsLoading ? (
                   <Skeleton className="h-2 sm:h-3 md:h-4 w-3 sm:w-4 md:w-6 mb-0.5" />
                 ) : (
@@ -482,20 +482,20 @@ export default function UnifiedHome() {
 
   // AUTHENTICATED USER VIEW - Dashboard with real data
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-[#FAFAF8] p-3 sm:p-4 md:p-6">
       {/* Welcome Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-[var(--micaa-line,#e7e5e4)] bg-white p-4 sm:p-5">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--micaa-accent,#C2410C)]">
             ¡Bienvenido, {(user as any)?.username || (user as any)?.email}!
           </h1>
           <p className="text-muted-foreground mt-1">
-            Panel de control del sistema MICAA
+            Acá tenés tu panel de control de MICAA
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
           <Link href="/budgets/new">
-            <Button className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto bg-[var(--micaa-accent,#C2410C)] text-white hover:bg-[#9A3412]">
               <Plus className="w-4 h-4 mr-2" />
               Nuevo Presupuesto
             </Button>
@@ -611,10 +611,10 @@ export default function UnifiedHome() {
                     wrapperStyle={{ fontSize: '10px' }}
                     iconSize={8}
                   />
-                  <Line type="monotone" dataKey="users" stroke="#8884d8" strokeWidth={1.5} name="Usuarios" />
-                  <Line type="monotone" dataKey="projects" stroke="#82ca9d" strokeWidth={1.5} name="Proyectos" />
-                  <Line type="monotone" dataKey="budgets" stroke="#ffc658" strokeWidth={1.5} name="Presupuestos" />
-                  <Line type="monotone" dataKey="suppliers" stroke="#ff7300" strokeWidth={1.5} name="Proveedores" />
+                  <Line type="monotone" dataKey="users" stroke="#C2410C" strokeWidth={1.5} name="Usuarios" />
+                  <Line type="monotone" dataKey="projects" stroke="#9A3412" strokeWidth={1.5} name="Proyectos" />
+                  <Line type="monotone" dataKey="budgets" stroke="#EA580C" strokeWidth={1.5} name="Presupuestos" />
+                  <Line type="monotone" dataKey="suppliers" stroke="#F97316" strokeWidth={1.5} name="Proveedores" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -693,9 +693,9 @@ export default function UnifiedHome() {
                   Creá tu primer presupuesto para comenzar a gestionar tus proyectos.
                 </p>
                 <Link href="/budgets/new">
-                  <Button>
+                  <Button className="bg-[var(--micaa-accent,#C2410C)] text-white hover:bg-[#9A3412]">
                     <Plus className="w-4 h-4 mr-2" />
-                    Crear Presupuesto
+                    Creá un presupuesto
                   </Button>
                 </Link>
               </div>
