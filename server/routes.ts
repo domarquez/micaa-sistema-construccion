@@ -9,6 +9,7 @@ import { storage as dbStorage } from './storage';
 import { getPublicMaterialPrice } from './material-price';
 import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
 import { registerSupplierGuideRoutes, setFeatured as setSupplierFeatured } from './supplier-guide';
+import { registerSupplierCompanySelfRoutes } from './supplier-company-self';
 import { registerApuRoutes } from './apu-routes';
 import { registerProjectTemplateRoutes } from './project-templates';
 import { registerTransportRoutes, afterProjectSaved, stripTransportFields } from './transport';
@@ -79,6 +80,7 @@ export async function registerRoutes(app: any) {
   // WhatsApp ferretería price ingest (API key, no JWT) — register early
   app.post('/api/ingest/whatsapp-price', handleWhatsappPriceIngest);
   registerSupplierGuideRoutes(app);
+  registerSupplierCompanySelfRoutes(app, requireAuth);
 
   const router = Router();
   // Usar la instancia de storage global
@@ -1072,6 +1074,16 @@ export async function registerRoutes(app: any) {
       const displayName = customMaterialName || `${material[0].name} (Personalizado)`;
       const publicFlag = isPublic === true || isPublic === 'true';
 
+      // Si el usuario tiene empresa en la guía, enlazar la cotización pública a esa empresa
+      let supplierCompanyId: number | null = existingCustomPrice[0]?.supplierCompanyId ?? null;
+      if (publicFlag) {
+        const owned = await db.select({ id: supplierCompanies.id })
+          .from(supplierCompanies)
+          .where(and(eq(supplierCompanies.userId, userId), eq(supplierCompanies.isActive, true)))
+          .limit(1);
+        if (owned[0]) supplierCompanyId = owned[0].id;
+      }
+
       if (existingCustomPrice.length > 0) {
         const updated = await db.update(userMaterialPrices)
           .set({
@@ -1081,6 +1093,7 @@ export async function registerRoutes(app: any) {
             reason: reason || 'Precio personalizado actualizado',
             city: (typeof city === 'string' && city.trim()) ? city.trim() : existingCustomPrice[0].city,
             isPublic: publicFlag,
+            supplierCompanyId: publicFlag ? supplierCompanyId : existingCustomPrice[0].supplierCompanyId,
             updatedAt: new Date()
           })
           .where(eq(userMaterialPrices.id, existingCustomPrice[0].id))
@@ -1099,6 +1112,7 @@ export async function registerRoutes(app: any) {
             reason: reason || 'Precio personalizado',
             city: (typeof city === 'string' && city.trim()) ? city.trim() : null,
             isPublic: publicFlag,
+            supplierCompanyId: publicFlag ? supplierCompanyId : null,
           })
           .returning();
 

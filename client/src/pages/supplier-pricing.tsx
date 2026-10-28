@@ -1,443 +1,168 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
+import { Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  DollarSign, 
-  Plus, 
-  Edit, 
-  Package,
-  TrendingUp,
-  Calendar,
-  AlertTriangle
-} from "lucide-react";
-import { formatCurrency, formatRelativeTime } from "@/lib/utils";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { MaterialWithCategory, MaterialCategory } from "@shared/schema";
+import { titleCaseMaterial } from "@/lib/lista";
+import { BETA_FREE_COPY } from "@/lib/micaa-contact";
 
-interface SupplierQuote {
+type Hit = { id: number; name: string; unit: string };
+type PriceRow = {
   id: number;
   materialId: number;
-  supplierId: number;
+  materialName: string;
   price: number;
-  validUntil: string;
-  status: string;
-  createdAt: string;
-  material: MaterialWithCategory;
+  unit?: string | null;
+  city?: string | null;
+  updatedAt?: string | null;
+  kind?: string;
+};
+
+async function authFetch(path: string, init?: RequestInit) {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(init?.headers as Record<string, string> | undefined),
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return fetch(path, { ...init, headers, credentials: "include" });
 }
 
 export default function SupplierPricing() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
-  const [selectedMaterial, setSelectedMaterial] = useState<MaterialWithCategory | null>(null);
-  const [quotePrice, setQuotePrice] = useState("");
-  const [validUntil, setValidUntil] = useState("");
+  const { user, isLoading: authLoading, isAnonymous } = useAuth();
   const { toast } = useToast();
+  const [hasCompany, setHasCompany] = useState<boolean | null>(null);
+  const [prices, setPrices] = useState<PriceRow[]>([]);
+  const [q, setQ] = useState("");
+  const [hits, setHits] = useState<Hit[]>([]);
+  const [materialId, setMaterialId] = useState<number | null>(null);
+  const [materialName, setMaterialName] = useState("");
+  const [unit, setUnit] = useState("");
+  const [price, setPrice] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-BO', {
-      style: 'currency',
-      currency: 'BOB',
-      minimumFractionDigits: 2
-    }).format(amount);
-  };
-
-  const getQuoteStatus = (quote: SupplierQuote) => {
-    if (!quote.validUntil) return { status: 'active', label: 'Activa', variant: 'default' as const };
-    
-    const validUntil = new Date(quote.validUntil);
-    const now = new Date();
-    
-    if (validUntil < now) {
-      return { status: 'expired', label: 'Oferta Vencida', variant: 'destructive' as const };
-    }
-    
-    const thirtyDaysFromNow = new Date();
-    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-    
-    if (validUntil <= thirtyDaysFromNow) {
-      return { status: 'expiring', label: 'Por Vencer', variant: 'secondary' as const };
-    }
-    
-    return { status: 'active', label: 'Activa', variant: 'default' as const };
-  };
-
-  // Cargar categorías de materiales
-  const { data: categories } = useQuery<MaterialCategory[]>({
-    queryKey: ["/api/material-categories"],
-  });
-
-  // Cargar materiales
-  const { data: materials, isLoading: materialsLoading } = useQuery<MaterialWithCategory[]>({
-    queryKey: ["/api/materials", { categoryId: selectedCategory === "all" ? undefined : selectedCategory }],
-  });
-
-  // Cargar mis cotizaciones
-  const { data: myQuotes, isLoading: quotesLoading } = useQuery<SupplierQuote[]>({
-    queryKey: ["/api/supplier/quotes"],
-  });
-
-  // Crear cotización
-  const createQuoteMutation = useMutation({
-    mutationFn: async (quoteData: {
-      materialId: number;
-      price: number;
-      validUntil: string;
-    }) => {
-      return apiRequest("POST", "/api/supplier/quotes", quoteData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/supplier/quotes"] });
-      setShowQuoteDialog(false);
-      setSelectedMaterial(null);
-      setQuotePrice("");
-      setValidUntil("");
-      toast({
-        title: "Cotización creada",
-        description: "Tu oferta de precio ha sido registrada exitosamente.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleCreateQuote = () => {
-    if (!selectedMaterial || !quotePrice || !validUntil) {
-      toast({
-        title: "Campos requeridos",
-        description: "Por favor completa todos los campos",
-        variant: "destructive",
-      });
+  const load = async () => {
+    const co = await authFetch("/api/my-supplier-company");
+    if (co.status === 404 || !co.ok) {
+      setHasCompany(false);
       return;
     }
-
-    createQuoteMutation.mutate({
-      materialId: selectedMaterial.id,
-      price: parseFloat(quotePrice),
-      validUntil,
-    });
+    setHasCompany(true);
+    const pr = await authFetch("/api/my-supplier-company/prices");
+    if (pr.ok) setPrices(await pr.json());
   };
 
-  const openQuoteDialog = (material: MaterialWithCategory) => {
-    setSelectedMaterial(material);
-    setQuotePrice("");
-    setValidUntil("");
-    setShowQuoteDialog(true);
+  useEffect(() => {
+    if (authLoading || !user?.id) return;
+    load().catch(() => setHasCompany(false));
+  }, [user?.id, authLoading]);
+
+  const search = async () => {
+    const params = new URLSearchParams({ q: q.trim(), limit: "20" });
+    const res = await fetch(`/api/public/materials?${params}`);
+    if (!res.ok) return;
+    setHits(await res.json());
   };
 
-  const filteredMaterials = materials?.filter(material => 
-    selectedCategory === "all" || material.categoryId.toString() === selectedCategory
-  ) || [];
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!materialId || !price) {
+      toast({ title: "Faltan datos", description: "Elegí material y precio.", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await authFetch("/api/my-supplier-company/prices", {
+        method: "POST",
+        body: JSON.stringify({ materialId, price: parseFloat(price), unit: unit || undefined }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || "No se pudo guardar");
+      toast({ title: "Precio publicado", description: "Ya se ve en la ficha del material y en tu empresa." });
+      setPrice("");
+      await load();
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (authLoading) {
+    return <div className="mx-auto max-w-xl px-4 py-10 text-sm text-[var(--micaa-muted)]">Cargando…</div>;
+  }
+  if (isAnonymous || !user) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-10 text-center">
+        <h1 className="text-[20px] font-semibold">Precios de tu empresa</h1>
+        <p className="mt-2 text-[var(--micaa-muted)]">Entrá con WhatsApp para cargar precios.</p>
+        <Link href="/anunciar" className="mt-6 inline-flex h-10 items-center rounded-lg bg-[var(--micaa-accent)] px-4 text-[var(--micaa-accent-fg)]">Entrar / registrarme</Link>
+      </div>
+    );
+  }
+  if (hasCompany === false) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-10 text-center">
+        <h1 className="text-[20px] font-semibold">Primero registrá tu empresa</h1>
+        <p className="mt-2 text-[var(--micaa-muted)]">{BETA_FREE_COPY}.</p>
+        <Link href="/anunciar" className="mt-6 inline-flex h-10 items-center rounded-lg bg-[var(--micaa-accent)] px-4 text-[var(--micaa-accent-fg)]">Ir a registrarme</Link>
+      </div>
+    );
+  }
+  if (hasCompany === null) {
+    return <div className="mx-auto max-w-xl px-4 py-10 text-sm text-[var(--micaa-muted)]">Cargando…</div>;
+  }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-        <div>
-          <h2 className="text-2xl font-bold text-on-surface">Mis Ofertas de Precios</h2>
-          <p className="text-muted-foreground">Gestiona tus cotizaciones de materiales y herramientas</p>
+    <div className="mx-auto max-w-xl px-4 py-8">
+      <h1 className="text-[20px] font-semibold">Precios de tu empresa</h1>
+      <p className="mt-1 text-sm text-[var(--micaa-muted)]">
+        Se muestran en la ficha del material y en tu ficha de /empresas. {BETA_FREE_COPY}.
+      </p>
+      <form onSubmit={submit} className="mt-6 space-y-3 rounded-xl border border-[var(--micaa-line)] bg-white p-5">
+        <div className="flex gap-2">
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar material…" className="h-10 flex-1 rounded-lg border border-[var(--micaa-line)] px-3 text-base" />
+          <button type="button" onClick={search} className="h-10 rounded-lg border border-[var(--micaa-line)] px-3 text-base">Buscar</button>
         </div>
-        <div className="flex items-center space-x-4">
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filtrar por categoría" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas las categorías</SelectItem>
-              {categories?.map((category) => (
-                <SelectItem key={category.id} value={category.id.toString()}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Estadísticas rápidas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Cotizaciones Activas</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {myQuotes?.filter(q => getQuoteStatus(q).status === 'active').length || 0}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Por Vencer</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {myQuotes?.filter(q => getQuoteStatus(q).status === 'expiring').length || 0}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Ofertas Vencidas</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {myQuotes?.filter(q => getQuoteStatus(q).status === 'expired').length || 0}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Cotizaciones</p>
-                <p className="text-2xl font-bold text-primary">
-                  {myQuotes?.length || 0}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Mis Cotizaciones */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Mis Cotizaciones Activas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {quotesLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : myQuotes && myQuotes.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Material</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Mi Precio</TableHead>
-                  <TableHead>Precio Actual</TableHead>
-                  <TableHead>Válido Hasta</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {myQuotes.map((quote) => (
-                  <TableRow key={quote.id}>
-                    <TableCell className="font-medium">
-                      {quote.material.name}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {quote.material.category?.name}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-semibold text-green-600">
-                      {formatCurrency(quote.price)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatCurrency(parseFloat(quote.material.price))}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(quote.validUntil).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      {(() => {
-                        const statusInfo = getQuoteStatus(quote);
-                        return (
-                          <Badge variant={statusInfo.variant}>
-                            {statusInfo.label}
-                          </Badge>
-                        );
-                      })()}
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <DollarSign className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>No tenés cotizaciones activas</p>
-              <p className="text-sm">Comenzá creando ofertas para materiales</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Lista de Materiales Disponibles */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Materiales Disponibles para Cotizar</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {materialsLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 10 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : filteredMaterials.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Material</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Unidad</TableHead>
-                  <TableHead>Precio Actual</TableHead>
-                  <TableHead>Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredMaterials.slice(0, 20).map((material) => (
-                  <TableRow key={material.id}>
-                    <TableCell className="font-medium">
-                      {material.name}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {material.category?.name}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{material.unit}</TableCell>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(parseFloat(material.price))}
-                    </TableCell>
-                    <TableCell>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => openQuoteDialog(material)}
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Cotizar
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>No hay materiales disponibles</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Dialog para crear cotización */}
-      <Dialog open={showQuoteDialog} onOpenChange={setShowQuoteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Crear Cotización</DialogTitle>
-            <DialogDescription>
-              Creá una oferta de precio para {selectedMaterial?.name}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="price">Precio por {selectedMaterial?.unit}</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                value={quotePrice}
-                onChange={(e) => setQuotePrice(e.target.value)}
-                placeholder="0.00"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Precio actual: {selectedMaterial ? formatCurrency(parseFloat(selectedMaterial.price)) : ""}
-              </p>
-            </div>
-            <div>
-              <Label htmlFor="validUntil">Válido hasta</Label>
-              <Input
-                id="validUntil"
-                type="date"
-                value={validUntil}
-                onChange={(e) => setValidUntil(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-              />
-            </div>
+        {hits.length > 0 && (
+          <div className="max-h-48 overflow-auto rounded-lg border border-[var(--micaa-line)]">
+            {hits.map((h) => (
+              <button key={h.id} type="button" className="block w-full border-b border-[var(--micaa-line)] px-3 py-2 text-left text-base last:border-0 hover:bg-black/[0.02]"
+                onClick={() => { setMaterialId(h.id); setMaterialName(h.name); setUnit(h.unit); setHits([]); setQ(titleCaseMaterial(h.name)); }}>
+                {titleCaseMaterial(h.name)}
+                <span className="text-[var(--micaa-muted)]"> · {h.unit}</span>
+              </button>
+            ))}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowQuoteDialog(false)}>
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleCreateQuote}
-              disabled={createQuoteMutation.isPending}
-            >
-              {createQuoteMutation.isPending ? "Creando..." : "Crear Cotización"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        )}
+        <p className="text-sm text-[var(--micaa-muted)]">
+          {materialId ? <>Elegido: <span className="text-[var(--micaa-fg)]">{titleCaseMaterial(materialName)}</span></> : "Todavía no elegiste material."}
+        </p>
+        <input type="number" step="any" min={0} value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Precio Bs" className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base" />
+        <button type="submit" disabled={saving} className="flex h-11 w-full items-center justify-center rounded-lg bg-[var(--micaa-accent)] text-base font-medium text-[var(--micaa-accent-fg)] disabled:opacity-60">
+          {saving ? "Publicando…" : "Publicar precio"}
+        </button>
+      </form>
+      <div className="mt-8">
+        <h2 className="text-base font-semibold">Tus precios publicados</h2>
+        {prices.length === 0 ? (
+          <p className="mt-2 text-sm text-[var(--micaa-muted)]">Todavía no cargaste ninguno.</p>
+        ) : (
+          <ul className="mt-3 divide-y divide-[var(--micaa-line)] rounded-xl border border-[var(--micaa-line)] bg-white">
+            {prices.map((p) => (
+              <li key={`${p.kind}-${p.id}`} className="flex items-baseline justify-between gap-3 px-4 py-3 text-sm">
+                <span>
+                  {titleCaseMaterial(p.materialName || `Material #${p.materialId}`)}
+                  {p.unit ? <span className="text-[var(--micaa-muted)]"> · {p.unit}</span> : null}
+                </span>
+                <span className="font-medium tabular-nums">Bs {Number(p.price).toFixed(2)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <p className="mt-4 text-sm">
+        <Link href="/supplier-registration" className="text-[var(--micaa-accent)] hover:underline">Editar perfil →</Link>
+      </p>
     </div>
   );
 }

@@ -202,7 +202,7 @@ function MaterialSuppliers({ materialId }: { materialId: string | number }) {
             Ver todas las empresas →
           </Link>
           <Link href="/anunciar" className="text-[var(--micaa-accent)] hover:underline">
-            Anunciá tu empresa
+            Registrá tu empresa (gratis hasta ene 2027)
           </Link>
         </div>
       )}
