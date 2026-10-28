@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
@@ -5,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Calendar, MapPin, User, FileText, Calculator, Download, Printer } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ArrowLeft, Calendar, MapPin, User, FileText, Calculator, Download, Printer, ChevronDown } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { groupBudgetItemsByPhase, type PhaseLike } from "@/lib/budget-phase-groups";
 import type { BudgetWithProject, BudgetItemWithActivity } from "@shared/schema";
@@ -61,6 +63,7 @@ export default function BudgetDetails() {
   const { id } = useParams();
   const budgetId = Number(id);
   const { isAnonymous } = useAuth();
+  const [financeOpen, setFinanceOpen] = useState(false);
 
   const handleGeneratePDF = async () => {
     if (!budget || !budgetItems) {
@@ -338,7 +341,7 @@ export default function BudgetDetails() {
           Presupuesto no encontrado
         </h2>
         <p className="text-muted-foreground mb-6">
-          El presupuesto que buscas no existe o no tenés permisos para verlo.
+          El presupuesto que buscás no existe o no tenés permisos para verlo.
         </p>
         <Button onClick={() => window.history.back()}>
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -352,88 +355,94 @@ export default function BudgetDetails() {
   const { cost: transportCost, snapshot: transportSnap } = budgetTransport(budget);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+    <div className="space-y-4 sm:space-y-6 min-w-0 max-w-full overflow-x-hidden">
+      {/* Header: título en su fila; acciones compactas en móvil */}
+      <div className="flex flex-col gap-3 min-w-0">
+        <div className="flex items-start gap-2 min-w-0">
           <Button
             variant="outline"
+            size="icon"
             onClick={() => window.history.back()}
-            className="flex items-center space-x-2"
+            className="shrink-0"
+            aria-label="Volver"
+            title="Volver"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Volver</span>
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-on-surface">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-on-surface break-words leading-tight">
               {budget.project.name}
             </h1>
-            <p className="text-muted-foreground">
-              {budget.phase ? budget.phase.name : "Multifase"} • Presupuesto #{budget.id}
+            <p className="text-sm text-muted-foreground break-words">
+              {budget.phase ? budget.phase.name : "Multifase"} · Presupuesto #{budget.id}
             </p>
           </div>
+          <Badge
+            variant={budget.status === 'active' ? 'default' :
+                    budget.status === 'completed' ? 'secondary' : 'outline'}
+            className="text-xs shrink-0 mt-1"
+          >
+            {budget.status === 'active' ? 'Activo' :
+             budget.status === 'completed' ? 'Completado' : 'Borrador'}
+          </Badge>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             onClick={handleGeneratePDF}
-            className="flex items-center space-x-2 bg-red-600 hover:bg-red-700"
+            size="sm"
+            className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Download className="w-4 h-4" />
-            <span>Descargar PDF</span>
+            <span className="sm:hidden">PDF</span>
+            <span className="hidden sm:inline">Descargar PDF</span>
           </Button>
           <Button
             onClick={() => window.print()}
             variant="outline"
-            className="flex items-center space-x-2"
+            size="sm"
+            className="flex items-center gap-2"
+            aria-label="Imprimir"
           >
             <Printer className="w-4 h-4" />
-            <span>Imprimir</span>
+            <span className="hidden sm:inline">Imprimir</span>
           </Button>
-          <Badge
-            variant={budget.status === 'active' ? 'default' : 
-                    budget.status === 'completed' ? 'secondary' : 'outline'}
-            className="text-sm"
-          >
-            {budget.status === 'active' ? 'Activo' : 
-             budget.status === 'completed' ? 'Completado' : 'Borrador'}
-          </Badge>
         </div>
       </div>
 
-      {/* Project Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 shadow-material">
-          <CardHeader>
-            <CardTitle className="text-lg">Información del Proyecto</CardTitle>
+      {/* Project Info + Financial: siempre 1 columna en móvil */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 min-w-0">
+        <Card className="lg:col-span-2 shadow-material min-w-0 w-full">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base sm:text-lg">Información del Proyecto</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center space-x-3">
-                <User className="w-5 h-5 text-muted-foreground" />
-                <div>
+          <CardContent className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="flex items-start gap-3 min-w-0">
+                <User className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <div className="min-w-0">
                   <p className="text-sm text-muted-foreground">Cliente</p>
-                  <p className="font-medium">{budget.project.client || "No especificado"}</p>
+                  <p className="font-medium break-words">{budget.project.client || "No especificado"}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-muted-foreground" />
-                <div>
+              <div className="flex items-start gap-3 min-w-0">
+                <MapPin className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <div className="min-w-0">
                   <p className="text-sm text-muted-foreground">Ubicación</p>
-                  <p className="font-medium">{budget.project.location || "No especificado"}</p>
+                  <p className="font-medium break-words">{budget.project.location || "No especificado"}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-muted-foreground" />
-                <div>
+              <div className="flex items-start gap-3 min-w-0">
+                <Calendar className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <div className="min-w-0">
                   <p className="text-sm text-muted-foreground">Fecha de Inicio</p>
                   <p className="font-medium">
                     {budget.project.startDate ? formatDate(budget.project.startDate) : "No definida"}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-muted-foreground" />
-                <div>
+              <div className="flex items-start gap-3 min-w-0">
+                <FileText className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <div className="min-w-0">
                   <p className="text-sm text-muted-foreground">Estado</p>
                   <p className="font-medium capitalize">{budget.project.status}</p>
                 </div>
@@ -442,50 +451,68 @@ export default function BudgetDetails() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-material">
-          <CardHeader>
-            <CardTitle className="text-lg">Resumen Financiero</CardTitle>
+        <Card className="shadow-material min-w-0 w-full">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base sm:text-lg">Resumen Financiero</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Total del Presupuesto</p>
-              <p className="text-2xl font-bold text-primary">
+          <CardContent className="space-y-3">
+            <div className="flex items-baseline justify-between gap-3 min-w-0">
+              <p className="text-sm text-muted-foreground shrink-0">Total</p>
+              <p className="text-xl sm:text-2xl font-bold text-primary tabular-nums text-right break-all min-w-0">
                 {formatCurrency(budget.total)}
               </p>
             </div>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between gap-2">
+            <div className="space-y-1.5 text-sm">
+              <div className="flex justify-between gap-3 min-w-0">
                 <span className="text-muted-foreground">Subtotal actividades</span>
-                <span className="font-semibold">{formatCurrency(totalItems)}</span>
+                <span className="font-semibold tabular-nums text-right shrink-0">{formatCurrency(totalItems)}</span>
               </div>
               {transportCost > 0 && (
-                <div className="flex justify-between gap-2" title={transportDetail(transportSnap)}>
+                <div className="flex justify-between gap-3 min-w-0">
                   <span className="text-muted-foreground">{TRANSPORT_LINE_LABEL}</span>
-                  <span className="font-semibold">{formatCurrency(transportCost)}</span>
+                  <span className="font-semibold tabular-nums text-right shrink-0">{formatCurrency(transportCost)}</span>
                 </div>
               )}
-              {transportCost > 0 && (
-                <p className="text-sm text-muted-foreground">{transportOrigin(transportSnap)} · {transportDetail(transportSnap)} · incluye GG, utilidad e IT</p>
-              )}
-              <p className="text-sm text-gray-400">{BASE_PRICE_NOTE}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Fase de Construcción</p>
-              <p className="font-medium">{budget.phase ? budget.phase.name : "Multifase"}</p>
-            </div>
+            <Collapsible open={financeOpen} onOpenChange={setFinanceOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-primary hover:text-primary/90 -ml-2"
+                >
+                  <ChevronDown className={`w-4 h-4 mr-1 transition-transform ${financeOpen ? "rotate-180" : ""}`} />
+                  {financeOpen ? "Ocultar detalle" : "Ver detalle"}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-2 pt-1">
+                {transportCost > 0 && (
+                  <p className="text-xs text-muted-foreground leading-relaxed break-words">
+                    {transportOrigin(transportSnap)}
+                    {transportDetail(transportSnap) ? ` · ${transportDetail(transportSnap)}` : ""}
+                    {" · incluye GG, utilidad e IT"}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground leading-relaxed break-words">{BASE_PRICE_NOTE}</p>
+                <div>
+                  <p className="text-xs text-muted-foreground">Fase de construcción</p>
+                  <p className="text-sm font-medium">{budget.phase ? budget.phase.name : "Multifase"}</p>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </CardContent>
         </Card>
       </div>
 
       {/* Budget Items */}
-      <Card className="shadow-material">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center space-x-2">
-            <Calculator className="w-5 h-5" />
+      <Card className="shadow-material min-w-0 w-full">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+            <Calculator className="w-5 h-5 shrink-0 text-primary" />
             <span>Detalles del Presupuesto</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="min-w-0">
           {itemsLoading ? (
             <div className="space-y-4">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -504,17 +531,48 @@ export default function BudgetDetails() {
           ) : orderedItems.length > 0 ? (
             <div className="space-y-6">
               {phaseGroups.map((group) => (
-                <div key={group.phaseId} data-testid={`phase-group-${group.phaseId}`}>
-                  <div className="flex items-baseline justify-between border-b pb-2 mb-2">
-                    <h3 className="font-semibold text-on-surface">
+                <div key={group.phaseId} data-testid={`phase-group-${group.phaseId}`} className="min-w-0">
+                  <div className="flex items-baseline justify-between gap-3 border-b border-orange-100 pb-2 mb-2 min-w-0">
+                    <h3 className="font-semibold text-on-surface break-words min-w-0">
                       {group.name}
                       {!group.isActive && (
                         <span className="ml-2 text-xs font-normal text-muted-foreground">(fase anterior)</span>
                       )}
                     </h3>
-                    <span className="font-semibold tabular-nums">{formatCurrency(group.total)}</span>
+                    <span className="font-semibold tabular-nums text-primary shrink-0">{formatCurrency(group.total)}</span>
                   </div>
-                  <div className="overflow-x-auto">
+
+                  {/* Móvil: lista en cards */}
+                  <div className="md:hidden space-y-2">
+                    {group.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="rounded-lg border border-gray-100 bg-[#FAFAF8] p-3 space-y-1.5 min-w-0"
+                      >
+                        <p className="text-sm font-medium break-words leading-snug">
+                          {item.activity?.name || `Actividad #${item.activityId}`}
+                        </p>
+                        <div className="flex justify-between gap-2 text-xs text-muted-foreground">
+                          <span>
+                            {item.activity?.unit || "—"} · cant.{" "}
+                            {Number(item.quantity).toLocaleString("es-BO", { maximumFractionDigits: 3 })}
+                          </span>
+                          <span className="tabular-nums shrink-0">
+                            P.U. {formatCurrency(Number(item.unitPrice))}
+                          </span>
+                        </div>
+                        <div className="flex justify-between gap-2 text-sm pt-0.5">
+                          <span className="text-muted-foreground">Subtotal</span>
+                          <span className="font-semibold tabular-nums text-primary">
+                            {formatCurrency(Number(item.subtotal))}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop: tabla */}
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="text-left text-xs text-muted-foreground">
@@ -542,27 +600,31 @@ export default function BudgetDetails() {
                   </div>
                 </div>
               ))}
-              <div className="border-t pt-4 bg-gray-50 p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <p className="text-lg font-semibold">{transportCost > 0 ? "Subtotal actividades:" : "Total del Presupuesto:"}</p>
-                  <p className="text-xl font-bold text-primary">
+              <div className="border-t pt-4 bg-[#FAFAF8] p-3 sm:p-4 rounded-lg space-y-2 min-w-0">
+                <div className="flex justify-between items-center gap-3 min-w-0">
+                  <p className="text-base sm:text-lg font-semibold min-w-0">
+                    {transportCost > 0 ? "Subtotal actividades" : "Total del Presupuesto"}
+                  </p>
+                  <p className="text-lg sm:text-xl font-bold text-primary tabular-nums text-right shrink-0">
                     {formatCurrency(totalItems)}
                   </p>
                 </div>
                 {transportCost > 0 && (
                   <>
-                    <div className="flex justify-between items-center mt-1 text-sm">
-                      <p className="text-gray-700">{TRANSPORT_LINE_LABEL}</p>
-                      <p className="font-semibold">{formatCurrency(transportCost)}</p>
+                    <div className="flex justify-between items-center gap-3 text-sm min-w-0">
+                      <p className="text-gray-700 min-w-0">{TRANSPORT_LINE_LABEL}</p>
+                      <p className="font-semibold tabular-nums shrink-0">{formatCurrency(transportCost)}</p>
                     </div>
-                    <div className="flex justify-between items-center mt-2 border-t pt-2">
-                      <p className="text-lg font-semibold">Total del Presupuesto:</p>
-                      <p className="text-xl font-bold text-primary">{formatCurrency(totalItems + transportCost)}</p>
+                    <div className="flex justify-between items-center gap-3 border-t pt-2 min-w-0">
+                      <p className="text-base sm:text-lg font-semibold">Total del Presupuesto</p>
+                      <p className="text-lg sm:text-xl font-bold text-primary tabular-nums shrink-0">
+                        {formatCurrency(totalItems + transportCost)}
+                      </p>
                     </div>
                   </>
                 )}
-                <p className="text-sm text-muted-foreground mt-2">
-                  Vista de solo lectura. Para cambiar cantidades o precios usa «Editar» en la lista de proyectos.
+                <p className="text-sm text-muted-foreground mt-1">
+                  Vista de solo lectura. Para cambiar cantidades o precios usá «Editar» en la lista de proyectos.
                 </p>
               </div>
             </div>
