@@ -36,14 +36,14 @@ export default function ContactoPage() {
           ¿Querés anunciar tu empresa?
         </p>
         <p className="mt-1 text-sm text-[var(--micaa-muted)]">
-          Mirá los planes y escribinos con el nombre de tu negocio.
+          Gratis hasta el 31 de enero de 2027, con todas las funciones. Registrás con WhatsApp.
         </p>
         <div className="mt-3 flex flex-wrap gap-3">
           <Link
             href="/anunciar"
             className="inline-flex h-10 items-center rounded-lg border border-[var(--micaa-line)] px-4 text-sm font-medium text-[var(--micaa-fg)] hover:border-[var(--micaa-accent)]"
           >
-            Ver planes
+            Registrarme gratis
           </Link>
           <a
             href={micaaWaUrl(micaaWaAdvertiseMsg())}

@@ -1,617 +1,207 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useEffect, useState } from "react";
+import { Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Building2, Phone, Globe, Facebook, MessageCircle, MapPin, Upload } from "lucide-react";
+import { CITY_LIST, getCity, type MicaaCity } from "@/lib/city";
+import { BETA_FREE_COPY } from "@/lib/micaa-contact";
 
-const supplierCompanySchema = z.object({
-  companyName: z.string().min(2, "Nombre de empresa es requerido"),
-  businessType: z.string().optional(),
-  speciality: z.string().optional(),
-  description: z.string().optional(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  phone: z.string().optional(),
-  whatsapp: z.string().optional(),
-  website: z.string().url("URL inválida").optional().or(z.literal("")),
-  facebook: z.string().optional(),
-  logoUrl: z.string().optional(),
-});
+const RUBROS: { value: string; label: string }[] = [
+  { value: "ferreteria", label: "Ferretería" },
+  { value: "cemento", label: "Cemento / hormigón" },
+  { value: "acero", label: "Acero / fierro" },
+  { value: "aridos", label: "Áridos / arena / grava" },
+  { value: "electrico", label: "Eléctrico" },
+  { value: "sanitario", label: "Sanitario / plomería" },
+  { value: "pinturas", label: "Pinturas" },
+  { value: "ceramicos", label: "Cerámicos / pisos" },
+  { value: "maderas", label: "Maderas" },
+  { value: "construccion_seco", label: "Construcción en seco" },
+  { value: "herramientas", label: "Herramientas" },
+  { value: "pasto_sintetico", label: "Pasto sintético" },
+  { value: "general", label: "General / varios" },
+];
 
-type SupplierCompanyForm = z.infer<typeof supplierCompanySchema>;
+type Company = {
+  id: number;
+  companyName: string;
+  speciality?: string | null;
+  city: string;
+  phone?: string | null;
+  whatsapp?: string | null;
+  description?: string | null;
+  address?: string | null;
+  website?: string | null;
+};
 
+async function authFetch(path: string, init?: RequestInit) {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(init?.headers as Record<string, string> | undefined),
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return fetch(path, { ...init, headers, credentials: "include" });
+}
+
+/** Edición de perfil. Alta nueva → /anunciar (WhatsApp + mínimos). */
 export default function SupplierRegistration() {
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [isEditing, setIsEditing] = useState(false);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [company, setCompany] = useState<Company | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [companyName, setCompanyName] = useState("");
+  const [rubro, setRubro] = useState("ferreteria");
+  const [city, setCityState] = useState<string>(() => getCity());
+  const [description, setDescription] = useState("");
+  const [address, setAddress] = useState("");
+  const [website, setWebsite] = useState("");
 
-  // Get current user's supplier company
-  const { data: company, isLoading } = useQuery({
-    queryKey: ["/api/my-supplier-company"],
-  });
-
-  const form = useForm<SupplierCompanyForm>({
-    resolver: zodResolver(supplierCompanySchema),
-    defaultValues: {
-      companyName: (company as any)?.companyName || "",
-      businessType: (company as any)?.businessType || "",
-      speciality: (company as any)?.speciality || "",
-      description: (company as any)?.description || "",
-      address: (company as any)?.address || "",
-      city: (company as any)?.city || "",
-      phone: (company as any)?.phone || "",
-      whatsapp: (company as any)?.whatsapp || "",
-      website: (company as any)?.website || "",
-      facebook: (company as any)?.facebook || "",
-      logoUrl: (company as any)?.logoUrl || "",
-    },
-  });
-
-  // Reset form when company data loads
-  useState(() => {
-    if (company) {
-      form.reset({
-        companyName: (company as any).companyName || "",
-        businessType: (company as any).businessType || "",
-        speciality: (company as any).speciality || "",
-        description: (company as any).description || "",
-        address: (company as any).address || "",
-        city: (company as any).city || "",
-        phone: (company as any).phone || "",
-        whatsapp: (company as any).whatsapp || "",
-        website: (company as any).website || "",
-        facebook: (company as any).facebook || "",
-        logoUrl: (company as any).logoUrl || "",
-      });
-    }
-  });
-
-  const createMutation = useMutation({
-    mutationFn: async (data: SupplierCompanyForm) => {
-      return await apiRequest("POST", "/api/supplier-companies", data);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Éxito",
-        description: "Empresa proveedora registrada exitosamente",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/my-supplier-company"] });
-      setIsEditing(false);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Error al registrar empresa",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async (data: SupplierCompanyForm) => {
-      return await apiRequest("PUT", `/api/supplier-companies/${(company as any).id}`, data);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Éxito",
-        description: "Empresa actualizada exitosamente",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/my-supplier-company"] });
-      setIsEditing(false);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Error al actualizar empresa",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Handle logo upload
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "Error",
-        description: "El archivo es demasiado grande. Máximo 5MB.",
-        variant: "destructive",
-      });
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user?.id) {
+      setLoading(false);
       return;
     }
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Error",
-        description: "Solo se permiten archivos de imagen.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLogoFile(file);
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setLogoPreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const onSubmit = async (data: SupplierCompanyForm) => {
-    let logoUrl = (company as any)?.logoUrl;
-
-    // Upload logo if a new file is selected
-    if (logoFile) {
-      const formData = new FormData();
-      formData.append('logo', logoFile);
-
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
       try {
-        const response = await fetch('/api/upload/logo', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error('Error al subir el logo');
+        const res = await authFetch("/api/my-supplier-company");
+        if (cancelled) return;
+        if (res.status === 404) {
+          setCompany(null);
+          return;
         }
-
-        const result = await response.json();
-        logoUrl = result.logoUrl;
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Error al subir el logo. Intentá de nuevo.",
-          variant: "destructive",
-        });
-        return;
+        if (!res.ok) return;
+        const data: Company = await res.json();
+        setCompany(data);
+        setCompanyName(data.companyName || "");
+        setRubro(data.speciality || "general");
+        setCityState(data.city || getCity());
+        setDescription(data.description || "");
+        setAddress(data.address || "");
+        setWebsite(data.website || "");
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    }
-
-    const submissionData = {
-      ...data,
-      logoUrl
+    })();
+    return () => {
+      cancelled = true;
     };
+  }, [user?.id, authLoading]);
 
-    if (company) {
-      updateMutation.mutate(submissionData);
-    } else {
-      createMutation.mutate(submissionData);
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!company) return;
+    setSaving(true);
+    try {
+      const res = await authFetch("/api/my-supplier-company", {
+        method: "PUT",
+        body: JSON.stringify({
+          companyName: companyName.trim(),
+          speciality: rubro,
+          city,
+          description: description.trim() || null,
+          address: address.trim() || null,
+          website: website.trim() || null,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || "No se pudo guardar");
+      setCompany(data);
+      toast({ title: "Perfil actualizado", description: "Los cambios ya están en la guía." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
     }
   };
 
-  if (isLoading) {
+  if (authLoading || loading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-64"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
-        </div>
+      <div className="mx-auto max-w-xl px-4 py-10 text-sm text-[var(--micaa-muted)]">Cargando…</div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-10 text-center">
+        <h1 className="text-[20px] font-semibold">Tu empresa</h1>
+        <p className="mt-2 text-base text-[var(--micaa-muted)]">
+          Entrá con WhatsApp para administrar tu perfil. {BETA_FREE_COPY}.
+        </p>
+        <Link
+          href="/anunciar"
+          className="mt-6 inline-flex h-10 items-center rounded-lg bg-[var(--micaa-accent)] px-4 text-base text-[var(--micaa-accent-fg)]"
+        >
+          Registrarme
+        </Link>
       </div>
     );
   }
 
-  const isReadOnly = company && !isEditing;
+  if (!company) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-10 text-center">
+        <h1 className="text-[20px] font-semibold">Todavía no registraste tu empresa</h1>
+        <p className="mt-2 text-base text-[var(--micaa-muted)]">{BETA_FREE_COPY}.</p>
+        <Link
+          href="/anunciar"
+          className="mt-6 inline-flex h-10 items-center rounded-lg bg-[var(--micaa-accent)] px-4 text-base text-[var(--micaa-accent-fg)]"
+        >
+          Ir a registrarme
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {company ? "Mi Empresa Proveedora" : "Registro de Empresa Proveedora"}
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            {company 
-              ? "Gestiona la información de tu empresa y conecta con arquitectos y constructores"
-              : "Registrá tu empresa para ofrecer materiales de construcción con precios competitivos"
-            }
-          </p>
+    <div className="mx-auto max-w-xl px-4 py-8">
+      <h1 className="text-[20px] font-semibold">Editar empresa</h1>
+      <p className="mt-1 text-sm text-[var(--micaa-muted)]">
+        WhatsApp: {company.phone || user.phone || "—"} (tu clave). {BETA_FREE_COPY}.
+      </p>
+      <form onSubmit={save} className="mt-6 space-y-4 rounded-xl border border-[var(--micaa-line)] bg-white p-5">
+        <div>
+          <label className="mb-1 block text-sm font-medium">Nombre</label>
+          <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base" required />
         </div>
-
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  Información de la Empresa
-                </CardTitle>
-                <CardDescription>
-                  Completá los datos de tu empresa para que los clientes puedan contactarte
-                </CardDescription>
-              </div>
-              {company && (
-                <Button
-                  variant={isEditing ? "outline" : "default"}
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  {isEditing ? "Cancelar" : "Editar"}
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="companyName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre de la Empresa *</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ej: Materiales La Paz S.R.L." 
-                            {...field} 
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="businessType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tipo de Negocio</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                          disabled={isReadOnly}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccioná tipo de negocio" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="wholesaler">Mayorista</SelectItem>
-                            <SelectItem value="retailer">Minorista</SelectItem>
-                            <SelectItem value="manufacturer">Fabricante</SelectItem>
-                            <SelectItem value="distributor">Distribuidor</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="speciality"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Rubro/Especialidad</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                          disabled={isReadOnly}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccioná tu especialidad" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="acero">Acero para Construcción</SelectItem>
-                            <SelectItem value="aluminio">Aluminio</SelectItem>
-                            <SelectItem value="cemento">Cemento y Hormigón</SelectItem>
-                            <SelectItem value="agua">Agua y Saneamiento</SelectItem>
-                            <SelectItem value="electricos">Materiales Eléctricos</SelectItem>
-                            <SelectItem value="ceramicos">Cerámicos y Pisos</SelectItem>
-                            <SelectItem value="maderas">Maderas</SelectItem>
-                            <SelectItem value="pinturas">Pinturas y Acabados</SelectItem>
-                            <SelectItem value="plomeria">Plomería y Gasfitería</SelectItem>
-                            <SelectItem value="prefabricados">Elementos Prefabricados</SelectItem>
-                            <SelectItem value="herramientas">Herramientas y Equipos</SelectItem>
-                            <SelectItem value="seguridad">Seguridad Industrial</SelectItem>
-                            <SelectItem value="aislantes">Materiales Aislantes</SelectItem>
-                            <SelectItem value="vidrios">Vidrios y Cristales</SelectItem>
-                            <SelectItem value="general">General/Varios</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Descripción de la Empresa</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Describe tu empresa, productos principales y experiencia..."
-                          className="min-h-[100px]"
-                          {...field}
-                          disabled={isReadOnly}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          Dirección
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Av. Principal #123, Zona Centro" 
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ciudad</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                          disabled={isReadOnly}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccioná ciudad" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="La Paz">La Paz</SelectItem>
-                            <SelectItem value="Santa Cruz">Santa Cruz</SelectItem>
-                            <SelectItem value="Cochabamba">Cochabamba</SelectItem>
-                            <SelectItem value="Potosí">Potosí</SelectItem>
-                            <SelectItem value="Oruro">Oruro</SelectItem>
-                            <SelectItem value="Sucre">Sucre</SelectItem>
-                            <SelectItem value="Tarija">Tarija</SelectItem>
-                            <SelectItem value="Trinidad">Trinidad</SelectItem>
-                            <SelectItem value="Cobija">Cobija</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Phone className="h-4 w-4" />
-                          Teléfono
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="(591) 2-123456" 
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="whatsapp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <MessageCircle className="h-4 w-4" />
-                          WhatsApp
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="59170123456" 
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="website"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Globe className="h-4 w-4" />
-                          Sitio Web
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="https://mi-empresa.com" 
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="facebook"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Facebook className="h-4 w-4" />
-                          Facebook
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="mi-empresa-materiales" 
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Logo Upload Section */}
-                <div className="border-t pt-6">
-                  <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
-                    <Upload className="h-5 w-5" />
-                    Logotipo de la Empresa
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    {(logoPreview || (company as any)?.logoUrl) && (
-                      <div className="flex items-center gap-4">
-                        <img 
-                          src={logoPreview || (company as any).logoUrl} 
-                          alt={logoPreview ? "Vista previa" : "Logo actual"}
-                          className="w-20 h-20 object-cover rounded-lg border"
-                        />
-                        <div>
-                          <p className="text-sm text-muted-foreground">
-                            {logoPreview ? "Vista previa" : "Logo actual"}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {logoPreview ? "Archivo seleccionado para subir" : "Subí una nueva imagen para reemplazarlo"}
-                          </p>
-                          {logoPreview && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                setLogoPreview(null);
-                                setLogoFile(null);
-                              }}
-                              className="mt-2"
-                            >
-                              Cancelar
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {!isReadOnly && (
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleLogoUpload}
-                          className="hidden"
-                          id="logo-upload"
-                        />
-                        <label htmlFor="logo-upload" className="cursor-pointer">
-                          <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                          <p className="text-sm text-muted-foreground">
-                            Hacé clic para subir tu logotipo
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            PNG, JPG hasta 5MB
-                          </p>
-                        </label>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {(!company || isEditing) && (
-                  <div className="flex justify-end space-x-4">
-                    <Button
-                      type="submit"
-                      disabled={createMutation.isPending || updateMutation.isPending}
-                      className="min-w-32"
-                    >
-                      {createMutation.isPending || updateMutation.isPending ? (
-                        "Guardando..."
-                      ) : company ? (
-                        "Actualizar Empresa"
-                      ) : (
-                        "Registrar Empresa"
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-
-        {company && (
-          <div className="mt-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Estado de la Empresa</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-primary/10 rounded-lg">
-                    <h3 className="font-semibold text-primary">Membresía</h3>
-                    <p className="text-primary capitalize">{company.membershipType}</p>
-                  </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <h3 className="font-semibold text-green-900">Estado</h3>
-                    <p className="text-green-600">
-                      {company.isVerified ? "Verificada" : "Pendiente"}
-                    </p>
-                  </div>
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                    <h3 className="font-semibold text-yellow-900">Rating</h3>
-                    <p className="text-yellow-600">{company.rating || "0.0"} / 5.0</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+        <div>
+          <label className="mb-1 block text-sm font-medium">Rubro</label>
+          <select value={rubro} onChange={(e) => setRubro(e.target.value)} className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base">
+            {RUBROS.map((r) => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Ciudad</label>
+          <select value={city} onChange={(e) => setCityState(e.target.value as MicaaCity)} className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base">
+            {CITY_LIST.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Dirección (opcional)</label>
+          <input value={address} onChange={(e) => setAddress(e.target.value)} className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base" />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Web (opcional)</label>
+          <input value={website} onChange={(e) => setWebsite(e.target.value)} className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base" placeholder="https://" />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Descripción (opcional)</label>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="w-full rounded-lg border border-[var(--micaa-line)] px-3 py-2 text-base" />
+        </div>
+        <button type="submit" disabled={saving} className="flex h-11 w-full items-center justify-center rounded-lg bg-[var(--micaa-accent)] text-base font-medium text-[var(--micaa-accent-fg)] disabled:opacity-60">
+          {saving ? "Guardando…" : "Guardar cambios"}
+        </button>
+      </form>
+      <div className="mt-4 flex flex-wrap gap-3 text-sm">
+        <Link href="/empresas" className="text-[var(--micaa-accent)] hover:underline">Ver en la guía →</Link>
+        <Link href="/supplier-pricing" className="text-[var(--micaa-accent)] hover:underline">Cargar precios →</Link>
       </div>
     </div>
   );

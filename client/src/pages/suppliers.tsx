@@ -213,7 +213,7 @@ export default function Suppliers() {
       </p>
       <p className="mt-2 text-sm">
         <Link href="/anunciar" className="font-medium text-[var(--micaa-accent)] hover:underline">
-          Anunciá tu empresa →
+          Registrá tu empresa gratis hasta el 31 de enero de 2027 →
         </Link>
       </p>
       <PublicAdSense className="mt-4" />
