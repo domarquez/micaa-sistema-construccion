@@ -543,6 +543,84 @@ export async function computeActivityApu(
 }
 
 // ---------------------------------------------------------------------------
+// P.U. en vivo para listados / catálogo (por ciudad). No escribe nada.
+// ---------------------------------------------------------------------------
+export type LiveUnitPriceInfo = {
+  unitPrice: number;
+  city: string;
+  factorCity: string | null;
+  pricedLive: true;
+};
+
+/**
+ * Calcula el P.U. en vivo de muchas actividades con la misma ciudad.
+ * Comparte caché de materiales entre llamadas. Sin overrides de proyecto
+ * (listado público / selector). Ante error deja el id sin entrada para
+ * que el caller conserve activities.unit_price como fallback.
+ */
+export async function liveUnitPricesForActivities(
+  activityIds: number[],
+  cityRaw?: string | null,
+): Promise<Map<number, LiveUnitPriceInfo>> {
+  const out = new Map<number, LiveUnitPriceInfo>();
+  const ids = Array.from(
+    new Set(
+      activityIds.filter((id) => Number.isFinite(id) && id > 0 && id < 10000),
+    ),
+  );
+  if (!ids.length) return out;
+  const city = (cityRaw || DEFAULT_CITY).trim() || DEFAULT_CITY;
+  const materialCache: NonNullable<ComputeApuOptions["materialCache"]> = new Map();
+  const CONCURRENCY = 12;
+  for (let i = 0; i < ids.length; i += CONCURRENCY) {
+    const chunk = ids.slice(i, i + CONCURRENCY);
+    await Promise.all(
+      chunk.map(async (id) => {
+        try {
+          const apu = await computeActivityApu(id, null, null, {
+            city,
+            includeOptions: false,
+            materialCache,
+          });
+          out.set(id, {
+            unitPrice: apu.totalUnitPrice,
+            city: apu.city,
+            factorCity: apu.factorCity,
+            pricedLive: true,
+          });
+        } catch {
+          /* fallback: caller keep stored unitPrice */
+        }
+      }),
+    );
+  }
+  return out;
+}
+
+/** Sustituye unitPrice por el P.U. en vivo cuando existe; conserva storedUnitPrice. */
+export function applyLiveUnitPrices<T extends { id: number; unitPrice?: string | number | null }>(
+  rows: T[],
+  prices: Map<number, LiveUnitPriceInfo>,
+): Array<T & { unitPrice: string; storedUnitPrice?: string | null; pricedLive?: boolean; priceCity?: string }> {
+  return rows.map((r) => {
+    const live = prices.get(r.id);
+    if (!live) {
+      return {
+        ...r,
+        unitPrice: r.unitPrice != null ? String(r.unitPrice) : "0",
+      };
+    }
+    return {
+      ...r,
+      unitPrice: String(live.unitPrice),
+      storedUnitPrice: r.unitPrice != null ? String(r.unitPrice) : null,
+      pricedLive: true as const,
+      priceCity: live.city,
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Escrituras explícitas (budget_items / budgets.total) — nunca materials.price
 // ---------------------------------------------------------------------------
 export function compactApuSnapshot(apu: LiveApuResult) {

@@ -46,6 +46,7 @@ import type { Project, ConstructionPhase, ActivityWithPhase, BudgetWithProject }
 import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
 import { useAuth } from "@/hooks/useAuth";
 import { track } from "@/lib/analytics";
+import { getCity } from "@/lib/city";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, "El nombre del proyecto es requerido"),
@@ -146,8 +147,9 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   };
 
   // Catálogo COMPLETO (all=1), ordenado por fase y nombre. Antes llegaban solo 100 de ~520.
+  const catalogCity = getCity();
   const { data: activitiesResponse } = useQuery<{activities: ActivityWithPhase[]}>({
-    queryKey: ["/api/activities", { all: 1 }],
+    queryKey: ["/api/activities", { all: 1, city: catalogCity }],
   });
   
   // Memo: referencia estable (antes un arreglo nuevo en cada render re-disparaba la carga del presupuesto).

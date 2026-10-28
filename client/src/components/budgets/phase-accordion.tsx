@@ -24,6 +24,7 @@ import { Plus, Trash2, Eye } from "lucide-react";
 import { formatCurrency, calculateSubtotal } from "@/lib/utils";
 import ActivityDetailDialog from "@/components/activity-detail-dialog";
 import type { ActivityWithPhase } from "@shared/schema";
+import { getCity } from "@/lib/city";
 
 interface BudgetItemData {
   id: string;
@@ -42,8 +43,16 @@ interface PhaseAccordionProps {
 export default function PhaseAccordion({ phaseId }: PhaseAccordionProps) {
   const [budgetItems, setBudgetItems] = useState<BudgetItemData[]>([]);
 
+  const city = getCity();
   const { data: activities } = useQuery<ActivityWithPhase[]>({
-    queryKey: ["/api/activities", { phaseId }],
+    queryKey: ["/api/activities", { phaseId, city }],
+    queryFn: async () => {
+      const params = new URLSearchParams({ phaseId: String(phaseId), city });
+      const response = await fetch(`/api/activities?${params}`);
+      if (!response.ok) throw new Error("Failed to fetch activities");
+      const data = await response.json();
+      return (data.activities ?? data) as ActivityWithPhase[];
+    },
   });
 
   // Agregar automáticamente el primer elemento cuando se cargan las actividades

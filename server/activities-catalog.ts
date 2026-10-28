@@ -16,6 +16,7 @@ import { and, asc, eq, inArray, sql, type SQL } from "drizzle-orm";
 import { db } from "./db";
 import { activities, activityFamilies, constructionPhases, type ConstructionPhase, type ActivityFamily } from "../shared/schema";
 import { buildSearchGroups, escapeLike, sqlNormalizeExpr } from "../shared/activity-search";
+import { applyLiveUnitPrices, liveUnitPricesForActivities } from "./apu-live";
 
 const NORM_NAME = sql.raw(sqlNormalizeExpr(`("activities"."name" || ' ' || coalesce("activities"."synonyms", ''))`));
 /** Orden constructivo: fase → familia (padre, luego subfamilia) → orden de la actividad → nombre. */
@@ -198,11 +199,14 @@ export interface CatalogActivity { id: number; name: string; unit: string; unitP
 export interface CatalogFamily { id: number; name: string; activities: CatalogActivity[]; variants: { id: number; name: string; activities: CatalogActivity[] }[]; count: number }
 export interface CatalogPhase { id: number; name: string; sortOrder: number; count: number; families: CatalogFamily[]; unclassified: CatalogActivity[] }
 
-let treeCache: { at: number; data: CatalogPhase[] } | null = null;
-export function invalidateCatalogCache() { treeCache = null; taxoCache = null; mostUsedCache = null; }
+/** Caché del árbol por ciudad (los P.U. en vivo dependen de city_price_factors). */
+let treeCacheByCity: Map<string, { at: number; data: CatalogPhase[] }> = new Map();
+export function invalidateCatalogCache() { treeCacheByCity = new Map(); taxoCache = null; mostUsedCache = null; }
 
-export async function getActivityCatalogTree(): Promise<CatalogPhase[]> {
-  if (treeCache && Date.now() - treeCache.at < 5 * 60_000) return treeCache.data;
+export async function getActivityCatalogTree(city?: string | null): Promise<CatalogPhase[]> {
+  const cityKey = (city || "Santa Cruz").trim() || "Santa Cruz";
+  const hit = treeCacheByCity.get(cityKey);
+  if (hit && Date.now() - hit.at < 5 * 60_000) return hit.data;
   const { phases, families } = await getTaxonomy(true);
   const rows = await db
     .select({ id: activities.id, name: activities.name, unit: activities.unit, unitPrice: activities.unitPrice,
@@ -226,6 +230,30 @@ export async function getActivityCatalogTree(): Promise<CatalogPhase[]> {
     return { id: p.id, name: p.name, sortOrder: p.sortOrder, families: fams, unclassified,
       count: fams.reduce((n, f) => n + f.count, 0) + unclassified.length };
   });
-  treeCache = { at: Date.now(), data };
+  // P.U. en vivo por ciudad (Base MICAA × factores); unit_price guardado queda como fallback
+  const allActs: CatalogActivity[] = [];
+  for (const p of data) {
+    allActs.push(...p.unclassified);
+    for (const f of p.families) {
+      allActs.push(...f.activities);
+      for (const v of f.variants) allActs.push(...v.activities);
+    }
+  }
+  const live = await liveUnitPricesForActivities(allActs.map((a) => a.id), cityKey);
+  const priced = applyLiveUnitPrices(allActs, live);
+  const byId = new Map(priced.map((a) => [a.id, a]));
+  const mapAct = (a: CatalogActivity): CatalogActivity => {
+    const p = byId.get(a.id);
+    return p ? { id: p.id, name: p.name, unit: p.unit, unitPrice: p.unitPrice } : a;
+  };
+  for (const p of data) {
+    p.unclassified = p.unclassified.map(mapAct);
+    for (const f of p.families) {
+      f.activities = f.activities.map(mapAct);
+      for (const v of f.variants) v.activities = v.activities.map(mapAct);
+    }
+  }
+
+  treeCacheByCity.set(cityKey, { at: Date.now(), data });
   return data;
 }

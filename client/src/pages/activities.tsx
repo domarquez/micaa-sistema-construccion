@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Plus, Search, Building2, Eye, ChevronLeft, ChevronRight, Copy, Settings, Lock, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +13,7 @@ import { formatCurrency } from "@/lib/utils";
 import { queryClient, getQueryFn, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import type { ActivityWithPhase, ActivityWithCustomData } from "@shared/schema";
+import { getCity } from "@/lib/city";
 
 interface ActivitiesResponse {
   activities: ActivityWithCustomData[];
@@ -113,6 +114,16 @@ export default function Activities() {
     );
   }
 
+  const [city, setCityState] = useState(() => getCity());
+  useEffect(() => {
+    const sync = () => setCityState(getCity());
+    window.addEventListener("micaa-city", sync as EventListener);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("micaa-city", sync as EventListener);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
   const { data: activitiesResponse, isLoading, refetch: refetchActivities } = useQuery<ActivitiesResponse>({
     queryKey: ["/api/activities", { 
       search: searchTerm, 
@@ -120,7 +131,8 @@ export default function Activities() {
       page: currentPage,
       offset: (currentPage - 1) * limit, // el servidor pagina por offset (antes siempre mostraba la página 1)
       limit: limit,
-      withCompositions: true 
+      withCompositions: true,
+      city,
     }],
     queryFn: getQueryFn({ on401: "throw" }),
     enabled: !isAnonymous, // Solo hacer la query si no es usuario anónimo

@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { getCity } from "@/lib/city";
 
 interface Activity {
   id: number;
@@ -46,9 +47,9 @@ export default function AdminActivities() {
 
   // Fetch activities
   const { data: activitiesResponse, isLoading: activitiesLoading } = useQuery({
-    queryKey: ["/api/activities", { all: 1 }], // Catálogo completo para admin
+    queryKey: ["/api/activities", { all: 1, city: getCity() }], // Catálogo completo para admin
     queryFn: async () => {
-      const response = await fetch("/api/activities?all=1");
+      const response = await fetch(`/api/activities?all=1&city=${encodeURIComponent(getCity())}`);
       if (!response.ok) throw new Error('Failed to fetch activities');
       return response.json();
     },

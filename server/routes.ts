@@ -12,7 +12,7 @@ import { registerSupplierGuideRoutes, setFeatured as setSupplierFeatured } from 
 import { registerApuRoutes } from './apu-routes';
 import { registerProjectTemplateRoutes } from './project-templates';
 import { registerTransportRoutes, afterProjectSaved, stripTransportFields } from './transport';
-import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal } from './apu-live';
+import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal, liveUnitPricesForActivities, applyLiveUnitPrices } from './apu-live';
 import { registerWaAuthRoutes } from './wa-auth/routes';
 import { registerAnalyticsRoutes } from './analytics';
 import { dbOtpStore, dbUserStore, dbSessionStore } from './wa-auth/db-stores';
@@ -314,11 +314,21 @@ export async function registerRoutes(app: any) {
     }
   });
 
+
+  const parseCityQuery = (q: Record<string, unknown> | any): string => {
+    const raw = typeof q?.ciudad === "string" ? q.ciudad : typeof q?.city === "string" ? q.city : "";
+    const t = String(raw || "").trim();
+    return t || "Santa Cruz";
+  };
+
   // Activities routes with phase information
   // "Más usadas" (presupuestos + plantillas, con lista curada de respaldo) — server/activities-catalog.ts
   router.get('/activities/most-used', async (req: Request, res: Response) => {
     try {
-      res.json({ activities: await getMostUsedActivities(req.query.limit) });
+      const city = parseCityQuery(req.query);
+      const activities = await getMostUsedActivities(req.query.limit);
+      const live = await liveUnitPricesForActivities(activities.map((a: any) => a.id), city);
+      res.json({ activities: applyLiveUnitPrices(activities, live), city });
     } catch (error) {
       console.error('Most-used activities error:', error);
       res.status(500).json({ error: 'Failed to fetch most-used activities' });
@@ -326,10 +336,11 @@ export async function registerRoutes(app: any) {
   });
 
   // Árbol del catálogo: fases activas en orden › familias › variantes (subfamilias) › actividades activas y públicas
-  router.get('/activities/catalog', async (_req: Request, res: Response) => {
+  router.get('/activities/catalog', async (req: Request, res: Response) => {
     try {
-      res.set('Cache-Control', 'public, max-age=300');
-      res.json({ phases: await getActivityCatalogTree() });
+      const city = parseCityQuery(req.query);
+      res.set('Cache-Control', 'private, max-age=60');
+      res.json({ phases: await getActivityCatalogTree(city), city });
     } catch (error) {
       console.error('Activity catalog error:', error);
       res.status(500).json({ error: 'Failed to fetch activity catalog' });
@@ -398,6 +409,13 @@ export async function registerRoutes(app: any) {
         activitiesWithPhases = mergedActivities;
       }
 
+      const city = parseCityQuery(q);
+      const live = await liveUnitPricesForActivities(
+        activitiesWithPhases.map((a: any) => a.id),
+        city,
+      );
+      activitiesWithPhases = applyLiveUnitPrices(activitiesWithPhases, live);
+
       res.json({
         activities: activitiesWithPhases,
         totalCount: result.totalCount,
@@ -405,6 +423,7 @@ export async function registerRoutes(app: any) {
         totalPages: result.totalPages,
         limit: result.limit,
         offset: result.offset,
+        city,
       });
     } catch (error) {
       console.error('Activities fetch error:', error);

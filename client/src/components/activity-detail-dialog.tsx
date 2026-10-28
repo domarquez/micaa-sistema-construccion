@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   Dialog,
@@ -28,6 +28,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import type { ActivityComposition } from "@shared/schema";
+import { getCity } from "@/lib/city";
 
 interface ActivityDetailDialogProps {
   activityId: number;
@@ -61,10 +62,16 @@ export default function ActivityDetailDialog({
     enabled: open && activityId > 0,
   });
 
+  const [city, setCityState] = useState(() => getCity());
+  useEffect(() => {
+    const sync = () => setCityState(getCity());
+    window.addEventListener("micaa-city", sync as EventListener);
+    return () => window.removeEventListener("micaa-city", sync as EventListener);
+  }, []);
   const { data: apuCalculation, isLoading: calculationLoading } = useQuery({
-    queryKey: ["/api/activities", activityId, "apu-calculation"],
+    queryKey: ["/api/activities", activityId, "apu-calculation", city],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/activities/${activityId}/apu-calculation`);
+      const response = await apiRequest('GET', `/api/activities/${activityId}/apu-calculation?ciudad=${encodeURIComponent(city)}`);
       return response.json();
     },
     enabled: open && activityId > 0,

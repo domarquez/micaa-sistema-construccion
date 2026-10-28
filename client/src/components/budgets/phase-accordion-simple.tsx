@@ -14,6 +14,7 @@ import {
 import { Plus, Trash2 } from "lucide-react";
 import { formatCurrency, calculateSubtotal } from "@/lib/utils";
 import type { ActivityWithPhase } from "@shared/schema";
+import { getCity } from "@/lib/city";
 
 interface BudgetItemData {
   id: string;
@@ -32,33 +33,18 @@ interface PhaseAccordionProps {
   onBudgetChange?: (budgetItems: BudgetItemData[], total: number) => void;
 }
 
-// Factores de precios por ciudad basados en los datos de la base de datos
-const cityFactors: Record<string, number> = {
-  "La Paz": 1.175,     // Promedio ponderado: (1.15*0.4 + 1.20*0.35 + 1.10*0.15 + 1.25*0.1)
-  "Santa Cruz": 1.0,   // Ciudad base
-  "Cochabamba": 0.955, // Promedio ponderado
-  "Sucre": 1.0575,     // Promedio ponderado
-  "Potosí": 1.2425,    // Promedio ponderado
-  "Oruro": 1.1375,     // Promedio ponderado
-  "Tarija": 0.9125,    // Promedio ponderado
-  "Trinidad": 1.315,   // Promedio ponderado
-  "Cobija": 1.3725     // Promedio ponderado
-};
-
-const applyGeographicFactor = (basePrice: number, city: string): number => {
-  const factor = cityFactors[city] || 1.0;
-  return basePrice * factor;
-};
-
 export default function PhaseAccordion({ phaseId, projectId, projectCity, projectCountry, onBudgetChange }: PhaseAccordionProps) {
   const [budgetItems, setBudgetItems] = useState<BudgetItemData[]>([]);
 
+  // Ciudad del proyecto (presupuesto) manda; fallback al selector global.
+  const priceCity = projectCity || getCity();
   const { data: activities } = useQuery<ActivityWithPhase[]>({
-    queryKey: ["/api/activities", phaseId],
+    queryKey: ["/api/activities", phaseId, priceCity],
     queryFn: async () => {
-      const response = await fetch(`/api/activities?phaseId=${phaseId}`);
+      const response = await fetch(`/api/activities?phaseId=${phaseId}&city=${encodeURIComponent(priceCity)}`);
       if (!response.ok) throw new Error('Failed to fetch activities');
-      return response.json();
+      const data = await response.json();
+      return (data.activities ?? data) as ActivityWithPhase[];
     }
   });
 
@@ -103,15 +89,10 @@ export default function PhaseAccordion({ phaseId, projectId, projectCity, projec
           
           // Auto-aplicar el precio unitario de la actividad seleccionada
           if (selectedActivity && selectedActivity.unitPrice) {
-            let basePrice = parseFloat(selectedActivity.unitPrice);
-            
-            // Aplicar factor geográfico si se ha seleccionado una ciudad
-            if (projectCity && projectCity !== 'Santa Cruz') {
-              basePrice = applyGeographicFactor(basePrice, projectCity);
-            }
-            
+            // P.U. ya viene en vivo del servidor para priceCity (city_price_factors).
+            const basePrice = parseFloat(String(selectedActivity.unitPrice));
             updatedItem.unitPrice = basePrice;
-            console.log('Auto-aplicando precio unitario:', basePrice, 'para actividad:', selectedActivity.name, 'en ciudad:', projectCity || 'Santa Cruz (base)');
+            console.log('Auto-aplicando P.U. en vivo:', basePrice, 'actividad:', selectedActivity.name, 'ciudad:', priceCity);
           }
         }
         

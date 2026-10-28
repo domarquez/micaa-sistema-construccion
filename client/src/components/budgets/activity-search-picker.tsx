@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Star, X, SlidersHorizontal } from "lucide-react";
 import type { ActivityWithPhase, ConstructionPhase } from "@shared/schema";
 import ActivityCatalogBrowser from "@/components/budgets/activity-catalog-browser";
+import { getCity } from "@/lib/city";
 
 /**
  * Buscador de actividades en TODAS las fases (divulgación progresiva):
@@ -37,12 +38,18 @@ export default function ActivitySearchPicker({ phases, onPick }: Props) {
   const q = useDebounced(query.trim());
   const searching = q.length >= 2;
 
+  const [city, setCityState] = useState(() => getCity());
+  useEffect(() => {
+    const sync = () => setCityState(getCity());
+    window.addEventListener("micaa-city", sync as EventListener);
+    return () => window.removeEventListener("micaa-city", sync as EventListener);
+  }, []);
   const { data: searchData, isFetching } = useQuery<{ activities: ActivityWithPhase[]; totalCount: number } | null>({
-    queryKey: ["/api/activities", { search: q, limit: 30, ...(phaseFilter ? { phase: phaseFilter } : {}) }],
+    queryKey: ["/api/activities", { search: q, limit: 30, city, ...(phaseFilter ? { phase: phaseFilter } : {}) }],
     enabled: searching,
   });
   const { data: mostUsed } = useQuery<{ activities: ActivityWithPhase[] } | null>({
-    queryKey: ["/api/activities/most-used", { limit: 12 }],
+    queryKey: ["/api/activities/most-used", { limit: 12, city }],
     staleTime: 10 * 60 * 1000,
   });
 

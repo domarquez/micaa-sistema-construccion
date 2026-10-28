@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ListSkeleton } from "@/components/ui/states";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronRight, Layers, Plus } from "lucide-react";
 import type { ActivityWithPhase } from "@shared/schema";
+import { getCity } from "@/lib/city";
 
 /**
  * Explorar por fase › familia (nivel 2 de la divulgación progresiva).
@@ -89,8 +90,14 @@ function FamilyBlock({ f, onPick }: { f: CatalogFamily; onPick: (a: CatalogActiv
 
 export default function ActivityCatalogBrowser({ onPick }: { onPick: (activity: ActivityWithPhase) => void }) {
   const [openPhase, setOpenPhase] = useState<number | null>(null);
+  const [city, setCityState] = useState(() => getCity());
+  useEffect(() => {
+    const sync = () => setCityState(getCity());
+    window.addEventListener("micaa-city", sync as EventListener);
+    return () => window.removeEventListener("micaa-city", sync as EventListener);
+  }, []);
   const { data, isLoading } = useQuery<{ phases: CatalogPhase[] } | null>({
-    queryKey: ["/api/activities/catalog"],
+    queryKey: ["/api/activities/catalog", { city }],
     staleTime: 5 * 60 * 1000,
   });
   const phases = data?.phases || [];
