@@ -123,6 +123,8 @@ type MaterialSupplier = {
   city?: string | null;
   phoneNormalized?: string | null;
   isVerified: boolean;
+  isFeatured?: boolean;
+  featuredActive?: boolean;
   price: number;
   unit?: string | null;
 };
@@ -150,6 +152,11 @@ function MaterialSuppliers({ materialId }: { materialId: string | number }) {
             <li key={`${s.id}-${s.price}`} className="flex items-baseline justify-between gap-3 py-2">
               <div className="min-w-0">
                 <span className="text-[var(--micaa-fg)]">{s.companyName}</span>
+                {s.featuredActive && (
+                  <span className="ml-2 rounded-full bg-[var(--micaa-accent)] px-1.5 py-0.5 text-[10px] font-medium text-white">
+                    Destacado
+                  </span>
+                )}
                 {!s.isVerified && <span className="ml-2 text-xs text-[var(--micaa-muted)]">sin verificar</span>}
                 <div className="text-[var(--micaa-muted)]">
                   {s.city}
@@ -169,9 +176,14 @@ function MaterialSuppliers({ materialId }: { materialId: string | number }) {
         </ul>
       )}
       {open && (
-        <Link href="/empresas" className="mt-2 inline-block text-sm text-[var(--micaa-muted)] hover:text-[var(--micaa-fg)]">
-          Ver todas las empresas →
-        </Link>
+        <div className="mt-2 flex flex-wrap gap-3 text-sm">
+          <Link href="/empresas" className="text-[var(--micaa-muted)] hover:text-[var(--micaa-fg)]">
+            Ver todas las empresas →
+          </Link>
+          <Link href="/anunciar" className="text-[var(--micaa-accent)] hover:underline">
+            Anunciá tu empresa
+          </Link>
+        </div>
       )}
     </div>
   );

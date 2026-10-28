@@ -1,127 +1,32 @@
-// Google AdSense Configuration for MICAA
-// This file contains the configuration and setup instructions for Google Ads
+/**
+ * Google AdSense para MICAA.
+ * Apagado por defecto: solo se activa si VITE_ADSENSE_CLIENT=ca-pub-XXXXXXXX está en el build.
+ * No inventar publisher IDs. Diego debe crear la cuenta AdSense y pasar el pub ID.
+ */
 
-export interface AdConfig {
-  clientId: string;
-  adSlots: {
-    banner: string;
-    sidebar: string;
-    square: string;
-    mobile: string;
-    responsive: string;
+export function getAdSenseClient(): string | null {
+  const v = (import.meta as any).env?.VITE_ADSENSE_CLIENT as string | undefined;
+  if (!v || !/^ca-pub-\d+$/.test(v.trim())) return null;
+  return v.trim();
+}
+
+export function getAdSenseSlot(kind: "banner" | "sidebar" | "square" | "mobile" | "responsive" = "responsive"): string | null {
+  if (!getAdSenseClient()) return null;
+  const map: Record<string, string | undefined> = {
+    banner: (import.meta as any).env?.VITE_ADSENSE_SLOT_BANNER,
+    sidebar: (import.meta as any).env?.VITE_ADSENSE_SLOT_SIDEBAR,
+    square: (import.meta as any).env?.VITE_ADSENSE_SLOT_SQUARE,
+    mobile: (import.meta as any).env?.VITE_ADSENSE_SLOT_MOBILE,
+    responsive: (import.meta as any).env?.VITE_ADSENSE_SLOT,
   };
+  const s = map[kind];
+  return typeof s === "string" && s.trim() ? s.trim() : null;
 }
 
-// Default configuration - replace with actual Google AdSense values
-export const googleAdsConfig: AdConfig = {
-  clientId: "ca-pub-8854811165812956", // Google AdSense Publisher ID for MICAA
-  adSlots: {
-    banner: "2345678901",      // 728x90 header banner ad slot (AdHeader)
-    sidebar: "0987654321",     // 160x600 sidebar ad slot (existing)
-    square: "1234567890",      // 300x250 in-feed ad slot (AdInFeed)
-    mobile: "4567890123",      // 320x50 mobile ad slot (AdMobile)
-    responsive: "3456789012"   // Responsive footer ad slot (AdFooter)
-  }
-};
-
-// Ad placement strategy for optimal revenue
-export const adPlacementStrategy = {
-  public: {
-    description: "High traffic, monetization focused",
-    placements: [
-      "Header banner (728x90) - High visibility",
-      "Between statistics and content (300x250) - Natural break", 
-      "Sidebar (160x600) - Desktop only, persistent",
-      "Before footer (Responsive) - High engagement",
-      "Mobile banner (320x50) - Mobile specific"
-    ]
-  },
-  authenticated: {
-    description: "Reduced ads for better UX",
-    placements: [
-      "Sidebar only for premium content",
-      "Footer area for minimal disruption"
-    ]
-  }
-};
-
-// Setup instructions for Google AdSense
 export const setupInstructions = `
-GOOGLE ADSENSE SETUP FOR MICAA:
-
-1. CREATE GOOGLE ADSENSE ACCOUNT:
-   - Go to www.google.com/adsense
-   - Sign up with your Google account
-   - Add your website: micaaa.top
-   - Wait for approval (usually 1-7 days)
-
-2. GET YOUR PUBLISHER ID:
-   - In AdSense dashboard, go to Account > Account information
-   - Copy your Publisher ID (starts with ca-pub-)
-   - Replace "ca-pub-8854811165812956" in google-ads-config.ts
-
-3. CREATE AD UNITS:
-   - Go to Ads > By ad unit > Display ads
-   - Create these ad units:
-     * Banner Ad (728x90) for desktop headers
-     * Square Ad (300x250) for content areas  
-     * Sidebar Ad (160x600) for desktop sidebars
-     * Mobile Banner (320x50) for mobile headers
-     * Responsive Ad (auto-size) for flexible areas
-
-4. UPDATE CONFIGURATION:
-   - Copy each ad unit ID from AdSense
-   - Update the adSlots object in google-ads-config.ts
-   - The ad components will automatically use these IDs
-
-5. ADD ADSENSE SCRIPT:
-   - Add this to your HTML head section:
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8854811165812956" crossorigin="anonymous"></script>
-
-6. VERIFY IMPLEMENTATION:
-   - Use AdSense dashboard to check ad serving
-   - Monitor revenue and performance metrics
-   - Adjust ad placements based on analytics
-
-REVENUE OPTIMIZATION TIPS:
-- Place ads above the fold for better viewability
-- Use responsive ads for mobile optimization  
-- Test different ad sizes and placements
-- Monitor Core Web Vitals impact
-- Ensure ads don't hurt user experience
+1. Creá una cuenta en google.com/adsense y agregá micaa.site
+2. Copiá tu Publisher ID (ca-pub-…)
+3. En Railway (o el build de Vite) seteá VITE_ADSENSE_CLIENT=ca-pub-…
+4. Opcional: VITE_ADSENSE_SLOT y VITE_ADSENSE_SLOT_* para unidades
+5. Redeploy. Sin esa variable, no se carga ningún anuncio.
 `;
-
-// Helper function to load Google AdSense script
-export function loadGoogleAdsScript(publisherId: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src*="googlesyndication.com"]`)) {
-      resolve();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`;
-    script.crossOrigin = 'anonymous';
-    
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Failed to load Google AdSense script'));
-    
-    document.head.appendChild(script);
-  });
-}
-
-// Ad performance tracking
-export function trackAdPerformance(adSlot: string, action: 'impression' | 'click') {
-  // This would integrate with your analytics system
-  console.log(`Ad ${action} tracked for slot: ${adSlot}`);
-  
-  // Example: Send to Google Analytics
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', action, {
-      event_category: 'ads',
-      event_label: adSlot,
-      value: action === 'click' ? 1 : 0
-    });
-  }
-}

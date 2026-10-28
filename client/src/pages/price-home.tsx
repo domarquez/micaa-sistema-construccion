@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { titleCaseMaterial } from "@/lib/lista";
 import { getCity } from "@/lib/city";
+import { PublicAdSense } from "@/components/ads/AdSenseSlot";
 
 type MaterialRow = {
   id: number;
@@ -145,6 +146,7 @@ export default function PriceHome({ afterSearch }: { afterSearch?: React.ReactNo
       </div>
 
       {afterSearch}
+      <PublicAdSense className="max-w-3xl mx-auto" />
 
       <div className="divide-y divide-[var(--micaa-line)] border-t border-[var(--micaa-line)]">
         {isLoading && (

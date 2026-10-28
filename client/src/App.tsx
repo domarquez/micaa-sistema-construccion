@@ -26,7 +26,6 @@ import Labor from "@/pages/labor";
 import ActivityManager from "@/pages/admin-activities";
 import SupplierPricing from "@/pages/supplier-pricing";
 import SupplierDashboard from "@/pages/supplier-dashboard";
-import CompanyAdvertising from "@/pages/company-advertising";
 import ImportCompanies from "@/pages/import-companies";
 import ReviewCompanies from "@/pages/review-companies";
 import SimpleImport from "@/pages/simple-import";
@@ -44,6 +43,10 @@ import CustomActivities from "@/pages/custom-activities";
 import ProjectTemplates from "@/pages/project-templates";
 import AccountSettings from "@/pages/account-settings";
 import NotFound from "@/pages/not-found";
+import AnunciarPage from "@/pages/anunciar";
+import ContactoPage from "@/pages/contacto";
+import { MicaaWhatsAppFab } from "@/components/MicaaWhatsAppFab";
+import { PublicAdSense } from "@/components/ads/AdSenseSlot";
 import AppSidebar from "@/components/layout/sidebar-simple";
 import AppHeader from "@/components/layout/header";
 import { AppFooter } from "@/components/layout/app-footer";
@@ -91,7 +94,10 @@ function usePriceSurface(path: string) {
     path === "/proyectos" ||
     path === "/plantillas" ||
     path === "/materiales" ||
-    path.startsWith("/materiales/")
+    path.startsWith("/materiales/") ||
+    path === "/empresas" ||
+    path === "/anunciar" ||
+    path === "/contacto"
   );
 }
 
@@ -113,6 +119,8 @@ function PriceRoutes() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/inscribete" component={InscribetePage} />
+      <Route path="/anunciar" component={AnunciarPage} />
+      <Route path="/contacto" component={ContactoPage} />
       <Route component={GuestFallback} />
     </Switch>
   );
@@ -163,10 +171,12 @@ function AuthenticatedLayout() {
               <Route path="/city-factors" component={CityFactors} />
               <Route path="/suppliers" component={Suppliers} />
               <Route path="/empresas" component={Suppliers} />
+              <Route path="/anunciar" component={AnunciarPage} />
+              <Route path="/contacto" component={ContactoPage} />
               <Route path="/supplier-registration" component={SupplierRegistration} />
               <Route path="/supplier-dashboard" component={SupplierDashboard} />
               <Route path="/supplier-pricing" component={SupplierPricing} />
-              <Route path="/company-advertising" component={CompanyAdvertising} />
+              <Route path="/company-advertising"><Redirect to="/anunciar" /></Route>
               <Route path="/import-companies" component={ImportCompanies} />
               <Route path="/review-companies" component={ReviewCompanies} />
               <Route path="/simple-import" component={SimpleImport} />
@@ -235,6 +245,7 @@ function App() {
       <TooltipProvider>
         <Router />
         <Toaster />
+        <MicaaWhatsAppFab />
       </TooltipProvider>
     </QueryClientProvider>
   );

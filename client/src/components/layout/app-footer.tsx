@@ -52,6 +52,11 @@ export function AppFooter() {
               <span className="hidden sm:inline">· Precios y presupuestos de construcción en Bolivia</span>
             </div>
             
+            <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
+              <a href="/anunciar" className="text-[var(--micaa-accent)] hover:underline">Anunciá tu empresa</a>
+              <a href="/contacto" className="hover:underline">Contacto</a>
+              <a href="https://wa.me/59176105183?text=Hola%20MICAA" target="_blank" rel="noopener noreferrer" className="hover:underline">WhatsApp</a>
+            </div>
             <div className="flex items-center gap-1">
               <span>Desarrollado por</span>
               <a 

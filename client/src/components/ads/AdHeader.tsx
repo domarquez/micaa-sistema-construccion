@@ -1,33 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { PublicAdSense } from "./AdSenseSlot";
 
-interface AdHeaderProps {
-  slot?: string;
-  className?: string;
-}
-
-export default function AdHeader({ slot = "2345678901", className = "" }: AdHeaderProps) {
-  const adRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    try {
-      if (typeof window !== 'undefined' && adRef.current && (window as any).adsbygoogle) {
-        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-      }
-    } catch (error) {
-      console.error('Error loading AdSense ad:', error);
-    }
-  }, []);
-
-  return (
-    <div className={`ad-container text-center py-2 ${className}`}>
-      <div className="text-xs text-gray-400 mb-1">Publicidad</div>
-      <ins
-        ref={adRef}
-        className="adsbygoogle"
-        style={{ display: 'inline-block', width: '728px', height: '90px' }}
-        data-ad-client="ca-pub-8854811165812956"
-        data-ad-slot={slot}
-      />
-    </div>
-  );
+/** Legacy wrapper: solo renderiza si VITE_ADSENSE_CLIENT está configurado. */
+export default function LegacyAd(props: { slot?: string; className?: string }) {
+  return <PublicAdSense className={props.className} />;
 }

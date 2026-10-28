@@ -1,3 +1,4 @@
+import { ensureFeaturedSupplierColumns } from "./migrate-featured";
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import cron from "node-cron";
@@ -10,6 +11,16 @@ app.set("trust proxy", 1);
 const server = createServer(app);
 
 app.use(express.json());
+
+// ads.txt — solo si ADSENSE_CLIENT / VITE_ADSENSE_CLIENT está configurado (sin inventar pub ID)
+app.get("/ads.txt", (_req, res) => {
+  const client = (process.env.ADSENSE_CLIENT || process.env.VITE_ADSENSE_CLIENT || "").trim();
+  if (!client || !/^ca-pub-\d+$/.test(client)) {
+    return res.status(404).type("text/plain").send("Not found");
+  }
+  res.type("text/plain").send(`google.com, ${client.replace(/^ca-pub-/, "pub-")}, DIRECT, f08c47fec0942fa0\n`);
+});
+
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
@@ -45,6 +56,7 @@ app.use((req, res, next) => {
 (async () => {
   const { registerRoutes } = await import("./routes");
   await registerRoutes(app);
+  await ensureFeaturedSupplierColumns();
   
   // Initialize news data
   try {

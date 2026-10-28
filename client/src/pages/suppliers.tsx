@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { formatBs, formatUnit } from "@/lib/format";
+import { PublicAdSense } from "@/components/ads/AdSenseSlot";
 
 type Supplier = {
   id: number;
@@ -21,6 +22,9 @@ type Supplier = {
   priceListUrl?: string | null;
   phoneNormalized?: string | null;
   priceCount: number;
+  isFeatured?: boolean;
+  featuredActive?: boolean;
+  adPlan?: string | null;
 };
 
 type SupplierPrice = {
@@ -107,11 +111,18 @@ function SupplierCard({ s }: { s: Supplier }) {
             {[s.city, branches.length > 1 ? `${branches.length} sucursales` : s.address].filter(Boolean).join(" · ")}
           </p>
         </div>
-        {!s.isVerified && (
-          <span className="shrink-0 rounded-full border border-[var(--micaa-line)] px-2 py-0.5 text-xs text-[var(--micaa-muted)]">
-            sin verificar
-          </span>
-        )}
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          {s.featuredActive && (
+            <span className="rounded-full bg-[var(--micaa-accent)] px-2 py-0.5 text-xs font-medium text-white">
+              Destacado
+            </span>
+          )}
+          {!s.isVerified && (
+            <span className="rounded-full border border-[var(--micaa-line)] px-2 py-0.5 text-xs text-[var(--micaa-muted)]">
+              sin verificar
+            </span>
+          )}
+        </div>
       </div>
       {cats.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
@@ -176,13 +187,16 @@ export default function Suppliers() {
   );
 
   const q = search.trim().toLowerCase();
-  const filtered = suppliers.filter(
-    (s) =>
-      (!q || s.companyName.toLowerCase().includes(q) || (s.description ?? "").toLowerCase().includes(q)) &&
-      (!city || s.city === city) &&
-      (!cat || supplierCategories(s).includes(cat)) &&
-      (!onlyPrices || s.priceCount > 0),
-  );
+  const filtered = suppliers
+    .filter(
+      (s) =>
+        (!q || s.companyName.toLowerCase().includes(q) || (s.description ?? "").toLowerCase().includes(q)) &&
+        (!city || s.city === city) &&
+        (!cat || supplierCategories(s).includes(cat)) &&
+        (!onlyPrices || s.priceCount > 0),
+    )
+    .slice()
+    .sort((a, b) => Number(!!b.featuredActive) - Number(!!a.featuredActive));
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -190,6 +204,12 @@ export default function Suppliers() {
       <p className="mt-1 text-base text-[var(--micaa-muted)]">
         Buscá proveedores de materiales y mirá los precios que cotizaron.
       </p>
+      <p className="mt-2 text-sm">
+        <Link href="/anunciar" className="font-medium text-[var(--micaa-accent)] hover:underline">
+          Anunciá tu empresa →
+        </Link>
+      </p>
+      <PublicAdSense className="mt-4" />
 
       <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-[1fr_12rem_14rem]">
         <input
