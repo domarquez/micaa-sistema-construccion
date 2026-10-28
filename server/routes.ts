@@ -14,6 +14,7 @@ import { registerProjectTemplateRoutes } from './project-templates';
 import { registerTransportRoutes, afterProjectSaved, stripTransportFields } from './transport';
 import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal } from './apu-live';
 import { registerWaAuthRoutes } from './wa-auth/routes';
+import { registerAnalyticsRoutes } from './analytics';
 import { dbOtpStore, dbUserStore, dbSessionStore } from './wa-auth/db-stores';
 import { listActivities, getMostUsedActivities, getActivityCatalogTree, listPhases } from './activities-catalog';
 
@@ -2652,6 +2653,7 @@ export async function registerRoutes(app: any) {
   });
 
   app.patch("/api/admin/suppliers/:id/featured", requireAdmin, setSupplierFeatured);
+  registerAnalyticsRoutes(app, requireAdmin);
 
   app.delete("/api/admin/suppliers/:id", requireAdmin, async (req, res) => {
     try {

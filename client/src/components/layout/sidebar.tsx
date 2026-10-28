@@ -143,6 +143,11 @@ const adminItems = [
     url: "/admin/database",
     icon: Shield,
   },
+  {
+    title: "Estadísticas",
+    url: "/admin/estadisticas",
+    icon: BarChart3,
+  },
 ];
 
 export default function AppSidebar() {

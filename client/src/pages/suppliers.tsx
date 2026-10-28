@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { formatBs, formatUnit } from "@/lib/format";
 import { PublicAdSense } from "@/components/ads/AdSenseSlot";
+import { track } from "@/lib/analytics";
 
 type Supplier = {
   id: number;
@@ -157,7 +158,13 @@ function SupplierCard({ s }: { s: Supplier }) {
         {s.priceCount > 0 && (
           <button
             type="button"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => {
+              setOpen((v) => {
+                const next = !v;
+                if (next) track("company_view", { supplierId: s.id, name: s.companyName, source: "empresas" });
+                return next;
+              });
+            }}
             className="ml-auto text-[var(--micaa-fg)] underline-offset-2 hover:underline"
           >
             {open ? "Ocultar precios" : `Ver precios (${s.priceCount})`}

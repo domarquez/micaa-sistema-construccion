@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Building2, Megaphone, Star, LayoutTemplate } from "lucide-react";
 import { adPlanPrice, micaaWaAdvertiseMsg, micaaWaUrl } from "@/lib/micaa-contact";
+import { track } from "@/lib/analytics";
 
 const PLANS = [
   {
@@ -92,6 +93,7 @@ export default function AnunciarPage() {
           target="_blank"
           rel="noopener noreferrer"
           data-testid="cta-anunciar-whatsapp"
+          onClick={() => track("whatsapp_click", { source: "anunciar" })}
           className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-lg bg-[var(--micaa-accent)] px-4 text-base font-medium text-white hover:opacity-95 sm:w-auto"
         >
           Escribir por WhatsApp

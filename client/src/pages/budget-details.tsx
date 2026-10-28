@@ -11,6 +11,7 @@ import { groupBudgetItemsByPhase, type PhaseLike } from "@/lib/budget-phase-grou
 import type { BudgetWithProject, BudgetItemWithActivity } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { BASE_PRICE_NOTE, TRANSPORT_LINE_LABEL, budgetTransport, transportDetail, transportOrigin, writePdfTotals } from "@/lib/transport-summary";
+import { track } from "@/lib/analytics";
 
 // Helper para normalizar presupuestos temporales al formato BudgetWithProject
 function normalizeAnonymousBudget(foundBudget: any): BudgetWithProject {
@@ -68,6 +69,7 @@ export default function BudgetDetails() {
     }
 
     try {
+      track("pdf_exported", { budgetId });
       const { default: jsPDF } = await import('jspdf');
       const doc = new jsPDF();
       

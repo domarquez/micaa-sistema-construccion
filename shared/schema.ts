@@ -1006,4 +1006,23 @@ export const siteStats = pgTable("site_stats", {
 
 export const insertSiteStatsSchema = createInsertSchema(siteStats).omit({ id: true });
 export type SiteStats = typeof siteStats.$inferSelect;
+
 export type InsertSiteStats = z.infer<typeof insertSiteStatsSchema>;
+
+/** Analytics propio (migración 0007, idempotente al boot). Sin IPs. */
+export const analyticsEvents = pgTable("analytics_events", {
+  id: serial("id").primaryKey(), // bigserial en SQL; serial alcanza para tipado drizzle
+  ts: timestamp("ts", { withTimezone: true }).notNull().defaultNow(),
+  visitorId: text("visitor_id").notNull(),
+  sessionId: text("session_id").notNull(),
+  userId: integer("user_id"),
+  path: text("path").notNull().default("/"),
+  eventType: text("event_type").notNull(),
+  eventData: jsonb("event_data").notNull().default({}),
+  referrer: text("referrer"),
+  device: text("device"),
+  city: text("city"),
+  durationMs: integer("duration_ms"),
+});
+export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
+

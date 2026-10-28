@@ -40,6 +40,7 @@ import type {
   InsertProject 
 } from "@shared/schema";
 import { z } from "zod";
+import { track } from "@/lib/analytics";
 
 const projectFormSchema = insertProjectSchema.extend({
   startDate: z.string().optional(),
@@ -113,6 +114,7 @@ export default function BudgetForm({ budget, onClose }: BudgetFormProps) {
     onSuccess: (project: Project) => {
       setCurrentProject(project);
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      if (!isEditing) track("budget_created", { projectId: project.id, source: "budget-form" });
       toast({
         title: isEditing ? "Proyecto actualizado" : "Proyecto creado",
         description: "Ahora puede seleccionar una fase para el presupuesto.",

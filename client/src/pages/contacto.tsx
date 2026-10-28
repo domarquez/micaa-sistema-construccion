@@ -6,6 +6,7 @@ import {
   micaaWaAdvertiseMsg,
   micaaWaUrl,
 } from "@/lib/micaa-contact";
+import { track } from "@/lib/analytics";
 
 export default function ContactoPage() {
   return (
@@ -20,6 +21,7 @@ export default function ContactoPage() {
         <p className="mt-1 text-lg font-semibold text-[var(--micaa-fg)]">{MICAA_WHATSAPP_DISPLAY}</p>
         <a
           href={micaaWaUrl(MICAA_WA_DEFAULT_MSG)}
+          onClick={() => track("whatsapp_click", { source: "contacto" })}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 text-base font-medium text-white hover:bg-[#1ebe57]"
@@ -45,6 +47,7 @@ export default function ContactoPage() {
           </Link>
           <a
             href={micaaWaUrl(micaaWaAdvertiseMsg())}
+            onClick={() => track("whatsapp_click", { source: "contacto-anunciar" })}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-10 items-center rounded-lg bg-[var(--micaa-accent)] px-4 text-sm font-medium text-white"
