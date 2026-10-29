@@ -49,12 +49,22 @@ export function classifySteelFamily(
   if (/INOX|AISI\s*304|AISI\s*316/.test(N)) return "inox";
   if (/ELECTRODO/.test(N)) return "electrodo";
   if (/ALAMBRE/.test(N)) return "alambre";
-  if (/CORRUGAD/.test(N)) return "corrugado";
+  // Construction rebar family: corrugado + liso/varilla de construcción (same Bs/kg pool).
+  // Herrero "redondo" stays in negro_perfil below.
+  if (
+    /CORRUGAD/.test(N) ||
+    /^LISO\b/.test(N) ||
+    /BARRA\s+LISA/.test(N) ||
+    /FIERRO\s+LISO/.test(N) ||
+    /\bVARILLA\b/.test(N)
+  ) {
+    return "corrugado";
+  }
   if (/GALVANIZ|FOGO|CA[NÑ]ERIA\s+GALV|TUBERIA\s+GALV|PLANCHA\s+GALV/.test(N)) {
     return "galvanizado";
   }
   if (
-    /ANGULAR|PLATINA|SOLERA|COSTANERA|PERFIL\s*C|PERFIL\s*U|PERFIL\s*TEE|PERFIL\s*T\b|PLANCHA\s+NEGRA|PLANCHA\s+LAF|PLANCHA\s+LAC|MONTANTE|RIEL\b|BARRA\s+LISA|^LISO\b|FIERRO\s+LISO|REDONDO\s+(?:DE\s+)?\d|VARILLA/.test(
+    /ANGULAR|PLATINA|SOLERA|COSTANERA|PERFIL\s*C|PERFIL\s*U|PERFIL\s*TEE|PERFIL\s*T\b|PLANCHA\s+NEGRA|PLANCHA\s+LAF|PLANCHA\s+LAC|MONTANTE|RIEL\b|REDONDO\s+(?:DE\s+)?\d/.test(
       N,
     )
   ) {
