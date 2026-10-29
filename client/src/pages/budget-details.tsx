@@ -14,6 +14,7 @@ import type { BudgetWithProject, BudgetItemWithActivity } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { BASE_PRICE_NOTE, TRANSPORT_LINE_LABEL, budgetTransport, transportDetail, transportOrigin, writePdfTotals } from "@/lib/transport-summary";
 import { track } from "@/lib/analytics";
+import { ExpandableText } from "@/components/ui/expandable-text";
 
 // Helper para normalizar presupuestos temporales al formato BudgetWithProject
 function normalizeAnonymousBudget(foundBudget: any): BudgetWithProject {
@@ -355,7 +356,7 @@ export default function BudgetDetails() {
   const { cost: transportCost, snapshot: transportSnap } = budgetTransport(budget);
 
   return (
-    <div className="space-y-4 sm:space-y-6 min-w-0 max-w-full overflow-x-hidden">
+    <div className="space-y-4 sm:space-y-6 min-w-0 max-w-full overflow-x-hidden pb-24 md:pb-0">
       {/* Header: título en su fila; acciones compactas en móvil */}
       <div className="flex flex-col gap-3 min-w-0">
         <div className="flex items-start gap-2 min-w-0">
@@ -370,10 +371,12 @@ export default function BudgetDetails() {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div className="min-w-0 flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-on-surface break-words leading-tight">
-              {budget.project.name}
+            <h1 className="text-title-fluid text-[var(--micaa-fg)]">
+              <ExpandableText lines={2} moreLabel="Ver nombre completo" lessLabel="Ver menos">
+                {budget.project.name}
+              </ExpandableText>
             </h1>
-            <p className="text-sm text-muted-foreground break-words">
+            <p className="mt-0.5 text-sm text-[var(--micaa-muted)] break-words">
               {budget.phase ? budget.phase.name : "Multifase"} · Presupuesto #{budget.id}
             </p>
           </div>
@@ -390,7 +393,7 @@ export default function BudgetDetails() {
           <Button
             onClick={handleGeneratePDF}
             size="sm"
-            className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="btn-micaa-primary flex items-center gap-2 h-9"
           >
             <Download className="w-4 h-4" />
             <span className="sm:hidden">PDF</span>
@@ -411,7 +414,7 @@ export default function BudgetDetails() {
 
       {/* Project Info + Financial: siempre 1 columna en móvil */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 min-w-0">
-        <Card className="lg:col-span-2 shadow-material min-w-0 w-full">
+        <Card className="tech-card lg:col-span-2 shadow-none min-w-0 w-full border-[var(--micaa-line)]">
           <CardHeader className="pb-3">
             <CardTitle className="text-base sm:text-lg">Información del Proyecto</CardTitle>
           </CardHeader>
@@ -451,14 +454,14 @@ export default function BudgetDetails() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-material min-w-0 w-full">
+        <Card className="tech-card shadow-none min-w-0 w-full border-[var(--micaa-line)]">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base sm:text-lg">Resumen Financiero</CardTitle>
+            <CardTitle className="font-display text-base sm:text-lg">Resumen Financiero</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-baseline justify-between gap-3 min-w-0">
               <p className="text-sm text-muted-foreground shrink-0">Total</p>
-              <p className="text-xl sm:text-2xl font-bold text-primary tabular-nums text-right break-all min-w-0">
+              <p className="measure text-xl sm:text-2xl font-bold text-[var(--micaa-accent)] text-right break-all min-w-0">
                 {formatCurrency(budget.total)}
               </p>
             </div>
@@ -505,9 +508,9 @@ export default function BudgetDetails() {
       </div>
 
       {/* Budget Items */}
-      <Card className="shadow-material min-w-0 w-full">
+      <Card className="tech-card shadow-none min-w-0 w-full border-[var(--micaa-line)]">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+          <CardTitle className="font-display text-base sm:text-lg flex items-center gap-2">
             <Calculator className="w-5 h-5 shrink-0 text-primary" />
             <span>Detalles del Presupuesto</span>
           </CardTitle>
@@ -547,23 +550,27 @@ export default function BudgetDetails() {
                     {group.items.map((item) => (
                       <div
                         key={item.id}
-                        className="rounded-lg border border-gray-100 bg-[#FAFAF8] p-3 space-y-1.5 min-w-0"
+                        className="row-accent rounded-[14px] border border-[var(--micaa-line)] bg-white p-3 pl-4 space-y-1.5 min-w-0"
                       >
-                        <p className="text-sm font-medium break-words leading-snug">
-                          {item.activity?.name || `Actividad #${item.activityId}`}
+                        <p className="text-apu text-[13.5px] font-semibold tracking-tight text-[var(--micaa-fg)]">
+                          <ExpandableText apu lines={2} moreLabel="Ver nombre completo" lessLabel="Ver menos">
+                            {item.activity?.name || `Actividad #${item.activityId}`}
+                          </ExpandableText>
                         </p>
-                        <div className="flex justify-between gap-2 text-xs text-muted-foreground">
+                        <div className="flex justify-between gap-2 text-xs text-[var(--micaa-muted)]">
                           <span>
                             {item.activity?.unit || "—"} · cant.{" "}
-                            {Number(item.quantity).toLocaleString("es-BO", { maximumFractionDigits: 3 })}
+                            <span className="measure">
+                              {Number(item.quantity).toLocaleString("es-BO", { maximumFractionDigits: 3 })}
+                            </span>
                           </span>
-                          <span className="tabular-nums shrink-0">
+                          <span className="measure shrink-0">
                             P.U. {formatCurrency(Number(item.unitPrice))}
                           </span>
                         </div>
-                        <div className="flex justify-between gap-2 text-sm pt-0.5">
-                          <span className="text-muted-foreground">Subtotal</span>
-                          <span className="font-semibold tabular-nums text-primary">
+                        <div className="flex justify-between gap-2 text-sm pt-1 border-t border-[var(--micaa-line)]">
+                          <span className="text-[var(--micaa-muted)]">Subtotal</span>
+                          <span className="measure font-semibold text-[var(--micaa-accent)]">
                             {formatCurrency(Number(item.subtotal))}
                           </span>
                         </div>
@@ -591,8 +598,8 @@ export default function BudgetDetails() {
                             <td className="py-2 px-2 text-right tabular-nums">
                               {Number(item.quantity).toLocaleString("es-BO", { maximumFractionDigits: 3 })}
                             </td>
-                            <td className="py-2 px-2 text-right tabular-nums">{formatCurrency(Number(item.unitPrice))}</td>
-                            <td className="py-2 pl-2 text-right tabular-nums font-medium">{formatCurrency(Number(item.subtotal))}</td>
+                            <td className="measure py-2 px-2 text-right">{formatCurrency(Number(item.unitPrice))}</td>
+                            <td className="measure py-2 pl-2 text-right font-medium">{formatCurrency(Number(item.subtotal))}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -605,7 +612,7 @@ export default function BudgetDetails() {
                   <p className="text-base sm:text-lg font-semibold min-w-0">
                     {transportCost > 0 ? "Subtotal actividades" : "Total del Presupuesto"}
                   </p>
-                  <p className="text-lg sm:text-xl font-bold text-primary tabular-nums text-right shrink-0">
+                  <p className="measure text-lg sm:text-xl font-bold text-[var(--micaa-accent)] text-right shrink-0">
                     {formatCurrency(totalItems)}
                   </p>
                 </div>
@@ -617,7 +624,7 @@ export default function BudgetDetails() {
                     </div>
                     <div className="flex justify-between items-center gap-3 border-t pt-2 min-w-0">
                       <p className="text-base sm:text-lg font-semibold">Total del Presupuesto</p>
-                      <p className="text-lg sm:text-xl font-bold text-primary tabular-nums shrink-0">
+                      <p className="measure text-lg sm:text-xl font-bold text-[var(--micaa-accent)] shrink-0">
                         {formatCurrency(totalItems + transportCost)}
                       </p>
                     </div>
@@ -638,6 +645,19 @@ export default function BudgetDetails() {
           )}
         </CardContent>
       </Card>
+
+      {/* Total sticky en móvil — Plano vivo */}
+      <div className="sticky-budget-total" aria-live="polite">
+        <div>
+          <div className="l">Total del presupuesto</div>
+          <div className="text-[11px] opacity-70 mt-0.5">
+            {budget.phase ? budget.phase.name : "Multifase"}
+          </div>
+        </div>
+        <div className="v measure">
+          {formatCurrency(Number(budget.total) || totalItems + transportCost)}
+        </div>
+      </div>
     </div>
   );
 }

@@ -16,6 +16,11 @@ export default {
       'desktop': {'min': '64rem'}, // Desktop range (fluid)
     },
     extend: {
+      fontFamily: {
+        sans: ['"DM Sans"', "Segoe UI", "system-ui", "sans-serif"],
+        display: ['"Space Grotesk"', '"DM Sans"', "system-ui", "sans-serif"],
+        mono: ['"IBM Plex Mono"', "ui-monospace", "monospace"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

@@ -25,7 +25,7 @@ export default function PublicHeader() {
         />
       )}
       
-      <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm relative">
+      <header className="sticky top-0 z-50 w-full border-b border-[var(--micaa-line)] bg-white/95 backdrop-blur-sm relative">
       <div className="max-w-7xl mx-auto flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
         <MicaaLogo />
         
