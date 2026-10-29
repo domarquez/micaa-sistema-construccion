@@ -111,7 +111,7 @@ function IvaBadge({ q }: { q: Quote }) {
   const sin = isSinIva(q);
   return (
     <span
-      className={`rounded-full border px-1.5 py-0.5 text-xs leading-none ${sin ? "border-amber-300 bg-amber-50 text-amber-900" : "border-[var(--micaa-line)] bg-white text-[var(--micaa-muted)]"}`}
+      className={`rounded-full border px-1.5 py-0.5 text-[10px] leading-none ${sin ? "border-amber-300 bg-amber-50 text-amber-900" : "border-[var(--micaa-line)] bg-white text-[var(--micaa-muted)]"}`}
       title={sin ? "Precio estimado sin factura" : "Precio con factura (IVA incluido)"}
     >
       {sin ? "sin IVA" : "con IVA"}
@@ -335,22 +335,33 @@ export default function MaterialDetail() {
                 onChange={() => setSelected(i)}
               />
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 text-base text-[var(--micaa-fg)]">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start gap-2">
                       {fresh && (
                         <span
-                          className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--micaa-ok)]"
+                          className="mt-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--micaa-ok)]"
                           title="Reciente"
                         />
                       )}
-                      <span className="truncate">{q.label.replace(/\s*\(sin IVA\)/i, "")}</span>
-                      <IvaBadge q={q} />
-                      {(q.kind === "base" || q.estimated || q.source === "market") && (
-                        <span className="text-sm text-[var(--micaa-muted)]">estimada</span>
-                      )}
+                      <div className="min-w-0 flex-1">
+                        <ExpandableText
+                          lines={2}
+                          moreLabel="Ver nombre"
+                          lessLabel="Ver menos"
+                          className="text-base leading-snug text-[var(--micaa-fg)]"
+                        >
+                          {q.label.replace(/\s*\(sin IVA\)/i, "")}
+                        </ExpandableText>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          <IvaBadge q={q} />
+                          {(q.kind === "base" || q.estimated || q.source === "market") && (
+                            <span className="text-[10px] text-[var(--micaa-muted)]">estimada</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-0.5 text-sm text-[var(--micaa-muted)]">
+                    <div className="mt-1 text-sm text-[var(--micaa-muted)]">
                       {[q.city, ageLabel(q.ageDays), distinguisher(q, i, quotes)].filter(Boolean).join(" · ")}
                     </div>
                     {procedencia && (
@@ -383,7 +394,7 @@ export default function MaterialDetail() {
                     </div>
                     {(q.weightKg ?? data.weightKg) != null &&
                       (q.weightKg ?? data.weightKg)! > 0 && (
-                        <div className="mt-0.5 text-sm text-[var(--micaa-muted)] tabular-nums">
+                        <div className="mt-0.5 max-w-[9.5rem] text-sm text-[var(--micaa-muted)] tabular-nums">
                           peso {(q.weightKg ?? data.weightKg)!.toLocaleString("es-BO", {
                             maximumFractionDigits: 4,
                           })}{" "}
