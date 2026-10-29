@@ -495,6 +495,8 @@ export const supplierCompanies = pgTable("supplier_companies", {
   phoneNormalized: text("phone_normalized"),
   source: text("source").notNull().default("manual"), // manual | extractor | web
   categories: text("categories").array(),
+  /** Free-text trades when "otro_servicio" is selected. */
+  customTrades: text("custom_trades").array(),
   branches: jsonb("branches"),
   contactStatus: text("contact_status"), // sin_contactar | contactado | respondio | no_responde | no_contactar | wa_inexistente
   priceListUrl: text("price_list_url"),
@@ -529,6 +531,19 @@ export const materialSupplierPrices = pgTable("material_supplier_prices", {
 });
 
 // Listas de materiales (Capa 1 — snapshot; invitados usan localStorage)
+export const companyServicePrices = pgTable("company_service_prices", {
+  id: serial("id").primaryKey(),
+  supplierId: integer("supplier_id").notNull().references(() => supplierCompanies.id),
+  name: text("name").notNull(),
+  unit: text("unit"),
+  price: decimal("price", { precision: 12, scale: 4 }).notNull(),
+  currency: text("currency").notNull().default("BOB"),
+  description: text("description"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const materialLists = pgTable("material_lists", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -926,6 +941,7 @@ export type InsertConstructionPhase = z.infer<typeof insertConstructionPhaseSche
 export type Activity = typeof activities.$inferSelect;
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
 export type Material = typeof materials.$inferSelect;
+export type CompanyServicePrice = typeof companyServicePrices.$inferSelect;
 export type InsertMaterial = z.infer<typeof insertMaterialSchema>;
 export type Project = typeof projects.$inferSelect;
 export type InsertProject = z.infer<typeof insertProjectSchema>;

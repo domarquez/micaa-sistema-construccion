@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { titleCaseMaterial } from "@/lib/lista";
 import { BETA_FREE_COPY } from "@/lib/micaa-contact";
+import { SERVICE_UNITS } from "@shared/company-trades";
 
 type Hit = { id: number; name: string; unit: string };
 type PriceRow = {
@@ -39,6 +40,10 @@ export default function SupplierPricing() {
   const [unit, setUnit] = useState("");
   const [price, setPrice] = useState("");
   const [saving, setSaving] = useState(false);
+  const [svcName, setSvcName] = useState("");
+  const [svcUnit, setSvcUnit] = useState("m2");
+  const [svcPrice, setSvcPrice] = useState("");
+  const [savingSvc, setSavingSvc] = useState(false);
 
   const load = async () => {
     const co = await authFetch("/api/my-supplier-company");
@@ -87,6 +92,40 @@ export default function SupplierPricing() {
     }
   };
 
+  const submitService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!svcName.trim() || !svcPrice) {
+      toast({ title: "Faltan datos", description: "Nombre y precio del servicio.", variant: "destructive" });
+      return;
+    }
+    setSavingSvc(true);
+    try {
+      const res = await authFetch("/api/my-supplier-company/services", {
+        method: "POST",
+        body: JSON.stringify({
+          name: svcName.trim(),
+          unit: svcUnit || undefined,
+          price: parseFloat(svcPrice),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || "No se pudo guardar");
+      toast({ title: "Servicio publicado", description: "Ya se ve en tu ficha de /empresas." });
+      setSvcName("");
+      setSvcPrice("");
+      await load();
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSavingSvc(false);
+    }
+  };
+
+  const removeService = async (id: number) => {
+    const res = await authFetch(`/api/my-supplier-company/services/${id}`, { method: "DELETE" });
+    if (res.ok) await load();
+  };
+
   if (authLoading) {
     return <div className="mx-auto max-w-xl px-4 py-10 text-sm text-[var(--micaa-muted)]">Cargando…</div>;
   }
@@ -114,9 +153,9 @@ export default function SupplierPricing() {
 
   return (
     <div className="mx-auto max-w-xl px-4 py-8">
-      <h1 className="text-[20px] font-semibold">Precios de tu empresa</h1>
+      <h1 className="text-[20px] font-semibold">Precios y servicios</h1>
       <p className="mt-1 text-sm text-[var(--micaa-muted)]">
-        Se muestran en la ficha del material y en tu ficha de /empresas. {BETA_FREE_COPY}.
+        Materiales (catálogo) o servicios con precio (ej. corte router Bs/m²). Se ven en /empresas. {BETA_FREE_COPY}.
       </p>
       <form onSubmit={submit} className="mt-6 space-y-3 rounded-xl border border-[var(--micaa-line)] bg-white p-5">
         <div className="flex gap-2">
@@ -142,8 +181,47 @@ export default function SupplierPricing() {
           {saving ? "Publicando…" : "Publicar precio"}
         </button>
       </form>
+      <form onSubmit={submitService} className="mt-6 space-y-3 rounded-xl border border-[var(--micaa-line)] bg-white p-5">
+        <h2 className="text-base font-semibold">Servicio con precio</h2>
+        <p className="text-xs text-[var(--micaa-muted)]">Para oficios: CNC, ploteo, carpintería, alquiler, etc.</p>
+        <input
+          value={svcName}
+          onChange={(e) => setSvcName(e.target.value)}
+          placeholder="Ej. Corte router MDF"
+          className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base"
+          maxLength={120}
+        />
+        <div className="grid grid-cols-2 gap-2">
+          <select
+            value={svcUnit}
+            onChange={(e) => setSvcUnit(e.target.value)}
+            className="h-11 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
+          >
+            {SERVICE_UNITS.map((u) => (
+              <option key={u.value} value={u.value}>{u.label}</option>
+            ))}
+          </select>
+          <input
+            type="number"
+            step="any"
+            min={0}
+            value={svcPrice}
+            onChange={(e) => setSvcPrice(e.target.value)}
+            placeholder="Precio Bs"
+            className="h-11 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={savingSvc}
+          className="flex h-11 w-full items-center justify-center rounded-lg bg-[var(--micaa-accent)] text-base font-medium text-[var(--micaa-accent-fg)] disabled:opacity-60"
+        >
+          {savingSvc ? "Publicando…" : "Publicar servicio"}
+        </button>
+      </form>
+
       <div className="mt-8">
-        <h2 className="text-base font-semibold">Tus precios publicados</h2>
+        <h2 className="text-base font-semibold">Tus precios y servicios publicados</h2>
         {prices.length === 0 ? (
           <p className="mt-2 text-sm text-[var(--micaa-muted)]">Todavía no cargaste ninguno.</p>
         ) : (
@@ -151,10 +229,20 @@ export default function SupplierPricing() {
             {prices.map((p) => (
               <li key={`${p.kind}-${p.id}`} className="flex items-baseline justify-between gap-3 px-4 py-3 text-sm">
                 <span>
+                  {p.kind === "servicio" ? (
+                    <span className="mr-1 rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase">serv.</span>
+                  ) : null}
                   {titleCaseMaterial(p.materialName || `Material #${p.materialId}`)}
                   {p.unit ? <span className="text-[var(--micaa-muted)]"> · {p.unit}</span> : null}
                 </span>
-                <span className="font-medium tabular-nums">Bs {Number(p.price).toFixed(2)}</span>
+                <span className="flex items-center gap-2">
+                  <span className="font-medium tabular-nums">Bs {Number(p.price).toFixed(2)}</span>
+                  {p.kind === "servicio" ? (
+                    <button type="button" className="text-xs text-red-600" onClick={() => removeService(p.id)}>
+                      Quitar
+                    </button>
+                  ) : null}
+                </span>
               </li>
             ))}
           </ul>

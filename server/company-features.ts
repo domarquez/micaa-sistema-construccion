@@ -1,7 +1,7 @@
 /**
  * Company feature flags / plan.
  * Beta free until 2027-01-31: Destacada (and all features) ON when profile is complete
- * (logo + description + ≥1 loaded material/price). From Feb 2027 flags can be flipped per company.
+ * (logo + description + ≥1 material or service price). From Feb 2027 flags can be flipped per company.
  */
 import { sql } from "drizzle-orm";
 import { db } from "./db";
@@ -88,6 +88,8 @@ export async function countCompanyPrices(companyId: number): Promise<number> {
           where u.supplier_company_id = ${companyId} and u.is_public)
         + (select count(*)::int from material_supplier_prices m
           where m.supplier_id = ${companyId} and m.is_active)
+        + (select count(*)::int from company_service_prices s
+          where s.supplier_id = ${companyId} and s.is_active)
       ) as n`),
   );
   return Number(r[0]?.n || 0);

@@ -4,28 +4,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { CITY_LIST, getCity, type MicaaCity } from "@/lib/city";
 import { BETA_FREE_COPY } from "@/lib/micaa-contact";
-
-const RUBROS: { value: string; label: string }[] = [
-  { value: "ferreteria", label: "Ferretería" },
-  { value: "cemento", label: "Cemento / hormigón" },
-  { value: "acero", label: "Acero / fierro" },
-  { value: "aridos", label: "Áridos / arena / grava" },
-  { value: "electrico", label: "Eléctrico" },
-  { value: "sanitario", label: "Sanitario / plomería" },
-  { value: "pinturas", label: "Pinturas" },
-  { value: "ceramicos", label: "Cerámicos / pisos" },
-  { value: "maderas", label: "Maderas" },
-  { value: "construccion_seco", label: "Construcción en seco" },
-  { value: "aislamiento", label: "Aislamiento / EPS" },
-  { value: "herramientas", label: "Herramientas" },
-  { value: "pasto_sintetico", label: "Pasto sintético" },
-  { value: "general", label: "General / varios" },
-];
+import { TradePicker } from "@/components/trade-picker";
 
 type Company = {
   id: number;
   companyName: string;
   speciality?: string | null;
+  trades?: string[] | null;
+  categories?: string[] | null;
+  customTrades?: string[] | null;
   city: string;
   phone?: string | null;
   whatsapp?: string | null;
@@ -82,7 +69,8 @@ export default function SupplierRegistration() {
   const [showMore, setShowMore] = useState(false);
 
   const [companyName, setCompanyName] = useState("");
-  const [rubro, setRubro] = useState("ferreteria");
+  const [trades, setTrades] = useState<string[]>(["ferreteria"]);
+  const [customTrades, setCustomTrades] = useState<string[]>([]);
   const [city, setCityState] = useState<string>(() => getCity());
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
@@ -98,7 +86,16 @@ export default function SupplierRegistration() {
   const fill = (data: Company) => {
     setCompany(data);
     setCompanyName(data.companyName || "");
-    setRubro(data.speciality || "general");
+    setTrades(
+      (data.trades?.length
+        ? data.trades
+        : data.categories?.length
+          ? data.categories
+          : data.speciality
+            ? [data.speciality]
+            : ["general"]) as string[],
+    );
+    setCustomTrades((data.customTrades || []) as string[]);
     setCityState(data.city || getCity());
     setDescription(data.description || "");
     setAddress(data.address || "");
@@ -151,7 +148,8 @@ export default function SupplierRegistration() {
         method: "PUT",
         body: JSON.stringify({
           companyName: companyName.trim(),
-          speciality: rubro,
+          trades,
+          customTrades,
           city,
           description: description.trim() || null,
           address: address.trim() || null,
@@ -172,7 +170,7 @@ export default function SupplierRegistration() {
         title: "Perfil actualizado",
         description: data.destacada
           ? "Tu empresa está Destacada en la guía (perfil completo)."
-          : "Completá logo, descripción y al menos 1 material para aparecer como Destacada.",
+          : "Completá logo, descripción y al menos 1 precio (material o servicio) para Destacada.",
       });
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -257,7 +255,7 @@ export default function SupplierRegistration() {
 
       {!destacada && (
         <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          Para ser <strong>Destacada</strong> (aparecer primero): logo + descripción (≥20 caracteres) + al menos 1 material con precio.
+          Para ser <strong>Destacada</strong> (aparecer primero): logo + descripción (≥20 caracteres) + al menos 1 precio (material o servicio).
         </p>
       )}
 
@@ -295,16 +293,15 @@ export default function SupplierRegistration() {
 
       <form onSubmit={save} className="mt-4 space-y-4 rounded-xl border border-[var(--micaa-line)] bg-white p-5">
         <div>
-          <label className="mb-1 block text-sm font-medium">Nombre</label>
-          <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base" required />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Rubro</label>
-          <select value={rubro} onChange={(e) => setRubro(e.target.value)} className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base">
-            {RUBROS.map((r) => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
+          <label className="mb-1 block text-sm font-medium">Rubros (podés elegir varios)</label>
+          <TradePicker
+            selected={trades}
+            customTrades={customTrades}
+            onChange={({ trades: tr, customTrades: ct }) => {
+              setTrades(tr);
+              setCustomTrades(ct);
+            }}
+          />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">Ciudad</label>

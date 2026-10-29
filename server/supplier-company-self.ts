@@ -12,6 +12,7 @@ import {
   supplierCompanies,
   userMaterialPrices,
   users,
+  companyServicePrices,
 } from "../shared/schema";
 import { normalizeBoPhone, normalizeCompanyName } from "./supplier-guide";
 import {
@@ -21,29 +22,13 @@ import {
   waMeLink,
   BETA_UNTIL as FEATURES_BETA_UNTIL,
 } from "./company-features";
+import { parseTradesInput, KNOWN_TRADE_SLUGS } from "../shared/company-trades";
 
 export const BETA_UNTIL = new Date("2027-01-31T23:59:59.000-04:00");
 export const BETA_AD_PLAN = "beta";
 
-const RUBROS = new Set([
-  "acero",
-  "cemento",
-  "ferreteria",
-  "construccion_seco",
-  "aridos",
-  "aislamiento",
-  "electrico",
-  "sanitario",
-  "maderas",
-  "pinturas",
-  "ceramicos",
-  "vidrios",
-  "agua",
-  "quincalleria",
-  "herramientas",
-  "general",
-  "pasto_sintetico",
-]);
+/** @deprecated use KNOWN_TRADE_SLUGS from shared/company-trades */
+const RUBROS = KNOWN_TRADE_SLUGS;
 
 const CITIES = new Set([
   "Santa Cruz",
@@ -75,6 +60,8 @@ function publicCompany(row: any, extras: { priceCount?: number } = {}) {
     companyName: row.companyName ?? row.company_name,
     businessType: row.businessType ?? row.business_type,
     speciality: row.speciality,
+    trades: (row.categories ?? row.trades ?? (row.speciality ? [row.speciality] : [])) as string[],
+    customTrades: (row.customTrades ?? row.custom_trades ?? []) as string[],
     description: row.description,
     address: row.address,
     city: row.city,
@@ -174,11 +161,7 @@ async function claimPendingByPhone(userId: number, phoneRaw: string | null | und
 function parseBody(body: any) {
   const companyName = String(body?.companyName ?? "").trim();
   const city = String(body?.city ?? "").trim();
-  const specialityRaw = String(body?.speciality ?? body?.rubro ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "_");
-  const speciality = specialityRaw || null;
+  const { trades, customTrades, speciality } = parseTradesInput(body);
   const phoneRaw = body?.phone ?? body?.whatsapp ?? null;
   const opt = (k: string) =>
     body?.[k] != null ? String(body[k]).trim() || null : undefined;
@@ -186,6 +169,8 @@ function parseBody(body: any) {
     companyName,
     city,
     speciality,
+    trades,
+    customTrades,
     phoneRaw,
     description: opt("description"),
     address: opt("address"),
@@ -224,7 +209,7 @@ async function createCompany(req: AuthReq, res: Response) {
 
     const parsed = parseBody(req.body);
     const {
-      companyName, city, speciality, phoneRaw, description, address, website,
+      companyName, city, speciality, trades, customTrades, phoneRaw, description, address, website,
       facebook, instagram, email, openingHours, deliveryInfo, nit, productsServices,
       waPriceReminders,
     } = parsed;
@@ -236,8 +221,11 @@ async function createCompany(req: AuthReq, res: Response) {
         .status(400)
         .json({ message: "Elegí una ciudad válida (Santa Cruz, La Paz, Cochabamba…)" });
     }
-    if (speciality && !RUBROS.has(speciality)) {
-      return res.status(400).json({ message: "Elegí un rubro de la lista" });
+    if (!trades.length) {
+      return res.status(400).json({ message: "Elegí al menos un rubro (materiales y/o servicios)" });
+    }
+    if (trades.includes("otro_servicio") && !customTrades.length) {
+      return res.status(400).json({ message: "Escribí el nombre de tu otro servicio" });
     }
 
     const phoneNorm =
@@ -250,7 +238,7 @@ async function createCompany(req: AuthReq, res: Response) {
         userId,
         companyName,
         businessType: "retailer",
-        speciality: speciality || "general",
+        speciality: speciality || trades[0] || "general",
         description: description ?? null,
         address: address ?? null,
         city,
@@ -267,7 +255,8 @@ async function createCompany(req: AuthReq, res: Response) {
         normalizedName: normalizeCompanyName(companyName),
         phoneNormalized: phoneNorm,
         source: "manual",
-        categories: speciality ? [speciality] : ["general"],
+        categories: trades.length ? trades : ["general"],
+        customTrades: customTrades.length ? customTrades : [],
         contactStatus: "respondio",
         branches: [],
         contacts: wa
@@ -304,7 +293,7 @@ async function updateCompany(req: AuthReq, res: Response) {
     }
 
     const {
-      companyName, city, speciality, phoneRaw, description, address, website,
+      companyName, city, speciality, trades, customTrades, phoneRaw, description, address, website,
       facebook, instagram, email, openingHours, deliveryInfo, nit, productsServices,
       waPriceReminders,
     } = parseBody(req.body);
@@ -314,8 +303,13 @@ async function updateCompany(req: AuthReq, res: Response) {
     if (city && !CITIES.has(city)) {
       return res.status(400).json({ message: "Elegí una ciudad válida" });
     }
-    if (speciality && !RUBROS.has(speciality)) {
-      return res.status(400).json({ message: "Elegí un rubro de la lista" });
+    if (Array.isArray(req.body?.trades) || Array.isArray(req.body?.categories) || req.body?.speciality || req.body?.rubro) {
+      if (!trades.length) {
+        return res.status(400).json({ message: "Elegí al menos un rubro (materiales y/o servicios)" });
+      }
+      if (trades.includes("otro_servicio") && !customTrades.length) {
+        return res.status(400).json({ message: "Escribí el nombre de tu otro servicio" });
+      }
     }
 
     const nextCity = city || mine.city;
@@ -331,9 +325,10 @@ async function updateCompany(req: AuthReq, res: Response) {
       patch.normalizedName = normalizeCompanyName(companyName);
     }
     if (city) patch.city = city;
-    if (speciality) {
-      patch.speciality = speciality;
-      patch.categories = [speciality];
+    if (trades.length) {
+      patch.speciality = speciality || trades[0];
+      patch.categories = trades;
+      patch.customTrades = customTrades;
     }
     if (description !== undefined) patch.description = description;
     if (address !== undefined) patch.address = address;
@@ -415,6 +410,11 @@ export function registerSupplierCompanySelfRoutes(
             from material_supplier_prices p
             join materials m on m.id = p.material_id
             where p.supplier_id = ${mine.id} and p.is_active
+            union all
+            select s.id, null::int, s.name, s.price::float, s.unit, null::text,
+                   s.updated_at, 'servicio'
+            from company_service_prices s
+            where s.supplier_id = ${mine.id} and s.is_active
           ) x
           order by "updatedAt" desc nulls last
           limit 200`),
@@ -525,6 +525,79 @@ export function registerSupplierCompanySelfRoutes(
     } catch (e) {
       console.error("POST my-supplier-company/prices:", e);
       res.status(500).json({ message: "No se pudo guardar el precio" });
+    }
+  });
+
+
+  app.get("/api/my-supplier-company/services", requireAuth, async (req: AuthReq, res: Response) => {
+    try {
+      const mine = await findMine(req.user!.id);
+      if (!mine) return res.status(404).json({ message: "Todavía no registraste tu empresa" });
+      const r = rows(
+        await db.execute(sql`
+          select id, name, unit, price::float as price, currency, description,
+                 updated_at as "updatedAt"
+          from company_service_prices
+          where supplier_id = ${mine.id} and is_active
+          order by updated_at desc nulls last
+          limit 200`),
+      );
+      res.json(r);
+    } catch (e) {
+      console.error("GET my-supplier-company/services:", e);
+      res.status(500).json({ message: "No se pudieron cargar tus servicios" });
+    }
+  });
+
+  app.post("/api/my-supplier-company/services", requireAuth, async (req: AuthReq, res: Response) => {
+    try {
+      const mine = await findMine(req.user!.id);
+      if (!mine) return res.status(404).json({ message: "Todavía no registraste tu empresa" });
+      const name = String(req.body?.name ?? "").trim();
+      const unit = typeof req.body?.unit === "string" ? req.body.unit.trim() || null : null;
+      const price = parseFloat(req.body?.price);
+      const description =
+        typeof req.body?.description === "string" ? req.body.description.trim() || null : null;
+      if (name.length < 2 || !price || price <= 0) {
+        return res.status(400).json({ message: "Nombre y precio válidos son obligatorios" });
+      }
+      const row = (
+        await db
+          .insert(companyServicePrices)
+          .values({
+            supplierId: mine.id,
+            name: name.slice(0, 120),
+            unit,
+            price: price.toString(),
+            currency: "BOB",
+            description,
+            isActive: true,
+          })
+          .returning()
+      )[0];
+      await refreshCompanyFeatureState(mine.id);
+      res.status(201).json(row);
+    } catch (e) {
+      console.error("POST my-supplier-company/services:", e);
+      res.status(500).json({ message: "No se pudo guardar el servicio" });
+    }
+  });
+
+  app.delete("/api/my-supplier-company/services/:id", requireAuth, async (req: AuthReq, res: Response) => {
+    try {
+      const mine = await findMine(req.user!.id);
+      if (!mine) return res.status(404).json({ message: "Todavía no registraste tu empresa" });
+      const id = Number(req.params.id);
+      if (!Number.isFinite(id)) return res.status(400).json({ message: "id inválido" });
+      await db.execute(sql`
+        update company_service_prices
+        set is_active = false, updated_at = now()
+        where id = ${id} and supplier_id = ${mine.id}`);
+      await refreshCompanyFeatureState(mine.id);
+      res.json({ ok: true });
+    } catch (e) {
+      console.error("DELETE service:", e);
+      res.status(500).json({ message: "No se pudo eliminar" });
     }
   });
 
