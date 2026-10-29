@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { formatBs, formatUnit } from "@/lib/format";
 import { PublicAdSense } from "@/components/ads/AdSenseSlot";
 import { track } from "@/lib/analytics";
+import { waMicaaLink } from "@/lib/wa-micaa";
 
 type Supplier = {
   id: number;
@@ -26,6 +27,8 @@ type Supplier = {
   isFeatured?: boolean;
   featuredActive?: boolean;
   adPlan?: string | null;
+  logoUrl?: string | null;
+  logoThumbUrl?: string | null;
 };
 
 type SupplierPrice = {
@@ -68,7 +71,7 @@ function supplierCategories(s: Supplier): string[] {
 
 function waLink(s: Supplier): string | null {
   const p = s.phoneNormalized || (s.whatsapp || "").replace(/\D/g, "");
-  return p && /^591[67]\d{7}$/.test(p) ? `https://wa.me/${p}` : null;
+  return waMicaaLink(p, s.companyName);
 }
 
 function SupplierPrices({ id }: { id: number }) {
@@ -106,16 +109,30 @@ function SupplierCard({ s }: { s: Supplier }) {
   return (
     <li className="tech-card p-4">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="flex min-w-0 items-start gap-3">
+          {(s.logoThumbUrl || s.logoUrl) ? (
+            <img
+              src={s.logoThumbUrl || s.logoUrl || ""}
+              alt=""
+              className="h-12 w-12 shrink-0 rounded-lg object-cover border border-[var(--micaa-line)] bg-white"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[var(--micaa-line)] bg-[var(--micaa-accent-soft,#fff3e8)] text-sm font-semibold text-[var(--micaa-accent)]">
+              {(s.companyName || "?").slice(0, 1).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0">
           <h2 className="font-display text-base font-semibold tracking-tight text-[var(--micaa-fg)]">{s.companyName}</h2>
           <p className="mt-0.5 text-sm text-[var(--micaa-muted)]">
             {[s.city, branches.length > 1 ? `${branches.length} sucursales` : s.address].filter(Boolean).join(" · ")}
           </p>
+          </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           {s.featuredActive && (
             <span className="stamp !rounded-full !border-solid bg-[var(--micaa-accent)] !text-white !border-transparent px-2 py-0.5 text-xs font-medium">
-              Destacado
+              Destacada
             </span>
           )}
           {!s.isVerified && (
@@ -136,7 +153,13 @@ function SupplierCard({ s }: { s: Supplier }) {
       )}
       <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
         {wa && (
-          <a href={wa} target="_blank" rel="noreferrer" className="font-medium text-[var(--micaa-accent)]">
+          <a
+            href={wa}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-[var(--micaa-accent)]"
+            onClick={() => track("whatsapp_click", { supplierId: s.id, name: s.companyName, source: "empresas" })}
+          >
             WhatsApp
           </a>
         )}

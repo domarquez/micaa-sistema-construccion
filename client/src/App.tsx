@@ -33,6 +33,7 @@ import SimpleImport from "@/pages/simple-import";
 import AdminMaterials from "@/pages/admin-materials";
 import AdminUsers from "@/pages/admin-users";
 import AdminSuppliers from "@/pages/admin-suppliers";
+import AdminPendingClaims from "@/pages/admin-pending-claims";
 import AdminCompanies from "@/pages/admin-companies";
 import AdminAdvertisements from "@/pages/admin-advertisements";
 import AdminBulkEmail from "@/pages/admin-bulk-email";
@@ -179,6 +180,7 @@ function AuthenticatedLayout() {
               <Route path="/anunciar" component={AnunciarPage} />
               <Route path="/contacto" component={ContactoPage} />
               <Route path="/supplier-registration" component={SupplierRegistration} />
+              <Route path="/miempresa" component={SupplierRegistration} />
               <Route path="/supplier-dashboard" component={SupplierDashboard} />
               <Route path="/supplier-pricing" component={SupplierPricing} />
               <Route path="/company-advertising"><Redirect to="/anunciar" /></Route>
@@ -191,6 +193,7 @@ function AuthenticatedLayout() {
               <Route path="/admin/suppliers" component={AdminSuppliers} />
               <Route path="/admin-materials" component={AdminMaterials} />
               <Route path="/admin-activities" component={ActivityManager} />
+              <Route path="/admin/pending-claims" component={AdminPendingClaims} />
               <Route path="/admin/companies" component={AdminCompanies} />
               <Route path="/admin/advertisements" component={AdminAdvertisements} />
               <Route path="/admin/bulk-email" component={AdminBulkEmail} />

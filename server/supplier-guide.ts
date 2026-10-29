@@ -73,7 +73,7 @@ async function listSuppliers(req: Request, res: Response) {
     const r = rows(
       await db.execute(sql`
         select s.id, s.company_name as "companyName", s.business_type as "businessType", s.speciality, s.description,
-               s.address, s.city, s.phone, s.whatsapp, s.website, s.facebook, s.logo_url as "logoUrl",
+               s.address, s.city, s.phone, s.whatsapp, s.website, s.facebook, s.logo_url as "logoUrl", s.logo_thumb_url as "logoThumbUrl", s.logo_format as "logoFormat",
                s.membership_type as "membershipType", s.is_verified as "isVerified", s.rating, s.review_count as "reviewCount",
                s.source, s.categories, s.branches, s.price_list_url as "priceListUrl", s.phone_normalized as "phoneNormalized",
                coalesce(s.is_featured, false) as "isFeatured", s.featured_until as "featuredUntil", s.ad_plan as "adPlan",
@@ -83,7 +83,7 @@ async function listSuppliers(req: Request, res: Response) {
         from supplier_companies s
         where s.is_active and coalesce(s.contact_status,'') not in ('no_contactar','wa_inexistente')
           and (${city}::text is null or s.city = ${city})
-        order by "featuredActive" desc, "priceCount" desc, s.is_verified desc, s.company_name`),
+        order by "featuredActive" desc, s.created_at desc nulls last, "priceCount" desc, s.is_verified desc, s.company_name`),
     );
     res.json(r);
   } catch (e) {
@@ -123,6 +123,7 @@ async function materialSuppliers(req: Request, res: Response) {
     const r = rows(
       await db.execute(sql`
         select s.id, s.company_name as "companyName", s.city, s.whatsapp, s.phone_normalized as "phoneNormalized",
+               s.logo_url as "logoUrl", s.logo_thumb_url as "logoThumbUrl",
                s.is_verified as "isVerified",
                coalesce(s.is_featured, false) as "isFeatured",
                (coalesce(s.is_featured, false) and (s.featured_until is null or s.featured_until > now())) as "featuredActive",
