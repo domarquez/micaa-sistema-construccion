@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,6 +31,7 @@ import {
   type ApuRow,
   type ApuTotals,
 } from "@shared/apu";
+import { cn } from "@/lib/utils";
 
 interface ItemApuResponse {
   item: {
@@ -258,234 +258,465 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
 
   const storedDiffers = item && apu ? Math.abs(item.unitPrice - apu.totalUnitPrice) > 0.005 : false;
 
+  const renderPriceControls = (r: ApuRow, d: Draft, selectable: boolean) => {
+    if (!selectable) {
+      return (
+        <div className="min-w-0">
+          <div className="whitespace-nowrap">{bs(r.unitPrice)}</div>
+          <div className="text-xs text-muted-foreground break-words [overflow-wrap:anywhere]">{r.sourceLabel}</div>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-1 min-w-0 w-full">
+        <Select value={d.choice} onValueChange={(v) => setDraft(r, { choice: v })}>
+          <SelectTrigger className="h-8 text-xs w-full min-w-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {r.options.map((o) => (
+              <SelectItem key={o.key} value={o.key} className="text-xs">
+                {optionLabel(o)}
+              </SelectItem>
+            ))}
+            <SelectItem value={MANUAL} className="text-xs">
+              Manual…
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        {d.choice === MANUAL && (
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            value={d.manual}
+            onChange={(e) => setDraft(r, { manual: e.target.value })}
+            placeholder="Precio unitario Bs"
+            className="h-8 text-xs"
+          />
+        )}
+      </div>
+    );
+  };
+
+  const renderMobileCard = (r: ApuRow) => {
+    const d = choiceOf(r);
+    const price = priceFor(r, d);
+    const eff = effectiveQuantity(r.quantity, r.wastePct);
+    const sub = eff * price;
+    const selectable = r.inputId != null && r.options.length > 0 && !!apu?.overridesAvailable;
+    const dirty = dirtyKeys.includes(rowKey(r));
+    return (
+      <div
+        key={r.compositionId}
+        className={cn(
+          "border-b last:border-b-0 px-3 py-2.5 space-y-2",
+          dirty && "bg-primary/10",
+        )}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="font-medium text-sm break-words [overflow-wrap:anywhere] [hyphens:none]">
+              {r.name}
+            </div>
+            {r.override && (
+              <Badge variant="outline" className="mt-0.5 text-xs">
+                {r.override.scope === "item" ? "Ajuste de este ítem" : "Ajuste del proyecto"}
+              </Badge>
+            )}
+            {r.sourceRef && <div className="text-xs text-muted-foreground break-words">Fuente: {r.sourceRef}</div>}
+            {r.warnings.map((w, i) => (
+              <div key={i} className="text-xs text-amber-700 flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3 shrink-0" /> {w}
+              </div>
+            ))}
+          </div>
+          {r.override && apu?.overridesAvailable && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 shrink-0"
+              title="Quitar ajuste (volver a base)"
+              disabled={saving}
+              onClick={() => resetRow(r)}
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </Button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-4 gap-1.5 text-xs items-end">
+          <div className="min-w-0">
+            <div className="text-muted-foreground">Unid</div>
+            <div className="font-medium truncate">{r.unit}</div>
+          </div>
+          <div className="min-w-0">
+            <div className="text-muted-foreground">Cant</div>
+            <div className="font-medium tabular-nums">
+              {r.quantity.toLocaleString("es-BO", { maximumFractionDigits: 4 })}
+            </div>
+            {r.wastePct > 0 && (
+              <div className="text-[10px] text-muted-foreground leading-tight">
+                +{r.wastePct}% = {eff.toLocaleString("es-BO", { maximumFractionDigits: 4 })}
+              </div>
+            )}
+          </div>
+          <div className="min-w-0 col-span-1">
+            <div className="text-muted-foreground">P.U.</div>
+            {selectable && d.choice === MANUAL ? (
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                value={d.manual}
+                onChange={(e) => setDraft(r, { manual: e.target.value })}
+                className="h-7 text-xs px-1"
+              />
+            ) : (
+              <div className="font-medium tabular-nums whitespace-nowrap text-[11px] sm:text-xs">{bs(price)}</div>
+            )}
+          </div>
+          <div className="min-w-0 text-right">
+            <div className="text-muted-foreground">Parcial</div>
+            <div className="font-semibold tabular-nums whitespace-nowrap text-[11px] sm:text-xs">{bs(sub)}</div>
+          </div>
+        </div>
+
+        {selectable && (
+          <div className="pt-0.5">
+            <Select
+              value={d.choice}
+              onValueChange={(v) => {
+                if (v === MANUAL && !d.manual) {
+                  setDraft(r, { choice: v, manual: String(r.unitPrice) });
+                } else {
+                  setDraft(r, { choice: v });
+                }
+              }}
+            >
+              <SelectTrigger className="h-8 text-xs w-full">
+                <SelectValue placeholder="Fuente de precio" />
+              </SelectTrigger>
+              <SelectContent>
+                {r.options.map((o) => (
+                  <SelectItem key={o.key} value={o.key} className="text-xs">
+                    {optionLabel(o)}
+                  </SelectItem>
+                ))}
+                <SelectItem value={MANUAL} className="text-xs">
+                  Manual…
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderDesktopRow = (r: ApuRow) => {
+    const d = choiceOf(r);
+    const price = priceFor(r, d);
+    const eff = effectiveQuantity(r.quantity, r.wastePct);
+    const sub = eff * price;
+    const diff = sub - eff * r.basePrice;
+    const selectable = r.inputId != null && r.options.length > 0 && !!apu?.overridesAvailable;
+    const dirty = dirtyKeys.includes(rowKey(r));
+    return (
+      <tr key={r.compositionId} className={`border-b align-top ${dirty ? "bg-primary/10" : ""}`}>
+        <td className="px-2 py-1.5">
+          <div className="font-medium break-words [hyphens:none]">{r.name}</div>
+          {r.override && (
+            <Badge variant="outline" className="mt-0.5 text-xs">
+              {r.override.scope === "item" ? "Ajuste de este ítem" : "Ajuste del proyecto"}
+            </Badge>
+          )}
+          {r.sourceRef && <div className="text-xs text-muted-foreground">Fuente: {r.sourceRef}</div>}
+          {r.warnings.map((w, i) => (
+            <div key={i} className="text-xs text-amber-700 flex items-center gap-1">
+              <AlertTriangle className="w-3 h-3" /> {w}
+            </div>
+          ))}
+        </td>
+        <td className="px-2 py-1.5 whitespace-nowrap">{r.unit}</td>
+        <td className="px-2 py-1.5 text-right whitespace-nowrap">
+          {r.quantity.toLocaleString("es-BO", { maximumFractionDigits: 4 })}
+          {r.wastePct > 0 && (
+            <div className="text-xs text-muted-foreground">
+              +{r.wastePct}% desp. = {eff.toLocaleString("es-BO", { maximumFractionDigits: 4 })}
+            </div>
+          )}
+        </td>
+        <td className="px-2 py-1.5 min-w-[220px]">{renderPriceControls(r, d, selectable)}</td>
+        <td className="px-2 py-1.5 text-right whitespace-nowrap">{bs(sub)}</td>
+        <td
+          className={`px-2 py-1.5 text-right whitespace-nowrap ${
+            diff > 0.005 ? "text-red-600" : diff < -0.005 ? "text-green-700" : "text-muted-foreground"
+          }`}
+        >
+          {signedBs(diff)}
+        </td>
+        <td className="px-1 py-1.5">
+          {r.override && apu?.overridesAvailable && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7"
+              title="Quitar ajuste (volver a base)"
+              disabled={saving}
+              onClick={() => resetRow(r)}
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </Button>
+          )}
+        </td>
+      </tr>
+    );
+  };
+
+  const sectionSubtotal = (t: ApuInputType) => {
+    if (!apu) return 0;
+    return apu.rows
+      .filter((r) => r.inputType === t)
+      .reduce((sum, r) => {
+        const d = choiceOf(r);
+        const price = priceFor(r, d);
+        return sum + effectiveQuantity(r.quantity, r.wastePct) * price;
+      }, 0);
+  };
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="w-full max-w-[98vw] lg:max-w-6xl max-h-[95vh] overflow-y-auto p-3 sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <Calculator className="w-5 h-5 text-primary" />
-            APU · {apu?.activityName ?? "…"}
-          </DialogTitle>
-          <DialogDescription>
-            {apu ? (
-              <>
-                Unidad: {apu.unit} · Ciudad: {apu.factorCity || apu.city} (factor mat. ×{apu.factors.materials}, M.O. ×
-                {apu.factors.labor}, eq. ×{apu.factors.equipment})
-              </>
-            ) : (
-              "Cargando análisis de precio unitario…"
-            )}
-          </DialogDescription>
-        </DialogHeader>
-
-        {isLoading && <Skeleton className="h-64 w-full" />}
-        {error && <p className="text-sm text-red-600">No se pudo cargar el APU: {String((error as any)?.message || error)}</p>}
-
-        {apu && item && preview && (
-          <div className="space-y-4">
-            {!apu.overridesAvailable && (
-              <div className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                La selección de precios por insumo requiere aplicar la migración
-                <code className="mx-1">migrations/0001_apu_live_overrides.sql</code>. Se muestra el APU con precios base.
-              </div>
-            )}
-            {apu.warnings.length > 0 && (
-              <ul className="text-xs text-amber-700 list-disc ml-5">
-                {apu.warnings.map((w, i) => (
-                  <li key={i}>{w}</li>
-                ))}
-              </ul>
-            )}
-
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium">Alcance del cambio:</span>
-                <RadioGroup
-                  value={scope}
-                  onValueChange={(v) => setScope(v as "item" | "project")}
-                  className="flex gap-4"
-                  disabled={!apu.overridesAvailable}
-                >
-                  <div className="flex items-center gap-1">
-                    <RadioGroupItem value="item" id="apu-scope-item" />
-                    <Label htmlFor="apu-scope-item" className="text-sm">Solo este ítem</Label>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <RadioGroupItem value="project" id="apu-scope-project" />
-                    <Label htmlFor="apu-scope-project" className="text-sm">Todo el proyecto</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Precio guardado en el ítem: <b>{bs(item.unitPrice)}</b>
-                {item.apuComputedAt ? " (APU en vivo)" : " (precio anterior / manual)"}
-              </div>
+      <DialogContent
+        className={cn(
+          "apu-dialog flex flex-col gap-0 overflow-hidden p-0",
+          "w-full max-w-[98vw] lg:max-w-6xl",
+          "max-md:h-[100dvh] max-md:max-h-[100dvh] max-md:rounded-none",
+          "md:max-h-[95vh]",
+        )}
+      >
+        {/* Sticky header: title + room for absolute X */}
+        <div className="sticky top-0 z-10 shrink-0 border-b bg-background px-3 pt-3 pb-2 pr-12 md:px-6 md:pt-5 md:pb-3 md:pr-14">
+          <DialogHeader className="space-y-1 text-left">
+            <DialogTitle className="flex items-start gap-2 text-base sm:text-lg leading-snug break-words [hyphens:none] [overflow-wrap:anywhere]">
+              <Calculator className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <span className="min-w-0">APU · {apu?.activityName ?? "…"}</span>
+            </DialogTitle>
+            <DialogDescription className="text-left text-xs sm:text-sm break-words [hyphens:none]">
+              {apu ? (
+                <>
+                  Unidad: {apu.unit} · Ciudad: {apu.factorCity || apu.city} (factor mat. ×{apu.factors.materials}, M.O. ×
+                  {apu.factors.labor}, eq. ×{apu.factors.equipment})
+                </>
+              ) : (
+                "Cargando análisis de precio unitario…"
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {item && (
+            <div className="mt-1.5 text-xs text-muted-foreground">
+              Precio guardado en el ítem: <b className="text-foreground whitespace-nowrap">{bs(item.unitPrice)}</b>
+              {item.apuComputedAt ? " (APU en vivo)" : " (precio anterior / manual)"}
             </div>
+          )}
+        </div>
 
-            {(["material", "labor", "equipment"] as ApuInputType[]).map((t) => {
-              const rows = apu.rows.filter((r) => r.inputType === t);
-              if (rows.length === 0) return null;
-              return (
-                <div key={t} className="border rounded-md overflow-x-auto">
-                  <div className="bg-muted px-3 py-1.5 text-sm font-semibold">{SECTION_TITLES[t]}</div>
-                  <table className="w-full text-xs sm:text-sm">
-                    <thead>
-                      <tr className="text-left text-muted-foreground border-b">
-                        <th className="px-2 py-1">Insumo</th>
-                        <th className="px-2 py-1">Unid.</th>
-                        <th className="px-2 py-1 text-right">Cant.</th>
-                        <th className="px-2 py-1 min-w-[260px]">Precio</th>
-                        <th className="px-2 py-1 text-right">Parcial</th>
-                        <th className="px-2 py-1 text-right">Δ vs base</th>
-                        <th className="px-2 py-1"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.map((r) => {
-                        const d = choiceOf(r);
-                        const price = priceFor(r, d);
-                        const eff = effectiveQuantity(r.quantity, r.wastePct);
-                        const sub = eff * price;
-                        const diff = sub - eff * r.basePrice;
-                        const selectable = r.inputId != null && r.options.length > 0 && apu.overridesAvailable;
-                        const dirty = dirtyKeys.includes(rowKey(r));
-                        return (
-                          <tr key={r.compositionId} className={`border-b align-top ${dirty ? "bg-primary/10" : ""}`}>
-                            <td className="px-2 py-1.5">
-                              <div className="font-medium">{r.name}</div>
-                              {r.override && (
-                                <Badge variant="outline" className="mt-0.5 text-xs">
-                                  {r.override.scope === "item" ? "Ajuste de este ítem" : "Ajuste del proyecto"}
-                                </Badge>
-                              )}
-                              {r.sourceRef && <div className="text-xs text-muted-foreground">Fuente: {r.sourceRef}</div>}
-                              {r.warnings.map((w, i) => (
-                                <div key={i} className="text-xs text-amber-700 flex items-center gap-1">
-                                  <AlertTriangle className="w-3 h-3" /> {w}
-                                </div>
-                              ))}
-                            </td>
-                            <td className="px-2 py-1.5 whitespace-nowrap">{r.unit}</td>
-                            <td className="px-2 py-1.5 text-right whitespace-nowrap">
-                              {r.quantity.toLocaleString("es-BO", { maximumFractionDigits: 4 })}
-                              {r.wastePct > 0 && (
-                                <div className="text-xs text-muted-foreground">
-                                  +{r.wastePct}% desp. = {eff.toLocaleString("es-BO", { maximumFractionDigits: 4 })}
-                                </div>
-                              )}
-                            </td>
-                            <td className="px-2 py-1.5">
-                              {selectable ? (
-                                <div className="space-y-1">
-                                  <Select value={d.choice} onValueChange={(v) => setDraft(r, { choice: v })}>
-                                    <SelectTrigger className="h-8 text-xs">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {r.options.map((o) => (
-                                        <SelectItem key={o.key} value={o.key} className="text-xs">
-                                          {optionLabel(o)}
-                                        </SelectItem>
-                                      ))}
-                                      <SelectItem value={MANUAL} className="text-xs">
-                                        Manual…
-                                      </SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  {d.choice === MANUAL && (
-                                    <Input
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                      value={d.manual}
-                                      onChange={(e) => setDraft(r, { manual: e.target.value })}
-                                      placeholder="Precio unitario Bs"
-                                      className="h-8 text-xs"
-                                    />
-                                  )}
-                                </div>
-                              ) : (
-                                <div>
-                                  {bs(r.unitPrice)}
-                                  <div className="text-xs text-muted-foreground">{r.sourceLabel}</div>
-                                </div>
-                              )}
-                            </td>
-                            <td className="px-2 py-1.5 text-right whitespace-nowrap">{bs(sub)}</td>
-                            <td
-                              className={`px-2 py-1.5 text-right whitespace-nowrap ${
-                                diff > 0.005 ? "text-red-600" : diff < -0.005 ? "text-green-700" : "text-muted-foreground"
-                              }`}
-                            >
-                              {signedBs(diff)}
-                            </td>
-                            <td className="px-1 py-1.5">
-                              {r.override && apu.overridesAvailable && (
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-7 w-7"
-                                  title="Quitar ajuste (volver a base)"
-                                  disabled={saving}
-                                  onClick={() => resetRow(r)}
-                                >
-                                  <RotateCcw className="w-3.5 h-3.5" />
-                                </Button>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              );
-            })}
+        {/* Scrollable body */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-3 md:px-6 md:py-4 space-y-4">
+          {isLoading && <Skeleton className="h-64 w-full" />}
+          {error && <p className="text-sm text-red-600">No se pudo cargar el APU: {String((error as any)?.message || error)}</p>}
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="text-xs space-y-1 border rounded-md p-3">
-                <Line label="Materiales" value={preview.materialsTotal} />
-                <Line label="Mano de obra" value={preview.laborTotal} />
-                <Line label={`Cargas sociales (${apu.percentages.socialCharges}%)`} value={preview.laborCharges} sub />
-                <Line label={`IVA M.O. (${apu.percentages.laborIva}%)`} value={preview.laborIVA} sub />
-                <Line label="Mano de obra total" value={preview.laborFinal} />
-                <Line label="Equipo" value={preview.equipmentTotal} />
-                <Line label={`Herramientas menores (${apu.percentages.minorTools}% de M.O.)`} value={preview.tools} sub />
-                <Line label="Costo directo" value={preview.directCost} bold />
-                <Line label={`Gastos generales (${apu.percentages.administrative}%)`} value={preview.administrativeCost} sub />
-                <Line label={`Utilidad (${apu.percentages.utility}%)`} value={preview.utilityCost} sub />
-                <Line label={`IT (${apu.percentages.tax}%)`} value={preview.taxCost} sub />
-              </div>
-              <div className="border rounded-md p-3 bg-primary/10 flex flex-col justify-between gap-2">
-                <div>
-                  <div className="text-sm text-muted-foreground">Precio unitario {dirtyKeys.length ? "(vista previa)" : ""}</div>
-                  <div className="text-2xl font-bold">{bs(preview.totalUnitPrice)}</div>
-                  <div className="text-xs">
-                    Base MICAA: {bs(apu.base.totalUnitPrice)} · Diferencia:{" "}
-                    <b className={preview.totalUnitPrice - apu.base.totalUnitPrice > 0 ? "text-red-600" : "text-green-700"}>
-                      {signedBs(preview.totalUnitPrice - apu.base.totalUnitPrice)}
-                    </b>
-                  </div>
-                  <div className="text-xs mt-1">
-                    Subtotal ítem ({item.quantity} {apu.unit}): <b>{bs(preview.totalUnitPrice * item.quantity)}</b>
-                  </div>
+          {apu && item && preview && (
+            <>
+              {!apu.overridesAvailable && (
+                <div className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span className="min-w-0 break-words [hyphens:none]">
+                    La selección de precios por insumo requiere aplicar la migración
+                    <code className="mx-1">migrations/0001_apu_live_overrides.sql</code>. Se muestra el APU con precios base.
+                  </span>
                 </div>
-                <div className="flex flex-wrap gap-2 justify-end">
-                  {storedDiffers && dirtyKeys.length === 0 && (
-                    <Button variant="outline" size="sm" disabled={saving} onClick={applyLive}>
-                      Usar este APU en el ítem
-                    </Button>
+              )}
+              {apu.warnings.length > 0 && (
+                <ul className="text-xs text-amber-700 list-disc ml-5">
+                  {apu.warnings.map((w, i) => (
+                    <li key={i}>{w}</li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Alcance: full-width segmented control */}
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Alcance del cambio</Label>
+                <div
+                  role="radiogroup"
+                  aria-label="Alcance del cambio"
+                  className={cn(
+                    "grid grid-cols-2 rounded-lg border bg-muted/40 p-0.5 gap-0.5",
+                    !apu.overridesAvailable && "opacity-50 pointer-events-none",
                   )}
-                  <Button variant="outline" size="sm" disabled={saving || dirtyKeys.length === 0} onClick={() => setDrafts({})}>
-                    Descartar
-                  </Button>
-                  <Button size="sm" disabled={saving || dirtyKeys.length === 0 || !apu.overridesAvailable} onClick={save}>
-                    {saving ? "Guardando…" : `Guardar ${dirtyKeys.length || ""} cambio(s)`}
-                  </Button>
+                >
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={scope === "item"}
+                    disabled={!apu.overridesAvailable}
+                    onClick={() => setScope("item")}
+                    className={cn(
+                      "rounded-md px-2 py-2 text-sm font-medium transition-colors text-center break-words [hyphens:none]",
+                      scope === "item"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    Solo este ítem
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={scope === "project"}
+                    disabled={!apu.overridesAvailable}
+                    onClick={() => setScope("project")}
+                    className={cn(
+                      "rounded-md px-2 py-2 text-sm font-medium transition-colors text-center break-words [hyphens:none]",
+                      scope === "project"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    Todo el proyecto
+                  </button>
                 </div>
               </div>
+
+              {(["material", "labor", "equipment"] as ApuInputType[]).map((t) => {
+                const rows = apu.rows.filter((r) => r.inputType === t);
+                if (rows.length === 0) return null;
+                const sub = sectionSubtotal(t);
+                return (
+                  <div key={t} className="border rounded-md overflow-hidden">
+                    <div className="bg-muted px-3 py-1.5 text-sm font-semibold flex items-center justify-between gap-2">
+                      <span className="min-w-0 break-words [hyphens:none]">{SECTION_TITLES[t]}</span>
+                      <span className="text-xs font-medium whitespace-nowrap shrink-0 md:hidden">{bs(sub)}</span>
+                    </div>
+
+                    {/* Mobile: card list */}
+                    <div className="md:hidden">{rows.map(renderMobileCard)}</div>
+                    <div className="md:hidden px-3 py-2 bg-muted/30 flex justify-between text-sm font-semibold border-t">
+                      <span>Subtotal</span>
+                      <span className="whitespace-nowrap tabular-nums">{bs(sub)}</span>
+                    </div>
+
+                    {/* Desktop: table */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left text-muted-foreground border-b">
+                            <th className="px-2 py-1">Insumo</th>
+                            <th className="px-2 py-1">Unid.</th>
+                            <th className="px-2 py-1 text-right">Cant.</th>
+                            <th className="px-2 py-1 min-w-[260px]">Precio</th>
+                            <th className="px-2 py-1 text-right">Parcial</th>
+                            <th className="px-2 py-1 text-right">Δ vs base</th>
+                            <th className="px-2 py-1"></th>
+                          </tr>
+                        </thead>
+                        <tbody>{rows.map(renderDesktopRow)}</tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Totals breakdown (scrolls with body; sticky footer shows Total + Guardar) */}
+              <div className="grid md:grid-cols-2 gap-4 pb-2">
+                <div className="text-xs space-y-1 border rounded-md p-3">
+                  <Line label="Materiales" value={preview.materialsTotal} />
+                  <Line label="Mano de obra" value={preview.laborTotal} />
+                  <Line label={`Cargas sociales (${apu.percentages.socialCharges}%)`} value={preview.laborCharges} sub />
+                  <Line label={`IVA M.O. (${apu.percentages.laborIva}%)`} value={preview.laborIVA} sub />
+                  <Line label="Mano de obra total" value={preview.laborFinal} />
+                  <Line label="Equipo" value={preview.equipmentTotal} />
+                  <Line label={`Herramientas menores (${apu.percentages.minorTools}% de M.O.)`} value={preview.tools} sub />
+                  <Line label="Costo directo" value={preview.directCost} bold />
+                  <Line label={`Gastos generales (${apu.percentages.administrative}%)`} value={preview.administrativeCost} sub />
+                  <Line label={`Utilidad (${apu.percentages.utility}%)`} value={preview.utilityCost} sub />
+                  <Line label={`IT (${apu.percentages.tax}%)`} value={preview.taxCost} sub />
+                </div>
+                <div className="border rounded-md p-3 bg-primary/10 hidden md:flex flex-col justify-between gap-2">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Precio unitario {dirtyKeys.length ? "(vista previa)" : ""}</div>
+                    <div className="text-2xl font-bold whitespace-nowrap">{bs(preview.totalUnitPrice)}</div>
+                    <div className="text-xs">
+                      Base MICAA: {bs(apu.base.totalUnitPrice)} · Diferencia:{" "}
+                      <b className={preview.totalUnitPrice - apu.base.totalUnitPrice > 0 ? "text-red-600" : "text-green-700"}>
+                        {signedBs(preview.totalUnitPrice - apu.base.totalUnitPrice)}
+                      </b>
+                    </div>
+                    <div className="text-xs mt-1">
+                      Subtotal ítem ({item.quantity} {apu.unit}): <b className="whitespace-nowrap">{bs(preview.totalUnitPrice * item.quantity)}</b>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-end">
+                    {storedDiffers && dirtyKeys.length === 0 && (
+                      <Button variant="outline" size="sm" disabled={saving} onClick={applyLive}>
+                        Usar este APU en el ítem
+                      </Button>
+                    )}
+                    <Button variant="outline" size="sm" disabled={saving || dirtyKeys.length === 0} onClick={() => setDrafts({})}>
+                      Descartar
+                    </Button>
+                    <Button size="sm" disabled={saving || dirtyKeys.length === 0 || !apu.overridesAvailable} onClick={save}>
+                      {saving ? "Guardando…" : `Guardar ${dirtyKeys.length || ""} cambio(s)`}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile-only: base/diff + apply live inside body */}
+              <div className="md:hidden text-xs space-y-1 border rounded-md p-3 bg-muted/20">
+                <div>
+                  Base MICAA: {bs(apu.base.totalUnitPrice)} · Diferencia:{" "}
+                  <b className={preview.totalUnitPrice - apu.base.totalUnitPrice > 0 ? "text-red-600" : "text-green-700"}>
+                    {signedBs(preview.totalUnitPrice - apu.base.totalUnitPrice)}
+                  </b>
+                </div>
+                <div>
+                  Subtotal ítem ({item.quantity} {apu.unit}):{" "}
+                  <b className="whitespace-nowrap">{bs(preview.totalUnitPrice * item.quantity)}</b>
+                </div>
+                {storedDiffers && dirtyKeys.length === 0 && (
+                  <Button variant="outline" size="sm" className="w-full mt-1" disabled={saving} onClick={applyLive}>
+                    Usar este APU en el ítem
+                  </Button>
+                )}
+                {dirtyKeys.length > 0 && (
+                  <Button variant="outline" size="sm" className="w-full mt-1" disabled={saving} onClick={() => setDrafts({})}>
+                    Descartar cambios
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Sticky footer: Total APU + Guardar (mobile always; desktop also for consistency on short screens) */}
+        {apu && item && preview && (
+          <div className="sticky bottom-0 z-10 shrink-0 border-t bg-background px-3 py-2.5 md:px-6 md:py-3 flex items-center justify-between gap-3 safe-pb">
+            <div className="min-w-0">
+              <div className="text-[11px] text-muted-foreground leading-tight">
+                Total APU{dirtyKeys.length ? " (vista previa)" : ""}
+              </div>
+              <div className="text-lg md:text-xl font-bold tabular-nums whitespace-nowrap">{bs(preview.totalUnitPrice)}</div>
             </div>
+            <Button
+              size="default"
+              className="shrink-0"
+              disabled={saving || dirtyKeys.length === 0 || !apu.overridesAvailable}
+              onClick={save}
+            >
+              {saving ? "Guardando…" : dirtyKeys.length ? `Guardar (${dirtyKeys.length})` : "Guardar"}
+            </Button>
           </div>
         )}
       </DialogContent>
@@ -495,9 +726,9 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
 
 function Line({ label, value, sub, bold }: { label: string; value: number; sub?: boolean; bold?: boolean }) {
   return (
-    <div className={`flex justify-between ${sub ? "pl-3 text-muted-foreground" : ""} ${bold ? "font-semibold border-t pt-1" : ""}`}>
-      <span>{label}</span>
-      <span>{bs(value)}</span>
+    <div className={`flex justify-between gap-2 ${sub ? "pl-3 text-muted-foreground" : ""} ${bold ? "font-semibold border-t pt-1" : ""}`}>
+      <span className="min-w-0 break-words [hyphens:none]">{label}</span>
+      <span className="shrink-0 whitespace-nowrap tabular-nums">{bs(value)}</span>
     </div>
   );
 }
