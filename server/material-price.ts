@@ -22,6 +22,11 @@ import {
   type QuoteSource,
   type NetworkQuoteInput,
 } from "../shared/pricing";
+import {
+  steelBaseFromKg,
+  type SteelKgRef,
+} from "../shared/steel-kg";
+import { getSteelKgRefForMaterial } from "./steel-kg-ref";
 
 function num(v: unknown, fallback = 0): number {
   if (v == null) return fallback;
@@ -256,6 +261,8 @@ function applyCityAndMarketPolicy(
  * - Market Bot siempre visible como "MICAA Market (sin IVA)" = base × STREET_NO_INVOICE_FACTOR
  *   (derivado del base, no de WA); va al final; no se suprime si hay WA/supplier.
  * - Aplica materialsFactor de city_price_factors al Base MICAA cuando ciudad ≠ SCZ.
+ * - Acero con weight_kg: Base = peso × mediana Bs/kg de cotizaciones ≤60d
+ *   (familia+ciudad, fallback SCZ; mediana robusta reporta n). Market = base × 0.90.
  * - Procedencia (name · city · date) always; link only if premium or active ad.
  * - NEVER writes materials.price / rebase.
  */
@@ -306,11 +313,42 @@ export async function getPublicMaterialPrice(
   const { cityFactor, factorCity, materialsFactor } = await lookupMaterialsFactor(
     ciudad,
   );
+
+  // Live steel Bs/kg: weight × family+city median (≤60d quotes), fallback SCZ.
+  // Overrides stored rebasedPrice / catalog rebase for eligible steel with weight.
+  // Never writes materials.price. Market = adjustedBase × STREET_NO_INVOICE.
+  let steelKg: SteelKgRef | null = null;
+  let steelKgApplied = false;
+  if (materialWeightKg != null && materialWeightKg > 0) {
+    try {
+      steelKg = await getSteelKgRefForMaterial(
+        material.name,
+        categoryName,
+        ciudad || "Santa Cruz",
+      );
+    } catch (err) {
+      console.warn("[steel-kg] ref lookup failed", err);
+      steelKg = null;
+    }
+  }
+  if (steelKg) {
+    // Ref median is city-local when note=misma_ciudad; SCZ (or other) otherwise.
+    const liveBase = steelBaseFromKg(materialWeightKg!, steelKg.medianBskg);
+    basePrice = liveBase;
+    origin = "red_acero_kg";
+    rebaseSkipped = false;
+    steelKgApplied = true;
+    // Same-city ref already prices that city — do not re-apply materialsFactor.
+    // Fallback SCZ/otra keeps SCZ-anchored semantics → apply materialsFactor below.
+  }
+
   // Base MICAA is SCZ-anchored; scale by materialsFactor when a city factor exists.
-  const adjustedBase =
-    materialsFactor !== 1
-      ? Math.round(basePrice * materialsFactor * 100) / 100
-      : basePrice;
+  // Skip factor when live steel ref already came from the viewer city.
+  const applyCityFactor =
+    materialsFactor !== 1 && !(steelKgApplied && steelKg?.note === "misma_ciudad");
+  const adjustedBase = applyCityFactor
+    ? Math.round(basePrice * materialsFactor * 100) / 100
+    : basePrice;
 
   const quotes: QuoteRow[] = [
     {
@@ -483,6 +521,16 @@ export async function getPublicMaterialPrice(
     cityFactor,
     factorCity,
     materialsFactor,
+    steelKg: steelKgApplied && steelKg
+      ? {
+          family: steelKg.family,
+          medianBskg: steelKg.medianBskg,
+          n: steelKg.n,
+          rawN: steelKg.rawN,
+          cityUsed: steelKg.cityUsed,
+          note: steelKg.note,
+        }
+      : null,
     pRed: network.pRed,
     p25: network.p25,
     p75: network.p75,

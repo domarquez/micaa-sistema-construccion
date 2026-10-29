@@ -4,7 +4,8 @@
  * computeActivityApu(activityId, projectId?, budgetItemId?) calcula:
  *  - materiales: precio resuelto = override ítem → override proyecto → Base MICAA
  *    (Base = misma lógica que getPublicMaterialPrice: rebasedPrice ?? rebase(price),
- *    × materials_factor de city_price_factors de la ciudad del proyecto).
+ *    o acero live weight×mediana Bs/kg familia+ciudad; × materials_factor
+ *    de city_price_factors de la ciudad del proyecto salvo ref misma ciudad).
  *    Opciones: Base → cotizaciones reales de la ciudad → MICAA Market (sin IVA) → Manual.
  *  - mano de obra: labor_categories.hourly_rate × labor_factor(ciudad).
  *  - equipo: tools.unit_price × equipment_factor(ciudad).
