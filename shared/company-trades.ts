@@ -39,6 +39,10 @@ export const COMPANY_TRADES: CompanyTrade[] = [
   { slug: "quincalleria", label: "Quincallería", group: "materiales", icon: "🔩" },
   { slug: "pasto_sintetico", label: "Pasto sintético", group: "materiales", icon: "🌿" },
   { slug: "calaminas", label: "Calaminas / cubiertas", group: "materiales", icon: "🏠" },
+  { slug: "muebleria", label: "Mueblería / fábrica de muebles", group: "materiales", icon: "🛋️" },
+  { slug: "colchoneria", label: "Colchonería", group: "materiales", icon: "🛏️" },
+  { slug: "muebles_oficina", label: "Muebles de oficina", group: "materiales", icon: "🪑" },
+  { slug: "importador", label: "Importador", group: "materiales", icon: "🚢" },
   { slug: "general", label: "General / varios materiales", group: "materiales", icon: "🏪" },
 
   // —— Servicios
@@ -86,6 +90,13 @@ const ALIASES: Record<string, string> = {
   plomeria: "sanitario",
   aluminio: "ferreteria",
   ceramico: "ceramicos",
+  muebles: "muebleria",
+  fabrica_muebles: "muebleria",
+  muebleria_fabrica: "muebleria",
+  colchones: "colchoneria",
+  oficina: "muebles_oficina",
+  muebles_de_oficina: "muebles_oficina",
+  importadora: "importador",
 };
 
 export function normalizeTradeSlug(raw: string): string | null {
