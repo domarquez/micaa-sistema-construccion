@@ -75,7 +75,7 @@ async function listSuppliers(req: Request, res: Response) {
         select s.id, s.company_name as "companyName", s.business_type as "businessType", s.speciality, s.description,
                s.address, s.city, s.phone, s.whatsapp, s.website, s.facebook, s.logo_url as "logoUrl", s.logo_thumb_url as "logoThumbUrl", s.logo_format as "logoFormat",
                s.membership_type as "membershipType", s.is_verified as "isVerified", s.rating, s.review_count as "reviewCount",
-               s.source, s.categories, s.custom_trades as "customTrades", s.branches, s.price_list_url as "priceListUrl", s.phone_normalized as "phoneNormalized",
+               s.source, s.categories, s.custom_trades as "customTrades", s.associations, s.branches, s.price_list_url as "priceListUrl", s.phone_normalized as "phoneNormalized",
                coalesce(s.is_featured, false) as "isFeatured", s.featured_until as "featuredUntil", s.ad_plan as "adPlan",
                (select count(*) from user_material_prices u where u.supplier_company_id = s.id and u.is_public)::int
              + (select count(*) from material_supplier_prices m where m.supplier_id = s.id and m.is_active)::int

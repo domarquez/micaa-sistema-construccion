@@ -497,6 +497,8 @@ export const supplierCompanies = pgTable("supplier_companies", {
   categories: text("categories").array(),
   /** Free-text trades when "otro_servicio" is selected. */
   customTrades: text("custom_trades").array(),
+  /** Gremio / asociación badges (e.g. Asociado CADECOCRUZ). */
+  associations: text("associations").array(),
   branches: jsonb("branches"),
   contactStatus: text("contact_status"), // sin_contactar | contactado | respondio | no_responde | no_contactar | wa_inexistente
   priceListUrl: text("price_list_url"),

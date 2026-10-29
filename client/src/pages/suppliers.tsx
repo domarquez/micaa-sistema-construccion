@@ -23,6 +23,7 @@ type Supplier = {
   source?: string | null;
   categories?: string[] | null;
   customTrades?: string[] | null;
+  associations?: string[] | null;
   trades?: string[] | null;
   branches?: { name?: string; address?: string; phone?: string }[] | null;
   priceListUrl?: string | null;
@@ -146,6 +147,11 @@ function SupplierCard({ s }: { s: Supplier }) {
           {!s.isVerified && (
             <span className="rounded-full border border-[var(--micaa-line)] px-2 py-0.5 text-xs text-[var(--micaa-muted)]">
               sin verificar
+            </span>
+          )}
+          {(s.associations || []).includes("Asociado CADECOCRUZ") && (
+            <span className="rounded-full border border-sky-300 bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-800">
+              Asociado CADECOCRUZ
             </span>
           )}
         </div>
