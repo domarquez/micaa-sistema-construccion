@@ -41,6 +41,9 @@ function num(v: unknown): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+// Prefilter only — classifySteelFamily still decides family.
+// Must cover abbreviated catalog names like "CAÑERIA GALV." / "GALVAN."
+// (%galvaniz% alone misses those; Metales quotes #281/#282 were dropped).
 const NAME_ILIKE = [
   "%angular%",
   "%platina%",
@@ -61,6 +64,11 @@ const NAME_ILIKE = [
   "%redondo%",
   "%varilla%",
   "%galvaniz%",
+  "%galv%",
+  "%cañeria%",
+  "%caneria%",
+  "%caño%",
+  "%cano%",
 ] as const;
 
 const CAT_ILIKE = [
@@ -70,6 +78,9 @@ const CAT_ILIKE = [
   "%METAL%",
   "%ALAMBRE%",
   "%HIERRO%",
+  "%CAÑO%",
+  "%CANO%",
+  "%TUBER%",
 ] as const;
 
 async function loadSteelKgSamples(): Promise<SteelKgSample[]> {

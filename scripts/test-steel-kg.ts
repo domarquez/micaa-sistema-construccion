@@ -29,6 +29,9 @@ assert(classifySteelFamily("Barra lisa 12mm 12m") === "corrugado", "barra lisa �
 assert(classifySteelFamily("PLATINA 1/2\" x 3/16\"") === "negro_perfil", "platina → negro_perfil");
 assert(classifySteelFamily("REDONDO DE 19 mm") === "negro_perfil", "redondo herrero → negro_perfil");
 assert(classifySteelFamily("Alambre de amarre N° 16") === "alambre", "alambre");
+assert(classifySteelFamily('CAÑERIA GALV. 1 1/4" L= 6m.') === "galvanizado", "CAÑERIA GALV. abbrev → galvanizado");
+assert(classifySteelFamily('CAÑERIA GALVAN. 2" L=6 m.') === "galvanizado", "CAÑERIA GALVAN. → galvanizado");
+assert(classifySteelFamily('Cañería galvanizada SCH40 para gas 1/2" barra 5.80 m') === "galvanizado", "SCH40 galv → galvanizado");
 assert(classifySteelFamily("Electrodo 6013 1/8") === "electrodo", "electrodo");
 assert(classifySteelFamily("Tubo PVC 1/2") === null, "PVC excluded");
 assert(classifySteelFamily("Plancha inox AISI 304") === "inox", "inox");
