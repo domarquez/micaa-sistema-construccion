@@ -52,4 +52,13 @@ t("sin actividad ni fase / fase desconocida / sin lista de fases → no rompe", 
   assert.deepEqual(groupBudgetItemsByPhase(undefined), []);
 });
 
+
+t("subtotal 0 con P.U.×cant > 0 → usa cantidad×precio (heal de display)", () => {
+  const g = groupBudgetItemsByPhase([
+    { id: 1, phaseId: 1, quantity: 1, unitPrice: "12.50", subtotal: "0", activity: { phaseId: 1, phase: P(1) } },
+    { id: 2, phaseId: 1, quantity: 2, unitPrice: 10, subtotal: 0, activity: { phaseId: 1, phase: P(1) } },
+  ], phases);
+  assert.equal(g[0].total, 32.5);
+});
+
 console.log(`\n${n} tests OK`);

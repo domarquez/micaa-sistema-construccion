@@ -5,12 +5,29 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amount: number | string): string {
-  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat('es-BO', {
-    style: 'currency',
-    currency: 'BOB'
-  }).format(num);
+/** Formato Bs X,XX (sin "BOB", sin wrap). NaN → Bs 0,00. */
+export function formatCurrency(amount: number | string | null | undefined): string {
+  const raw = typeof amount === 'string' ? parseFloat(amount) : Number(amount);
+  const n = Number.isFinite(raw) ? raw : 0;
+  return `Bs ${n.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+/**
+ * Subtotal efectivo de un ítem: usa subtotal guardado; si está ~0 pero
+ * cantidad×P.U. > 0, recalcula (cubre filas con unit_price ok y subtotal 0).
+ */
+export function itemEffectiveSubtotal(item: {
+  quantity?: string | number | null;
+  unitPrice?: string | number | null;
+  subtotal?: string | number | null;
+}): number {
+  const st = Number(item?.subtotal);
+  const q = Number(item?.quantity);
+  const pu = Number(item?.unitPrice);
+  const computed = (Number.isFinite(q) && Number.isFinite(pu)) ? Math.round(q * pu * 100) / 100 : 0;
+  if (Number.isFinite(st) && Math.abs(st) > 0.0005) return Math.round(st * 100) / 100;
+  if (computed > 0.0005) return computed;
+  return Number.isFinite(st) ? Math.round(st * 100) / 100 : 0;
 }
 
 export function formatNumber(amount: number | string): string {

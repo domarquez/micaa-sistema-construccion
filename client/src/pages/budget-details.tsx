@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useParams } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ArrowLeft, Calendar, MapPin, User, FileText, Calculator, Download, Printer, ChevronDown } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { ArrowLeft, Calendar, MapPin, User, FileText, Calculator, Download, Printer, ChevronDown, Pencil } from "lucide-react";
+import { formatCurrency, formatDate, itemEffectiveSubtotal } from "@/lib/utils";
 import { groupBudgetItemsByPhase, type PhaseLike } from "@/lib/budget-phase-groups";
 import type { BudgetWithProject, BudgetItemWithActivity } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,6 +16,7 @@ import { BASE_PRICE_NOTE, TRANSPORT_LINE_LABEL, budgetTransport, transportDetail
 import { track } from "@/lib/analytics";
 import { ExpandableText } from "@/components/ui/expandable-text";
 import { SuggestedSuppliersCard } from "@/components/suggested-suppliers-card";
+import MultiphaseBudgetForm from "@/components/budgets/multi-phase-budget-form";
 
 // Helper para normalizar presupuestos temporales al formato BudgetWithProject
 function normalizeAnonymousBudget(foundBudget: any): BudgetWithProject {
@@ -65,7 +66,9 @@ export default function BudgetDetails() {
   const { id } = useParams();
   const budgetId = Number(id);
   const { isAnonymous } = useAuth();
+  const queryClient = useQueryClient();
   const [financeOpen, setFinanceOpen] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
 
   const handleGeneratePDF = async () => {
     if (!budget || !budgetItems) {
@@ -144,9 +147,9 @@ export default function BudgetDetails() {
           yPosition += 8;
         }
 
-        const quantity = typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity;
-        const unitPrice = typeof item.unitPrice === 'string' ? parseFloat(item.unitPrice) : item.unitPrice;
-        const subtotal = typeof item.subtotal === 'string' ? parseFloat(item.subtotal) : item.subtotal;
+        const quantity = typeof item.quantity === 'string' ? parseFloat(item.quantity) : Number(item.quantity);
+        const unitPrice = typeof item.unitPrice === 'string' ? parseFloat(item.unitPrice) : Number(item.unitPrice);
+        const subtotal = itemEffectiveSubtotal(item);
         totalGeneral += subtotal;
 
         // Actividad principal
@@ -353,7 +356,7 @@ export default function BudgetDetails() {
     );
   }
 
-  const totalItems = budgetItems?.reduce((sum, item) => sum + Number(item.subtotal), 0) || 0;
+  const totalItems = budgetItems?.reduce((sum, item) => sum + itemEffectiveSubtotal(item), 0) || 0;
   const { cost: transportCost, snapshot: transportSnap } = budgetTransport(budget);
 
   return (
@@ -391,10 +394,22 @@ export default function BudgetDetails() {
           </Badge>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          {!isAnonymous && (
+            <Button
+              onClick={() => setShowEditForm(true)}
+              size="sm"
+              className="btn-micaa-primary flex items-center gap-2 h-9"
+              data-testid="button-edit-budget"
+            >
+              <Pencil className="w-4 h-4" />
+              Editar
+            </Button>
+          )}
           <Button
             onClick={handleGeneratePDF}
             size="sm"
-            className="btn-micaa-primary flex items-center gap-2 h-9"
+            variant={isAnonymous ? "default" : "outline"}
+            className={`${isAnonymous ? "btn-micaa-primary" : ""} flex items-center gap-2 h-9`}
           >
             <Download className="w-4 h-4" />
             <span className="sm:hidden">PDF</span>
@@ -414,8 +429,9 @@ export default function BudgetDetails() {
       </div>
 
       {/* Project Info + Financial: siempre 1 columna en móvil */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 min-w-0">
-        <Card className="tech-card lg:col-span-2 shadow-none min-w-0 w-full border-[var(--micaa-line)]">
+      {/* flex-col en móvil (1 col forzada); grid 3 cols solo desde lg */}
+      <div className="flex flex-col gap-4 sm:gap-6 min-w-0 lg:grid lg:grid-cols-3">
+        <Card className="tech-card lg:col-span-2 shadow-none min-w-0 w-full max-w-full border-[var(--micaa-line)]">
           <CardHeader className="pb-3">
             <CardTitle className="text-base sm:text-lg">Información del Proyecto</CardTitle>
           </CardHeader>
@@ -455,21 +471,21 @@ export default function BudgetDetails() {
           </CardContent>
         </Card>
 
-        <Card className="tech-card shadow-none min-w-0 w-full border-[var(--micaa-line)]">
+        <Card className="tech-card shadow-none min-w-0 w-full max-w-full border-[var(--micaa-line)]">
           <CardHeader className="pb-3">
             <CardTitle className="font-display text-base sm:text-lg">Resumen Financiero</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-baseline justify-between gap-3 min-w-0">
+            <div className="flex items-baseline justify-between gap-2 min-w-0">
               <p className="text-sm text-muted-foreground shrink-0">Total</p>
-              <p className="measure text-xl sm:text-2xl font-bold text-[var(--micaa-accent)] text-right break-all min-w-0">
-                {formatCurrency(budget.total)}
+              <p className="measure text-base sm:text-xl font-bold text-[var(--micaa-accent)] text-right whitespace-nowrap tabular-nums shrink-0">
+                {formatCurrency(Number(budget.total) > 0.0005 ? budget.total : totalItems + transportCost)}
               </p>
             </div>
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between gap-3 min-w-0">
-                <span className="text-muted-foreground">Subtotal actividades</span>
-                <span className="font-semibold tabular-nums text-right shrink-0">{formatCurrency(totalItems)}</span>
+                <span className="text-muted-foreground min-w-0">Subtotal actividades</span>
+                <span className="font-semibold tabular-nums text-right whitespace-nowrap shrink-0">{formatCurrency(totalItems)}</span>
               </div>
               {transportCost > 0 && (
                 <div className="flex justify-between gap-3 min-w-0">
@@ -543,7 +559,7 @@ export default function BudgetDetails() {
                         <span className="ml-2 text-xs font-normal text-muted-foreground">(fase anterior)</span>
                       )}
                     </h3>
-                    <span className="font-semibold tabular-nums text-primary shrink-0">{formatCurrency(group.total)}</span>
+                    <span className="font-semibold tabular-nums text-primary shrink-0 whitespace-nowrap">{formatCurrency(group.total)}</span>
                   </div>
 
                   {/* Móvil: lista en cards */}
@@ -571,8 +587,8 @@ export default function BudgetDetails() {
                         </div>
                         <div className="flex justify-between gap-2 text-sm pt-1 border-t border-[var(--micaa-line)]">
                           <span className="text-[var(--micaa-muted)]">Subtotal</span>
-                          <span className="measure font-semibold text-[var(--micaa-accent)]">
-                            {formatCurrency(Number(item.subtotal))}
+                          <span className="measure font-semibold text-[var(--micaa-accent)] whitespace-nowrap">
+                            {formatCurrency(itemEffectiveSubtotal(item))}
                           </span>
                         </div>
                       </div>
@@ -600,7 +616,7 @@ export default function BudgetDetails() {
                               {Number(item.quantity).toLocaleString("es-BO", { maximumFractionDigits: 3 })}
                             </td>
                             <td className="measure py-2 px-2 text-right">{formatCurrency(Number(item.unitPrice))}</td>
-                            <td className="measure py-2 pl-2 text-right font-medium">{formatCurrency(Number(item.subtotal))}</td>
+                            <td className="measure py-2 pl-2 text-right font-medium whitespace-nowrap">{formatCurrency(itemEffectiveSubtotal(item))}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -631,9 +647,11 @@ export default function BudgetDetails() {
                     </div>
                   </>
                 )}
-                <p className="text-sm text-muted-foreground mt-1">
-                  Vista de solo lectura. Para cambiar cantidades o precios usá «Editar» en la lista de proyectos.
-                </p>
+                {!isAnonymous && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Podés cambiar cantidades o precios con el botón «Editar» arriba.
+                  </p>
+                )}
               </div>
             </div>
           ) : (
@@ -656,16 +674,27 @@ export default function BudgetDetails() {
 
       {/* Total sticky en móvil — Plano vivo */}
       <div className="sticky-budget-total" aria-live="polite">
-        <div>
+        <div className="min-w-0">
           <div className="l">Total del presupuesto</div>
           <div className="text-[11px] opacity-70 mt-0.5">
             {budget.phase ? budget.phase.name : "Multifase"}
           </div>
         </div>
-        <div className="v measure">
-          {formatCurrency(Number(budget.total) || totalItems + transportCost)}
+        <div className="v measure whitespace-nowrap shrink-0">
+          {formatCurrency(Number(budget.total) > 0.0005 ? Number(budget.total) : totalItems + transportCost)}
         </div>
       </div>
+
+      {showEditForm && !isAnonymous && (
+        <MultiphaseBudgetForm
+          budget={budget}
+          onClose={() => {
+            setShowEditForm(false);
+            queryClient.invalidateQueries({ queryKey: [`/api/budgets/${budgetId}`] });
+            queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+          }}
+        />
+      )}
     </div>
   );
 }

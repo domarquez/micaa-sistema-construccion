@@ -674,9 +674,10 @@ export async function saveBudgetItemPrice(
   const subtotal = round2(unitPrice * num(item.quantity));
   const cols = await getOptionalColumns();
   if (cols.has("budget_items.apu_snapshot") && cols.has("budget_items.apu_computed_at")) {
+    // Bind as text so decimal columns never get a null/0 from driver coercion.
     await db.execute(sql`
       UPDATE budget_items
-         SET unit_price = ${unitPrice}, subtotal = ${subtotal},
+         SET unit_price = ${String(unitPrice)}, subtotal = ${String(subtotal)},
              apu_snapshot = ${JSON.stringify(compactApuSnapshot(apu))}::jsonb,
              apu_computed_at = now()
        WHERE id = ${itemId}`);
