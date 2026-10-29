@@ -142,6 +142,14 @@ export default function SupplierRegistration() {
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!company) return;
+    if (!companyName.trim()) {
+      toast({
+        title: "Falta el nombre",
+        description: "Poné el nombre de tu empresa.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSaving(true);
     try {
       const res = await authFetch("/api/my-supplier-company", {
@@ -292,6 +300,22 @@ export default function SupplierRegistration() {
       </div>
 
       <form onSubmit={save} className="mt-4 space-y-4 rounded-xl border border-[var(--micaa-line)] bg-white p-5">
+        <div>
+          <label className="mb-1 block text-sm font-medium" htmlFor="miempresa-nombre">
+            Nombre de la empresa
+          </label>
+          <input
+            id="miempresa-nombre"
+            name="companyName"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            placeholder="Ej. Ferretería Los Andes"
+            className="h-11 w-full min-w-0 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
+            required
+            autoComplete="organization"
+            maxLength={120}
+          />
+        </div>
         <div>
           <label className="mb-1 block text-sm font-medium">Rubros (podés elegir varios)</label>
           <TradePicker

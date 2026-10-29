@@ -98,6 +98,14 @@ export default function AnunciarPage() {
       });
       return;
     }
+    if (!trades.length) {
+      toast({
+        title: "Elegí un rubro",
+        description: "Seleccioná al menos un rubro o servicio.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSaving(true);
     try {
       const res = await authFetch("/api/my-supplier-company", {
@@ -231,6 +239,24 @@ export default function AnunciarPage() {
           <p className="text-sm text-[var(--micaa-muted)]">
             WhatsApp verificado: <span className="text-[var(--micaa-fg)]">{user?.phone}</span>
           </p>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="empresa-nombre">
+              Nombre de la empresa
+            </label>
+            <input
+              id="empresa-nombre"
+              name="companyName"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Ej. Ferretería Los Andes"
+              className="h-11 w-full min-w-0 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
+              required
+              autoFocus
+              autoComplete="organization"
+              maxLength={120}
+            />
+          </div>
 
           <div>
             <label className="mb-1 block text-sm font-medium">
