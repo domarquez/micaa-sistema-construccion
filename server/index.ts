@@ -1,5 +1,9 @@
 import { ensureFeaturedSupplierColumns } from "./migrate-featured";
 import { ensureAnalyticsEventsTable } from "./migrate-analytics";
+import {
+  ensureExchangeRateSchema,
+  refreshExchangeRateSafe,
+} from "./exchange-rate";
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import cron from "node-cron";
@@ -59,6 +63,26 @@ app.use((req, res, next) => {
   await registerRoutes(app);
   await ensureFeaturedSupplierColumns();
   await ensureAnalyticsEventsTable();
+  await ensureExchangeRateSchema();
+  // TCO oficial BCB: al arrancar + diario 08:00 America/La_Paz + reintento 09:30
+  await refreshExchangeRateSafe("boot");
+  cron.schedule(
+    "0 8 * * *",
+    async () => {
+      log("🔄 Fetching BCB official USD rate (08:00 La Paz)...");
+      await refreshExchangeRateSafe("cron-0800");
+    },
+    { timezone: "America/La_Paz" },
+  );
+  cron.schedule(
+    "30 9 * * *",
+    async () => {
+      log("🔄 BCB rate retry (09:30 La Paz)...");
+      await refreshExchangeRateSafe("cron-0930-retry");
+    },
+    { timezone: "America/La_Paz" },
+  );
+  log("💱 BCB TCO scheduled: 08:00 + 09:30 America/La_Paz");
   
   // Initialize news data
   try {

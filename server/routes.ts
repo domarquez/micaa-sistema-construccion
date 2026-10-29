@@ -8,6 +8,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { storage as dbStorage } from './storage';
 import { getPublicMaterialPrice } from './material-price';
 import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
+import { getLatestExchangeRate, refreshExchangeRateSafe } from './exchange-rate';
 import { registerSupplierGuideRoutes, setFeatured as setSupplierFeatured } from './supplier-guide';
 import { registerSupplierCompanySelfRoutes } from './supplier-company-self';
 import { registerApuRoutes } from './apu-routes';
@@ -79,6 +80,31 @@ export async function registerRoutes(app: any) {
 
   // WhatsApp ferretería price ingest (API key, no JWT) — register early
   app.post('/api/ingest/whatsapp-price', handleWhatsappPriceIngest);
+
+  // Tipo de cambio oficial BCB (público)
+  app.get('/api/exchange-rate', async (_req: any, res: any) => {
+    try {
+      let info = await getLatestExchangeRate();
+      if (!info) {
+        info = await refreshExchangeRateSafe('api-miss');
+      }
+      if (!info) {
+        return res.status(503).json({
+          error: 'Exchange rate unavailable',
+          code: 'fx_unavailable',
+        });
+      }
+      return res.json({
+        rate: info.rate,
+        date: info.date,
+        source: info.source,
+        fetchedAt: info.fetchedAt,
+      });
+    } catch (e) {
+      console.error('GET /api/exchange-rate', e);
+      return res.status(500).json({ error: 'Failed to read exchange rate' });
+    }
+  });
   registerSupplierGuideRoutes(app);
   registerSupplierCompanySelfRoutes(app, requireAuth);
 

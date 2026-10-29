@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, decimal, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { date, pgTable, text, serial, integer, boolean, decimal, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -155,6 +155,14 @@ export const userMaterialPrices = pgTable("user_material_prices", {
   /** FK a la guía de empresas (supplier_companies). Nullable; supplierName se conserva. */
   supplierCompanyId: integer("supplier_company_id"),
   isPublic: boolean("is_public").notNull().default(false),
+  /** Moneda del precio guardado (siempre BOB tras conversión). */
+  currency: text("currency").notNull().default("BOB"),
+  /** Moneda original del ingest (p.ej. USD) cuando se convirtió. */
+  originalCurrency: text("original_currency"),
+  /** Monto original en originalCurrency (antes de convertir a BOB). */
+  originalAmount: decimal("original_amount", { precision: 14, scale: 4 }),
+  /** Tipo de cambio BCB usado para convertir a BOB. */
+  fxRate: decimal("fx_rate", { precision: 12, scale: 4 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -407,6 +415,15 @@ export const userTemplateEntitlements = pgTable("user_template_entitlements", {
 export type ProjectTemplate = typeof projectTemplates.$inferSelect;
 export type ProjectTemplateItem = typeof projectTemplateItems.$inferSelect;
 export type UserTemplateEntitlement = typeof userTemplateEntitlements.$inferSelect;
+
+/** Historial diario del TCO oficial BCB (Bs/$us). */
+export const exchangeRates = pgTable("exchange_rates", {
+  id: serial("id").primaryKey(),
+  rateDate: date("rate_date").notNull().unique(),
+  rate: decimal("rate", { precision: 12, scale: 4 }).notNull(),
+  source: text("source").notNull().default("bcb_tco"),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).defaultNow().notNull(),
+});
 
 export const priceSettings = pgTable("price_settings", {
   id: serial("id").primaryKey(),
