@@ -98,9 +98,10 @@ export default function MaterialesPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="text-[20px] font-semibold text-[var(--micaa-fg)]">Materiales</h1>
+      <h1 className="text-title-fluid text-[var(--micaa-fg)]">Materiales</h1>
+      <div className="accent-rule mt-2" />
       <PublicAdSense className="max-w-3xl" />
-      <p className="mt-1 text-sm text-[var(--micaa-muted)]">
+      <p className="mt-2 text-sm text-[var(--micaa-muted)]">
         Precios orientativos para {city}
         {materialsFactor !== 1 ? ` (×${materialsFactor.toFixed(2)} vs SCZ)` : ""}
       </p>
@@ -110,15 +111,17 @@ export default function MaterialesPage() {
           e.preventDefault();
         }}
       >
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar material…"
-          className="h-11 w-full rounded-xl border border-[var(--micaa-line)] bg-white px-4 text-base outline-none focus:border-[var(--micaa-accent)]"
-        />
+        <div className="search-micaa">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar material…"
+            aria-label="Buscar material"
+          />
+        </div>
       </form>
 
-      <div className="mt-4 divide-y divide-[var(--micaa-line)] border-t border-[var(--micaa-line)]">
+      <div className="mt-4 flex flex-col gap-2">
         {isLoading && (
           <ListSkeleton rows={6} />
         )}
@@ -129,16 +132,18 @@ export default function MaterialesPage() {
           <Link
             key={m.id}
             href={`/materiales/${m.id}`}
-            className="flex items-baseline justify-between gap-4 py-3"
+            className="row-accent flex items-center justify-between gap-3 px-4 py-3.5 pl-5 transition-colors hover:bg-black/[0.02]"
           >
             <div className="min-w-0">
-              <div className="truncate text-base">{titleCaseMaterial(m.name)}</div>
-              <div className="mt-0.5 text-sm text-[var(--micaa-muted)]">
+              <div className="line-clamp-2 text-[14.5px] font-semibold tracking-tight">
+                {titleCaseMaterial(m.name)}
+              </div>
+              <div className="mt-0.5 text-xs text-[var(--micaa-muted)]">
                 {formatUnit(m.unit)}
                 {m.category?.name ? ` · ${titleCaseMaterial(m.category.name)}` : ""}
               </div>
             </div>
-            <div className="shrink-0 text-[20px] font-medium tabular-nums">
+            <div className="measure shrink-0 text-[18px] font-semibold">
               {formatBs(priceOf(m) * materialsFactor)}
             </div>
           </Link>

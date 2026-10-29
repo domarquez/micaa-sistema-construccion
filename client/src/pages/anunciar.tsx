@@ -145,16 +145,17 @@ export default function AnunciarPage() {
   return (
     <div className="mx-auto max-w-xl px-4 py-8">
       <div className="mb-6">
-        <p className="text-sm font-medium text-[var(--micaa-accent)]">Beta abierta</p>
-        <h1 className="mt-1 text-[22px] font-semibold text-[var(--micaa-fg)]">
+        <span className="stamp">Beta abierta · gratis hasta 31 ene 2027</span>
+        <h1 className="text-title-fluid mt-3 text-[var(--micaa-fg)]">
           Registrá tu empresa en MICAA
         </h1>
+        <div className="accent-rule mt-2" />
         <p className="mt-2 text-base text-[var(--micaa-muted)]">
           {BETA_FREE_COPY}. Tu WhatsApp es la clave: sin contraseña.
         </p>
       </div>
 
-      <ul className="mb-8 space-y-2 rounded-xl border border-[var(--micaa-line)] bg-white p-4 text-sm text-[var(--micaa-fg)]">
+      <ul className="tech-card mb-8 space-y-2 p-4 text-sm text-[var(--micaa-fg)]">
         <li className="flex gap-2">
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--micaa-accent)]" />
           Aparecés en la guía{" "}
@@ -175,7 +176,7 @@ export default function AnunciarPage() {
       {authLoading || loadingCompany ? (
         <p className="text-sm text-[var(--micaa-muted)]">Cargando…</p>
       ) : company ? (
-        <div className="rounded-xl border border-[var(--micaa-line)] bg-white p-5">
+        <div className="tech-card p-5">
           <div className="flex items-start gap-3">
             <Store className="mt-0.5 h-5 w-5 text-[var(--micaa-accent)]" />
             <div>
@@ -190,7 +191,7 @@ export default function AnunciarPage() {
               <div className="mt-4 flex flex-wrap gap-2">
                 <Link
                   href="/empresas"
-                  className="inline-flex h-10 items-center rounded-lg bg-[var(--micaa-accent)] px-4 text-sm font-medium text-[var(--micaa-accent-fg)]"
+                  className="btn-micaa-primary inline-flex h-10 items-center px-4 text-sm"
                 >
                   Ver guía
                 </Link>
@@ -211,7 +212,7 @@ export default function AnunciarPage() {
           </div>
         </div>
       ) : !phoneOk ? (
-        <div className="rounded-xl border border-[var(--micaa-line)] bg-white p-5">
+        <div className="tech-card p-5">
           <div className="mb-3 flex items-center gap-2 text-base font-medium">
             <Phone className="h-4 w-4 text-[var(--micaa-accent)]" />
             Paso 1 · Verificá tu WhatsApp
@@ -230,7 +231,7 @@ export default function AnunciarPage() {
       ) : (
         <form
           onSubmit={submit}
-          className="space-y-4 rounded-xl border border-[var(--micaa-line)] bg-white p-5"
+          className="tech-card space-y-4 p-5"
         >
           <div className="flex items-center gap-2 text-base font-medium">
             <Building2 className="h-4 w-4 text-[var(--micaa-accent)]" />
@@ -297,7 +298,7 @@ export default function AnunciarPage() {
           <button
             type="submit"
             disabled={saving}
-            className="flex h-11 w-full items-center justify-center rounded-lg bg-[var(--micaa-accent)] text-base font-medium text-[var(--micaa-accent-fg)] disabled:opacity-60"
+            className="btn-micaa-primary flex h-11 w-full items-center justify-center text-base disabled:opacity-60"
           >
             {saving ? "Publicando…" : "Publicar en la guía (gratis)"}
           </button>

@@ -7,6 +7,7 @@ import { getCity } from "@/lib/city";
 import { useToast } from "@/hooks/use-toast";
 import { ListSkeleton } from "@/components/ui/states";
 import { track } from "@/lib/analytics";
+import { ExpandableText } from "@/components/ui/expandable-text";
 
 type Quote = {
   kind: "base" | "person" | "supplier";
@@ -297,10 +298,13 @@ export default function MaterialDetail() {
       <Link href="/materiales" className="text-sm text-[var(--micaa-muted)] hover:text-[var(--micaa-fg)]">
         ← Materiales
       </Link>
-      <h1 className="mt-3 text-[20px] font-semibold text-[var(--micaa-fg)]">
-        {titleCaseMaterial(data.name)}
-        <span className="font-normal text-[var(--micaa-muted)]"> · {formatUnit(data.unit)}</span>
+      <h1 className="text-title-fluid mt-3 text-[var(--micaa-fg)]">
+        <ExpandableText apu moreLabel="Ver nombre completo" lessLabel="Ver menos">
+          {titleCaseMaterial(data.name)}
+        </ExpandableText>
+        <span className="ml-1 text-base font-normal text-[var(--micaa-muted)]">· {formatUnit(data.unit)}</span>
       </h1>
+      <div className="accent-rule mt-2" />
       <p className="mt-1 text-sm text-[var(--micaa-muted)]">
         {titleCaseMaterial(data.category)}
         {data.catalogAgeDays ? ` · catálogo ${relativeDays(data.catalogAgeDays)}` : ""}
@@ -313,7 +317,7 @@ export default function MaterialDetail() {
           : ""}
       </p>
 
-      <div className="mt-6 divide-y divide-[var(--micaa-line)] border-y border-[var(--micaa-line)]">
+      <div className="mt-6 flex flex-col gap-2">
         {quotes.map((q, i) => {
           const fresh = (q.ageDays ?? 999) <= 21 && q.kind !== "base";
           const procedencia = procedenciaLine(q);
@@ -321,7 +325,7 @@ export default function MaterialDetail() {
           return (
             <label
               key={`${q.kind}-${q.supplierId ?? q.userId ?? "base"}-${i}`}
-              className="flex cursor-pointer items-start gap-3 py-3"
+              className={`row-accent flex cursor-pointer items-start gap-3 px-4 py-3.5 pl-5 ${selected === i ? "ring-1 ring-[var(--micaa-accent)] bg-[var(--micaa-accent-soft)]" : ""}`}
             >
               <input
                 type="radio"
@@ -374,7 +378,7 @@ export default function MaterialDetail() {
                     )}
                   </div>
                   <div className="shrink-0 text-right">
-                    <div className="text-[20px] font-medium tabular-nums">
+                    <div className="measure text-[18px] font-semibold">
                       {formatBs(q.price)}
                     </div>
                     {(q.weightKg ?? data.weightKg) != null &&
@@ -404,7 +408,7 @@ export default function MaterialDetail() {
       {Number.isFinite(id) && id > 0 && <MaterialSuppliers materialId={id} />}
       </div>
 
-      <aside className="mt-6 lg:sticky lg:top-20 lg:mt-10 lg:self-start lg:rounded-xl lg:border lg:border-[var(--micaa-line)] lg:bg-white lg:p-4">
+      <aside className="tech-card mt-6 p-4 lg:sticky lg:top-20 lg:mt-10 lg:self-start">
       <div className="flex items-center gap-3">
         <input
           type="number"
@@ -417,7 +421,7 @@ export default function MaterialDetail() {
         <button
           type="button"
           onClick={add}
-          className="h-10 flex-1 rounded-lg bg-[var(--micaa-accent)] px-4 text-base font-medium text-[var(--micaa-accent-fg)]"
+          className="btn-micaa-primary h-10 flex-1 px-4 text-base"
         >
           Agregar a la lista
         </button>

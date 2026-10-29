@@ -67,7 +67,7 @@ export function MicaaLogo({
     <div className={`flex items-center space-x-2 ${className}`}>
       <ConstructorIcon />
       {showText && (
-        <span className={`font-bold text-gray-700 dark:text-gray-200 ${textSizes[size]} ${textClassName}`}>
+        <span className={`font-display font-bold tracking-tight text-[var(--micaa-fg)] ${textSizes[size]} ${textClassName}`}>
           MICAA
         </span>
       )}

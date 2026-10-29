@@ -88,7 +88,7 @@ function SupplierPrices({ id }: { id: number }) {
           ) : (
             <span className="min-w-0 truncate">{p.materialName}</span>
           )}
-          <span className="shrink-0 tabular-nums">
+          <span className="measure shrink-0">
             {formatBs(p.price)}
             {p.unit ? <span className="text-[var(--micaa-muted)]"> / {formatUnit(p.unit)}</span> : null}
           </span>
@@ -104,17 +104,17 @@ function SupplierCard({ s }: { s: Supplier }) {
   const cats = supplierCategories(s);
   const branches = (s.branches ?? []).filter((b) => b && (b.name || b.address));
   return (
-    <li className="rounded-xl border border-[var(--micaa-line)] bg-white p-4">
+    <li className="tech-card p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-[var(--micaa-fg)]">{s.companyName}</h2>
+          <h2 className="font-display text-base font-semibold tracking-tight text-[var(--micaa-fg)]">{s.companyName}</h2>
           <p className="mt-0.5 text-sm text-[var(--micaa-muted)]">
             {[s.city, branches.length > 1 ? `${branches.length} sucursales` : s.address].filter(Boolean).join(" · ")}
           </p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           {s.featuredActive && (
-            <span className="rounded-full bg-[var(--micaa-accent)] px-2 py-0.5 text-xs font-medium text-white">
+            <span className="stamp !rounded-full !border-solid bg-[var(--micaa-accent)] !text-white !border-transparent px-2 py-0.5 text-xs font-medium">
               Destacado
             </span>
           )}
@@ -207,8 +207,9 @@ export default function Suppliers() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-[20px] font-semibold text-[var(--micaa-fg)]">Empresas</h1>
-      <p className="mt-1 text-base text-[var(--micaa-muted)]">
+      <h1 className="text-title-fluid text-[var(--micaa-fg)]">Empresas</h1>
+      <div className="accent-rule mt-2" />
+      <p className="mt-2 text-base text-[var(--micaa-muted)]">
         Buscá proveedores de materiales y mirá los precios que cotizaron.
       </p>
       <p className="mt-2 text-sm">
