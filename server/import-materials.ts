@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { db } from './db';
 import { materials } from '../shared/schema';
+import { cleanMaterialName } from '../shared/material-name';
 
 interface MaterialData {
   IdClasMaterial: number;
@@ -58,6 +59,12 @@ export async function importMaterialsFromSQL() {
         for (let j = 0; j < rowData.length; j++) {
           const char = rowData[j];
           
+          // MySQL escapes quotes as \' or \"; treat as literal content
+          if (char === '\\' && inQuotes && j + 1 < rowData.length) {
+            current += rowData[j + 1];
+            j++;
+            continue;
+          }
           if ((char === '"' || char === "'") && !inQuotes) {
             inQuotes = true;
             quoteChar = char;
@@ -96,7 +103,7 @@ export async function importMaterialsFromSQL() {
           try {
             await db.insert(materials).values({
               categoryId: categoryId,
-              name: materialData.Descripcion.substring(0, 100),
+              name: cleanMaterialName(materialData.Descripcion).substring(0, 100),
               unit: materialData.Unidad,
               price: materialData.LP.toString(),
               description: `Importado de archivo SQL - Categoría ${categoryId}`

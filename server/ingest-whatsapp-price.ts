@@ -15,6 +15,7 @@ import {
   userMaterialPrices,
   priceIngestKeys,
 } from "../shared/schema";
+import { cleanMaterialName } from "../shared/material-name";
 
 const UNIT_MAP: Record<string, string> = {
   m2: "m2",
@@ -586,7 +587,7 @@ async function resolveMaterial(
     .insert(materials)
     .values({
       categoryId,
-      name: item.name!,
+      name: cleanMaterialName(item.name!),
       unit: item.unit,
       price: item.price.toFixed(2),
       description: "stub",

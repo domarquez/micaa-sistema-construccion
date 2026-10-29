@@ -1,3 +1,4 @@
+import { cleanMaterialName } from "@shared/material-name";
 /**
  * Formateadores de presentación compartidos (no tocan la base de datos).
  * Unidades, precios en Bs (es-BO, 2 decimales), fechas relativas y acentos.
@@ -68,7 +69,7 @@ const ACCENT_FIXES: [RegExp, string][] = [
 /** Mayúscula inicial + acentos comunes faltantes (sólo visualización). */
 export function displayName(name?: string | null): string {
   if (!name) return "";
-  let s = name.toLowerCase();
+  let s = cleanMaterialName(name).toLowerCase();
   for (const [re, rep] of ACCENT_FIXES) s = s.replace(re, rep);
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
