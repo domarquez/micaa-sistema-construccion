@@ -13,8 +13,9 @@ import { maskPhone } from "./phone";
 export const OTP_TTL_MS = 5 * 60_000;
 export const OTP_MAX_ATTEMPTS = 5;
 export const OTP_COOLDOWN_MS = 60_000;
-export const OTP_MAX_PER_PHONE_HOUR = 3;
-export const OTP_MAX_PER_IP_HOUR = 10;
+/** Beta: 8/hora (antes 3). Override con OTP_MAX_PER_PHONE_HOUR. */
+export const OTP_MAX_PER_PHONE_HOUR = Math.max(1, Number(process.env.OTP_MAX_PER_PHONE_HOUR) || 8);
+export const OTP_MAX_PER_IP_HOUR = Math.max(1, Number(process.env.OTP_MAX_PER_IP_HOUR) || 20);
 
 export function otpMessage(code: string): string {
   return `Tu código MICAA es ${code}. Vence en 5 minutos. Si no lo pediste, ignóralo.`;

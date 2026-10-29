@@ -10,13 +10,14 @@ const toOtp = (r: any): OtpRow => ({ ...r, purpose: r.purpose, channel: r.channe
 
 export const dbOtpStore: OtpStore = {
   async countByPhoneSince(phone, since) {
+    // Solo envíos que no fallaron: un fallo de Evolution no debe quemar la cuota.
     const [r] = await db.select({ n: sql<number>`count(*)::int` }).from(authOtpCodes)
-      .where(and(eq(authOtpCodes.phone, phone), gte(authOtpCodes.createdAt, since)));
+      .where(and(eq(authOtpCodes.phone, phone), gte(authOtpCodes.createdAt, since), ne(authOtpCodes.sendStatus, "failed")));
     return Number(r?.n || 0);
   },
   async countByIpSince(ip, since) {
     const [r] = await db.select({ n: sql<number>`count(*)::int` }).from(authOtpCodes)
-      .where(and(eq(authOtpCodes.requestIp, ip), gte(authOtpCodes.createdAt, since)));
+      .where(and(eq(authOtpCodes.requestIp, ip), gte(authOtpCodes.createdAt, since), ne(authOtpCodes.sendStatus, "failed")));
     return Number(r?.n || 0);
   },
   async lastCreatedAt(phone) {
