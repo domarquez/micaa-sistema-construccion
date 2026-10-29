@@ -103,8 +103,12 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   const [selectedPhases, setSelectedPhases] = useState<number[]>([]);
   const [apuTarget, setApuTarget] = useState<{ phaseId: number; localId: string; dbId: number } | null>(null);
   const [openPhases, setOpenPhases] = useState<string[]>([]);
+  /** Presupuesto borrador creado al abrir APU antes del «Guardar» final. */
+  const [draftBudgetId, setDraftBudgetId] = useState<number | null>(budget?.id ?? null);
+  const [apuOpening, setApuOpening] = useState(false);
 
   const isEditing = !!budget;
+  const persistedBudgetId = budget?.id ?? draftBudgetId;
 
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectFormSchema),
@@ -489,11 +493,11 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       // USUARIOS AUTENTICADOS: Guardar en servidor
       let budgetToUse;
 
-      if (isEditing && budget) {
-        // MODO EDICIÓN: Actualizar presupuesto existente
-        console.log("Actualizando presupuesto existente:", budget.id, "con total:", totalGeneral);
+      if (persistedBudgetId) {
+        // MODO EDICIÓN / borrador APU: Actualizar presupuesto existente
+        console.log("Actualizando presupuesto existente:", persistedBudgetId, "con total:", totalGeneral);
         
-        const budgetResponse = await apiRequest("PUT", `/api/budgets/${budget.id}`, {
+        const budgetResponse = await apiRequest("PUT", `/api/budgets/${persistedBudgetId}`, {
           total: totalGeneral,
           status: "active"
         });
@@ -515,7 +519,16 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
             if (item.dbId && item.activityId > 0 && item.quantity > 0) keptIds.add(item.dbId);
           }
         }
-        const originalItems: any[] = (budgetData as any)?.items || [];
+        let originalItems: any[] = (budgetData as any)?.items || [];
+        if (persistedBudgetId && originalItems.length === 0) {
+          try {
+            const snap = await apiRequest("GET", `/api/budgets/${persistedBudgetId}`);
+            if (snap.ok) {
+              const data = await snap.json();
+              originalItems = data.items || [];
+            }
+          } catch { /* seguir con lista vacía */ }
+        }
         for (const orig of originalItems) {
           if (!keptIds.has(orig.id)) {
             await apiRequest("DELETE", `/api/budget-items/${orig.id}`);
@@ -540,13 +553,14 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         
         budgetToUse = await budgetResponse.json();
         console.log("Presupuesto creado:", budgetToUse);
+        if (budgetToUse?.id) setDraftBudgetId(budgetToUse.id);
       }
 
       // Crear / actualizar los elementos del presupuesto
       let itemsCreated = 0;
       for (const phaseData of phases) {
         for (const item of phaseData.items) {
-          if (isEditing && item.dbId && item.activityId > 0 && item.quantity > 0) {
+          if (persistedBudgetId && item.dbId && item.activityId > 0 && item.quantity > 0) {
             await apiRequest("PUT", `/api/budget-items/${item.dbId}`, {
               activityId: item.activityId,
               phaseId: item.storedPhaseId ?? phaseData.phaseId,
@@ -594,7 +608,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/budgets/${budget?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/budgets/${persistedBudgetId || budget?.id}`] });
       toast({
         title: isEditing ? "Presupuesto actualizado" : "Presupuesto guardado",
         description: `Se ${isEditing ? 'actualizó' : 'creó'} el presupuesto con ${phases.filter(p => p.items.length > 0).length} fases correctamente.`,
@@ -609,6 +623,87 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       });
     }
   });
+
+  /** Abre el APU: si el ítem aún no está en el servidor, guarda un borrador y luego abre el diálogo. Nunca es un enlace muerto. */
+  const openApuForItem = async (phaseId: number, item: BudgetItemData) => {
+    if (!item.activityId) {
+      toast({ title: "Elegí una actividad", description: "Seleccioná la actividad antes de ver el APU.", variant: "destructive" });
+      return;
+    }
+    if (isAnonymous) {
+      toast({
+        title: "Registrate para ajustar el APU",
+        description: "En modo prueba el APU se calcula al guardar; con cuenta podés verlo y ajustar insumos.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!currentProject?.id) {
+      toast({ title: "Creá el proyecto primero", description: "Completá nombre y ciudad y tocá Crear Proyecto.", variant: "destructive" });
+      return;
+    }
+    if (item.dbId) {
+      setApuTarget({ phaseId, localId: item.id, dbId: item.dbId });
+      return;
+    }
+    setApuOpening(true);
+    try {
+      let budgetId = persistedBudgetId;
+      if (!budgetId) {
+        const totalGeneral = phases.reduce((sum, phase) => sum + phase.total, 0);
+        const budgetResponse = await apiRequest("POST", "/api/budgets", {
+          projectId: currentProject.id,
+          phaseId: null,
+          total: totalGeneral,
+          status: "draft",
+        });
+        if (!budgetResponse.ok) {
+          throw new Error(await budgetResponse.text());
+        }
+        const createdBudget = await budgetResponse.json();
+        budgetId = createdBudget.id;
+        setDraftBudgetId(budgetId);
+      }
+      const itemResponse = await apiRequest("POST", "/api/budget-items", {
+        budgetId,
+        activityId: item.activityId,
+        phaseId,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        subtotal: item.subtotal,
+        manualUnitPrice: !!item.priceManual,
+      });
+      if (!itemResponse.ok) {
+        throw new Error(await itemResponse.text());
+      }
+      const createdItem = await itemResponse.json();
+      const newDbId = createdItem.id as number;
+      const livePrice = createdItem.unitPrice != null ? Number(createdItem.unitPrice) : item.unitPrice;
+      setPhases((prev) =>
+        prev.map((p) => {
+          if (p.phaseId !== phaseId) return p;
+          const items = p.items.map((it) => {
+            if (it.id !== item.id) return it;
+            const up = Number.isFinite(livePrice) ? livePrice : it.unitPrice;
+            return { ...it, dbId: newDbId, unitPrice: up, subtotal: it.quantity * up };
+          });
+          return { ...p, items, total: items.reduce((s, i) => s + i.subtotal, 0) };
+        }),
+      );
+      queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
+      setApuTarget({ phaseId, localId: item.id, dbId: newDbId });
+      toast({ title: "Borrador listo", description: "Podés ver y ajustar el APU de este ítem." });
+    } catch (e: any) {
+      console.error("openApuForItem", e);
+      toast({
+        title: "No se pudo abrir el APU",
+        description: String(e?.message || e || "Intentá de nuevo"),
+        variant: "destructive",
+      });
+    } finally {
+      setApuOpening(false);
+    }
+  };
 
   const addPhase = (phaseId: number) => {
     if (selectedPhases.includes(phaseId)) {
@@ -953,16 +1048,22 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                   <div className="mb-4">
                     <ActivitySearchPicker phases={constructionPhases} onPick={addActivityFromSearch} />
                   </div>
-                  <button
-                    type="button"
-                    className="text-sm text-muted-foreground hover:text-foreground mb-2"
-                    onClick={() => setShowPhaseButtons((v) => !v)}
-                    aria-expanded={showPhaseButtons}
-                  >
-                    {showPhaseButtons ? "Ocultar fases vacías" : "Avanzado: agregar una fase vacía"}
-                  </button>
+                  <div className="mb-2 min-w-0">
+                    <button
+                      type="button"
+                      className="text-sm text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowPhaseButtons((v) => !v)}
+                      aria-expanded={showPhaseButtons}
+                      data-testid="toggle-empty-phases"
+                    >
+                      {showPhaseButtons ? "Ocultar fases vacías" : "Avanzado: agregar una fase vacía"}
+                    </button>
+                    <p className="mt-0.5 text-xs text-muted-foreground leading-snug">
+                      Lo habitual es buscar o explorar actividades arriba; esto solo agrega una fase sin ítems.
+                    </p>
+                  </div>
                   {showPhaseButtons && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
+                  <div className="grid grid-cols-1 min-[390px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
                     {constructionPhases?.map((phase) => (
                       <Button
                         key={phase.id}
@@ -970,9 +1071,10 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                         size="sm"
                         onClick={() => addPhase(phase.id)}
                         disabled={selectedPhases.includes(phase.id)}
+                        className="h-auto min-w-0 whitespace-normal text-left justify-start py-2"
                       >
-                        <Plus className="w-4 h-4 mr-1" />
-                        {phase.name}
+                        <Plus className="w-4 h-4 mr-1 shrink-0" />
+                        <span className="min-w-0 break-words">{phase.name}</span>
                       </Button>
                     ))}
                   </div>
@@ -1014,19 +1116,29 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                           </div>
                         </AccordionTrigger>
                         <AccordionContent>
-                          <div className="px-6 pb-4 space-y-4">
-                            {/* Elementos de la fase */}
-                            {phaseData.items.map((item, index) => (
-                              <div key={item.id} className="grid grid-cols-12 gap-2 items-center bg-gray-50 p-3 rounded-lg">
-                                {/* fila del ítem */}
-                                <div className="col-span-4">
+                          <div className="px-3 sm:px-6 pb-4 space-y-3 min-w-0">
+                            {/* Elementos de la fase — móvil: nombre completo + campos etiquetados debajo */}
+                            {phaseData.items.map((item) => {
+                              const unit = item.activity?.unit || allActivities?.find((a) => a.id === item.activityId)?.unit || "—";
+                              const activityName =
+                                item.activity?.name ||
+                                allActivities?.find((a) => a.id === item.activityId)?.name ||
+                                "";
+                              return (
+                              <div
+                                key={item.id}
+                                className="min-w-0 space-y-2 rounded-lg border border-border/60 bg-gray-50 p-3"
+                                data-testid={`budget-item-row-${item.id}`}
+                              >
+                                <div className="min-w-0 space-y-1">
+                                  <label className="text-xs font-medium text-muted-foreground">Actividad</label>
                                   <select
                                     value={item.activityId}
                                     onChange={(e) => updateItemInPhase(phaseData.phaseId, item.id, 'activityId', parseInt(e.target.value) || 0)}
-                                    className="w-full p-2 border rounded text-sm"
+                                    className="w-full min-w-0 p-2 border rounded text-sm"
+                                    aria-label="Actividad"
                                   >
                                     <option value={0}>Seleccionar actividad...</option>
-                                    {/* Show current activity if it's a custom activity */}
                                     {item.activity && !allActivities.find(a => a.id === item.activityId) && (
                                       <option key={item.activity.id} value={item.activity.id} style={{backgroundColor: '#dcfce7'}}>
                                         {item.activity.name}
@@ -1040,75 +1152,102 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                                         </option>
                                       ))}
                                   </select>
+                                  {activityName ? (
+                                    <p className="text-sm font-medium leading-snug break-words text-foreground">
+                                      {activityName}
+                                    </p>
+                                  ) : null}
                                 </div>
-                                <div className="col-span-2">
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    value={item.quantity}
-                                    onChange={(e) => updateItemInPhase(phaseData.phaseId, item.id, 'quantity', parseFloat(e.target.value) || 0)}
-                                    placeholder="Cantidad"
-                                    className="text-sm"
-                                  />
-                                </div>
-                                <div className="col-span-2">
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    value={item.unitPrice}
-                                    onChange={(e) => updateItemInPhase(phaseData.phaseId, item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                                    placeholder="Precio Unit."
-                                    className="text-sm"
-                                  />
-                                </div>
-                                <div className="col-span-2">
-                                  <Input
-                                    type="number"
-                                    value={item.subtotal.toFixed(2)}
-                                    disabled
-                                    className="text-sm bg-gray-100"
-                                  />
-                                </div>
-                                <div className="col-span-2 flex gap-1">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => addItemToPhase(phaseData.phaseId)}
-                                  >
-                                    <Plus className="w-4 h-4" />
-                                  </Button>
-                                  {(phaseData.items.length > 1 || item.activityId > 0) && (
+
+                                <div className="grid grid-cols-2 gap-2 min-[480px]:grid-cols-4 sm:grid-cols-12 sm:items-end min-w-0">
+                                  <div className="min-w-0 sm:col-span-2">
+                                    <label className="mb-1 block text-xs font-medium text-muted-foreground">Cantidad</label>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      inputMode="decimal"
+                                      value={item.quantity}
+                                      onChange={(e) => updateItemInPhase(phaseData.phaseId, item.id, 'quantity', parseFloat(e.target.value) || 0)}
+                                      className="text-sm min-w-0"
+                                      aria-label="Cantidad"
+                                    />
+                                  </div>
+                                  <div className="min-w-0 sm:col-span-2">
+                                    <label className="mb-1 block text-xs font-medium text-muted-foreground">Unidad</label>
+                                    <div className="flex h-9 items-center rounded-md border bg-white px-2 text-sm text-muted-foreground">
+                                      {unit}
+                                    </div>
+                                  </div>
+                                  <div className="min-w-0 sm:col-span-3">
+                                    <label className="mb-1 block text-xs font-medium text-muted-foreground">P.U. Bs</label>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      inputMode="decimal"
+                                      value={item.unitPrice}
+                                      onChange={(e) => updateItemInPhase(phaseData.phaseId, item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                                      className="text-sm min-w-0"
+                                      aria-label="Precio unitario en Bs"
+                                    />
+                                  </div>
+                                  <div className="min-w-0 sm:col-span-3">
+                                    <label className="mb-1 block text-xs font-medium text-muted-foreground">Subtotal</label>
+                                    <Input
+                                      type="text"
+                                      value={item.subtotal.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                      disabled
+                                      className="text-sm bg-gray-100 min-w-0"
+                                      aria-label="Subtotal"
+                                    />
+                                  </div>
+                                  <div className="col-span-2 sm:col-span-2 flex gap-1 items-end justify-end">
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      onClick={() => removeItemFromPhase(phaseData.phaseId, item.id)}
-                                      className="text-red-500"
-                                      title="Quitar ítem"
+                                      type="button"
+                                      onClick={() => addItemToPhase(phaseData.phaseId)}
+                                      title="Agregar ítem"
+                                      aria-label="Agregar ítem"
                                     >
-                                      <Trash2 className="w-4 h-4" />
+                                      <Plus className="w-4 h-4" />
                                     </Button>
-                                  )}
+                                    {(phaseData.items.length > 1 || item.activityId > 0) && (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        type="button"
+                                        onClick={() => removeItemFromPhase(phaseData.phaseId, item.id)}
+                                        className="text-red-500"
+                                        title="Quitar ítem"
+                                        aria-label="Quitar ítem"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    )}
+                                  </div>
                                 </div>
+
                                 {item.activityId > 0 && !isAnonymous && (
-                                  <div className="col-span-12 flex items-center gap-2 text-xs">
+                                  <div className="flex flex-wrap items-center gap-2 pt-1 text-xs min-w-0">
                                     <Button
                                       type="button"
                                       size="sm"
                                       variant="link"
                                       className="h-auto p-0 text-xs"
-                                      disabled={!item.dbId}
-                                      title={item.dbId ? "Ver el análisis de precio unitario y elegir precios por insumo" : "Guardá el presupuesto para ajustar el APU de este ítem"}
-                                      onClick={() => item.dbId && setApuTarget({ phaseId: phaseData.phaseId, localId: item.id, dbId: item.dbId })}
+                                      disabled={apuOpening}
+                                      title="Ver el análisis de precio unitario y elegir precios por insumo"
+                                      onClick={() => openApuForItem(phaseData.phaseId, item)}
+                                      data-testid={`btn-open-apu-${item.id}`}
                                     >
                                       <Calculator className="w-3.5 h-3.5 mr-1" />
-                                      Ver / ajustar APU
+                                      {apuOpening && !item.dbId ? "Abriendo APU…" : "Ver / ajustar APU"}
                                     </Button>
-                                    {!item.dbId && <span className="text-muted-foreground">(guarda el presupuesto para ajustarlo)</span>}
                                     {item.priceManual && <Badge variant="outline" className="text-xs">P.U. manual</Badge>}
                                   </div>
                                 )}
                               </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </AccordionContent>
                       </Card>
@@ -1131,20 +1270,20 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
         {/* Footer */}
         <Separator />
-        <div className="flex justify-between items-center">
-          <Button variant="outline" onClick={onClose}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center min-w-0">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto order-3 sm:order-1">
             Cancelar
           </Button>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col min-[390px]:flex-row items-stretch min-[390px]:items-center gap-2 sm:gap-4 order-1 sm:order-2 min-w-0">
             {phases.length > 0 && (
-              <div className="text-lg font-semibold">
+              <div className="text-base sm:text-lg font-semibold tabular-nums text-center min-[390px]:text-left">
                 Total: Bs {grandTotal.toLocaleString('es-BO', { minimumFractionDigits: 2 })}
               </div>
             )}
             <Button 
               onClick={() => saveBudgetMutation.mutate()}
               disabled={!currentProject || phases.length === 0 || saveBudgetMutation.isPending}
-              className="bg-primary hover:bg-primary-variant"
+              className="bg-primary hover:bg-primary-variant w-full min-[390px]:w-auto"
             >
               {saveBudgetMutation.isPending ? "Guardando..." : isAnonymous ? "Crear Presupuesto (Temporal)" : "Guardar Presupuesto"}
             </Button>
