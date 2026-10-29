@@ -4,6 +4,9 @@ import { Link } from "wouter";
 import { formatBs, formatUnit } from "@/lib/format";
 import { PublicAdSense } from "@/components/ads/AdSenseSlot";
 import { track } from "@/lib/analytics";
+import { waMicaaLink } from "@/lib/wa-micaa";
+import { TradePicker } from "@/components/trade-picker";
+import { tradeLabel, tradeIcon, tradeBySlug, type TradeGroup } from "@shared/company-trades";
 
 type Supplier = {
   id: number;
@@ -19,6 +22,8 @@ type Supplier = {
   isVerified: boolean;
   source?: string | null;
   categories?: string[] | null;
+  customTrades?: string[] | null;
+  trades?: string[] | null;
   branches?: { name?: string; address?: string; phone?: string }[] | null;
   priceListUrl?: string | null;
   phoneNormalized?: string | null;
@@ -26,6 +31,8 @@ type Supplier = {
   isFeatured?: boolean;
   featuredActive?: boolean;
   adPlan?: string | null;
+  logoUrl?: string | null;
+  logoThumbUrl?: string | null;
 };
 
 type SupplierPrice = {
@@ -35,6 +42,7 @@ type SupplierPrice = {
   unit?: string | null;
   city?: string | null;
   updatedAt?: string | null;
+  kind?: string | null;
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -58,17 +66,17 @@ const CATEGORY_LABELS: Record<string, string> = {
   general: "General",
 };
 
-const catLabel = (c: string) => CATEGORY_LABELS[c.toLowerCase()] ?? c;
+const catLabel = (c: string) => tradeLabel(c.toLowerCase()) || CATEGORY_LABELS[c.toLowerCase()] || c;
 
 function supplierCategories(s: Supplier): string[] {
-  const list = (s.categories ?? []).filter(Boolean);
+  const list = (s.trades ?? s.categories ?? []).filter(Boolean) as string[];
   if (list.length) return list;
   return s.speciality ? [s.speciality] : [];
 }
 
 function waLink(s: Supplier): string | null {
   const p = s.phoneNormalized || (s.whatsapp || "").replace(/\D/g, "");
-  return p && /^591[67]\d{7}$/.test(p) ? `https://wa.me/${p}` : null;
+  return waMicaaLink(p, s.companyName);
 }
 
 function SupplierPrices({ id }: { id: number }) {
@@ -91,6 +99,9 @@ function SupplierPrices({ id }: { id: number }) {
           <span className="measure shrink-0">
             {formatBs(p.price)}
             {p.unit ? <span className="text-[var(--micaa-muted)]"> / {formatUnit(p.unit)}</span> : null}
+            {(p as any).kind === "servicio" ? (
+              <span className="ml-1 text-[10px] uppercase text-[var(--micaa-muted)]">serv.</span>
+            ) : null}
           </span>
         </li>
       ))}
@@ -106,16 +117,30 @@ function SupplierCard({ s }: { s: Supplier }) {
   return (
     <li className="tech-card p-4">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="flex min-w-0 items-start gap-3">
+          {(s.logoThumbUrl || s.logoUrl) ? (
+            <img
+              src={s.logoThumbUrl || s.logoUrl || ""}
+              alt=""
+              className="h-12 w-12 shrink-0 rounded-lg object-cover border border-[var(--micaa-line)] bg-white"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[var(--micaa-line)] bg-[var(--micaa-accent-soft,#fff3e8)] text-sm font-semibold text-[var(--micaa-accent)]">
+              {(s.companyName || "?").slice(0, 1).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0">
           <h2 className="font-display text-base font-semibold tracking-tight text-[var(--micaa-fg)]">{s.companyName}</h2>
           <p className="mt-0.5 text-sm text-[var(--micaa-muted)]">
             {[s.city, branches.length > 1 ? `${branches.length} sucursales` : s.address].filter(Boolean).join(" · ")}
           </p>
+          </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           {s.featuredActive && (
             <span className="stamp !rounded-full !border-solid bg-[var(--micaa-accent)] !text-white !border-transparent px-2 py-0.5 text-xs font-medium">
-              Destacado
+              Destacada
             </span>
           )}
           {!s.isVerified && (
@@ -129,14 +154,26 @@ function SupplierCard({ s }: { s: Supplier }) {
         <div className="mt-2 flex flex-wrap gap-1.5">
           {cats.map((c) => (
             <span key={c} className="rounded-full bg-[var(--micaa-accent-soft,#fff3e8)] px-2 py-0.5 text-xs text-[var(--micaa-accent)]">
+              <span className="mr-0.5" aria-hidden>{tradeIcon(c)}</span>
               {catLabel(c)}
+            </span>
+          ))}
+          {(s.customTrades || []).map((c) => (
+            <span key={`custom-${c}`} className="rounded-full border border-[var(--micaa-line)] px-2 py-0.5 text-xs text-[var(--micaa-muted)]">
+              {c}
             </span>
           ))}
         </div>
       )}
       <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
         {wa && (
-          <a href={wa} target="_blank" rel="noreferrer" className="font-medium text-[var(--micaa-accent)]">
+          <a
+            href={wa}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-[var(--micaa-accent)]"
+            onClick={() => track("whatsapp_click", { supplierId: s.id, name: s.companyName, source: "empresas" })}
+          >
             WhatsApp
           </a>
         )}
@@ -167,7 +204,7 @@ function SupplierCard({ s }: { s: Supplier }) {
             }}
             className="ml-auto text-[var(--micaa-fg)] underline-offset-2 hover:underline"
           >
-            {open ? "Ocultar precios" : `Ver precios (${s.priceCount})`}
+            {open ? "Ocultar precios" : `Ver precios / servicios (${s.priceCount})`}
           </button>
         )}
       </div>
@@ -181,6 +218,7 @@ export default function Suppliers() {
   const [city, setCity] = useState("");
   const [cat, setCat] = useState("");
   const [onlyPrices, setOnlyPrices] = useState(false);
+  const [filterGroup, setFilterGroup] = useState<TradeGroup | "all">("all");
 
   const { data: suppliers = [], isLoading } = useQuery<Supplier[]>({ queryKey: ["/api/public/suppliers"] });
 
@@ -195,13 +233,19 @@ export default function Suppliers() {
 
   const q = search.trim().toLowerCase();
   const filtered = suppliers
-    .filter(
-      (s) =>
+    .filter((s) => {
+      const sc = supplierCategories(s);
+      const groupOk =
+        filterGroup === "all" ||
+        sc.some((c) => tradeBySlug(c)?.group === filterGroup);
+      return (
+        groupOk &&
         (!q || s.companyName.toLowerCase().includes(q) || (s.description ?? "").toLowerCase().includes(q)) &&
         (!city || s.city === city) &&
-        (!cat || supplierCategories(s).includes(cat)) &&
-        (!onlyPrices || s.priceCount > 0),
-    )
+        (!cat || sc.includes(cat)) &&
+        (!onlyPrices || s.priceCount > 0)
+      );
+    })
     .slice()
     .sort((a, b) => Number(!!b.featuredActive) - Number(!!a.featuredActive));
 
@@ -210,7 +254,7 @@ export default function Suppliers() {
       <h1 className="text-title-fluid text-[var(--micaa-fg)]">Empresas</h1>
       <div className="accent-rule mt-2" />
       <p className="mt-2 text-base text-[var(--micaa-muted)]">
-        Buscá proveedores de materiales y mirá los precios que cotizaron.
+        Buscá proveedores de materiales y empresas de servicios (arquitectura, carpintería, CNC, ploteo…) con precios publicados.
       </p>
       <p className="mt-2 text-sm">
         <Link href="/anunciar" className="font-medium text-[var(--micaa-accent)] hover:underline">
@@ -219,7 +263,7 @@ export default function Suppliers() {
       </p>
       <PublicAdSense className="mt-4" />
 
-      <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-[1fr_12rem_14rem]">
+      <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-[1fr_12rem]">
         <input
           className="h-10 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
           placeholder="Buscar empresa…"
@@ -236,16 +280,19 @@ export default function Suppliers() {
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
-        <select
-          className="h-10 rounded-lg border border-[var(--micaa-line)] px-3 text-base"
-          value={cat}
-          onChange={(e) => setCat(e.target.value)}
-        >
-          <option value="">Todos los rubros</option>
-          {cats.map((c) => (
-            <option key={c} value={c}>{catLabel(c)}</option>
-          ))}
-        </select>
+      </div>
+      <div className="mt-3">
+        <TradePicker
+          mode="filter"
+          selected={cat ? [cat] : []}
+          customTrades={[]}
+          activeGroup={filterGroup}
+          onGroupChange={(g) => {
+            setFilterGroup(g);
+            setCat("");
+          }}
+          onChange={({ trades }) => setCat(trades[0] || "")}
+        />
       </div>
       <label className="mt-3 flex items-center gap-2 text-sm text-[var(--micaa-muted)]">
         <input type="checkbox" className="h-4 w-4 shrink-0 accent-[var(--micaa-accent)]" checked={onlyPrices} onChange={(e) => setOnlyPrices(e.target.checked)} />

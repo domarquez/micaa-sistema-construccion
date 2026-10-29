@@ -4,6 +4,7 @@ import {
   ensureExchangeRateSchema,
   refreshExchangeRateSafe,
 } from "./exchange-rate";
+import { ensureCompanyProfileSchema, ensureCompanyClaimSchema } from "./company-features";
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import cron from "node-cron";
@@ -64,6 +65,8 @@ app.use((req, res, next) => {
   await ensureFeaturedSupplierColumns();
   await ensureAnalyticsEventsTable();
   await ensureExchangeRateSchema();
+  await ensureCompanyProfileSchema();
+  await ensureCompanyClaimSchema();
   // TCO oficial BCB: al arrancar + diario 08:00 America/La_Paz + reintento 09:30
   await refreshExchangeRateSafe("boot");
   cron.schedule(

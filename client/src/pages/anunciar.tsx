@@ -8,28 +8,17 @@ import { queryClient } from "@/lib/queryClient";
 import { CITY_LIST, getCity, type MicaaCity } from "@/lib/city";
 import { BETA_FREE_COPY, BETA_FREE_UNTIL_LABEL } from "@/lib/micaa-contact";
 import { track, setAnalyticsUser } from "@/lib/analytics";
+import { TradePicker } from "@/components/trade-picker";
 
-const RUBROS: { value: string; label: string }[] = [
-  { value: "ferreteria", label: "Ferretería" },
-  { value: "cemento", label: "Cemento / hormigón" },
-  { value: "acero", label: "Acero / fierro" },
-  { value: "aridos", label: "Áridos / arena / grava" },
-  { value: "electrico", label: "Eléctrico" },
-  { value: "sanitario", label: "Sanitario / plomería" },
-  { value: "pinturas", label: "Pinturas" },
-  { value: "ceramicos", label: "Cerámicos / pisos" },
-  { value: "maderas", label: "Maderas" },
-  { value: "construccion_seco", label: "Construcción en seco" },
-  { value: "herramientas", label: "Herramientas" },
-  { value: "pasto_sintetico", label: "Pasto sintético" },
-  { value: "general", label: "General / varios" },
-];
 
 type Company = {
   id: number;
   companyName: string;
   city: string;
   speciality?: string | null;
+  trades?: string[] | null;
+  categories?: string[] | null;
+  customTrades?: string[] | null;
   phone?: string | null;
   betaUntil?: string;
 };
@@ -53,7 +42,8 @@ export default function AnunciarPage() {
   const [saving, setSaving] = useState(false);
 
   const [companyName, setCompanyName] = useState("");
-  const [rubro, setRubro] = useState("ferreteria");
+  const [trades, setTrades] = useState<string[]>(["ferreteria"]);
+  const [customTrades, setCustomTrades] = useState<string[]>([]);
   const [city, setCityState] = useState<string>(() => getCity());
 
   useEffect(() => {
@@ -114,7 +104,8 @@ export default function AnunciarPage() {
         method: "POST",
         body: JSON.stringify({
           companyName: companyName.trim(),
-          speciality: rubro,
+          trades,
+          customTrades,
           city,
         }),
       });
@@ -242,36 +233,17 @@ export default function AnunciarPage() {
           </p>
 
           <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="empresa-nombre">
-              Nombre de la empresa
+            <label className="mb-1 block text-sm font-medium">
+              Rubros (podés elegir varios)
             </label>
-            <input
-              id="empresa-nombre"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Ej. Ferretería Los Andes"
-              className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base"
-              required
-              autoFocus
+            <TradePicker
+              selected={trades}
+              customTrades={customTrades}
+              onChange={({ trades: tr, customTrades: ct }) => {
+                setTrades(tr);
+                setCustomTrades(ct);
+              }}
             />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="empresa-rubro">
-              Rubro
-            </label>
-            <select
-              id="empresa-rubro"
-              value={rubro}
-              onChange={(e) => setRubro(e.target.value)}
-              className="h-11 w-full rounded-lg border border-[var(--micaa-line)] px-3 text-base"
-            >
-              {RUBROS.map((r) => (
-                <option key={r.value} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
           </div>
 
           <div>

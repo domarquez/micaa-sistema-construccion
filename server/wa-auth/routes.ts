@@ -20,6 +20,7 @@ import { createOtpService, OTP_COOLDOWN_MS, OTP_TTL_MS } from "./otp";
 import { createSessionService, clearSessionCookies, clientIp, jwtSecret, parseCookies, sha256, SESSION_COOKIE, type SessionService } from "./sessions";
 import { e164ToDigits, maskPhone, normalizePhoneE164 } from "./phone";
 import { extractLoginRequests, LOGIN_REQUEST_TEXT, webhookTokenOk } from "./webhook";
+import { handleClaimPhoneReplies } from "../company-claim-wa";
 import { createMemoryRefStore, normalizeRef, type LoginRefStore } from "./login-refs";
 
 export interface WaAuthDeps {
@@ -259,7 +260,18 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
           }
         }
       }
-      res.json({ ok: true, processed: requests.length, results, skipped: skipped.length });
+      // Claim flow: salesperson replies with responsible person's WA → pending admin approval (no auto-send).
+      let claimHits = 0;
+      try {
+        const claim = await handleClaimPhoneReplies(req.body, { instance: evolutionConfig().instance });
+        claimHits = claim.hits.length;
+        for (const h of claim.hits) {
+          log(`[company-claim] pending owner ${h.proposedOwnerPhone} for #${h.companyId} ${h.companyName} (from ${h.fromPhone})`);
+        }
+      } catch (ce: any) {
+        log(`[company-claim] handler error: ${ce?.message || ce}`);
+      }
+      res.json({ ok: true, processed: requests.length, results, skipped: skipped.length, claimHits });
     } catch (e) {
       console.error("[wa-auth] webhook error", e);
       res.json({ ok: false });

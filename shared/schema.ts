@@ -464,14 +464,28 @@ export const supplierCompanies = pgTable("supplier_companies", {
   whatsapp: text("whatsapp"),
   website: text("website"),
   facebook: text("facebook"),
+  instagram: text("instagram"),
+  email: text("email"),
   logoUrl: text("logo_url"),
+  logoThumbUrl: text("logo_thumb_url"),
+  logoFormat: text("logo_format"), // square | wide
+  logoQualityWarn: boolean("logo_quality_warn").default(false),
   imageUrls: text("image_urls").array(),
+  openingHours: text("opening_hours"),
+  deliveryInfo: text("delivery_info"),
+  nit: text("nit"),
+  productsServices: text("products_services"),
+  waPriceReminders: boolean("wa_price_reminders").default(true),
+  lastPriceReminderAt: timestamp("last_price_reminder_at"),
+  profileCompletedAt: timestamp("profile_completed_at"),
+  /** Plan/feature flags. Empty = beta defaults (all on when Destacada criteria met). Flip in Feb 2027. */
+  features: jsonb("features").$type<Record<string, boolean>>().default({}),
   membershipType: text("membership_type").notNull().default("free"), // 'free', 'premium'
   membershipExpiresAt: timestamp("membership_expires_at"),
   /** Publicidad: destacado en guía (migración 0006, aditiva). */
   isFeatured: boolean("is_featured").notNull().default(false),
   featuredUntil: timestamp("featured_until"),
-  adPlan: text("ad_plan"), // free | destacado | material | banner
+  adPlan: text("ad_plan"), // free | destacado | material | banner | beta
   isActive: boolean("is_active").notNull().default(true),
   isVerified: boolean("is_verified").notNull().default(false),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
@@ -481,9 +495,22 @@ export const supplierCompanies = pgTable("supplier_companies", {
   phoneNormalized: text("phone_normalized"),
   source: text("source").notNull().default("manual"), // manual | extractor | web
   categories: text("categories").array(),
+  /** Free-text trades when "otro_servicio" is selected. */
+  customTrades: text("custom_trades").array(),
   branches: jsonb("branches"),
   contactStatus: text("contact_status"), // sin_contactar | contactado | respondio | no_responde | no_contactar | wa_inexistente
   priceListUrl: text("price_list_url"),
+  /** Claim: pending_claim | claimed (MICAA-seeded profiles). */
+  claimStatus: text("claim_status"),
+  claimedAt: timestamp("claimed_at"),
+  claimedByUserId: integer("claimed_by_user_id"),
+  /** Contacts with roles: sales (cotizó), owner, marketing, other. */
+  contacts: jsonb("contacts").$type<{phone:string;name?:string;role:string;isPrimary?:boolean}[]>().default([]),
+  micaaCreated: boolean("micaa_created").default(false),
+  /** Responsible WA proposed via reply/admin; admin must approve before it becomes an owner contact. */
+  pendingOwnerPhone: text("pending_owner_phone"),
+  pendingOwnerPhoneAt: timestamp("pending_owner_phone_at"),
+  pendingOwnerPhoneFrom: text("pending_owner_phone_from"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -504,6 +531,19 @@ export const materialSupplierPrices = pgTable("material_supplier_prices", {
 });
 
 // Listas de materiales (Capa 1 — snapshot; invitados usan localStorage)
+export const companyServicePrices = pgTable("company_service_prices", {
+  id: serial("id").primaryKey(),
+  supplierId: integer("supplier_id").notNull().references(() => supplierCompanies.id),
+  name: text("name").notNull(),
+  unit: text("unit"),
+  price: decimal("price", { precision: 12, scale: 4 }).notNull(),
+  currency: text("currency").notNull().default("BOB"),
+  description: text("description"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const materialLists = pgTable("material_lists", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -901,6 +941,7 @@ export type InsertConstructionPhase = z.infer<typeof insertConstructionPhaseSche
 export type Activity = typeof activities.$inferSelect;
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
 export type Material = typeof materials.$inferSelect;
+export type CompanyServicePrice = typeof companyServicePrices.$inferSelect;
 export type InsertMaterial = z.infer<typeof insertMaterialSchema>;
 export type Project = typeof projects.$inferSelect;
 export type InsertProject = z.infer<typeof insertProjectSchema>;

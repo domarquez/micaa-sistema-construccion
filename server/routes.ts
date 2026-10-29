@@ -11,6 +11,9 @@ import { handleWhatsappPriceIngest } from './ingest-whatsapp-price';
 import { getLatestExchangeRate, refreshExchangeRateSafe } from './exchange-rate';
 import { registerSupplierGuideRoutes, setFeatured as setSupplierFeatured } from './supplier-guide';
 import { registerSupplierCompanySelfRoutes } from './supplier-company-self';
+import { registerCompanyClaimAdminRoutes } from './company-claim-wa';
+import { registerCompanyLogoRoutes } from './company-logo';
+import { registerSuggestedSuppliersRoutes } from './suggested-suppliers';
 import { registerApuRoutes } from './apu-routes';
 import { registerProjectTemplateRoutes } from './project-templates';
 import { registerTransportRoutes, afterProjectSaved, stripTransportFields } from './transport';
@@ -106,7 +109,9 @@ export async function registerRoutes(app: any) {
     }
   });
   registerSupplierGuideRoutes(app);
+  registerSuggestedSuppliersRoutes(app);
   registerSupplierCompanySelfRoutes(app, requireAuth);
+  registerCompanyLogoRoutes(app, requireAuth);
 
   const router = Router();
   // Usar la instancia de storage global
@@ -2712,6 +2717,7 @@ export async function registerRoutes(app: any) {
   });
 
   app.patch("/api/admin/suppliers/:id/featured", requireAdmin, setSupplierFeatured);
+  registerCompanyClaimAdminRoutes(app, requireAdmin);
   registerAnalyticsRoutes(app, requireAdmin);
 
   app.delete("/api/admin/suppliers/:id", requireAdmin, async (req, res) => {
