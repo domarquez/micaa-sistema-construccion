@@ -1,57 +1,19 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Bell, User, Construction, LogOut, Mail, Shield, MapPin, Calendar, AlertTriangle, UserPlus, Menu, X, Package, Store, Calculator } from "lucide-react";
+import { Bell, Construction, LogOut, Mail, Menu, X, Package, Store, Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useDisclosureLevel } from "@/hooks/useDisclosureLevel";
 import { ContactForm } from "@/components/contact-form";
 import { MicaaLogo } from "@/components/micaa-logo";
 import { NotificationsPanel, NotificationsBadge } from "@/components/notifications-panel";
 import { PWAInstallButton } from "@/components/pwa-install-button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
+import { AuthEntryControl } from "@/components/AuthEntryControl";
 
 export default function AppHeader() {
-  const { user, logout, isAnonymous } = useAuth();
+  const { logout, isAnonymous } = useAuth();
   const { can, nextStep } = useDisclosureLevel();
-  const { toggleSidebar } = useSidebar();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const getUserInitials = (user: any) => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-    }
-    if (user?.username) {
-      return user.username.slice(0, 2).toUpperCase();
-    }
-    return "U";
-  };
-
-  const getUserTypeLabel = (userType: string) => {
-    switch (userType) {
-      case 'architect': return 'Arquitecto';
-      case 'constructor': return 'Constructor';
-      case 'supplier': return 'Proveedor';
-      default: return 'Usuario';
-    }
-  };
-
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case 'admin': return 'Administrador';
-      case 'user': return 'Usuario';
-      default: return role;
-    }
-  };
 
   return (
     <header className="bg-white shadow-material sticky top-0 z-50 border-b">
@@ -99,121 +61,8 @@ export default function AppHeader() {
             </PopoverContent>
           </Popover>
           
-          {isAnonymous ? (
-            /* Anonymous User Header - Mobile Optimized */
-            <div className="flex items-center gap-1 min-w-0">
-              <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs py-0 px-1 hidden md:flex items-center flex-shrink-0">
-                <AlertTriangle className="w-2.5 h-2.5 mr-0.5" />
-                <span>Anónimo</span>
-              </Badge>
-              
-              {/* Mobile optimized buttons */}
-              <div className="flex items-center gap-0.5 min-w-0">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => window.location.href = "/login"}
-                  className="text-[9px] sm:text-xs md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 flex-shrink-0"
-                >
-                  <User className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:mr-0.5" />
-                  <span className="hidden md:inline">Login</span>
-                </Button>
-                <Button 
-                  size="sm"
-                  onClick={() => window.location.href = "/register"}
-                  className="text-[9px] sm:text-xs md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 h-6 sm:h-7 md:h-8 bg-orange-600 hover:bg-orange-700 flex-shrink-0"
-                >
-                  <UserPlus className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:mr-0.5" />
-                  <span className="hidden md:inline">Sign Up</span>
-                </Button>
-              </div>
-            </div>
-          ) : (
-            /* Authenticated User Dropdown */
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full">
-                  <Avatar className="h-7 w-7 md:h-8 md:w-8">
-                    <AvatarImage src="" alt={user?.username || "Usuario"} />
-                    <AvatarFallback className="bg-primary text-white text-xs md:text-sm">
-                      {getUserInitials(user)}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium leading-none">
-                      {user?.firstName && user?.lastName 
-                        ? `${user.firstName} ${user.lastName}`
-                        : user?.username
-                      }
-                    </p>
-                    <div className="flex gap-1">
-                      {user?.role === 'admin' && (
-                        <Badge variant="destructive" className="text-xs">
-                          <Shield className="w-3 h-3 mr-1" />
-                          Admin
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Mail className="w-3 h-3" />
-                      {user?.email}
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <User className="w-3 h-3" />
-                      {getUserTypeLabel((user as any)?.userType || '')} • {getRoleLabel(user?.role || '')}
-                    </div>
-                    
-                    {(user as any)?.city && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <MapPin className="w-3 h-3" />
-                        {(user as any).city}, {(user as any)?.country || 'Bolivia'}
-                      </div>
-                    )}
-                    
-                    {user?.lastLogin && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        Último acceso: {new Date(user.lastLogin).toLocaleDateString()}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="pt-2">
-                    <div className="text-xs font-medium text-green-600 mb-1">
-                      Opciones disponibles:
-                    </div>
-                    <div className="grid grid-cols-2 gap-1 text-xs text-muted-foreground">
-                      <span>• Crear presupuestos</span>
-                      <span>• Ver materiales</span>
-                      <span>• Calcular APUs</span>
-                      <span>• Gestionar proyectos</span>
-                      {user?.role === 'admin' && (
-                        <>
-                          <span>• Panel administrativo</span>
-                          <span>• Gestión de usuarios</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout} className="text-red-600">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Cerrar sesión</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          )}
+          {/* Un solo control: Ingresar/Inscribite o avatar */}
+          <AuthEntryControl />
         </div>
       </div>
       
@@ -231,33 +80,19 @@ export default function AppHeader() {
         >
           <div className="px-3 sm:px-4 py-3">
             {/* Auth Actions - Only for Anonymous Users */}
-            {isAnonymous && (
-              <div className="flex items-center space-x-2 py-2 border-b border-gray-100">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => {
-                    window.location.href = "/login";
-                    setMobileMenuOpen(false);
-                  }}
-                  className="flex-1 text-sm"
-                >
-                  <User className="w-3 h-3 mr-2" />
-                  Iniciar Sesión
-                </Button>
-                <Button 
-                  size="sm"
-                  onClick={() => {
-                    window.location.href = "/register";
-                    setMobileMenuOpen(false);
-                  }}
-                  className="flex-1 text-sm bg-orange-600 hover:bg-orange-700"
-                >
-                  <UserPlus className="w-3 h-3 mr-2" />
-                  Registro Gratis
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center space-x-2 py-2 border-b border-gray-100">
+              <Button
+                size="sm"
+                onClick={() => {
+                  window.location.href = "/anunciar";
+                  setMobileMenuOpen(false);
+                }}
+                className="flex-1 text-sm bg-[var(--micaa-accent)] hover:bg-[var(--micaa-accent)]/90"
+                data-testid="mobile-registra-empresa"
+              >
+                Registrá tu empresa gratis
+              </Button>
+            </div>
             
             {/* Navigation Menu */}
             <div className="space-y-3 pt-3">
@@ -335,13 +170,13 @@ export default function AppHeader() {
               </>
               ) : nextStep ? (
                 <div
-                  className="flex items-center justify-center rounded bg-green-50 px-2 py-2 text-sm font-medium text-green-700 cursor-pointer"
+                  className="flex items-center justify-center rounded bg-[var(--micaa-accent-soft)] px-2 py-2 text-sm font-medium text-[var(--micaa-accent)] cursor-pointer"
                   onClick={() => {
-                    window.location.href = nextStep === "login" ? "/login" : "/inscribete";
+                    window.location.href = "/anunciar";
                     setMobileMenuOpen(false);
                   }}
                 >
-                  Inscribite con WhatsApp
+                  Registrá tu empresa gratis
                 </div>
               ) : null}
 
