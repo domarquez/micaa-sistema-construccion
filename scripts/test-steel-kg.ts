@@ -24,6 +24,10 @@ function assert(cond: boolean, msg: string) {
 
 assert(classifySteelFamily("Angular 1 1/2\" x 1/8\" x 6m") === "negro_perfil", "angular → negro_perfil");
 assert(classifySteelFamily("CORRUGADO 1/2\" x 12m") === "corrugado", "corrugado");
+assert(classifySteelFamily("LISO 3/8\" (10mm.) BAR 12 m.") === "corrugado", "liso construcción → corrugado");
+assert(classifySteelFamily("Barra lisa 12mm 12m") === "corrugado", "barra lisa → corrugado");
+assert(classifySteelFamily("PLATINA 1/2\" x 3/16\"") === "negro_perfil", "platina → negro_perfil");
+assert(classifySteelFamily("REDONDO DE 19 mm") === "negro_perfil", "redondo herrero → negro_perfil");
 assert(classifySteelFamily("Alambre de amarre N° 16") === "alambre", "alambre");
 assert(classifySteelFamily("Electrodo 6013 1/8") === "electrodo", "electrodo");
 assert(classifySteelFamily("Tubo PVC 1/2") === null, "PVC excluded");
