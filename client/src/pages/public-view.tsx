@@ -749,11 +749,18 @@ export default function PublicView() {
                           ({supplier.reviewCount})
                         </span>
                       </div>
-                      {supplier.isVerified && (
-                        <Badge variant="outline" className="text-green-600 border-green-200">
-                          Verificado
-                        </Badge>
-                      )}
+                      <div className="flex flex-wrap items-center gap-1.5 justify-end">
+                        {supplier.isVerified && (
+                          <Badge variant="outline" className="text-green-600 border-green-200">
+                            Verificado
+                          </Badge>
+                        )}
+                        {(supplier.associations || []).includes("Asociado CADECOCRUZ") && (
+                          <Badge variant="outline" className="text-sky-800 border-sky-300 bg-sky-50">
+                            Asociado CADECOCRUZ
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

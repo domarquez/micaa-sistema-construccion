@@ -208,6 +208,7 @@ export async function ensureCompanyClaimSchema(): Promise<void> {
     `ALTER TABLE supplier_companies ADD COLUMN IF NOT EXISTS pending_owner_phone text`,
     `ALTER TABLE supplier_companies ADD COLUMN IF NOT EXISTS pending_owner_phone_at timestamptz`,
     `ALTER TABLE supplier_companies ADD COLUMN IF NOT EXISTS pending_owner_phone_from text`,
+    `ALTER TABLE supplier_companies ADD COLUMN IF NOT EXISTS associations text[]`,
   ];
   for (const s of stmts) {
     try {
