@@ -1,9 +1,16 @@
 import { MessageCircle } from "lucide-react";
+import { useLocation } from "wouter";
 import { micaaWaUrl, MICAA_WA_DEFAULT_MSG } from "@/lib/micaa-contact";
 import { track } from "@/lib/analytics";
 
 /** Botón flotante de WhatsApp de la marca MICAA (soporte / publicidad). */
 export function MicaaWhatsAppFab() {
+  const [location] = useLocation();
+  // Ocultar en detalle de presupuesto: el sticky TOTAL del presupuesto ocupa el mismo borde inferior.
+  if (/^\/budgets\/\d+(\/|$|\?)/.test(location) || /^\/budgets\/\d+$/.test(location)) {
+    return null;
+  }
+
   return (
     <a
       href={micaaWaUrl(MICAA_WA_DEFAULT_MSG)}

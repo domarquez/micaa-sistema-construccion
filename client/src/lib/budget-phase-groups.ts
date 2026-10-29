@@ -14,8 +14,20 @@ export interface PhaseLike {
 export interface GroupableItem {
   id: number;
   phaseId?: number | null;
+  quantity?: string | number | null;
+  unitPrice?: string | number | null;
   subtotal?: string | number | null;
   activity?: { phaseId?: number | null; phase?: PhaseLike | null } | null;
+}
+
+function effectiveSubtotal(item: GroupableItem): number {
+  const st = Number(item.subtotal);
+  const q = Number(item.quantity);
+  const pu = Number(item.unitPrice);
+  const computed = (Number.isFinite(q) && Number.isFinite(pu)) ? Math.round(q * pu * 100) / 100 : 0;
+  if (Number.isFinite(st) && Math.abs(st) > 0.0005) return Math.round(st * 100) / 100;
+  if (computed > 0.0005) return computed;
+  return Number.isFinite(st) ? Math.round(st * 100) / 100 : 0;
 }
 
 export interface PhaseGroup<T> {
@@ -62,8 +74,7 @@ export function groupBudgetItemsByPhase<T extends GroupableItem>(items: T[] | nu
       groups.set(pid, g);
     }
     g.items.push(item);
-    const st = Number(item.subtotal);
-    g.total += Number.isFinite(st) ? st : 0;
+    g.total += effectiveSubtotal(item);
   }
 
   const out = Array.from(groups.values());

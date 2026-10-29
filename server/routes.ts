@@ -3296,6 +3296,75 @@ export async function registerRoutes(app: any) {
         .leftJoin(constructionPhases, eq(activities.phaseId, constructionPhases.id))
         .where(eq(budgetItems.budgetId, budgetId));
       
+      // Autoreparar ítems con P.U.>0 y subtotal≈0 (sin overwrite masivo: solo filas inconsistentes).
+      // Backup en log antes de escribir; luego recomputeBudgetTotal.
+      const healedItems = [];
+      for (const row of items) {
+        const bi = row.budget_items;
+        const q = Number(bi.quantity);
+        const pu = Number(bi.unitPrice);
+        const st = Number(bi.subtotal);
+        const computed = (Number.isFinite(q) && Number.isFinite(pu)) ? Math.round(q * pu * 100) / 100 : 0;
+        if (
+          Number.isFinite(st) && Math.abs(st) <= 0.0005 &&
+          Number.isFinite(computed) && computed >= 0.01
+        ) {
+          const backup = {
+            id: bi.id,
+            budgetId,
+            quantity: bi.quantity,
+            unitPrice: bi.unitPrice,
+            subtotalBefore: bi.subtotal,
+            subtotalAfter: String(computed),
+            at: new Date().toISOString(),
+          };
+          console.warn("[budget-item-subtotal-heal] backup", JSON.stringify(backup));
+          await db
+            .update(budgetItems)
+            .set({ subtotal: String(computed) })
+            .where(eq(budgetItems.id, bi.id));
+          healedItems.push({ ...bi, subtotal: String(computed) });
+        } else {
+          healedItems.push(bi);
+        }
+      }
+      if (healedItems.some((h, i) => String(h.subtotal) !== String(items[i].budget_items.subtotal))) {
+        try {
+          await recomputeBudgetTotal(budgetId);
+        } catch (e) {
+          console.warn("[budget-item-subtotal-heal] recompute failed", budgetId, (e as any)?.message);
+        }
+        // Releer presupuesto + ítems tras heal para devolver total actualizado
+        const refreshed = await db
+          .select()
+          .from(budgets)
+          .leftJoin(projects, eq(budgets.projectId, projects.id))
+          .leftJoin(constructionPhases, eq(budgets.phaseId, constructionPhases.id))
+          .where(and(eq(budgets.id, budgetId), eq(projects.userId, userId)))
+          .limit(1);
+        const refreshedItems = await db
+          .select()
+          .from(budgetItems)
+          .leftJoin(activities, eq(budgetItems.activityId, activities.id))
+          .leftJoin(constructionPhases, eq(activities.phaseId, constructionPhases.id))
+          .where(eq(budgetItems.budgetId, budgetId));
+        if (refreshed.length > 0) {
+          return res.json({
+            ...refreshed[0].budgets,
+            project: refreshed[0].projects!,
+            phase: refreshed[0].construction_phases,
+            items: refreshedItems.map(item => ({
+              ...item.budget_items,
+              activity: item.activities ? {
+                ...item.activities,
+                phase: item.construction_phases
+              } : null
+            })),
+            _healedSubtotals: true,
+          });
+        }
+      }
+
       const budgetData = {
         ...budget[0].budgets,
         project: budget[0].projects!,
@@ -3399,13 +3468,15 @@ export async function registerRoutes(app: any) {
         return res.status(400).json({ message: "Precio unitario inválido" });
       }
 
+      const roundedPu = Math.round(finalUnitPrice * 100) / 100;
+      const roundedSt = Math.round(qty * finalUnitPrice * 100) / 100;
       const budgetItem = await dbStorage.createBudgetItem({
         budgetId: owned.id,
         activityId: aid,
         phaseId: phaseId ? parseInt(phaseId) : null,
-        quantity: qty,
-        unitPrice: Math.round(finalUnitPrice * 100) / 100,
-        subtotal: Math.round(qty * finalUnitPrice * 100) / 100
+        quantity: String(qty),
+        unitPrice: String(roundedPu),
+        subtotal: String(roundedSt),
       } as any);
 
       if (apu) {
