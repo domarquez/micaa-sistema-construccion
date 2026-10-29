@@ -17,5 +17,7 @@ export function cleanMaterialName(raw?: string | null): string {
   // espacio tras " antes de letra: 3/16"BAR → 3/16" BAR
   s = s.replace(/"([A-Za-zÁÉÍÓÚÜÑáéíóúüñ])/g, '" $1');
   s = s.replace(/\s+/g, " ").trim();
+  // entero pegado a fracción de pulgada: 11/2" → 1 1/2"
+  s = s.replace(/(\d)(\d\/\d+")/g, "$1 $2");
   return s;
 }
