@@ -2,11 +2,11 @@ import { Link, useLocation } from "wouter";
 import { loadLista } from "@/lib/lista";
 import { CITY_LIST, getCity, setCity, type MicaaCity } from "@/lib/city";
 import { useEffect, useState } from "react";
-import { Menu, X, Download } from "lucide-react";
+import { Building2, Download, Menu, X } from "lucide-react";
 import { useDisclosureLevel } from "@/hooks/useDisclosureLevel";
 import { useAuth } from "@/hooks/useAuth";
 import { useInstallPrompt } from "@/lib/pwa";
-import { WhatsAppSignupCta } from "@/components/DisclosureGate";
+import { AuthEntryControl } from "@/components/AuthEntryControl";
 
 const baseLinks = [
   { href: "/", label: "Inicio" },
@@ -17,7 +17,7 @@ const publishLink = { href: "/publicar-precio", label: "Publicar precio" };
 
 export function GuestHeader() {
   const [location] = useLocation();
-  const { can, isAdmin, nextStep } = useDisclosureLevel();
+  const { can, isAdmin } = useDisclosureLevel();
   const { isAuthenticated, logout } = useAuth();
   const { canInstall, install } = useInstallPrompt();
   const [count, setCount] = useState(0);
@@ -82,7 +82,7 @@ export function GuestHeader() {
           MICAA
         </Link>
 
-        {/* Desktop: enlaces en línea (igual que antes) */}
+        {/* Desktop: enlaces en línea */}
         <nav className="hidden flex-1 items-center gap-4 overflow-x-auto text-[var(--micaa-muted)] sm:flex">
           {links.map((l) => (
             <Link
@@ -93,6 +93,13 @@ export function GuestHeader() {
               {label(l)}
             </Link>
           ))}
+          <Link
+            href="/anunciar"
+            className={isActive("/anunciar") ? "whitespace-nowrap font-medium text-[var(--micaa-accent)]" : "whitespace-nowrap text-[var(--micaa-accent)] hover:underline"}
+            data-testid="link-registra-empresa-desktop"
+          >
+            Registrá tu empresa gratis
+          </Link>
         </nav>
         <label className="hidden shrink-0 items-center gap-2 text-sm text-[var(--micaa-muted)] sm:flex">
           <span className="hidden md:inline">Ciudad</span>
@@ -103,27 +110,16 @@ export function GuestHeader() {
             <Download className="h-3.5 w-3.5" /> Instalar app
           </button>
         )}
+        {isAdmin ? (
+          <Link href="/dashboard" className="hidden whitespace-nowrap text-[var(--micaa-accent)] sm:inline">Panel</Link>
+        ) : null}
         <div className="hidden sm:block">
-          {member ? (
-            isAdmin ? (
-              <Link href="/dashboard" className="whitespace-nowrap text-[var(--micaa-accent)]">Panel</Link>
-            ) : null
-          ) : (
-            <WhatsAppSignupCta compact />
-          )}
+          <AuthEntryControl />
         </div>
 
-        {/* Móvil: logo + (CTA corto) + hamburguesa */}
+        {/* Móvil: auth + hamburguesa (sin CTA Inscribite duplicado) */}
         <div className="ml-auto flex items-center gap-2 sm:hidden">
-          {nextStep && (
-            <Link
-              href={nextStep === "login" ? "/login" : "/inscribete"}
-              className="rounded-full bg-[var(--micaa-accent)] px-3 py-1 text-sm font-medium text-white"
-              data-testid="cta-whatsapp-mobile"
-            >
-              Inscribite
-            </Link>
-          )}
+          <AuthEntryControl />
           <button
             type="button"
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
@@ -155,6 +151,13 @@ export function GuestHeader() {
             {isAdmin && (
               <Link href="/dashboard" className="py-2.5 text-[var(--micaa-muted)]">Panel de administración</Link>
             )}
+            <Link
+              href="/anunciar"
+              className="flex items-center gap-2 py-2.5 font-medium text-[var(--micaa-accent)]"
+              data-testid="link-registra-empresa-mobile"
+            >
+              <Building2 className="h-4 w-4" /> Registrá tu empresa gratis
+            </Link>
             <label className="flex items-center justify-between gap-2 py-2.5 text-[var(--micaa-muted)]">
               <span>Ciudad</span>
               {citySelect("max-w-[12rem]")}
@@ -164,14 +167,6 @@ export function GuestHeader() {
                 <Download className="h-4 w-4" /> Instalar app
               </button>
             )}
-            {nextStep ? (
-              <Link
-                href={nextStep === "login" ? "/login" : "/inscribete"}
-                className="my-2 rounded-md bg-[var(--micaa-accent)] px-4 py-2.5 text-center font-medium text-white"
-              >
-                Inscribite con WhatsApp
-              </Link>
-            ) : null}
             {isAuthenticated && (
               <button type="button" onClick={() => logout()} className="py-2.5 text-left text-[var(--micaa-muted)]">
                 Cerrar sesión

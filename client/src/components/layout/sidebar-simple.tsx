@@ -33,6 +33,7 @@ import {
   BarChart3,
   LayoutTemplate,
   MessageCircle,
+  Building2,
 } from "lucide-react";
 
 type NavItem = { title: string; url: string; icon: any; feature?: DisclosureFeature };
@@ -71,6 +72,11 @@ const menuItems: NavItem[] = [
     url: "/marketplace",
     feature: "catalog",
     icon: Store,
+  },
+  {
+    title: "Registrá tu empresa gratis",
+    url: "/anunciar",
+    icon: Building2,
   },
 ];
 

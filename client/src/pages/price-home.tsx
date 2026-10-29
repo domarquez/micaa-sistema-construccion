@@ -201,6 +201,25 @@ export default function PriceHome({ afterSearch }: { afterSearch?: React.ReactNo
           </Link>
         </div>
 
+        <section
+          className="mt-8 rounded-[var(--micaa-radius)] border border-[var(--micaa-line)] bg-[var(--micaa-bg-elev)] p-4 text-left sm:p-5"
+          data-testid="block-registra-empresa"
+        >
+          <h2 className="text-base font-semibold text-[var(--micaa-fg)] sm:text-lg">
+            ¿Tenés una empresa de construcción o ferretería?
+          </h2>
+          <p className="mt-2 text-sm text-[var(--micaa-muted)]">
+            Registrala gratis (beta hasta el 31/01/2027): publicidad, carga de tus precios y empresa destacada.
+          </p>
+          <Link
+            href="/anunciar"
+            className="btn-micaa-primary mt-3 inline-flex"
+            data-testid="button-registra-empresa-home"
+          >
+            Registrá tu empresa gratis
+          </Link>
+        </section>
+
         <section className="tech-card mt-10 p-5 text-left">
           <h2 className="font-display text-lg font-semibold text-[var(--micaa-fg)]">¿Qué es MICAA?</h2>
           <div className="accent-rule mt-2" />

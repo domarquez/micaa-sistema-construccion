@@ -100,7 +100,8 @@ function usePriceSurface(path: string) {
     path.startsWith("/materiales/") ||
     path === "/empresas" ||
     path === "/anunciar" ||
-    path === "/contacto"
+    path === "/contacto" ||
+    path === "/account-settings"
   );
 }
 
@@ -124,6 +125,7 @@ function PriceRoutes() {
       <Route path="/inscribete" component={InscribetePage} />
       <Route path="/anunciar" component={AnunciarPage} />
       <Route path="/contacto" component={ContactoPage} />
+      <Route path="/account-settings" component={AccountSettings} />
       <Route component={GuestFallback} />
     </Switch>
   );
