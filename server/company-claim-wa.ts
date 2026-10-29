@@ -15,11 +15,11 @@ const rows = (r: any): any[] => (Array.isArray(r) ? r : r?.rows ?? []);
 /** Extract first BO mobile (591[67]XXXXXXX) from free text. */
 export function extractBoMobileFromText(text: string, city?: string | null): string | null {
   if (!text) return null;
-  // Prefer explicit +591 / 591 forms
-  const m591 = text.match(/(?:\+?591[\s.-]*)([67]\d{7})/);
+  // Digits-only scan: find 591[67]xxxxxxx or bare [67]xxxxxxx (allow spaces/dashes in source)
+  const compact = text.replace(/[\s.-]/g, "");
+  const m591 = compact.match(/\+?591([67]\d{7})(?!\d)/);
   if (m591) return "591" + m591[1];
-  // Bare 8-digit mobile
-  const m8 = text.match(/(?<!\d)([67]\d{7})(?!\d)/);
+  const m8 = compact.match(/(?<!\d)([67]\d{7})(?!\d)/);
   if (m8) return normalizeBoPhone(m8[1], city || "Santa Cruz");
   return null;
 }
