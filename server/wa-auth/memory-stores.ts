@@ -7,10 +7,10 @@ export function createMemoryOtpStore(): OtpStore & { rows: OtpRow[] } {
   return {
     rows,
     async countByPhoneSince(phone, since) {
-      return rows.filter((r) => r.phone === phone && r.createdAt >= since).length;
+      return rows.filter((r) => r.phone === phone && r.createdAt >= since && r.sendStatus !== "failed").length;
     },
     async countByIpSince(ip, since) {
-      return rows.filter((r) => r.requestIp === ip && r.createdAt >= since).length;
+      return rows.filter((r) => r.requestIp === ip && r.createdAt >= since && r.sendStatus !== "failed").length;
     },
     async lastCreatedAt(phone) {
       const list = rows.filter((r) => r.phone === phone);

@@ -241,7 +241,23 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
         if (r.ref) refs.bind(r.ref, r.phone, nowFn());
         const out = await otp.issue({ phone: r.phone, ip: null, purpose: "login", channel: "inbound" });
         results.push(out.ok ? "sent" : out.reason);
-        if (!out.ok) log(`[wa-auth] inbound ${maskPhone(r.phone)} no enviado: ${out.reason}`);
+        if (!out.ok) {
+          log(`[wa-auth] inbound ${maskPhone(r.phone)} no enviado: ${out.reason}`);
+          // Antes el usuario escribía a MICAA y no recibía nada (parecía "el teléfono no responde").
+          if (out.reason === "cooldown" || out.reason === "phone_limit" || out.reason === "ip_limit") {
+            const mins = Math.max(1, Math.ceil((out.retryAfterSeconds || 60) / 60));
+            try {
+              await sender.sendText(
+                r.phone,
+                out.reason === "cooldown"
+                  ? `Esperá ${out.retryAfterSeconds} s y pedí el código de nuevo.`
+                  : `Pediste demasiados códigos. Probá de nuevo en unos ${mins} min, o desde micaa.site con «Enviarme el código».`,
+              );
+            } catch (e: any) {
+              log(`[wa-auth] no se pudo avisar límite a ${maskPhone(r.phone)}: ${e?.message || e}`);
+            }
+          }
+        }
       }
       res.json({ ok: true, processed: requests.length, results, skipped: skipped.length });
     } catch (e) {

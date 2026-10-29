@@ -184,9 +184,10 @@ async function test(name: string, fn: () => Promise<void>) {
     assert.equal((await call("GET", "/api/legacy-protected", undefined, { Cookie: cookie })).status, 401);
   });
 
-  await test("máximo 3 envíos por número por hora", async () => {
-    // ya hubo 1 envío a este número en la última hora (hace 2 h -> no cuenta); hacemos 3 nuevos
-    for (let i = 0; i < 3; i++) {
+  await test("máximo N envíos por número por hora", async () => {
+    const { OTP_MAX_PER_PHONE_HOUR } = await import("../server/wa-auth/otp");
+    // ya hubo 1 envío a este número en la última hora (hace 2 h -> no cuenta); llenamos el cupo
+    for (let i = 0; i < OTP_MAX_PER_PHONE_HOUR; i++) {
       advance(61_000);
       const r = await call("POST", "/api/auth/wa/request", { phone: "76543210" }, ip(2));
       assert.equal(r.status, 200, `envío ${i + 1}`);
@@ -217,13 +218,14 @@ async function test(name: string, fn: () => Promise<void>) {
     assert.equal((await call("POST", "/api/auth/wa/verify", { phone: "60000002", code: c }, ip(4))).status, 400);
   });
 
-  await test("máximo 10 envíos por IP por hora", async () => {
+  await test("máximo N envíos por IP por hora", async () => {
+    const { OTP_MAX_PER_IP_HOUR } = await import("../server/wa-auth/otp");
     advance(3600_000);
-    for (let i = 0; i < 10; i++) {
-      const r = await call("POST", "/api/auth/wa/request", { phone: `6100000${i}` }, ip(5));
+    for (let i = 0; i < OTP_MAX_PER_IP_HOUR; i++) {
+      const r = await call("POST", "/api/auth/wa/request", { phone: `61000${String(i).padStart(3, "0")}` }, ip(5));
       assert.equal(r.status, 200, `ip envío ${i + 1}`);
     }
-    const r = await call("POST", "/api/auth/wa/request", { phone: "61000010" }, ip(5));
+    const r = await call("POST", "/api/auth/wa/request", { phone: "61000999" }, ip(5));
     assert.equal(r.status, 429);
   });
 
