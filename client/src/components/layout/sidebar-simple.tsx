@@ -32,6 +32,7 @@ import {
   Shield,
   BarChart3,
   LayoutTemplate,
+  FilePlus2,
   MessageCircle,
   Building2,
 } from "lucide-react";
@@ -66,6 +67,12 @@ const menuItems: NavItem[] = [
     url: "/plantillas",
     feature: "templates",
     icon: LayoutTemplate,
+  },
+  {
+    title: "En blanco",
+    url: "/proyecto-nuevo",
+    feature: "projects",
+    icon: FilePlus2,
   },
   {
     title: "Marketplace",
