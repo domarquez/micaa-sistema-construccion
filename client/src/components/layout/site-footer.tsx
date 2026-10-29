@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { micaaWaUrl, MICAA_WA_DEFAULT_MSG, MICAA_WHATSAPP_DISPLAY } from "@/lib/micaa-contact";
+import { BcbExchangeRate } from "@/components/BcbExchangeRate";
 
 /** Pie de página simple, compartido por todas las páginas públicas. */
 export function SiteFooter() {
@@ -11,6 +12,7 @@ export function SiteFooter() {
           <p>
             <span className="font-semibold text-[var(--micaa-fg)]">MICAA</span> © {year} · Precios y presupuestos de construcción en Bolivia
           </p>
+          <BcbExchangeRate className="mt-1" />
           <p className="mt-1">
             WhatsApp:{" "}
             <a

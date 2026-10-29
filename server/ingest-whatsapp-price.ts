@@ -16,6 +16,7 @@ import {
   priceIngestKeys,
 } from "../shared/schema";
 import { cleanMaterialName } from "../shared/material-name";
+import { convertIngestPriceToBob, normalizeCurrency } from "./exchange-rate";
 
 const UNIT_MAP: Record<string, string> = {
   m2: "m2",
@@ -94,11 +95,16 @@ export type IngestSuccessBody = {
   materialName: string;
   matchedBy: "materialId" | "name_unit" | "stub_created";
   city: string;
+  /** Precio guardado en BOB (convertido si vino en USD). */
   price: number;
   unit: string;
   weightKg?: number | null;
   isPublic: boolean;
   idempotencyKey: string;
+  currency?: string;
+  originalCurrency?: string | null;
+  originalAmount?: number | null;
+  fxRate?: number | null;
 };
 
 export type IngestErrorBody = {
@@ -114,8 +120,12 @@ type ParsedItem = {
   materialId: number | null;
   name: string | null;
   unit: string;
+  /** Precio en BOB tras conversión FX. */
   price: number;
   currency: string;
+  originalCurrency?: string | null;
+  originalAmount?: number | null;
+  fxRate?: number | null;
   city: string;
   isPublic: boolean;
   collectedAt: string;
@@ -184,13 +194,14 @@ function truncate(s: string, max: number): string {
 }
 
 function payloadHash(item: ParsedItem): string {
+  // Prefer original USD amount when present so idempotency survives TCO changes.
   const stable = {
     idempotencyKey: item.idempotencyKey,
     materialId: item.materialId,
     name: item.name,
     unit: item.unit,
-    price: item.price,
-    currency: item.currency,
+    price: item.originalAmount ?? item.price,
+    currency: item.originalCurrency ?? item.currency,
     city: item.city,
     isPublic: item.isPublic,
     collectedAt: item.collectedAt,
@@ -216,6 +227,11 @@ function buildReason(item: ParsedItem): string {
   if (item.chatJid) parts.push(`jid=${item.chatJid}`);
   if (item.instanceName) parts.push(`inst=${item.instanceName}`);
   if (item.rawExcerpt) parts.push(`excerpt=${truncate(item.rawExcerpt, 200)}`);
+  if (item.originalCurrency && item.originalAmount != null && item.fxRate != null) {
+    parts.push(
+      `fx=${item.originalAmount} ${item.originalCurrency}@${item.fxRate}=${item.price} BOB`,
+    );
+  }
   parts.push(`idem=${item.idempotencyKey}`);
   return truncate(parts.join(" | "), 2000);
 }
@@ -316,13 +332,18 @@ function parseItem(raw: unknown): { ok: true; item: ParsedItem } | { ok: false; 
     };
   }
 
-  const currency = String(b.currency ?? "BOB").trim().toUpperCase() || "BOB";
-  if (currency !== "BOB") {
+  const currencyNorm = normalizeCurrency(String(b.currency ?? "BOB"));
+  if (currencyNorm !== "BOB" && currencyNorm !== "USD") {
     return {
       ok: false,
-      error: { ok: false, error: "Only BOB currency supported", code: "validation_error" },
+      error: {
+        ok: false,
+        error: `Unsupported currency ${currencyNorm}; use BOB or USD`,
+        code: "validation_error",
+      },
     };
   }
+  const currency = currencyNorm;
 
   const city = resolveCity(String(b.city ?? ""));
   if (!city) {
@@ -750,6 +771,11 @@ async function persistQuote(
         customMaterialName: resolved.materialName,
         originalMaterialName: resolved.materialName,
         reason,
+        currency: "BOB",
+        originalCurrency: item.originalCurrency ?? null,
+        originalAmount:
+          item.originalAmount != null ? item.originalAmount.toFixed(4) : null,
+        fxRate: item.fxRate != null ? item.fxRate.toFixed(4) : null,
         // Same supplier by construction; keep stored identity if this payload omits a field.
         supplierName: item.supplierName ?? existing[0].supplierName ?? null,
         supplierPhone: normalizePhone(item.phone) ?? existing[0].supplierPhone ?? null,
@@ -773,6 +799,11 @@ async function persistQuote(
         price: item.price.toFixed(2),
         unit: resolved.unit,
         reason,
+        currency: "BOB",
+        originalCurrency: item.originalCurrency ?? null,
+        originalAmount:
+          item.originalAmount != null ? item.originalAmount.toFixed(4) : null,
+        fxRate: item.fxRate != null ? item.fxRate.toFixed(4) : null,
         supplierName: item.supplierName ?? null,
         supplierPhone: normalizePhone(item.phone),
         weightKg: quoteWeightKg,
@@ -849,6 +880,10 @@ async function persistQuote(
     weightKg: item.weightKg ?? null,
     isPublic: item.isPublic,
     idempotencyKey: item.idempotencyKey,
+    currency: "BOB",
+    originalCurrency: item.originalCurrency ?? null,
+    originalAmount: item.originalAmount ?? null,
+    fxRate: item.fxRate ?? null,
   };
 }
 
@@ -856,6 +891,20 @@ async function processOneItem(
   item: ParsedItem,
   systemUserId: number,
 ): Promise<{ status: number; body: IngestSuccessBody | IngestErrorBody }> {
+  // Convertir USD → BOB con TCO oficial BCB antes de hashear/persistir.
+  const fx = await convertIngestPriceToBob(item.price, item.currency);
+  if (!fx.ok) {
+    return {
+      status: fx.code === "fx_unavailable" ? 503 : 400,
+      body: { ok: false, error: fx.error, code: fx.code },
+    };
+  }
+  item.price = fx.priceBob;
+  item.currency = fx.currency;
+  item.originalCurrency = fx.originalCurrency;
+  item.originalAmount = fx.originalAmount;
+  item.fxRate = fx.fxRate;
+
   const hash = payloadHash(item);
   const replay = await replayOrConflict(item, hash);
   if (replay) {

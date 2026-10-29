@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink, Eye, Users } from 'lucide-react';
+import { BcbExchangeRate } from '@/components/BcbExchangeRate';
 
 interface SiteStats {
   visitCount: number;
@@ -46,6 +47,9 @@ export function AppFooter() {
           </div>
           )}
           
+          <div className="flex justify-center">
+            <BcbExchangeRate />
+          </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs border-t border-[var(--micaa-line)] pt-2">
             <div className="flex items-center gap-1">
               <span>MICAA © {currentYear}</span>
