@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { BASE_PRICE_NOTE, TRANSPORT_LINE_LABEL, budgetTransport, transportDetail, transportOrigin, writePdfTotals } from "@/lib/transport-summary";
 import { track } from "@/lib/analytics";
 import { ExpandableText } from "@/components/ui/expandable-text";
+import { SuggestedSuppliersCard } from "@/components/suggested-suppliers-card";
 
 // Helper para normalizar presupuestos temporales al formato BudgetWithProject
 function normalizeAnonymousBudget(foundBudget: any): BudgetWithProject {
@@ -645,6 +646,13 @@ export default function BudgetDetails() {
           )}
         </CardContent>
       </Card>
+
+      <SuggestedSuppliersCard
+        city={(budget as any)?.project?.city || null}
+        activityIds={(budgetItems || [])
+          .map((it) => Number(it.activityId))
+          .filter((n) => Number.isFinite(n) && n > 0)}
+      />
 
       {/* Total sticky en móvil — Plano vivo */}
       <div className="sticky-budget-total" aria-live="polite">

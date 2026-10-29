@@ -14,11 +14,29 @@ export function registerSuggestedSuppliersRoutes(app: Express) {
     try {
       const city = typeof req.query.city === "string" ? req.query.city.trim() : "";
       const rawIds = typeof req.query.materialIds === "string" ? req.query.materialIds : "";
-      const materialIds = rawIds
+      const rawActs = typeof req.query.activityIds === "string" ? req.query.activityIds : "";
+      let materialIds = rawIds
         .split(",")
         .map((x) => Number(x.trim()))
         .filter((n) => Number.isFinite(n) && n > 0)
         .slice(0, 80);
+      const activityIds = rawActs
+        .split(",")
+        .map((x) => Number(x.trim()))
+        .filter((n) => Number.isFinite(n) && n > 0)
+        .slice(0, 80);
+      if (!materialIds.length && activityIds.length) {
+        const actList = sql.join(activityIds.map((id) => sql`${id}`), sql`, `);
+        const mats = rows(
+          await db.execute(sql`
+            select distinct material_id as id
+            from activity_compositions
+            where type = 'material' and material_id is not null
+              and activity_id in (${actList})
+            limit 80`),
+        );
+        materialIds = mats.map((m: any) => Number(m.id)).filter((n: number) => n > 0);
+      }
       if (!materialIds.length) return res.json([]);
 
       const idList = sql.join(materialIds.map((id) => sql`${id}`), sql`, `);
