@@ -47,6 +47,7 @@ export function canAccess(user: DisclosureUser | null | undefined, feature: Disc
 const GATED_ROUTES: Array<[RegExp, DisclosureFeature]> = [
   [/^\/dashboard\/?$/, "projects"],
   [/^\/budgets(\/|$)/, "projects"],
+  [/^\/proyecto-nuevo(\/|$)/, "projects"],
   [/^\/plantillas(\/|$)/, "templates"],
   [/^\/(activities|custom-activities|tools|labor|marketplace)(\/|$)/, "catalog"],
 ];

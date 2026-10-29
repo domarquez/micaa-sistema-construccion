@@ -44,6 +44,7 @@ import Login from "@/pages/login";
 import Register from "@/pages/register";
 import CustomActivities from "@/pages/custom-activities";
 import ProjectTemplates from "@/pages/project-templates";
+import NewBlankProjectPage from "@/pages/new-blank-project";
 import AccountSettings from "@/pages/account-settings";
 import NotFound from "@/pages/not-found";
 import AnunciarPage from "@/pages/anunciar";
@@ -97,6 +98,7 @@ function usePriceSurface(path: string) {
     path === "/publicar-precio" ||
     path === "/proyectos" ||
     path === "/plantillas" ||
+    path === "/proyecto-nuevo" ||
     path === "/materiales" ||
     path.startsWith("/materiales/") ||
     path === "/empresas" ||
@@ -115,6 +117,9 @@ function PriceRoutes() {
         <div className="mx-auto max-w-5xl px-4 py-6">
           <DisclosureGate feature="templates"><ProjectTemplates /></DisclosureGate>
         </div>
+      </Route>
+      <Route path="/proyecto-nuevo">
+        <DisclosureGate feature="projects"><NewBlankProjectPage /></DisclosureGate>
       </Route>
       <Route path="/materiales" component={MaterialesPage} />
       <Route path="/materiales/:id" component={MaterialDetail} />
@@ -171,6 +176,7 @@ function AuthenticatedLayout() {
               <Route path="/budgets" component={Budgets} />
               <Route path="/budgets/new" component={Budgets} />
               <Route path="/plantillas" component={ProjectTemplates} />
+              <Route path="/proyecto-nuevo" component={NewBlankProjectPage} />
               <Route path="/budgets/:id" component={BudgetDetails} />
               <Route path="/price-settings" component={PriceSettings} />
               <Route path="/apu-import" component={APUImport} />

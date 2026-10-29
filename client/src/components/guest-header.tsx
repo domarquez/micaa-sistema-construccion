@@ -146,7 +146,10 @@ export function GuestHeader() {
               </Link>
             ))}
             {member && (
-              <Link href="/plantillas" className="py-2.5 text-[var(--micaa-muted)]">Desde plantilla</Link>
+              <>
+                <Link href="/plantillas" className="py-2.5 text-[var(--micaa-muted)]">Desde plantilla</Link>
+                <Link href="/proyecto-nuevo" className="py-2.5 text-[var(--micaa-muted)]">En blanco</Link>
+              </>
             )}
             {isAdmin && (
               <Link href="/dashboard" className="py-2.5 text-[var(--micaa-muted)]">Panel de administración</Link>

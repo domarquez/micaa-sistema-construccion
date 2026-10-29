@@ -3234,7 +3234,7 @@ export async function registerRoutes(app: any) {
       const { projectId, phaseId, total, status } = req.body;
       const userId = (req as any).user.id;
       
-      if (!projectId || !total) {
+      if (!projectId || total === undefined || total === null || total === "") {
         return res.status(400).json({ message: "Datos incompletos para crear presupuesto" });
       }
 
