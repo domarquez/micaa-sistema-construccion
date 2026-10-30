@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { AlertTriangle, RotateCcw, Calculator } from "lucide-react";
+import { AlertTriangle, RotateCcw, Calculator, X } from "lucide-react";
 import {
   computeApuTotals,
   effectiveQuantity,
@@ -128,6 +128,8 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
   const [scope, setScope] = useState<"item" | "project">("item");
   const [saving, setSaving] = useState(false);
+  const unsavedRef = useRef(false);
+  const savingRef = useRef(false);
 
   const queryKey = ["/api/budget-items", budgetItemId, "apu"];
   const { data, isLoading, error, refetch } = useQuery<ItemApuResponse>({
@@ -152,7 +154,9 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
       if (!r) return false;
       const cur = currentChoice(r);
       const d = drafts[k];
-      return d.choice !== cur.choice || (d.choice === MANUAL && d.manual !== cur.manual);
+      if (d.choice !== cur.choice || (d.choice === MANUAL && d.manual !== cur.manual)) return true;
+      // Fallback: resolved draft price differs from the row's current applied price
+      return Math.abs(priceFor(r, d) - r.unitPrice) > 0.005;
     });
   }, [drafts, apu]);
 
@@ -177,44 +181,142 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
     setDrafts({});
     const fresh = await refetch();
     queryClient.invalidateQueries({ queryKey: ["/api/budgets"] });
-    if (item) queryClient.invalidateQueries({ queryKey: [`/api/budgets/${item.budgetId}`] });
+    if (item) {
+      queryClient.invalidateQueries({ queryKey: [`/api/budgets/${item.budgetId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/projects", item.projectId] });
+    }
+    queryClient.invalidateQueries({ queryKey });
     const it = fresh.data?.item;
     if (it) onSaved?.({ id: it.id, unitPrice: it.unitPrice, subtotal: it.subtotal });
+    return it;
   };
 
+  const hasUnsaved = dirtyKeys.length > 0;
+  unsavedRef.current = hasUnsaved;
+  savingRef.current = saving;
+
+  const requestClose = () => {
+    if (savingRef.current) return;
+    if (unsavedRef.current) {
+      const ok = window.confirm("Hay cambios sin guardar en el APU. ¿Salir sin guardar?");
+      if (!ok) return;
+    }
+    onClose();
+  };
+
+  // Android/system back while APU is open → confirm if dirty, then close (same as X).
+  useEffect(() => {
+    if (!open) return;
+    const marker = { micaaApuDialog: budgetItemId };
+    window.history.pushState(marker, "");
+    let closedViaBack = false;
+    const onPopState = () => {
+      if (savingRef.current) {
+        window.history.pushState(marker, "");
+        return;
+      }
+      if (unsavedRef.current) {
+        const ok = window.confirm("Hay cambios sin guardar en el APU. ¿Salir sin guardar?");
+        if (!ok) {
+          window.history.pushState(marker, "");
+          return;
+        }
+      }
+      closedViaBack = true;
+      onClose();
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      // X / Guardar close: drop the history marker we pushed.
+      if (
+        !closedViaBack &&
+        typeof window !== "undefined" &&
+        (window.history.state as { micaaApuDialog?: number } | null)?.micaaApuDialog === budgetItemId
+      ) {
+        window.history.back();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, budgetItemId]);
+
+  /** Persist draft overrides (or reprice if only stored price differs), then close. */
   const save = async () => {
-    if (!apu || !item || dirtyKeys.length === 0) return;
+    if (!apu || !item) return;
+    const needsOverrides = dirtyKeys.length > 0;
+    const needsRepriceOnly =
+      !needsOverrides && Math.abs(item.unitPrice - (preview?.totalUnitPrice ?? apu.totalUnitPrice)) > 0.005;
+    if (!needsOverrides && !needsRepriceOnly) return;
+    if (needsOverrides && !apu.overridesAvailable) {
+      toast({
+        title: "No se puede guardar",
+        description: "Falta la migración de overrides de precio.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
-      for (const k of dirtyKeys) {
-        const r = apu.rows.find((x) => rowKey(x) === k)!;
-        const d = drafts[k];
-        const opt = r.options.find((o) => o.key === d.choice);
-        const body: Record<string, unknown> = {
-          inputType: r.inputType,
-          inputId: r.inputId,
-          scope,
-          budgetItemId: item.id,
-          repriceItemId: item.id,
-        };
-        if (d.choice === MANUAL) {
-          const n = parseFloat(d.manual.replace(",", "."));
-          if (!Number.isFinite(n) || n < 0) throw new Error(`Precio manual inválido para ${r.name}`);
-          Object.assign(body, { source: "manual", manualPrice: n });
-        } else if (d.choice === "market") {
-          Object.assign(body, { source: "market" });
-        } else if (opt?.source === "quote") {
-          Object.assign(body, { source: "quote", quoteId: opt.quoteId ?? null, supplierPriceId: opt.supplierPriceId ?? null });
-        } else {
-          Object.assign(body, { source: "base" });
+      if (needsOverrides) {
+        for (const k of dirtyKeys) {
+          const r = apu.rows.find((x) => rowKey(x) === k)!;
+          const d = drafts[k];
+          const opt = r.options.find((o) => o.key === d.choice);
+
+          // Volver a base = quitar override (no insertar source=base en ítem)
+          if (d.choice === "base" || opt?.source === "base") {
+            if (r.override) {
+              const q = new URLSearchParams({
+                inputType: r.inputType,
+                inputId: String(r.inputId),
+                scope: scope === "project" ? "project" : r.override.scope,
+                repriceItemId: String(item.id),
+              });
+              if (scope === "item" || r.override.scope === "item") q.set("budgetItemId", String(item.id));
+              await apiRequest("DELETE", `/api/projects/${item.projectId}/price-overrides?${q.toString()}`);
+            }
+            continue;
+          }
+
+          const body: Record<string, unknown> = {
+            inputType: r.inputType,
+            inputId: r.inputId,
+            scope,
+            budgetItemId: item.id,
+            repriceItemId: item.id,
+          };
+          if (d.choice === MANUAL) {
+            const n = parseFloat(d.manual.replace(",", "."));
+            if (!Number.isFinite(n) || n < 0) throw new Error(`Precio manual inválido para ${r.name}`);
+            Object.assign(body, { source: "manual", manualPrice: n });
+          } else if (d.choice === "market" || opt?.source === "market") {
+            Object.assign(body, { source: "market" });
+          } else if (opt?.source === "quote") {
+            Object.assign(body, {
+              source: "quote",
+              quoteId: opt.quoteId ?? null,
+              supplierPriceId: opt.supplierPriceId ?? null,
+            });
+          } else {
+            throw new Error(`Opción de precio no reconocida para ${r.name}`);
+          }
+          await apiRequest("PUT", `/api/projects/${item.projectId}/price-overrides`, body);
         }
-        await apiRequest("PUT", `/api/projects/${item.projectId}/price-overrides`, body);
+      } else if (needsRepriceOnly) {
+        await apiRequest("POST", `/api/budget-items/${item.id}/reprice`);
       }
-      await afterServerChange();
+
+      const it = await afterServerChange();
+      const pu = it?.unitPrice ?? preview?.totalUnitPrice ?? apu.totalUnitPrice;
       toast({
-        title: "APU actualizado",
-        description: scope === "project" ? "Precios aplicados a todo el proyecto" : "Precios aplicados solo a este ítem",
+        title: `APU guardado, P.U. ${bs(pu)}`,
+        description:
+          scope === "project" && needsOverrides
+            ? "Precios aplicados a todo el proyecto"
+            : "Precios aplicados solo a este ítem",
       });
+      onClose();
     } catch (e: any) {
       toast({ title: "No se pudo guardar", description: String(e?.message || e), variant: "destructive" });
     } finally {
@@ -234,7 +336,10 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
       });
       if (r.override.scope === "item") q.set("budgetItemId", String(item.id));
       await apiRequest("DELETE", `/api/projects/${item.projectId}/price-overrides?${q.toString()}`);
-      await afterServerChange();
+      const it = await afterServerChange();
+      if (it) {
+        toast({ title: `APU actualizado, P.U. ${bs(it.unitPrice)}` });
+      }
     } catch (e: any) {
       toast({ title: "No se pudo restablecer", description: String(e?.message || e), variant: "destructive" });
     } finally {
@@ -242,21 +347,13 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
     }
   };
 
-  const applyLive = async () => {
-    if (!item) return;
-    setSaving(true);
-    try {
-      await apiRequest("POST", `/api/budget-items/${item.id}/reprice`);
-      await afterServerChange();
-      toast({ title: "Precio del ítem actualizado con el APU en vivo" });
-    } catch (e: any) {
-      toast({ title: "No se pudo recalcular", description: String(e?.message || e), variant: "destructive" });
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const storedDiffers = item && apu ? Math.abs(item.unitPrice - apu.totalUnitPrice) > 0.005 : false;
+  /** Single primary action: drafts to persist, or apply live APU when stored price lags. */
+  const canSave =
+    !!apu &&
+    !!item &&
+    !saving &&
+    (dirtyKeys.length > 0 ? !!apu.overridesAvailable : storedDiffers);
 
   const renderPriceControls = (r: ApuRow, d: Draft, selectable: boolean) => {
     if (!selectable) {
@@ -486,8 +583,19 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o) => { if (!o) requestClose(); }}>
       <DialogContent
+        hideCloseButton
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+          requestClose();
+        }}
+        onPointerDownOutside={(e) => {
+          // Fullscreen mobile: never dismiss by tapping outside; use X / back / Guardar.
+          if (typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches) {
+            e.preventDefault();
+          }
+        }}
         className={cn(
           "apu-dialog flex flex-col gap-0 overflow-hidden p-0",
           "w-full max-w-[98vw] lg:max-w-6xl",
@@ -495,8 +603,17 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
           "md:max-h-[95vh]",
         )}
       >
-        {/* Sticky header: title + room for absolute X */}
-        <div className="sticky top-0 z-10 shrink-0 border-b bg-background px-3 pt-3 pb-2 pr-12 md:px-6 md:pt-5 md:pb-3 md:pr-14">
+        {/* Sticky header: title + always-visible X (above body; default Dialog X hidden) */}
+        <div className="sticky top-0 z-20 shrink-0 border-b bg-background px-3 pt-3 pb-2 pr-12 md:px-6 md:pt-5 md:pb-3 md:pr-14">
+          <button
+            type="button"
+            aria-label="Cerrar APU"
+            className="absolute right-3 top-3 z-30 inline-flex h-9 w-9 items-center justify-center rounded-md border bg-background text-muted-foreground shadow-sm hover:bg-accent hover:text-foreground md:right-4 md:top-4"
+            onClick={requestClose}
+            disabled={saving}
+          >
+            <X className="h-4 w-4" />
+          </button>
           <DialogHeader className="space-y-1 text-left">
             <DialogTitle className="flex items-start gap-2 text-base sm:text-lg leading-snug break-words [hyphens:none] [overflow-wrap:anywhere]">
               <Calculator className="w-5 h-5 text-primary shrink-0 mt-0.5" />
@@ -658,16 +775,17 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2 justify-end">
-                    {storedDiffers && dirtyKeys.length === 0 && (
-                      <Button variant="outline" size="sm" disabled={saving} onClick={applyLive}>
-                        Usar este APU en el ítem
-                      </Button>
-                    )}
                     <Button variant="outline" size="sm" disabled={saving || dirtyKeys.length === 0} onClick={() => setDrafts({})}>
                       Descartar
                     </Button>
-                    <Button size="sm" disabled={saving || dirtyKeys.length === 0 || !apu.overridesAvailable} onClick={save}>
-                      {saving ? "Guardando…" : `Guardar ${dirtyKeys.length || ""} cambio(s)`}
+                    <Button size="sm" disabled={!canSave} onClick={save}>
+                      {saving
+                        ? "Guardando…"
+                        : dirtyKeys.length
+                          ? `Guardar (${dirtyKeys.length})`
+                          : storedDiffers
+                            ? "Guardar P.U."
+                            : "Guardar"}
                     </Button>
                   </div>
                 </div>
@@ -685,15 +803,15 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
                   Subtotal ítem ({item.quantity} {apu.unit}):{" "}
                   <b className="whitespace-nowrap">{bs(preview.totalUnitPrice * item.quantity)}</b>
                 </div>
-                {storedDiffers && dirtyKeys.length === 0 && (
-                  <Button variant="outline" size="sm" className="w-full mt-1" disabled={saving} onClick={applyLive}>
-                    Usar este APU en el ítem
-                  </Button>
-                )}
                 {dirtyKeys.length > 0 && (
                   <Button variant="outline" size="sm" className="w-full mt-1" disabled={saving} onClick={() => setDrafts({})}>
                     Descartar cambios
                   </Button>
+                )}
+                {storedDiffers && dirtyKeys.length === 0 && (
+                  <p className="text-amber-800 mt-1">
+                    El P.U. guardado del ítem difiere del APU en vivo. Pulsa <b>Guardar</b> para actualizarlo.
+                  </p>
                 )}
               </div>
             </>
@@ -711,11 +829,17 @@ export default function BudgetItemApuDialog({ budgetItemId, open, onClose, onSav
             </div>
             <Button
               size="default"
-              className="shrink-0"
-              disabled={saving || dirtyKeys.length === 0 || !apu.overridesAvailable}
+              className="shrink-0 min-w-[7.5rem]"
+              disabled={!canSave}
               onClick={save}
             >
-              {saving ? "Guardando…" : dirtyKeys.length ? `Guardar (${dirtyKeys.length})` : "Guardar"}
+              {saving
+                ? "Guardando…"
+                : dirtyKeys.length
+                  ? `Guardar (${dirtyKeys.length})`
+                  : storedDiffers
+                    ? "Guardar P.U."
+                    : "Guardar"}
             </Button>
           </div>
         )}
