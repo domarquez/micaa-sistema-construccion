@@ -387,6 +387,8 @@ export async function computeActivityApu(
     let basePrice = snapshotCost;
     let baseSource: ApuPriceSource = isCustomActivity ? "custom" : "snapshot";
     let options: ApuPriceOption[] = [];
+    /** Full option list for override resolution (never strip quotes). */
+    let resolveOptions: ApuPriceOption[] = [];
 
     if (inputType === "material" && c.material_id != null) {
       inputId = c.material_id;
@@ -409,6 +411,8 @@ export async function computeActivityApu(
         catalogUnit = m.unit;
         basePrice = m.base;
         baseSource = "base";
+        resolveOptions = m.options;
+        // Payload may omit quotes for size, but reprice/overrides MUST resolve against full list.
         options = includeOptions ? m.options : m.options.filter((o) => o.key === "base" || o.key === "market");
         if (/\[DUPLICADO/i.test(m.name)) rowWarnings.push("El material enlazado está marcado como DUPLICADO");
       } else {
@@ -423,6 +427,7 @@ export async function computeActivityApu(
         basePrice = round2(num(l.hourlyRate) * cf.laborFactor);
         baseSource = "base";
         options = [{ key: "base", source: "base", label: `Tarifa MICAA (${cf.factorCity || city})`, price: basePrice }];
+        resolveOptions = options;
       } else rowWarnings.push(`Mano de obra #${inputId} no existe: se usa el costo importado`);
     } else if (inputType === "equipment" && c.tool_id != null) {
       inputId = c.tool_id;
@@ -433,6 +438,7 @@ export async function computeActivityApu(
         basePrice = round2(num(t.unitPrice) * cf.equipmentFactor);
         baseSource = "base";
         options = [{ key: "base", source: "base", label: `Tarifa MICAA (${cf.factorCity || city})`, price: basePrice }];
+        resolveOptions = options;
       } else rowWarnings.push(`Equipo #${inputId} no existe: se usa el costo importado`);
     } else {
       rowWarnings.push("Sin enlace al catálogo: se usa el costo importado (unit_cost)");
@@ -450,7 +456,7 @@ export async function computeActivityApu(
         : APU_SOURCE_LABELS[baseSource];
     const ov = baseSource === "base" ? findOverride(overrides, inputType, inputId, budgetItemId ?? null) : null;
     if (ov) {
-      const r = applyOverride(basePrice, options, ov, rowWarnings);
+      const r = applyOverride(basePrice, resolveOptions.length ? resolveOptions : options, ov, rowWarnings);
       unitPrice = r.price;
       source = r.source;
       sourceLabel = r.label;
