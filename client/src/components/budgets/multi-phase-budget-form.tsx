@@ -47,6 +47,7 @@ import { AnonymousBudgetWarning } from "@/components/anonymous-budget-warning";
 import { useAuth } from "@/hooks/useAuth";
 import { track } from "@/lib/analytics";
 import { getCity } from "@/lib/city";
+import { parseBudgetQuantity, BUDGET_QTY_MAX } from "@shared/quantity";
 
 const projectFormSchema = z.object({
   name: z.string().min(1, "El nombre del proyecto es requerido"),
@@ -92,14 +93,21 @@ interface PhaseData {
 interface MultiphaseBudgetFormProps {
   budget?: BudgetWithProject | null;
   onClose: () => void;
+  /** Al abrir desde /budgets/:id (Editar), priorizar cantidades/fases sobre metadatos del proyecto. */
+  focusQuantities?: boolean;
 }
 
-export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudgetFormProps) {
+export default function MultiphaseBudgetForm({ budget, onClose, focusQuantities = false }: MultiphaseBudgetFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isAnonymous } = useAuth();
   const [currentProject, setCurrentProject] = useState<Project | null>(budget?.project || null);
   const [phases, setPhases] = useState<PhaseData[]>([]);
+  /** Siempre el último `phases` — evita cierres stale en Guardar / updates rápidos. */
+  const phasesRef = useRef<PhaseData[]>([]);
+  useEffect(() => { phasesRef.current = phases; }, [phases]);
+  const phasesSectionRef = useRef<HTMLDivElement | null>(null);
+  const [projectMetaOpen, setProjectMetaOpen] = useState(!focusQuantities && !budget);
   const [selectedPhases, setSelectedPhases] = useState<number[]>([]);
   const [apuTarget, setApuTarget] = useState<{ phaseId: number; localId: string; dbId: number } | null>(null);
   const [openPhases, setOpenPhases] = useState<string[]>([]);
@@ -186,7 +194,17 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     // Agrupar por la fase de la ACTIVIDAD (igual que el PDF y el detalle); el phase_id guardado se conserva (storedPhaseId).
     const loadedPhases = buildEditorPhases((budgetData as any).items, allActivities, constructionPhases) as PhaseData[];
     setPhases(loadedPhases);
+    phasesRef.current = loadedPhases;
     setSelectedPhases(loadedPhases.map(p => p.phaseId));
+    // Abrir todas las fases para que cantidades/APU sean fáciles de encontrar (móvil / presupuestos grandes).
+    setOpenPhases(loadedPhases.map(p => p.phaseId.toString()));
+    if (focusQuantities || isEditing) {
+      setProjectMetaOpen(false);
+      // Scroll a cantidades tras pintar
+      requestAnimationFrame(() => {
+        phasesSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
 
     // Actualizar el formulario con los datos del proyecto
     const project = (budgetData as any).project;
@@ -450,8 +468,44 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         throw new Error("Proyecto requerido para guardar presupuesto");
       }
 
-      // Validar que hay al menos una fase con actividades válidas
-      const validItems = phases.filter(phase => 
+      // Volcar inputs de cantidad visibles (blur pendiente) al snapshot antes de guardar.
+      if (typeof document !== "undefined") {
+        document.querySelectorAll<HTMLInputElement>("input[data-testid=budget-item-quantity]").forEach((el) => {
+          const phaseId = Number(el.getAttribute("data-phase-id"));
+          const itemId = el.getAttribute("data-item-id");
+          if (!itemId || !Number.isFinite(phaseId)) return;
+          const parsed = parseBudgetQuantity(el.value);
+          if (!parsed.ok) return;
+          const next = phasesRef.current.map((p) => {
+            if (p.phaseId !== phaseId) return p;
+            const items = p.items.map((it) => {
+              if (it.id !== itemId) return it;
+              return { ...it, quantity: parsed.value, subtotal: parsed.value * it.unitPrice };
+            });
+            return { ...p, items, total: items.reduce((s, it) => s + it.subtotal, 0) };
+          });
+          phasesRef.current = next;
+        });
+        setPhases(phasesRef.current);
+      }
+
+      // Leer el snapshot más reciente (incluye fases colapsadas y edits rápidos).
+      const phasesSnapshot = phasesRef.current;
+
+      // Validar cantidades antes de pegarle al API
+      for (const phase of phasesSnapshot) {
+        for (const item of phase.items) {
+          if (!(item.activityId > 0)) continue;
+          const q = parseBudgetQuantity(item.quantity);
+          if (!q.ok) {
+            throw new Error(`${phase.phase?.name || "Fase"}: ${q.message}`);
+          }
+          item.quantity = q.value;
+          item.subtotal = item.quantity * item.unitPrice;
+        }
+      }
+
+      const validItems = phasesSnapshot.filter(phase => 
         phase.items.some(item => item.activityId > 0 && item.quantity > 0)
       );
       
@@ -459,7 +513,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         throw new Error("Debe agregar al menos una actividad válida al presupuesto");
       }
 
-      const totalGeneral = phases.reduce((sum, phase) => sum + phase.total, 0);
+      const totalGeneral = phasesSnapshot.reduce((sum, phase) => sum + phase.items.reduce((s, it) => s + it.subtotal, 0), 0);
       
       // USUARIOS ANÓNIMOS: Guardar en sessionStorage
       if (isAnonymous) {
@@ -471,11 +525,11 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           project: currentProject,
           total: totalGeneral,
           status: "active",
-          phases: phases.map(phaseData => ({
+          phases: phasesSnapshot.map(phaseData => ({
             phaseId: phaseData.phaseId,
             phase: phaseData.phase,
             items: phaseData.items.filter(item => item.activityId > 0 && item.quantity > 0),
-            total: phaseData.total
+            total: phaseData.items.reduce((s, it) => s + it.subtotal, 0)
           })),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
@@ -514,7 +568,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         // (PUT), se crean los nuevos (POST) y se eliminan los quitados (DELETE).
         // Así se conservan los ajustes de APU por ítem (project_price_overrides).
         const keptIds = new Set<number>();
-        for (const phaseData of phases) {
+        for (const phaseData of phasesSnapshot) {
           for (const item of phaseData.items) {
             if (item.dbId && item.activityId > 0 && item.quantity > 0) keptIds.add(item.dbId);
           }
@@ -556,51 +610,60 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
         if (budgetToUse?.id) setDraftBudgetId(budgetToUse.id);
       }
 
-      // Crear / actualizar los elementos del presupuesto
+      // Crear / actualizar TODOS los ítems del snapshot (fases abiertas o colapsadas).
       let itemsCreated = 0;
-      for (const phaseData of phases) {
+      const putErrors: string[] = [];
+      // Lotes de 8 para no saturar el browser en presupuestos grandes (casa ~68).
+      const updates: Array<() => Promise<void>> = [];
+      for (const phaseData of phasesSnapshot) {
         for (const item of phaseData.items) {
           if (persistedBudgetId && item.dbId && item.activityId > 0 && item.quantity > 0) {
-            await apiRequest("PUT", `/api/budget-items/${item.dbId}`, {
+            const dbId = item.dbId;
+            const body = {
               activityId: item.activityId,
               phaseId: item.storedPhaseId ?? phaseData.phaseId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
               manualUnitPrice: !!item.priceManual
+            };
+            updates.push(async () => {
+              const res = await apiRequest("PUT", `/api/budget-items/${dbId}`, body);
+              if (!res.ok) {
+                let msg = await res.text();
+                try { msg = JSON.parse(msg).message || msg; } catch { /* keep */ }
+                putErrors.push(`Ítem #${dbId}: ${msg}`);
+                return;
+              }
+              itemsCreated++;
             });
-            itemsCreated++;
             continue;
           }
           if (item.activityId > 0 && item.quantity > 0) {
-            console.log("Creando item:", {
-              budgetId: budgetToUse.id,
-              activityId: item.activityId,
-              phaseId: phaseData.phaseId,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              subtotal: item.subtotal
+            updates.push(async () => {
+              const itemResponse = await apiRequest("POST", "/api/budget-items", {
+                budgetId: budgetToUse.id,
+                activityId: item.activityId,
+                phaseId: phaseData.phaseId,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                subtotal: item.subtotal,
+                manualUnitPrice: !!item.priceManual
+              });
+              if (!itemResponse.ok) {
+                const errorText = await itemResponse.text();
+                throw new Error(`Error al crear elemento del presupuesto: ${errorText}`);
+              }
+              itemsCreated++;
             });
-            
-            const itemResponse = await apiRequest("POST", "/api/budget-items", {
-              budgetId: budgetToUse.id,
-              activityId: item.activityId,
-              phaseId: phaseData.phaseId,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              subtotal: item.subtotal,
-              // El servidor calcula el P.U. con el APU en vivo salvo precio manual
-              manualUnitPrice: !!item.priceManual
-            });
-            
-            if (!itemResponse.ok) {
-              const errorText = await itemResponse.text();
-              console.error("Error creando item:", errorText);
-              throw new Error(`Error al crear elemento del presupuesto: ${errorText}`);
-            }
-            
-            itemsCreated++;
           }
         }
+      }
+      const CHUNK = 8;
+      for (let i = 0; i < updates.length; i += CHUNK) {
+        await Promise.all(updates.slice(i, i + CHUNK).map((fn) => fn()));
+      }
+      if (putErrors.length) {
+        throw new Error(`No se guardaron ${putErrors.length} ítem(s). ${putErrors[0]}`);
       }
       
       console.log(`Se ${isEditing ? 'actualizaron' : 'crearon'} ${itemsCreated} elementos del presupuesto`);
@@ -618,7 +681,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
     onError: (error) => {
       toast({
         title: "Error al guardar",
-        description: "No se pudo guardar el presupuesto. Intentá nuevamente.",
+        description: error instanceof Error ? error.message : "No se pudo guardar el presupuesto. Intentá nuevamente.",
         variant: "destructive",
       });
     }
@@ -731,7 +794,11 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
       total: 0
     };
 
-    setPhases([...phases, newPhaseData].sort(byPhaseOrder));
+    setPhases((prev) => {
+      const next = [...prev, newPhaseData].sort(byPhaseOrder);
+      phasesRef.current = next;
+      return next;
+    });
     setSelectedPhases([...selectedPhases, phaseId]);
     setOpenPhases((prev) => (prev.includes(String(phaseId)) ? prev : [...prev, String(phaseId)]));
   };
@@ -769,37 +836,50 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   };
 
   const removePhase = (phaseId: number) => {
-    setPhases(phases.filter(p => p.phaseId !== phaseId));
+    setPhases((prev) => {
+      const next = prev.filter(p => p.phaseId !== phaseId);
+      phasesRef.current = next;
+      return next;
+    });
     setSelectedPhases(selectedPhases.filter(id => id !== phaseId));
   };
 
   const updatePhaseItems = (phaseId: number, items: BudgetItemData[]) => {
     const total = items.reduce((sum, item) => sum + item.subtotal, 0);
-    setPhases(phases.map(p => 
-      p.phaseId === phaseId 
-        ? { ...p, items, total }
-        : p
-    ));
+    setPhases((prev) => {
+      const next = prev.map(p => 
+        p.phaseId === phaseId 
+          ? { ...p, items, total }
+          : p
+      );
+      phasesRef.current = next;
+      return next;
+    });
   };
 
   const addItemToPhase = (phaseId: number) => {
-    setPhases(phases.map(p => {
-      if (p.phaseId === phaseId) {
-        const newItem: BudgetItemData = {
-          id: Date.now().toString(),
-          activityId: 0,
-          quantity: 1,
-          unitPrice: 0,
-          subtotal: 0,
-        };
-        return { ...p, items: [...p.items, newItem] };
-      }
-      return p;
-    }));
+    setPhases((prev) => {
+      const next = prev.map(p => {
+        if (p.phaseId === phaseId) {
+          const newItem: BudgetItemData = {
+            id: Date.now().toString(),
+            activityId: 0,
+            quantity: 1,
+            unitPrice: 0,
+            subtotal: 0,
+          };
+          return { ...p, items: [...p.items, newItem] };
+        }
+        return p;
+      });
+      phasesRef.current = next;
+      return next;
+    });
   };
 
   const removeItemFromPhase = (phaseId: number, itemId: string) => {
-    const next = removeEditorItem(phases, phaseId, itemId);
+    const next = removeEditorItem(phasesRef.current, phaseId, itemId);
+    phasesRef.current = next;
     setPhases(next);
     if (!next.some(p => p.phaseId === phaseId)) setSelectedPhases(selectedPhases.filter(id => id !== phaseId));
   };
@@ -837,37 +917,50 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
   };
 
   const updateItemInPhase = (phaseId: number, itemId: string, field: keyof BudgetItemData, value: any) => {
-    setPhases(phases.map(p => {
-      if (p.phaseId === phaseId) {
+    setPhases((prev) => {
+      const next = prev.map(p => {
+        if (p.phaseId !== phaseId) return p;
         const newItems = p.items.map(item => {
-          if (item.id === itemId) {
-            const updatedItem = { ...item, [field]: value };
-            
-            if (field === 'activityId') {
-              const activity = allActivities?.find((a: any) => a.id === value);
-              updatedItem.activity = activity;
-              updatedItem.priceManual = false;
-              // Provisional hasta que llegue el APU en vivo del servidor
-              updatedItem.unitPrice = activity?.unitPrice ? Number(activity.unitPrice) : 0;
-              if (activity) fetchLivePrice(phaseId, itemId, activity.id);
-            }
-            if (field === 'unitPrice') {
-              updatedItem.priceManual = true;
-            }
-            
-            // Siempre recalcular subtotal
-            updatedItem.subtotal = updatedItem.quantity * updatedItem.unitPrice;
-            
-            return updatedItem;
+          if (item.id !== itemId) return item;
+          const updatedItem = { ...item, [field]: value };
+
+          if (field === 'activityId') {
+            const activity = allActivities?.find((a: any) => a.id === value);
+            updatedItem.activity = activity;
+            updatedItem.priceManual = false;
+            updatedItem.unitPrice = activity?.unitPrice ? Number(activity.unitPrice) : 0;
+            if (activity) fetchLivePrice(phaseId, itemId, activity.id);
           }
-          return item;
+          if (field === 'unitPrice') {
+            updatedItem.priceManual = true;
+          }
+          if (field === 'quantity') {
+            const n = typeof value === 'number' ? value : Number(value);
+            updatedItem.quantity = Number.isFinite(n) ? n : 0;
+          }
+
+          updatedItem.subtotal = updatedItem.quantity * updatedItem.unitPrice;
+          return updatedItem;
         });
-        
         const total = newItems.reduce((sum, item) => sum + item.subtotal, 0);
         return { ...p, items: newItems, total };
-      }
-      return p;
-    }));
+      });
+      phasesRef.current = next;
+      return next;
+    });
+  };
+
+  const commitQuantity = (phaseId: number, itemId: string, raw: string) => {
+    const parsed = parseBudgetQuantity(raw === "" ? "0" : raw);
+    if (!parsed.ok) {
+      toast({
+        title: "Cantidad inválida",
+        description: parsed.message,
+        variant: "destructive",
+      });
+      return;
+    }
+    updateItemInPhase(phaseId, itemId, 'quantity', parsed.value);
   };
 
 
@@ -901,21 +994,53 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
           )}
           
           
-          {/* Formulario del Proyecto */}
+          {/* Formulario del Proyecto — en edición queda colapsado para priorizar cantidades */}
           {(!currentProject || isEditing) && (
             <Card>
-              <CardHeader className="pb-4 sm:pb-6">
-                <CardTitle className="text-lg sm:text-xl font-semibold text-foreground">
-                  {isEditing ? "Editar Información del Proyecto" : "Información del Proyecto"}
-                </CardTitle>
-                <CardDescription className="text-sm sm:text-base text-muted-foreground mt-2">
-                  {isEditing 
-                    ? "Modifica los datos del proyecto. Los cambios se aplicarán al proyecto actual."
-                    : "Complete los datos básicos del proyecto para comenzar con el presupuesto"
-                  }
-                </CardDescription>
+              <CardHeader className="pb-2 sm:pb-4">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                    <CardTitle className="text-lg sm:text-xl font-semibold text-foreground">
+                      {isEditing ? "Información del Proyecto" : "Información del Proyecto"}
+                    </CardTitle>
+                    <CardDescription className="text-sm sm:text-base text-muted-foreground mt-2">
+                      {isEditing 
+                        ? "Nombre, cliente y ciudad. Las cantidades están más abajo."
+                        : "Complete los datos básicos del proyecto para comenzar con el presupuesto"
+                      }
+                    </CardDescription>
+                  </div>
+                  {isEditing && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() => setProjectMetaOpen((v) => !v)}
+                      data-testid="toggle-project-meta"
+                    >
+                      {projectMetaOpen ? "Ocultar datos" : "Editar datos del proyecto"}
+                    </Button>
+                  )}
+                </div>
+                {isEditing && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                      onClick={() => {
+                        setOpenPhases(phasesRef.current.map((p) => p.phaseId.toString()));
+                        phasesSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                      data-testid="jump-to-quantities"
+                    >
+                      Ir a cantidades y fases
+                    </Button>
+                  </div>
+                )}
               </CardHeader>
-              <CardContent>
+              <CardContent className={isEditing && !projectMetaOpen ? "hidden" : undefined}>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleProjectSubmit)} className="space-y-3 sm:space-y-4">
                     <FormField
@@ -1084,6 +1209,20 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
 
               {/* Fases del Presupuesto */}
               {phases.length > 0 && (
+                <div ref={phasesSectionRef} className="space-y-3" data-testid="budget-phases-section">
+                <div className="flex flex-wrap items-center justify-between gap-2 sticky top-0 z-10 bg-background/95 backdrop-blur py-2 border-b">
+                  <p className="text-sm font-semibold text-foreground">
+                    Fases y cantidades ({phases.reduce((n, p) => n + p.items.length, 0)} ítems)
+                  </p>
+                  <div className="flex gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => setOpenPhases(phases.map(p => p.phaseId.toString()))}>
+                      Expandir todas
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setOpenPhases([])}>
+                      Colapsar
+                    </Button>
+                  </div>
+                </div>
                 <Accordion type="multiple" value={openPhases} onValueChange={setOpenPhases} className="space-y-4">
                   {phases.map((phaseData) => (
                     <AccordionItem key={phaseData.phaseId} value={phaseData.phaseId.toString()}>
@@ -1163,13 +1302,21 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                                   <div className="min-w-0 sm:col-span-2">
                                     <label className="mb-1 block text-xs font-medium text-muted-foreground">Cantidad</label>
                                     <Input
-                                      type="number"
-                                      step="0.01"
+                                      type="text"
                                       inputMode="decimal"
-                                      value={item.quantity}
-                                      onChange={(e) => updateItemInPhase(phaseData.phaseId, item.id, 'quantity', parseFloat(e.target.value) || 0)}
+                                      defaultValue={String(item.quantity)}
+                                      key={`qty-${phaseData.phaseId}-${item.id}`}
+                                      onBlur={(e) => commitQuantity(phaseData.phaseId, item.id, e.target.value)}
+                                      onChange={(e) => {
+                                        const parsed = parseBudgetQuantity(e.target.value);
+                                        if (parsed.ok) updateItemInPhase(phaseData.phaseId, item.id, 'quantity', parsed.value);
+                                      }}
                                       className="text-sm min-w-0"
                                       aria-label="Cantidad"
+                                      data-testid="budget-item-quantity"
+                                      data-phase-id={phaseData.phaseId}
+                                      data-item-id={item.id}
+                                      title={`Máximo ${BUDGET_QTY_MAX.toLocaleString("es-BO")}; coma decimal válida (ej. 12,5)`}
                                     />
                                   </div>
                                   <div className="min-w-0 sm:col-span-2">
@@ -1254,6 +1401,7 @@ export default function MultiphaseBudgetForm({ budget, onClose }: MultiphaseBudg
                     </AccordionItem>
                   ))}
                 </Accordion>
+                </div>
               )}
             </div>
           )}

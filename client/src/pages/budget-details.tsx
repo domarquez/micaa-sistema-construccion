@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { useParams } from "wouter";
 import { getQueryFn } from "@/lib/queryClient";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -69,6 +69,10 @@ export default function BudgetDetails() {
   const queryClient = useQueryClient();
   const [financeOpen, setFinanceOpen] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  // Prefetch jsPDF so the first PDF on large budgets is less likely to time out.
+  useEffect(() => {
+    void import("jspdf");
+  }, []); // prefetch-jspdf
 
   const handleGeneratePDF = async () => {
     if (!budget || !budgetItems) {
@@ -688,6 +692,7 @@ export default function BudgetDetails() {
       {showEditForm && !isAnonymous && (
         <MultiphaseBudgetForm
           budget={budget}
+          focusQuantities
           onClose={() => {
             setShowEditForm(false);
             queryClient.invalidateQueries({ queryKey: [`/api/budgets/${budgetId}`] });
