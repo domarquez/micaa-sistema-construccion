@@ -57,6 +57,7 @@ import AppHeader from "@/components/layout/header";
 import { AppFooter } from "@/components/layout/app-footer";
 import { GuestHeader } from "@/components/guest-header";
 import { useAuth } from "@/hooks/useAuth";
+import { withAdminGate } from "@/components/AdminRouteGuard";
 import { useDisclosureLevel } from "@/hooks/useDisclosureLevel";
 import { DisclosureGate, WhatsAppSignupCta } from "@/components/DisclosureGate";
 import { featureForPath } from "@/lib/disclosure";
@@ -170,7 +171,7 @@ function AuthenticatedLayout() {
               <Route path="/materials" component={Materials} />
               <Route path="/activities" component={Activities} />
               <Route path="/custom-activities" component={CustomActivities} />
-              <Route path="/admin/activities" component={ActivityManager} />
+              <Route path="/admin/activities" component={withAdminGate(ActivityManager)} />
               <Route path="/tools" component={Tools} />
               <Route path="/labor" component={Labor} />
               <Route path="/budgets" component={Budgets} />
@@ -193,18 +194,18 @@ function AuthenticatedLayout() {
               <Route path="/import-companies" component={ImportCompanies} />
               <Route path="/review-companies" component={ReviewCompanies} />
               <Route path="/simple-import" component={SimpleImport} />
-              <Route path="/admin/materials" component={AdminMaterials} />
-              <Route path="/admin/prices" component={AdminMaterials} />
-              <Route path="/admin/users" component={AdminUsers} />
-              <Route path="/admin/suppliers" component={AdminSuppliers} />
-              <Route path="/admin-materials" component={AdminMaterials} />
-              <Route path="/admin-activities" component={ActivityManager} />
-              <Route path="/admin/pending-claims" component={AdminPendingClaims} />
-              <Route path="/admin/companies" component={AdminCompanies} />
-              <Route path="/admin/advertisements" component={AdminAdvertisements} />
-              <Route path="/admin/bulk-email" component={AdminBulkEmail} />
-              <Route path="/admin/database" component={AdminDatabase} />
-              <Route path="/admin/estadisticas" component={AdminEstadisticas} />
+              <Route path="/admin/materials" component={withAdminGate(AdminMaterials)} />
+              <Route path="/admin/prices" component={withAdminGate(AdminMaterials)} />
+              <Route path="/admin/users" component={withAdminGate(AdminUsers)} />
+              <Route path="/admin/suppliers" component={withAdminGate(AdminSuppliers)} />
+              <Route path="/admin-materials" component={withAdminGate(AdminMaterials)} />
+              <Route path="/admin-activities" component={withAdminGate(ActivityManager)} />
+              <Route path="/admin/pending-claims" component={withAdminGate(AdminPendingClaims)} />
+              <Route path="/admin/companies" component={withAdminGate(AdminCompanies)} />
+              <Route path="/admin/advertisements" component={withAdminGate(AdminAdvertisements)} />
+              <Route path="/admin/bulk-email" component={withAdminGate(AdminBulkEmail)} />
+              <Route path="/admin/database" component={withAdminGate(AdminDatabase)} />
+              <Route path="/admin/estadisticas" component={withAdminGate(AdminEstadisticas)} />
               <Route path="/marketplace" component={Marketplace} />
               <Route path="/account-settings" component={AccountSettings} />
               <Route component={NotFound} />

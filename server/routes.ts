@@ -18,6 +18,7 @@ import { registerApuRoutes } from './apu-routes';
 import { registerProjectTemplateRoutes } from './project-templates';
 import { registerTransportRoutes, afterProjectSaved, stripTransportFields } from './transport';
 import { computeActivityApu, saveBudgetItemPrice, clearBudgetItemSnapshot, recomputeBudgetTotal, liveUnitPricesForActivities, applyLiveUnitPrices } from './apu-live';
+import { parseBudgetQuantity } from '../shared/quantity';
 import { registerWaAuthRoutes } from './wa-auth/routes';
 import { registerAnalyticsRoutes } from './analytics';
 import { dbOtpStore, dbUserStore, dbSessionStore } from './wa-auth/db-stores';
@@ -3436,12 +3437,16 @@ export async function registerRoutes(app: any) {
     try {
       const { budgetId, activityId, phaseId, quantity, unitPrice, manualUnitPrice } = req.body;
       const userId = (req as any).user.id;
-      const qty = parseFloat(quantity);
       const aid = parseInt(activityId);
+      const qtyParsed = parseBudgetQuantity(quantity);
 
-      if (!budgetId || !aid || !(qty > 0)) {
+      if (!budgetId || !aid) {
         return res.status(400).json({ message: "Datos incompletos para crear elemento de presupuesto" });
       }
+      if (!qtyParsed.ok) {
+        return res.status(400).json({ message: qtyParsed.message });
+      }
+      const qty = qtyParsed.value;
 
       const owned = await assertBudgetOwnedByUser(parseInt(budgetId), userId);
       if (!owned) {
@@ -3533,8 +3538,17 @@ export async function registerRoutes(app: any) {
 
       // Solo campos editables (nunca budgetId → no se puede mover a otro presupuesto)
       const nextActivityId = body.activityId != null ? parseInt(body.activityId) : current.item.activityId;
-      const nextQty = body.quantity != null ? parseFloat(body.quantity) : parseFloat(String(current.item.quantity));
       const nextPhaseId = body.phaseId !== undefined ? (body.phaseId ? parseInt(body.phaseId) : null) : current.item.phaseId;
+      let nextQty: number;
+      if (body.quantity != null) {
+        const qtyParsed = parseBudgetQuantity(body.quantity);
+        if (!qtyParsed.ok) {
+          return res.status(400).json({ message: qtyParsed.message });
+        }
+        nextQty = qtyParsed.value;
+      } else {
+        nextQty = parseFloat(String(current.item.quantity));
+      }
       if (!nextActivityId || !(nextQty > 0)) {
         return res.status(400).json({ message: "Datos inválidos" });
       }
