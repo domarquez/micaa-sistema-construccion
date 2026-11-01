@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MessageCircle, Send, ArrowLeft } from "lucide-react";
+import { MessageCircle, ArrowLeft } from "lucide-react";
 
-type WaConfig = { enabled: boolean; waLink: string | null; requestText: string; cooldownSeconds: number };
+type WaConfig = {
+  enabled: boolean;
+  waLink: string | null;
+  waNumber?: string | null;
+  requestText: string;
+  cooldownSeconds: number;
+};
 
 type Props = {
   mode: "login" | "link";
@@ -18,79 +24,54 @@ function authHeaders(): Record<string, string> {
 }
 
 /**
- * Flujo de código por WhatsApp.
- * Preferido: "Abrir WhatsApp" (el usuario nos escribe "Quiero mi código MICAA" y el servidor responde con el código).
- * Fallback: "Enviarme el código" (POST /api/auth/wa/request).
+ * Login inbound-first: el usuario escribe a MICAA por WhatsApp ("Quiero mi código MICAA")
+ * y MICAA responde. No hay envío outbound desde /api/auth/wa/request.
  */
 export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
   const [config, setConfig] = useState<WaConfig | null>(null);
-  const [step, setStep] = useState<"phone" | "code">("phone");
+  const [step, setStep] = useState<"start" | "code">("start");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
-  const [cooldown, setCooldown] = useState(0);
-  // Flujo "Abrir WhatsApp" con ref: el server sabe desde qué número se pidió el código.
   const [start, setStart] = useState<{ ref: string; waLink: string } | null>(null);
   const [mismatch, setMismatch] = useState<string | null>(null);
+  const autoVerifyRef = useRef(false);
 
   useEffect(() => {
-    fetch("/api/auth/wa/config").then((r) => r.json()).then(setConfig).catch(() => setConfig({ enabled: false, waLink: null, requestText: "", cooldownSeconds: 60 }));
-    // Se pide al montar para que window.open sea síncrono al tocar el botón (bloqueadores de popups).
+    fetch("/api/auth/wa/config")
+      .then((r) => r.json())
+      .then(setConfig)
+      .catch(() => setConfig({ enabled: false, waLink: null, requestText: "", cooldownSeconds: 60 }));
     fetch("/api/auth/wa/start", { method: "POST" })
       .then((r) => r.json())
-      .then((d) => { if (d?.ok && d.ref && d.waLink) setStart({ ref: d.ref, waLink: d.waLink }); })
+      .then((d) => {
+        if (d?.ok && d.ref && d.waLink) setStart({ ref: d.ref, waLink: d.waLink });
+      })
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (cooldown <= 0) return;
-    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [cooldown]);
-
-  const phoneLooksOk = phone.replace(/\D/g, "").length >= 8;
+  const waHref = start?.waLink || config?.waLink || null;
   const base = mode === "login" ? "/api/auth/wa" : "/api/auth/wa/link";
+  const phoneLooksOk = phone.replace(/\D/g, "").length >= 8;
 
-  const openWhatsApp = () => {
-    const link = start?.waLink || config?.waLink;
-    if (!link) return;
+  const goToCodeStep = () => {
     setError("");
     setMismatch(null);
-    window.open(link, "_blank", "noopener");
-    setInfo("Enviá el mensaje en WhatsApp y te responderemos con tu código.");
+    setInfo("Enviá el mensaje en WhatsApp. MICAA te responde con el código de 6 dígitos; escribilo acá.");
     setStep("code");
   };
 
-  const sendCode = async () => {
-    setBusy(true);
-    setError("");
-    try {
-      const r = await fetch(`${base}/request`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json", ...authHeaders() },
-        body: JSON.stringify({ phone }),
-      });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) {
-        if (data.retryAfterSeconds && data.code === "COOLDOWN") setCooldown(data.retryAfterSeconds);
-        throw new Error(data.message || "No se pudo enviar el código");
-      }
-      setInfo("Te enviamos un código por WhatsApp. Vence en 5 minutos.");
-      setCooldown(data.cooldownSeconds || 60);
-      setStep("code");
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const verify = async (e?: React.FormEvent, useSender = false) => {
-    e?.preventDefault();
+  const verify = async (opts?: { useSender?: boolean; codeOverride?: string }) => {
     if (busy) return;
+    const useSender = !!opts?.useSender;
+    const codeValue = opts?.codeOverride ?? code;
+    if (!useSender && !phoneLooksOk) {
+      setError("Escribí el número de WhatsApp desde el que pediste el código.");
+      return;
+    }
+    if (codeValue.length !== 6) return;
     setBusy(true);
     setError("");
     try {
@@ -98,7 +79,7 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json", ...authHeaders() },
-        body: JSON.stringify({ phone, code, ref: start?.ref, useSender }),
+        body: JSON.stringify({ phone, code: codeValue, ref: start?.ref, useSender }),
       });
       const data = await r.json().catch(() => ({}));
       if (r.status === 409 && data.code === "PHONE_MISMATCH") {
@@ -110,68 +91,103 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
       onSuccess(data);
     } catch (e: any) {
       setError(e.message);
+      autoVerifyRef.current = false;
     } finally {
       setBusy(false);
     }
   };
 
+  // Auto-verifica al completar 6 dígitos
+  useEffect(() => {
+    if (step !== "code" || code.length !== 6 || busy || autoVerifyRef.current) return;
+    if (!phoneLooksOk && !mismatch) return;
+    autoVerifyRef.current = true;
+    void verify({ codeOverride: code });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code, step, phoneLooksOk]);
+
   if (config && !config.enabled) {
-    return <p className="text-xs text-muted-foreground text-center">El acceso por WhatsApp no está disponible en este momento.</p>;
+    return (
+      <p className="text-xs text-muted-foreground text-center">
+        El acceso por WhatsApp no está disponible en este momento.
+      </p>
+    );
   }
 
   return (
     <div className="space-y-3">
-      {step === "phone" ? (
+      {step === "start" ? (
         <>
+          <p className="text-xs sm:text-sm text-muted-foreground text-center">
+            Abrí WhatsApp, enviá el mensaje listo a MICAA y te respondemos con tu código. MICAA no inicia la conversación.
+          </p>
+          {waHref ? (
+            <a
+              href={waHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              data-testid="button-wa-open"
+              onClick={goToCodeStep}
+            >
+              <MessageCircle className="w-4 h-4" /> Abrir WhatsApp
+            </a>
+          ) : (
+            <Button type="button" className="w-full" disabled data-testid="button-wa-open">
+              <MessageCircle className="w-4 h-4 mr-2" /> Cargando WhatsApp…
+            </Button>
+          )}
+          <button
+            type="button"
+            className="w-full text-center text-xs text-muted-foreground hover:underline"
+            onClick={goToCodeStep}
+            data-testid="button-wa-already-sent"
+          >
+            Ya envié el mensaje — ingresar código
+          </button>
+        </>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            autoVerifyRef.current = true;
+            void verify();
+          }}
+          className="space-y-3"
+        >
+          {info && <p className="text-xs text-muted-foreground text-center">{info}</p>}
           <div className="space-y-1">
-            <Label htmlFor="wa-phone" className="text-xs sm:text-sm">Tu número de WhatsApp</Label>
+            <Label htmlFor="wa-phone" className="text-xs sm:text-sm">
+              Número desde el que escribiste
+            </Label>
             <Input
               id="wa-phone"
               type="tel"
               inputMode="tel"
               autoComplete="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                autoVerifyRef.current = false;
+                setPhone(e.target.value);
+              }}
               placeholder="7123 4567"
               data-testid="input-wa-phone"
             />
-            <p className="text-xs sm:text-xs text-muted-foreground">Bolivia (+591) por defecto. Otro país: escribí el número con +.</p>
+            <p className="text-xs text-muted-foreground">Bolivia (+591) por defecto. Otro país: con +.</p>
           </div>
-          <Button
-            type="button"
-            className="w-full disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100"
-            disabled={!phoneLooksOk || !(start?.waLink || config?.waLink)}
-            onClick={openWhatsApp}
-            data-testid="button-wa-open"
-          >
-            <MessageCircle className="w-4 h-4 mr-2" /> Abrir WhatsApp
-          </Button>
-          {!phoneLooksOk && (
-            <p className="text-center text-xs text-muted-foreground" data-testid="text-wa-hint">Escribí tu número para continuar.</p>
-          )}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            disabled={!phoneLooksOk || busy || cooldown > 0}
-            onClick={sendCode}
-            data-testid="button-wa-send"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            {busy ? "Enviando..." : cooldown > 0 ? `Enviarme el código (${cooldown}s)` : "Enviarme el código"}
-          </Button>
-        </>
-      ) : (
-        <form onSubmit={verify} className="space-y-3">
-          {info && <p className="text-xs text-muted-foreground text-center">{info}</p>}
           <div className="space-y-1">
-            <Label htmlFor="wa-code" className="text-xs sm:text-sm">Código de 6 dígitos</Label>
+            <Label htmlFor="wa-code" className="text-xs sm:text-sm">
+              Código de 6 dígitos
+            </Label>
             <Input
               id="wa-code"
               inputMode="numeric"
               autoComplete="one-time-code"
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onChange={(e) => {
+                autoVerifyRef.current = false;
+                setCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+              }}
               placeholder="000000"
               className="text-center text-2xl tracking-widest"
               maxLength={6}
@@ -179,24 +195,59 @@ export default function WhatsAppCodeFlow({ mode, onSuccess }: Props) {
             />
           </div>
           {mismatch && (
-            <Button type="button" variant="outline" className="w-full border-primary text-primary" disabled={busy} onClick={() => verify(undefined, true)} data-testid="button-wa-use-sender">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-primary text-primary"
+              disabled={busy}
+              onClick={() => verify({ useSender: true })}
+              data-testid="button-wa-use-sender"
+            >
               {mode === "login" ? "Entrar" : "Vincular"} con el WhatsApp {mismatch}
             </Button>
           )}
-          <Button type="submit" className="w-full" disabled={code.length !== 6 || busy} data-testid="button-wa-verify">
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={code.length !== 6 || !phoneLooksOk || busy}
+            data-testid="button-wa-verify"
+          >
             {busy ? "Verificando..." : mode === "login" ? "Entrar" : "Vincular WhatsApp"}
           </Button>
           <div className="flex items-center justify-between text-xs">
-            <button type="button" className="text-muted-foreground hover:underline flex items-center gap-1" onClick={() => { setStep("phone"); setCode(""); setError(""); setInfo(""); setMismatch(null); }}>
-              <ArrowLeft className="w-3 h-3" /> Cambiar número
+            <button
+              type="button"
+              className="text-muted-foreground hover:underline flex items-center gap-1"
+              onClick={() => {
+                setStep("start");
+                setCode("");
+                setError("");
+                setInfo("");
+                setMismatch(null);
+                autoVerifyRef.current = false;
+              }}
+            >
+              <ArrowLeft className="w-3 h-3" /> Volver
             </button>
-            <button type="button" className="text-primary hover:underline disabled:opacity-50" disabled={busy || cooldown > 0} onClick={sendCode}>
-              {cooldown > 0 ? `Reenviar (${cooldown}s)` : "Enviarme el código"}
-            </button>
+            {waHref && (
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+                data-testid="link-wa-reopen"
+              >
+                Reabrir WhatsApp
+              </a>
+            )}
           </div>
         </form>
       )}
-      {error && <div className="text-red-600 text-xs bg-red-50 p-2 rounded-md border border-red-200" data-testid="text-wa-error">{error}</div>}
+      {error && (
+        <div className="text-red-600 text-xs bg-red-50 p-2 rounded-md border border-red-200" data-testid="text-wa-error">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
