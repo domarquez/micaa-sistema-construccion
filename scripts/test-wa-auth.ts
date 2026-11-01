@@ -68,6 +68,15 @@ async function call(method: string, path: string, body?: any, headers: Record<st
 }
 const codeFromLastMessage = () => /(\d{6})/.exec(sent[sent.length - 1].text)![1];
 const ip = (n: number) => ({ "X-Forwarded-For": `10.0.0.${n}` });
+const inbound = (from: string, text: string) => ({
+  event: "messages.upsert", instance: "precios-ferreterias",
+  data: { key: { remoteJid: `${from}@s.whatsapp.net`, fromMe: false, id: "M" + from + String(clock) }, message: { conversation: text }, messageTimestamp: Math.floor(Date.now() / 1000) },
+});
+async function issueViaInbound(fromDigits: string) {
+  const r = await call("POST", "/api/webhooks/evolution?token=hook-test-token", inbound(fromDigits, "Quiero mi código MICAA"));
+  assert.equal(r.status, 200);
+  return r;
+}
 
 let passed = 0;
 async function test(name: string, fn: () => Promise<void>) {
@@ -105,37 +114,53 @@ async function test(name: string, fn: () => Promise<void>) {
 
   let token = "";
   let cookie = "";
-  await test("request envía código (mensaje exacto, sin links) y no lo devuelve", async () => {
+  await test("request outbound está deshabilitado (USE_INBOUND) y no envía", async () => {
+    const n = sent.length;
     const r = await call("POST", "/api/auth/wa/request", { phone: "7123 4567" }, ip(1));
-    assert.equal(r.status, 200);
-    assert.equal(r.json.ok, true);
-    assert.equal(sent.length, 1);
-    assert.ok(!JSON.stringify(r.json).includes(codeFromLastMessage()), "la respuesta no debe incluir el código");
-    assert.equal(sent[0].to, "+59171234567");
-    assert.match(sent[0].text, /^Tu código MICAA es \d{6}\. Vence en 5 minutos\. Si no lo pediste, ignóralo\.$/);
-    assert.ok(!/http/i.test(sent[0].text));
-    const stored = otp.rows[0];
+    assert.equal(r.status, 403);
+    assert.equal(r.json.code, "USE_INBOUND");
+    assert.match(r.json.waLink, /^https:\/\/wa\.me\/59178732644\?text=/);
+    assert.equal(sent.length, n);
+  });
+
+  await test("inbound envía código (mensaje exacto, sin links) y no lo expone", async () => {
+    const n = sent.length;
+    await issueViaInbound("59171234567");
+    assert.equal(sent.length, n + 1);
+    assert.equal(sent[sent.length - 1].to, "+59171234567");
+    assert.match(sent[sent.length - 1].text, /^Tu código MICAA es \d{6}\. Vence en 5 minutos\. Si no lo pediste, ignóralo\.$/);
+    assert.ok(!/http/i.test(sent[sent.length - 1].text));
+    const stored = otp.rows[otp.rows.length - 1];
     assert.notEqual(stored.codeHash, codeFromLastMessage(), "el código se guarda hasheado");
     assert.ok(!stored.codeHash.includes(codeFromLastMessage()));
     assert.ok(logs.every((l) => !l.includes(codeFromLastMessage())), "logs sin el código");
   });
 
-  await test("cooldown de 60 s por número", async () => {
-    const r = await call("POST", "/api/auth/wa/request", { phone: "71234567" }, ip(1));
-    assert.equal(r.status, 429);
-    assert.equal(r.json.code, "COOLDOWN");
-    assert.equal(sent.length, 1);
+  await test("cooldown de 60 s por número (inbound)", async () => {
+    const n = sent.length;
+    await issueViaInbound("59171234567");
+    assert.equal(sent.length, n + 1, "aviso de cooldown (texto, no OTP nuevo) o nada");
+    const otpSends = sent.filter((s) => /^Tu código MICAA es \d{6}/.test(s.text));
+    assert.equal(otpSends.filter((s) => s.to === "+59171234567").length, 1);
+  });
+
+  let loginCode = "";
+  await test("nuevo código tras cooldown para verify", async () => {
+    advance(61_000);
+    await issueViaInbound("59171234567");
+    loginCode = codeFromLastMessage();
+    assert.match(loginCode, /^\d{6}$/);
   });
 
   await test("verify: código incorrecto -> 400 genérico", async () => {
-    const wrong = codeFromLastMessage() === "000000" ? "111111" : "000000";
+    const wrong = loginCode === "000000" ? "111111" : "000000";
     const r = await call("POST", "/api/auth/wa/verify", { phone: "71234567", code: wrong }, ip(1));
     assert.equal(r.status, 400);
     assert.equal(r.json.code, "INVALID_CODE");
   });
 
   await test("verify correcto: crea cuenta, emite JWT + cookie httpOnly 1 año", async () => {
-    const r = await call("POST", "/api/auth/wa/verify", { phone: "+591 71234567", code: codeFromLastMessage() }, { ...ip(1), "User-Agent": "Mozilla/5.0 (Linux; Android 14) Chrome/120.0" });
+    const r = await call("POST", "/api/auth/wa/verify", { phone: "+591 71234567", code: loginCode }, { ...ip(1), "User-Agent": "Mozilla/5.0 (Linux; Android 14) Chrome/120.0" });
     assert.equal(r.status, 200);
     assert.equal(r.json.isNewUser, true);
     assert.equal(r.json.user.phoneVerified, true, "cuenta creada por WhatsApp = teléfono verificado");
@@ -154,7 +179,7 @@ async function test(name: string, fn: () => Promise<void>) {
   });
 
   await test("el código no se puede reutilizar", async () => {
-    const r = await call("POST", "/api/auth/wa/verify", { phone: "71234567", code: codeFromLastMessage() }, ip(1));
+    const r = await call("POST", "/api/auth/wa/verify", { phone: "71234567", code: loginCode }, ip(1));
     assert.equal(r.status, 400);
   });
 
@@ -184,23 +209,24 @@ async function test(name: string, fn: () => Promise<void>) {
     assert.equal((await call("GET", "/api/legacy-protected", undefined, { Cookie: cookie })).status, 401);
   });
 
-  await test("máximo N envíos por número por hora", async () => {
+  await test("máximo N envíos por número por hora (inbound)", async () => {
     const { OTP_MAX_PER_PHONE_HOUR } = await import("../server/wa-auth/otp");
-    // ya hubo 1 envío a este número en la última hora (hace 2 h -> no cuenta); llenamos el cupo
+    const before = sent.filter((s) => s.to === "+59176543210" && /^Tu código MICAA es/.test(s.text)).length;
     for (let i = 0; i < OTP_MAX_PER_PHONE_HOUR; i++) {
       advance(61_000);
-      const r = await call("POST", "/api/auth/wa/request", { phone: "76543210" }, ip(2));
-      assert.equal(r.status, 200, `envío ${i + 1}`);
+      await issueViaInbound("59176543210");
     }
+    const mid = sent.filter((s) => s.to === "+59176543210" && /^Tu código MICAA es/.test(s.text)).length;
+    assert.equal(mid - before, OTP_MAX_PER_PHONE_HOUR);
     advance(61_000);
-    const r = await call("POST", "/api/auth/wa/request", { phone: "76543210" }, ip(2));
-    assert.equal(r.status, 429);
-    assert.equal(r.json.code, "RATE_LIMITED");
+    await issueViaInbound("59176543210");
+    const after = sent.filter((s) => s.to === "+59176543210" && /^Tu código MICAA es/.test(s.text)).length;
+    assert.equal(after, mid, "no emite OTP nuevo al superar el cupo");
   });
 
   await test("5 intentos por código", async () => {
     advance(3600_000);
-    await call("POST", "/api/auth/wa/request", { phone: "60000001" }, ip(3));
+    await issueViaInbound("59160000001");
     const good = codeFromLastMessage();
     const bad = good === "999999" ? "888888" : "999999";
     for (let i = 0; i < 4; i++) {
@@ -212,33 +238,32 @@ async function test(name: string, fn: () => Promise<void>) {
 
   await test("código vence a los 5 min", async () => {
     advance(61_000);
-    await call("POST", "/api/auth/wa/request", { phone: "60000002" }, ip(4));
+    await issueViaInbound("59160000002");
     const c = codeFromLastMessage();
     advance(5 * 60_000 + 1000);
     assert.equal((await call("POST", "/api/auth/wa/verify", { phone: "60000002", code: c }, ip(4))).status, 400);
   });
 
-  await test("máximo N envíos por IP por hora", async () => {
-    const { OTP_MAX_PER_IP_HOUR } = await import("../server/wa-auth/otp");
+  await test("inbound no aplica límite por IP (solo responde a quien escribe)", async () => {
     advance(3600_000);
-    for (let i = 0; i < OTP_MAX_PER_IP_HOUR; i++) {
-      const r = await call("POST", "/api/auth/wa/request", { phone: `61000${String(i).padStart(3, "0")}` }, ip(5));
-      assert.equal(r.status, 200, `ip envío ${i + 1}`);
+    const { OTP_MAX_PER_IP_HOUR } = await import("../server/wa-auth/otp");
+    // Muchos inbound distintos no deben fallar por IP (webhook usa ip:null)
+    for (let i = 0; i < Math.min(OTP_MAX_PER_IP_HOUR + 2, 5); i++) {
+      await issueViaInbound(`59161000${String(i).padStart(3, "0")}`);
     }
-    const r = await call("POST", "/api/auth/wa/request", { phone: "61000999" }, ip(5));
-    assert.equal(r.status, 429);
+    assert.ok(sent.some((s) => s.to === "+59161000000" && /^Tu código MICAA es/.test(s.text)));
   });
 
-  await test("si Evolution falla -> 502 con mensaje claro", async () => {
+  await test("si Evolution falla en inbound, no deja código usable", async () => {
     advance(3600_000);
     failNext = true;
-    const r = await call("POST", "/api/auth/wa/request", { phone: "62000000" }, ip(6));
-    assert.equal(r.status, 502);
-    assert.equal(r.json.code, "WA_SEND_FAILED");
-    assert.match(r.json.message, /WhatsApp/);
+    const n = sent.length;
+    await issueViaInbound("59162000000");
+    assert.equal(sent.length, n, "no hubo envío exitoso");
+    assert.equal((await call("POST", "/api/auth/wa/verify", { phone: "62000000", code: "123456" }, ip(6))).json.code, "NO_ACTIVE_CODE");
   });
 
-  await test("teléfono inválido -> 400", async () => {
+  await test("teléfono inválido en request -> 400", async () => {
     const r = await call("POST", "/api/auth/wa/request", { phone: "123" }, ip(6));
     assert.equal(r.status, 400);
   });
@@ -279,38 +304,38 @@ async function test(name: string, fn: () => Promise<void>) {
     assert.equal(sent.length, n);
   });
 
-  await test("vincular WhatsApp a cuenta existente con correo/contraseña", async () => {
+  await test("vincular WhatsApp a cuenta existente con correo/contraseña (código por inbound)", async () => {
     const legacy = jwt.sign({ userId: 1, username: "diego", email: "diego@example.com", role: "user" }, process.env.JWT_SECRET!, { expiresIn: "24h" });
     advance(61_000);
     const rq = await call("POST", "/api/auth/wa/link/request", { phone: "79999999" }, { Authorization: `Bearer ${legacy}`, ...ip(8) });
-    assert.equal(rq.status, 200);
+    assert.equal(rq.status, 403);
+    assert.equal(rq.json.code, "USE_INBOUND");
+    await issueViaInbound("59179999999");
     const lv = await call("POST", "/api/auth/wa/link/verify", { phone: "79999999", code: codeFromLastMessage() }, { Authorization: `Bearer ${legacy}`, ...ip(8) });
     assert.equal(lv.status, 200);
     assert.equal(users.users[0].phone, "+59179999999");
-    // ahora login por WhatsApp entra a la MISMA cuenta
     advance(61_000);
-    await call("POST", "/api/auth/wa/request", { phone: "79999999" }, ip(8));
+    await issueViaInbound("59179999999");
     const v = await call("POST", "/api/auth/wa/verify", { phone: "79999999", code: codeFromLastMessage() }, ip(8));
     assert.equal(v.status, 200);
     assert.equal(v.json.user.id, 1);
     assert.equal(v.json.isNewUser, false);
-    // JWT legacy sigue funcionando
     assert.equal((await call("GET", "/api/legacy-protected", undefined, { Authorization: `Bearer ${legacy}` })).status, 200);
   });
 
-  await test("no revela si el número existe (misma respuesta)", async () => {
+  await test("request no revela si el número existe (misma USE_INBOUND)", async () => {
     advance(3600_000);
-    const a = await call("POST", "/api/auth/wa/request", { phone: "79999999" }, ip(9)); // existe
-    const b = await call("POST", "/api/auth/wa/request", { phone: "79999998" }, ip(9)); // no existe
-    assert.equal(a.status, b.status);
-    assert.deepEqual(Object.keys(a.json).sort(), Object.keys(b.json).sort());
+    const a = await call("POST", "/api/auth/wa/request", { phone: "79999999" }, ip(9));
+    const b = await call("POST", "/api/auth/wa/request", { phone: "79999998" }, ip(9));
+    assert.equal(a.status, 403);
+    assert.equal(b.status, 403);
+    assert.equal(a.json.code, "USE_INBOUND");
     assert.equal(a.json.message, b.json.message);
   });
 
   await test("login por WhatsApp de cuenta existente con teléfono sin verificar → queda verificado", async () => {
     advance(3600_000);
-    const q = await call("POST", "/api/auth/wa/request", { phone: "76666666" }, ip(20));
-    assert.equal(q.status, 200);
+    await issueViaInbound("59176666666");
     const v = await call("POST", "/api/auth/wa/verify", { phone: "76666666", code: codeFromLastMessage() }, ip(20));
     assert.equal(v.status, 200);
     assert.equal(v.json.user.id, 50);
@@ -320,10 +345,6 @@ async function test(name: string, fn: () => Promise<void>) {
 
   // Bug 2026-10-04 (Diego): "Abrir WhatsApp" desde otro WhatsApp → el código queda para el remitente y el
   // verify con el número escrito decía "incorrecto o vencido" aunque no pasaron 5 min.
-  const inbound = (from: string, text: string) => ({
-    event: "messages.upsert", instance: "precios-ferreterias",
-    data: { key: { remoteJid: `${from}@s.whatsapp.net`, fromMe: false, id: "M" + from }, message: { conversation: text }, messageTimestamp: Math.floor(Date.now() / 1000) },
-  });
 
   await test("bug OTP: código pedido por WhatsApp desde otro número → NO_ACTIVE_CODE explicativo (no 'vencido')", async () => {
     advance(3600_000);
@@ -371,7 +392,8 @@ async function test(name: string, fn: () => Promise<void>) {
   });
 
   await test("logs sin códigos", async () => {
-    const codes = sent.map((s) => /(\d{6})/.exec(s.text)![1]);
+    const codes = sent.map((s) => /(\d{6})/.exec(s.text)?.[1]).filter(Boolean) as string[];
+    assert.ok(codes.length > 0);
     for (const l of logs) for (const c of codes) assert.ok(!l.includes(c), `log contiene código: ${l}`);
   });
 

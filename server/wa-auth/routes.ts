@@ -1,9 +1,9 @@
 /**
  * Rutas de login por WhatsApp + dispositivos recordados.
  *   GET  /api/auth/wa/config
- *   POST /api/auth/wa/request        {phone}            (fallback "Enviarme el código")
+ *   POST /api/auth/wa/request        {phone}            (disabled: returns USE_INBOUND)
  *   POST /api/auth/wa/verify         {phone, code, deviceName?}
- *   POST /api/auth/wa/link/request   {phone}            (auth; "Vincular WhatsApp")
+ *   POST /api/auth/wa/link/request   {phone}            (auth; disabled: USE_INBOUND)
  *   POST /api/auth/wa/link/verify    {phone, code}      (auth)
  *   POST /api/webhooks/evolution?token=...              (Evolution messages.upsert)
  *   GET  /api/auth/devices                              (auth)
@@ -45,7 +45,7 @@ const INVALID_PHONE = { ok: false, code: "INVALID_PHONE", message: "Número no v
 const INVALID_CODE = { ok: false, code: "INVALID_CODE", message: "Código incorrecto. Revisá los 6 dígitos." };
 const noActive = (phone: string) => ({
   ok: false, code: "NO_ACTIVE_CODE",
-  message: `No hay un código vigente para ${maskPhone(phone)} (venció, ya se usó o se envió a otro número). Si escribiste a MICAA desde otro WhatsApp, usa ese número, o toca «Enviarme el código».`,
+  message: `No hay un código vigente para ${maskPhone(phone)} (venció, ya se usó o se envió a otro número). Si escribiste a MICAA desde otro WhatsApp, usá ese número, o pedí el código otra vez escribiendo a MICAA.`,
 });
 const TOO_MANY = { ok: false, code: "TOO_MANY_ATTEMPTS", message: "Demasiados intentos. Pide un código nuevo." };
 
@@ -122,7 +122,7 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
     res.setHeader("Retry-After", String(r.retryAfterSeconds));
     const message = r.reason === "cooldown"
       ? `Espera ${r.retryAfterSeconds} s antes de pedir otro código.`
-      : "Pediste demasiados códigos. Intentá más tarde o usá “Abrir WhatsApp”.";
+      : "Pediste demasiados códigos. Intentá más tarde escribiendo de nuevo a MICAA por WhatsApp.";
     return res.status(429).json({ ok: false, code: r.reason === "cooldown" ? "COOLDOWN" : "RATE_LIMITED", message, retryAfterSeconds: r.retryAfterSeconds });
   }
 
@@ -159,16 +159,25 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
     res.json({ ok: true, enabled, ref, requestText: text, waLink: `https://wa.me/${digits}?text=${encodeURIComponent(text)}` });
   });
 
-  async function handleRequest(req: Request, res: Response, purpose: "login" | "link", userId: number | null) {
+  /**
+   * Outbound OTP initiation is disabled: MICAA only replies to an inbound WhatsApp
+   * ("Quiero mi código MICAA"). Keeps the same shape for existing/non-existing phones.
+   */
+  async function handleRequest(req: Request, res: Response, _purpose: "login" | "link", _userId: number | null) {
     const phone = normalizePhoneE164(req.body?.phone);
     if (!phone) return res.status(400).json(INVALID_PHONE);
     if (!sender.isConfigured()) {
       return res.status(503).json({ ok: false, code: "WA_NOT_CONFIGURED", message: "El envío por WhatsApp no está disponible en este momento." });
     }
-    const r = await otp.issue({ phone, ip: clientIp(req), purpose, channel: "outbound", userId });
-    if (!r.ok) return issueErrorResponse(res, r);
-    // Misma respuesta exista o no la cuenta (no revelamos si el número está registrado).
-    return res.json({ ok: true, phone, message: "Te enviamos un código por WhatsApp.", expiresInSeconds: OTP_TTL_MS / 1000, cooldownSeconds: OTP_COOLDOWN_MS / 1000 });
+    const digits = e164ToDigits((await sender.getInstanceNumber()) || "") || e164ToDigits(process.env.MICAA_WA_LOGIN_NUMBER || "") || "59176105183";
+    const waLink = `https://wa.me/${digits}?text=${encodeURIComponent(LOGIN_REQUEST_TEXT)}`;
+    return res.status(403).json({
+      ok: false,
+      code: "USE_INBOUND",
+      message: "MICAA no inicia el mensaje. Abrí WhatsApp, enviá «Quiero mi código MICAA» al número de MICAA y te respondemos con el código.",
+      waLink,
+      requestText: LOGIN_REQUEST_TEXT,
+    });
   }
 
   app.post("/api/auth/wa/request", async (req, res) => {
@@ -252,7 +261,7 @@ export function registerWaAuthRoutes(app: Express, deps: WaAuthDeps): { sessions
                 r.phone,
                 out.reason === "cooldown"
                   ? `Esperá ${out.retryAfterSeconds} s y pedí el código de nuevo.`
-                  : `Pediste demasiados códigos. Probá de nuevo en unos ${mins} min, o desde micaa.site con «Enviarme el código».`,
+                  : `Pediste demasiados códigos. Probá de nuevo en unos ${mins} min escribiendo otra vez a MICAA.`,
               );
             } catch (e: any) {
               log(`[wa-auth] no se pudo avisar límite a ${maskPhone(r.phone)}: ${e?.message || e}`);

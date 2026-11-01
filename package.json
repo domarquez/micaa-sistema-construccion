@@ -15,7 +15,8 @@
     "seed:templates": "tsx scripts/seed-project-templates.ts",
     "verify:apu-6h": "tsx scripts/verify-apu-muro-6h.ts",
     "test:wa-auth": "tsx scripts/test-wa-auth.ts",
-    "test:steel-kg": "tsx scripts/test-steel-kg.ts"
+    "test:steel-kg": "tsx scripts/test-steel-kg.ts",
+    "test:wa-login-link": "node scripts/playwright-wa-login-link.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",
@@ -131,6 +132,7 @@
     "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.30.6",
     "esbuild": "^0.25.8",
+    "playwright": "^1.48.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
