@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://micaa.store/sitemap.xml
+Sitemap: https://micaa.site/sitemap.xml
