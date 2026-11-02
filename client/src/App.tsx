@@ -50,6 +50,7 @@ import NotFound from "@/pages/not-found";
 import AnunciarPage from "@/pages/anunciar";
 import ContactoPage from "@/pages/contacto";
 import { MicaaWhatsAppFab } from "@/components/MicaaWhatsAppFab";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { AnalyticsProvider, setAnalyticsUser } from "@/lib/analytics";
 import { PublicAdSense } from "@/components/ads/AdSenseSlot";
 import AppSidebar from "@/components/layout/sidebar-simple";
@@ -273,6 +274,7 @@ function App() {
           <Router />
           <Toaster />
           <MicaaWhatsAppFab />
+          <PWAInstallPrompt />
         </AnalyticsProvider>
       </TooltipProvider>
     </QueryClientProvider>

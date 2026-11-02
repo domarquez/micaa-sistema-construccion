@@ -9,6 +9,10 @@ interface BeforeInstallPromptEvent extends Event {
 let deferred: BeforeInstallPromptEvent | null = null;
 const EVT = "micaa-installable";
 
+export const PWA_DISMISS_KEY = "micaa-pwa-dismiss-until";
+export const PWA_INSTALLED_KEY = "micaa-pwa-installed";
+export const PWA_DISMISS_MS = 3 * 24 * 60 * 60 * 1000; // 3 días
+
 export function initPwa() {
   if (typeof window === "undefined") return;
   window.addEventListener("beforeinstallprompt", (e) => {
@@ -18,6 +22,12 @@ export function initPwa() {
   });
   window.addEventListener("appinstalled", () => {
     deferred = null;
+    try {
+      localStorage.setItem(PWA_INSTALLED_KEY, "1");
+      localStorage.removeItem(PWA_DISMISS_KEY);
+    } catch {
+      /* ignore */
+    }
     window.dispatchEvent(new Event(EVT));
   });
   if (!("serviceWorker" in navigator) || !import.meta.env.PROD) return;
@@ -53,4 +63,72 @@ export function useInstallPrompt() {
     return outcome === "accepted";
   };
   return { canInstall, install };
+}
+
+/** Ya está instalada / abierta como app (standalone). */
+export function isPwaInstalled(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    if (localStorage.getItem(PWA_INSTALLED_KEY) === "1") return true;
+  } catch {
+    /* ignore */
+  }
+  if (window.matchMedia("(display-mode: standalone)").matches) return true;
+  const nav = window.navigator as Navigator & { standalone?: boolean };
+  if (nav.standalone === true) return true;
+  return false;
+}
+
+/** Viewport / UA de celular (no escritorio). */
+export function isMobileClient(): boolean {
+  if (typeof window === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  if (/Mobi|Android|iPhone|iPod|iPad|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua)) return true;
+  return window.matchMedia("(max-width: 768px)").matches;
+}
+
+/**
+ * Navegador interno (WhatsApp, Instagram, Facebook, Gmail, WebView).
+ * Ahí no se puede instalar una PWA.
+ */
+export function isInAppBrowser(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /FBAN|FBAV|Instagram|WhatsApp|GSA|; wv\)|WebView/i.test(ua);
+}
+
+export function isIosSafariLike(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const iOS = /iPhone|iPad|iPod/i.test(ua);
+  // Chrome/Firefox iOS también usan WebKit; el flujo de “Agregar a inicio” es el de Safari.
+  return iOS && !isInAppBrowser();
+}
+
+export function isAndroid(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /Android/i.test(navigator.userAgent || "");
+}
+
+export function chromeIntentUrl(url = "https://micaa.site"): string {
+  // Abre la misma URL en Chrome (Android) desde un WebView / in-app browser.
+  const withoutScheme = url.replace(/^https?:\/\//, "");
+  return `intent://${withoutScheme}#Intent;scheme=https;package=com.android.chrome;end`;
+}
+
+export function wasDismissedRecently(): boolean {
+  try {
+    const until = Number(localStorage.getItem(PWA_DISMISS_KEY) || 0);
+    return until > Date.now();
+  } catch {
+    return false;
+  }
+}
+
+export function dismissForThreeDays(): void {
+  try {
+    localStorage.setItem(PWA_DISMISS_KEY, String(Date.now() + PWA_DISMISS_MS));
+  } catch {
+    /* ignore */
+  }
 }
