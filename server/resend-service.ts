@@ -46,8 +46,8 @@ async function getResendClient(): Promise<Resend> {
   return resendClient;
 }
 
-// Domain verified - use micaaa.top
-const FROM_EMAIL = 'MICAA <noreply@micaaa.top>';
+// EMAIL_FROM override once micaa.site is verified in Resend; default keeps prior from-address
+const FROM_EMAIL = process.env.EMAIL_FROM || 'MICAA <noreply@micaaa.top>';
 
 class ResendEmailService {
   async sendVerificationCode(email: string, code: string): Promise<boolean> {
@@ -157,7 +157,7 @@ class ResendEmailService {
                 <li>Calcular costos con precios regionales</li>
               </ul>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://micaaa.top" style="background: #10b981; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold;">Ir a MICAA</a>
+                <a href="https://micaa.site" style="background: #10b981; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold;">Ir a MICAA</a>
               </div>
               <p style="color: #64748b; font-size: 14px;">¡Gracias por unirte a MICAA!</p>
             </div>

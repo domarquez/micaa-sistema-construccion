@@ -318,7 +318,7 @@ export default function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => window.open('mailto:contacto@micaaa.top?subject=Consulta%20MICAA&body=Envianos%20un%20mensaje%20con%20tus%20consultas%20o%20sugerencias', '_blank')}
+              onClick={() => window.open('mailto:contacto@micaa.site?subject=Consulta%20MICAA&body=Envianos%20un%20mensaje%20con%20tus%20consultas%20o%20sugerencias', '_blank')}
               className="w-full justify-center"
             >
               <Mail className="w-4 h-4" />
